@@ -1,0 +1,21 @@
+rules:
+- id: vuln-chakracore-8d21cde3
+  pattern: "insertBeforeInstr->InsertBefore(IR::Instr::New(Js::OpCode::Add_I4,\n \
+    \                                              $...ARGS));\n"
+  pattern-not: '$INSTR = IR::Instr::New(...);
+
+    $INSERT->InsertBefore($INSTR);
+
+    $INSTR->ConvertToBailOutInstr(...);
+
+    '
+  languages:
+  - cpp
+  message: Missing bounds check bailout after integer increment operation may allow
+    overflow in loop counter optimization
+  severity: ERROR
+  metadata:
+    source-url: github.com/Microsoft/ChakraCore/commit/8d21cde342a4e826d96eb4ac85241f876b879aed
+    category: security
+    technology:
+    - cpp

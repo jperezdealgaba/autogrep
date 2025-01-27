@@ -1,0 +1,27 @@
+rules:
+- id: vuln-chakracore-d73c5f12
+  pattern: '$TYPE $SAVE = $CTX->GetImplicitCallFlags();
+
+    $CTX->ClearDisableImplicitFlags();
+
+    ...
+
+    JavascriptFunction::CallRootFunctionInScript(...);
+
+    ...
+
+    $CTX->SetImplicitCallFlags(...);
+
+    '
+  pattern-not: "{\n    AutoRestoreFlags $VAR($CTX, ..., ...);\n    JavascriptFunction::CallRootFunctionInScript(...);\n\
+    }\n"
+  languages:
+  - cpp
+  message: Manual implicit call flag handling without RAII guard could leave inconsistent
+    state on exceptions
+  severity: ERROR
+  metadata:
+    source-url: github.com/Microsoft/ChakraCore/commit/d73c5f12d9c5cbbf64f59ae04e76a531b3e844b3
+    category: security
+    technology:
+    - cpp

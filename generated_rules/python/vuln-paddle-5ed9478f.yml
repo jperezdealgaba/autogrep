@@ -1,0 +1,13 @@
+rules:
+- id: vuln-paddle-5ed9478f
+  pattern: paddle.jit.dy2static.convert_shape_compare(...)
+  languages:
+  - python
+  message: Use of removed convert_shape_compare function can lead to incorrect tensor
+    comparison logic, causing dy2static conversion errors
+  severity: ERROR
+  metadata:
+    source-url: github.com/PaddlePaddle/Paddle/commit/5ed9478fdef96a06eeec9093f9e768c97b094af3
+    category: security
+    technology:
+    - python

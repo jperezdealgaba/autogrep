@@ -1,0 +1,15 @@
+rules:
+- id: vuln-paddle-4c0888d7
+  pattern: '_download_methods = {..., ''wget'': $FUNC, ...}
+
+    '
+  languages:
+  - python
+  message: Insecure 'wget' download method detected which was removed due to security
+    concerns
+  severity: ERROR
+  metadata:
+    source-url: github.com/PaddlePaddle/Paddle/commit/4c0888d7b8f10405e2e79adc41c224264f93e816
+    category: security
+    technology:
+    - python

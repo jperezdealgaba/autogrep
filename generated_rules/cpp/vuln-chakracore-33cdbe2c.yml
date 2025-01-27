@@ -1,0 +1,15 @@
+rules:
+- id: vuln-chakracore-33cdbe2c
+  pattern: 'paramScope->SetMustInstantiate(!pnodeFnc->sxFnc.IsBodyAndParamScopeMerged());
+
+    '
+  languages:
+  - cpp
+  message: Insecure instantiation of parameter scope without proper validation may
+    lead to incorrect scope handling
+  severity: ERROR
+  metadata:
+    source-url: github.com/Microsoft/ChakraCore/commit/33cdbe2c582cfa09242aca3876c4f0d300685cb9
+    category: security
+    technology:
+    - cpp
