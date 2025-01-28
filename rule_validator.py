@@ -6,12 +6,93 @@ from patch_processor import PatchInfo
 from config import Config
 import yaml
 import git
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 import logging
 
 class RuleValidator:
     def __init__(self, config: Config):
         self.config = config
+
+    def check_existing_rules(self, patch_info: PatchInfo, repo_path: Path, existing_rules: List[dict]) -> Tuple[bool, Optional[str]]:
+        """
+        Check if any existing rules can already detect the vulnerability.
+        
+        Args:
+            patch_info: Information about the patch
+            repo_path: Path to the repository
+            existing_rules: List of existing rules for the same language
+            
+        Returns:
+            Tuple[bool, Optional[str]]: 
+                - Boolean indicating if vulnerability is already detectable
+                - ID of the matching rule if found, None otherwise
+        """
+        try:
+            repo = git.Repo(repo_path)
+            
+            # Check vulnerable version first
+            parent_commit = repo.commit(patch_info.commit_id).parents[0]
+            repo.git.checkout(parent_commit)
+            
+            # Create temporary rule file with all existing rules
+            with tempfile.NamedTemporaryFile('w', suffix='.yml', delete=False) as tf:
+                yaml.dump({"rules": existing_rules}, tf)
+                rule_file = tf.name
+            
+            try:
+                # Test vulnerable version
+                vuln_results = []
+                for file_change in patch_info.file_changes:
+                    target_file = repo_path / file_change.file_path
+                    if not target_file.exists():
+                        continue
+                        
+                    results, error = self._run_semgrep(rule_file, str(target_file))
+                    if error:
+                        continue
+                    vuln_results.extend(results)
+                
+                # If no rules detect the vulnerable version, we need a new rule
+                if not vuln_results:
+                    return False, None
+                
+                # Check fixed version
+                repo.git.checkout(patch_info.commit_id)
+                fixed_results = []
+                
+                for file_change in patch_info.file_changes:
+                    target_file = repo_path / file_change.file_path
+                    if not target_file.exists():
+                        continue
+                        
+                    results, error = self._run_semgrep(rule_file, str(target_file))
+                    if error:
+                        continue
+                    fixed_results.extend(results)
+                
+                # If any rule detects vulnerability in vulnerable version but not in fixed version,
+                # we don't need a new rule
+                detecting_rules = set()
+                for result in vuln_results:
+                    rule_id = result.get('check_id')
+                    if rule_id and not any(r.get('check_id') == rule_id for r in fixed_results):
+                        detecting_rules.add(rule_id)
+                
+                if detecting_rules:
+                    return True, next(iter(detecting_rules))  # Return first detecting rule ID
+                
+                return False, None
+                
+            finally:
+                # Clean up temporary rule file
+                try:
+                    Path(rule_file).unlink()
+                except Exception as e:
+                    logging.warning(f"Failed to delete temporary rule file: {e}")
+                    
+        except Exception as e:
+            logging.error(f"Error checking existing rules: {e}", exc_info=True)
+            return False, None
         
     def _run_semgrep(self, rule_file: str, target_path: str) -> Tuple[list, Optional[str]]:
         """Run semgrep with better error classification."""

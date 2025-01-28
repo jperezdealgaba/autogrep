@@ -22,7 +22,7 @@ class AutoGrep:
         self.rule_validator = RuleValidator(config)
         
     def process_patch(self, patch_file: Path) -> Optional[Tuple[dict, PatchInfo]]:
-        """Process a single patch file with caching."""
+        """Process a single patch file with improved rule checking."""
         # Check if patch has already been processed
         if self.config.cache_manager.is_patch_processed(patch_file.name):
             logging.info(f"Skipping already processed patch: {patch_file.name}")
@@ -46,13 +46,24 @@ class AutoGrep:
             # Prepare repository
             repo_path = self.git_manager.prepare_repo(patch_info)
             if not repo_path:
-                self.config.cache_manager.mark_repo_failed(
-                    repo_key, 
-                    "Failed to prepare repository"
-                )
+                self.config.cache_manager.mark_repo_failed(repo_key, "Failed to prepare repository")
                 self.config.cache_manager.mark_patch_processed(patch_file.name)
                 return None
             
+            # Get the language from patch info
+            language = patch_info.file_changes[0].language
+            
+            # Check if any existing rules can detect this vulnerability
+            existing_rules = self.rule_manager.rules.get(language, [])
+            is_detected, detecting_rule = self.rule_validator.check_existing_rules(
+                patch_info, repo_path, existing_rules
+            )
+            
+            if is_detected:
+                logging.info(f"Vulnerability already detectable by existing rule: {detecting_rule}")
+                self.config.cache_manager.mark_patch_processed(patch_file.name)
+                return None
+                
             # Initialize error tracking
             error_msg = None
             

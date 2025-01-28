@@ -1,0 +1,20 @@
+rules:
+- id: vuln-chakracore-a267c5b7
+  pattern: 'JavascriptError::SetErrorMessageProperties($_, $_, this->GetSpecifierSz(),
+    $_)
+
+    '
+  pattern-not: 'JavascriptError::SetErrorMessageProperties($_, $_, allocatedString,
+    $_)
+
+    '
+  languages:
+  - cpp
+  message: Insecure use of GetSpecifierSz() buffer without copying may lead to use-after-free
+    vulnerabilities. Always create a copied buffer for error messages.
+  severity: ERROR
+  metadata:
+    source-url: github.com/Microsoft/ChakraCore/commit/a267c5b7c45fae20d783fd8163d64998595feab0
+    category: security
+    technology:
+    - cpp
