@@ -21,20 +21,176 @@ class PatchInfo:
 class PatchProcessor:
     def __init__(self, config: Config):
         self.config = config
-        
+            
     def get_language_from_file(self, file_path: str) -> Optional[str]:
         """Determine programming language from file extension."""
         ext_map = {
+            # Python
             ".py": "python",
+            ".pyi": "python",
+            ".pyx": "python",
+            ".pyw": "python",
+            
+            # JavaScript/TypeScript
             ".js": "javascript",
+            ".jsx": "javascript",
+            ".ts": "typescript",
+            ".tsx": "typescript",
+            ".mjs": "javascript",
+            ".cjs": "javascript",
+            
+            # Java
             ".java": "java",
+            ".jav": "java",
+            
+            # C/C++
             ".cpp": "cpp",
             ".hpp": "cpp",
-            ".h": "cpp",
-            ".c": "c",
             ".cc": "cpp",
+            ".cxx": "cpp",
+            ".c++": "cpp",
+            ".h": "cpp",
             ".hh": "cpp",
-            # Add more mappings as needed
+            ".hxx": "cpp",
+            ".h++": "cpp",
+            ".c": "c",
+            
+            # C#
+            ".cs": "csharp",
+            
+            # Ruby
+            ".rb": "ruby",
+            ".rbw": "ruby",
+            ".rake": "ruby",
+            ".gemspec": "ruby",
+            
+            # PHP
+            ".php": "php",
+            ".phtml": "php",
+            ".php3": "php",
+            ".php4": "php",
+            ".php5": "php",
+            
+            # Go
+            ".go": "go",
+            
+            # Rust
+            ".rs": "rust",
+            
+            # Swift
+            ".swift": "swift",
+            
+            # Kotlin
+            ".kt": "kotlin",
+            ".kts": "kotlin",
+            
+            # Scala
+            ".scala": "scala",
+            ".sc": "scala",
+            
+            # HTML/CSS
+            ".html": "html",
+            ".htm": "html",
+            ".xhtml": "html",
+            ".css": "css",
+            ".scss": "scss",
+            ".sass": "sass",
+            ".less": "less",
+            
+            # Shell scripting
+            ".sh": "shell",
+            ".bash": "shell",
+            ".zsh": "shell",
+            ".fish": "shell",
+            
+            # PowerShell
+            ".ps1": "powershell",
+            ".psm1": "powershell",
+            ".psd1": "powershell",
+            
+            # Perl
+            ".pl": "perl",
+            ".pm": "perl",
+            ".t": "perl",
+            
+            # R
+            ".r": "r",
+            ".R": "r",
+            ".rmd": "r",
+            
+            # Lua
+            ".lua": "lua",
+            
+            # Haskell
+            ".hs": "haskell",
+            ".lhs": "haskell",
+            
+            # Julia
+            ".jl": "julia",
+            
+            # Dart
+            ".dart": "dart",
+            
+            # Visual Basic
+            ".vb": "vb",
+            ".bas": "vb",
+            ".vbs": "vb",
+            
+            # MATLAB
+            ".m": "matlab",
+            ".mat": "matlab",
+            
+            # Assembly
+            ".asm": "assembly",
+            ".s": "assembly",
+            
+            # SQL
+            ".sql": "sql",
+            
+            # Markdown
+            ".md": "markdown",
+            ".markdown": "markdown",
+            
+            # XML
+            ".xml": "xml",
+            ".xsl": "xml",
+            ".xsd": "xml",
+            
+            # JSON
+            ".json": "json",
+            
+            # YAML
+            ".yml": "yaml",
+            ".yaml": "yaml",
+            
+            # Protocol Buffers
+            ".proto": "protobuf",
+            
+            # Groovy
+            ".groovy": "groovy",
+            ".gvy": "groovy",
+            
+            # Objective-C
+            ".m": "objectivec",
+            ".mm": "objectivec",
+            
+            # F#
+            ".fs": "fsharp",
+            ".fsi": "fsharp",
+            ".fsx": "fsharp",
+            
+            # Clojure
+            ".clj": "clojure",
+            ".cljs": "clojure",
+            ".cljc": "clojure",
+            
+            # Elixir
+            ".ex": "elixir",
+            ".exs": "elixir",
+            
+            # Erlang
+            ".erl": "erlang",
+            ".hrl": "erlang",
         }
         ext = Path(file_path).suffix.lower()
         return ext_map.get(ext)
