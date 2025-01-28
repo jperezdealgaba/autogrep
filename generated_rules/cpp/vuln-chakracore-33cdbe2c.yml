@@ -3,13 +3,31 @@ rules:
   pattern: 'paramScope->SetMustInstantiate(!pnodeFnc->sxFnc.IsBodyAndParamScopeMerged());
 
     '
+  pattern-not-inside: "if (!pnodeFnc->sxFnc.IsBodyAndParamScopeMerged())\n{\n    ...\n\
+    \    paramScope->SetMustInstantiate(...);\n    ...\n}\n"
   languages:
   - cpp
-  message: Insecure instantiation of parameter scope without proper validation may
-    lead to incorrect scope handling
+  message: 'Unconditional parameter scope instantiation vulnerability in ChakraCore.
+    The code
+
+    directly sets MustInstantiate without proper validation of scope merging status
+
+    and frame object registers, which could lead to incorrect closure handling or
+
+    scope instantiation errors. Add conditional checks for IsBodyAndParamScopeMerged()
+
+    status and validate frameObjRegister/local closure ownership before setting
+
+    MustInstantiate.
+
+    '
   severity: ERROR
   metadata:
     source-url: github.com/Microsoft/ChakraCore/commit/33cdbe2c582cfa09242aca3876c4f0d300685cb9
     category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A04: Insecure Design'
     technology:
     - cpp
