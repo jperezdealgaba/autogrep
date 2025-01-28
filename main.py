@@ -22,18 +22,35 @@ class AutoGrep:
         self.rule_validator = RuleValidator(config)
         
     def process_patch(self, patch_file: Path) -> Optional[Tuple[dict, PatchInfo]]:
-        """Process a single patch file with improved error handling."""
-        repo_path = None
+        """Process a single patch file with caching."""
+        # Check if patch has already been processed
+        if self.config.cache_manager.is_patch_processed(patch_file.name):
+            logging.info(f"Skipping already processed patch: {patch_file.name}")
+            return None
+            
         try:
             patch_info = self.patch_processor.process_patch(patch_file)
             if not patch_info:
+                self.config.cache_manager.mark_patch_processed(patch_file.name)
                 logging.warning(f"Failed to process patch file: {patch_file}")
+                return None
+                
+            # Check if repo is known to fail
+            repo_key = f"{patch_info.repo_owner}/{patch_info.repo_name}"
+            if self.config.cache_manager.is_repo_failed(repo_key):
+                error = self.config.cache_manager.get_repo_error(repo_key)
+                logging.warning(f"Skipping known failed repository {repo_key}: {error}")
+                self.config.cache_manager.mark_patch_processed(patch_file.name)
                 return None
                 
             # Prepare repository
             repo_path = self.git_manager.prepare_repo(patch_info)
             if not repo_path:
-                logging.warning(f"Failed to prepare repository for patch: {patch_file}")
+                self.config.cache_manager.mark_repo_failed(
+                    repo_key, 
+                    "Failed to prepare repository"
+                )
+                self.config.cache_manager.mark_patch_processed(patch_file.name)
                 return None
             
             # Initialize error tracking
@@ -54,6 +71,7 @@ class AutoGrep:
                 
                 if is_valid:
                     logging.info(f"Successfully generated valid rule for {patch_file}")
+                    self.config.cache_manager.mark_patch_processed(patch_file.name)
                     return (rule, patch_info)
                     
                 # If validation failed due to parse errors, skip this patch
@@ -61,16 +79,19 @@ class AutoGrep:
                                     "Syntax error" in validation_error or
                                     "Skipped all files" in validation_error):
                     logging.info(f"Skipping patch due to parse errors: {validation_error}")
+                    self.config.cache_manager.mark_patch_processed(patch_file.name)
                     return None
                     
                 # Otherwise, use the error message for the next attempt
                 error_msg = validation_error
                 logging.warning(f"Attempt {attempt + 1} failed: {error_msg}")
             
+            self.config.cache_manager.mark_patch_processed(patch_file.name)
             return None
             
         except Exception as e:
             logging.error(f"Unexpected error processing patch {patch_file}: {e}", exc_info=True)
+            self.config.cache_manager.mark_patch_processed(patch_file.name)
             return None
         finally:
             # Always reset the repository state if it exists
@@ -80,8 +101,26 @@ class AutoGrep:
                     # If reset fails, we might want to force cleanup
                     self.git_manager.cleanup_repo(repo_path)
 
+    def _process_repo_patches(self, patches: list) -> list:
+        """Process all patches for a single repository with caching."""
+        rules = []
+        for patch_file in patches:
+            try:
+                result = self.process_patch(patch_file)
+                if result:  # Check if we got a valid result
+                    rule, patch_info = result  # Properly unpack the tuple
+                    if rule and patch_info and patch_info.file_changes:
+                        language = patch_info.file_changes[0].language
+                        # Store the rule immediately after generation
+                        self.rule_manager.add_generated_rule(language, rule)
+                        rules.append(rule)
+                        logging.info(f"Successfully stored rule for {patch_file} in {language}")
+            except Exception as e:
+                logging.error(f"Error processing patch {patch_file}: {e}", exc_info=True)
+        return rules
+
     def run(self):
-        """Main execution flow."""
+        """Main execution flow with caching."""
         # Load initial rules
         self.rule_manager.load_initial_rules()
         
@@ -91,15 +130,29 @@ class AutoGrep:
         # Group patches by repository
         repo_patches = {}
         for patch_file in patch_files:
+            # Skip if already processed
+            if self.config.cache_manager.is_patch_processed(patch_file.name):
+                logging.info(f"Skipping already processed patch: {patch_file.name}")
+                continue
+                
             try:
                 # Try to parse the patch filename to get repo info
                 repo_owner, repo_name, _ = self.patch_processor.parse_patch_filename(patch_file.name)
                 repo_key = f"{repo_owner}/{repo_name}"
+                
+                # Skip if repo is known to fail
+                if self.config.cache_manager.is_repo_failed(repo_key):
+                    error = self.config.cache_manager.get_repo_error(repo_key)
+                    logging.warning(f"Skipping known failed repository {repo_key}: {error}")
+                    self.config.cache_manager.mark_patch_processed(patch_file.name)
+                    continue
+                    
                 if repo_key not in repo_patches:
                     repo_patches[repo_key] = []
                 repo_patches[repo_key].append(patch_file)
             except ValueError as e:
                 logging.error(f"Error parsing patch filename {patch_file}: {e}")
+                self.config.cache_manager.mark_patch_processed(patch_file.name)
                 continue
         
         # Process different repos in parallel with max 4 workers
@@ -118,36 +171,11 @@ class AutoGrep:
                             self.rule_manager.add_generated_rule(rule["language"], rule)
                 except Exception as e:
                     logging.error(f"Error processing repository patches: {e}")
-    
-    def _process_repo_patches(self, patches: list) -> list:
-        """Process all patches for a single repository sequentially."""
-        rules = []
-        for patch_file in patches:
-            try:
-                result = self.process_patch(patch_file)
-                if result:  # Check if we got a valid result
-                    rule, patch_info = result  # Properly unpack the tuple
-                    if rule and patch_info and patch_info.file_changes:
-                        language = patch_info.file_changes[0].language
-                        # Store the rule immediately after generation
-                        self.rule_manager.add_generated_rule(language, rule)
-                        rules.append(rule)
-                        logging.info(f"Successfully stored rule for {patch_file} in {language}")
-            except Exception as e:
-                logging.error(f"Error processing patch {patch_file}: {e}", exc_info=True)
-        return rules
 
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description="AutoGrep: Automated Semgrep rule generation from vulnerability patches"
-    )
-    
-    parser.add_argument(
-        "--rules-dir",
-        type=Path,
-        default=Path("rules"),
-        help="Directory containing initial rules"
     )
     
     parser.add_argument(
@@ -181,7 +209,7 @@ def parse_args():
     parser.add_argument(
         "--max-retries",
         type=int,
-        default=5,
+        default=3,
         help="Maximum number of LLM generation attempts"
     )
     
@@ -223,7 +251,6 @@ def main():
     
     # Initialize config
     config = Config(
-        rules_dir=args.rules_dir,
         patches_dir=args.patches_dir,
         generated_rules_dir=args.output_dir,
         repos_cache_dir=args.repos_cache_dir,

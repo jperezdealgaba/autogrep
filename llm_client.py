@@ -130,7 +130,7 @@ class LLMClient:
     Always include these required fields: id, pattern, message, severity, languages"""},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.1,
+                temperature=0.6,
             )
             
             if not response.choices:
@@ -174,7 +174,8 @@ class LLMClient:
             return None
         
     def _build_prompt(self, patch_info: PatchInfo, error_feedback: Optional[str] = None) -> str:
-        """Build prompt for rule generation with stronger emphasis on required fields."""
+        """Build an enhanced prompt for rule generation with examples and detailed guidance."""
+        # Combine all file changes with context
         all_changes = []
         for file_change in patch_info.file_changes:
             file_header = f"File: {file_change.file_path}\n"
@@ -186,75 +187,154 @@ class LLMClient:
         commit_short = patch_info.commit_id[:8]
         suggested_id = f"vuln-{patch_info.repo_name.lower()}-{commit_short}"
         
-        prompt = f"""Generate a Semgrep rule to detect similar vulnerabilities in {language} code.
+        # Language-specific example rules
+        EXAMPLE_RULES = {
+            "python": '''
+    rules:
+    - id: "unsafe-deserialization"
+        pattern: pickle.loads($DATA)
+        pattern-not: pickle.loads(trusted_data)
+        pattern-inside: |
+            def $FUNC(...):
+                ...
+        languages: ["python"]
+        message: "Detected unsafe deserialization using pickle.loads(). This can lead to remote code execution."
+        severity: ERROR
+        metadata:
+            category: security
+            cwe: CWE-502
+            owasp: A8:2017-Insecure Deserialization
+            references:
+                - https://docs.python.org/3/library/pickle.html#pickle.loads
 
+    - id: "sql-injection"
+        patterns:
+            - pattern: execute($QUERY)
+            - pattern-not: execute("SELECT ...")
+            - pattern-not: execute(sanitized_query)
+        languages: ["python"]
+        message: "Potential SQL injection detected. Use parameterized queries instead."
+        severity: ERROR
+        metadata:
+            category: security
+            cwe: CWE-89
+    ''',
+            "javascript": '''
+    rules:
+    - id: "xss-innerHTML"
+        pattern: $ELEMENT.innerHTML = $DATA
+        pattern-not-inside: |
+            $ELEMENT.innerHTML = DOMPurify.sanitize($DATA)
+        languages: ["javascript"]
+        message: "Potential XSS vulnerability using innerHTML. Use DOMPurify or safe alternatives."
+        severity: ERROR
+        metadata:
+            category: security
+            cwe: CWE-79
+
+    - id: "eval-injection"
+        pattern: eval($DATA)
+        pattern-not: eval("trusted_static_string")
+        languages: ["javascript"]
+        message: "Dangerous use of eval() detected. This can lead to code injection."
+        severity: ERROR
+        metadata:
+            category: security
+            cwe: CWE-95
+    ''',
+            "java": '''
+    rules:
+    - id: "path-traversal"
+        pattern: new File($PATH)
+        pattern-not: new File(sanitized_path)
+        pattern-inside: |
+            class $CLASS {
+                ...
+            }
+        languages: ["java"]
+        message: "Potential path traversal vulnerability. Validate and sanitize file paths."
+        severity: ERROR
+        metadata:
+            category: security
+            cwe: CWE-22
+
+    - id: "weak-cipher"
+        pattern: Cipher.getInstance("DES")
+        languages: ["java"]
+        message: "Usage of weak cryptographic algorithm DES detected. Use AES instead."
+        severity: ERROR
+        metadata:
+            category: security
+            cwe: CWE-326
+    '''
+        }
+
+        # Get examples for the current language
+        examples = EXAMPLE_RULES.get(language, "")
+
+        # Build the enhanced prompt
+        prompt = f"""Analyze the following vulnerability patch and generate a precise Semgrep rule to detect similar vulnerabilities in {language} code.
+
+    CONTEXT:
     Repository: github.com/{patch_info.repo_owner}/{patch_info.repo_name}
     Commit: {patch_info.commit_id}
 
-    Changes:
+    PATCH CHANGES:
     {combined_changes}
 
-    CRITICAL: Your response must be a single YAML rule with ALL of these required fields:
-    1. id: "{suggested_id}"
-    2. pattern: The vulnerable code pattern
+    SEMGREP PATTERN SYNTAX GUIDE:
+    - Use $VARNAME to match any expression
+    - Use ... to match any sequence of statements
+    - Use |> to pipe patterns together
+    - Use pattern-inside to limit matches to specific code blocks
+    - Use pattern-not to exclude specific patterns (like the fixed version)
+    - Use metavariable-pattern to add constraints on variables
+
+    REQUIRED FIELDS:
+    1. id: "{suggested_id}" (must be unique and descriptive)
+    2. pattern: Clear pattern matching the vulnerable code structure
     3. languages: ["{language}"]
-    4. message: Clear description of the vulnerability
+    4. message: Detailed description of:
+    - What the vulnerability is
+    - Why it's dangerous
+    - How to fix it
     5. severity: One of [ERROR, WARNING, INFO]
 
-    Optional fields that improve the rule:
-    - pattern-not: Pattern that should not match (fixed version)
+    RECOMMENDED FIELDS:
+    - pattern-not: Pattern that should not match (e.g., fixed version)
     - pattern-inside: Context pattern for where the rule should match
     - pattern-not-inside: Context pattern for where the rule should not match
     - metadata:
-    source-url: github.com/{patch_info.repo_owner}/{patch_info.repo_name}/commit/{patch_info.commit_id}
-    category: security
-    technology: [{language}]
-
-    Example format:
-    rules:
-    - id: "{suggested_id}"
-        pattern: $VULNERABLE_PATTERN
-        pattern-not: $FIXED_PATTERN
-        languages: ["{language}"]
-        message: "Clear description of the security issue"
-        severity: ERROR
-        metadata:
         source-url: github.com/{patch_info.repo_owner}/{patch_info.repo_name}/commit/{patch_info.commit_id}
         category: security
-        technology:
-            - {language}
-    """
+        cwe: [relevant CWE number]
+        owasp: [relevant OWASP category]
+        references: [links to documentation or standards]
+        technology: [{language}]
+
+    IMPORTANT GUIDELINES:
+    1. Make patterns as specific as possible to minimize false positives
+    2. Include pattern-not for the fixed version when possible
+    3. Add relevant metadata like CWE numbers and OWASP categories
+    4. Write clear, actionable messages explaining both the problem and solution
+    5. Consider different variations of the vulnerable pattern
+
+    EXAMPLES OF HIGH-QUALITY RULES:
+    {examples}
+
+    FORMAT YOUR RESPONSE AS A SINGLE YAML DOCUMENT:
+    rules:
+    - id: "{suggested_id}"
+    pattern: [Your pattern here]
+    pattern-not: [Fixed version pattern]
+    languages: ["{language}"]
+    message: [Clear description]
+    severity: ERROR
+    metadata: [Additional context]
+
+    Remember to adapt the patterns to match the specific vulnerability in the patch while keeping them general enough to catch variations of the same issue."""
 
         if error_feedback:
-            prompt += f"\nPrevious attempt failed with error: {error_feedback}\nFix these issues in your next attempt."
+            prompt += f"\n\nPREVIOUS ERROR TO FIX:\n{error_feedback}\nEnsure your next attempt addresses these issues."
             
         return prompt
-
-# And update the AutoGrep class's process_patch method to handle the error_msg correctly:
-
-def process_patch(self, patch_file: Path) -> Optional[dict]:
-    """Process a single patch file."""
-    patch_info = self.patch_processor.process_patch(patch_file)
-    if not patch_info:
-        return None
-        
-    # Prepare repository
-    repo_path = self.git_manager.prepare_repo(patch_info)
-    if not repo_path:
-        return None
-        
-    # Try generating and validating rule
-    error_msg = None
-    for attempt in range(self.config.max_retries):
-        rule = self.llm_client.generate_rule(patch_info, error_msg)
-        if not rule:
-            error_msg = "Failed to generate valid YAML"
-            continue
-            
-        is_valid, validation_error = self.rule_validator.validate_rule(rule, patch_info, repo_path)
-        if is_valid:
-            return rule
-            
-        error_msg = validation_error
-        
-    return None
