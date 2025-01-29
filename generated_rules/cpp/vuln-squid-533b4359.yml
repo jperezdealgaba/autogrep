@@ -1,0 +1,25 @@
+rules:
+- id: vuln-squid-533b4359
+  pattern: "if (!computeMissingCertificateUrls($VAR))\n    return handleNegotiationResult($VAR2);\n"
+  pattern-not: "if (!computeMissingCertificateUrls($VAR))\n    return resumeNegotiation();\n"
+  languages:
+  - cpp
+  message: 'Using handleNegotiationResult() instead of resumeNegotiation() when certificate
+    URLs are missing can lead to improper SSL/TLS negotiation handling, potentially
+    causing security vulnerabilities. The fix changes the behavior to properly resume
+    negotiation instead of handling the result directly. Always use resumeNegotiation()
+    in this context to ensure proper SSL/TLS handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/squid-cache/squid/commit/533b4359f16cf9ed15a6d709a57a4b06e4222cfe
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://wiki.squid-cache.org/Features/SslPeekAndSplice
+    technology:
+    - cpp

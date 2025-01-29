@@ -1,0 +1,23 @@
+rules:
+- id: vuln-strapi-55a6a2bc
+  pattern: '..._.omit($USER, [''password'', ''resetPasswordToken'', ''roles''])
+
+    '
+  pattern-not: '..._.omit($USER, [''password'', ''resetPasswordToken'', ''registrationToken'',
+    ''roles''])
+
+    '
+  languages:
+  - javascript
+  message: 'Sensitive data exposure: The ''registrationToken'' field is not being
+    omitted from the user object, which could lead to information disclosure. Ensure
+    all sensitive fields are properly omitted to prevent exposure of sensitive data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/55a6a2bc0b6f52ce5a10ffb174336ea5a30d78fe
+    category: security
+    cwe: CWE-200
+    owasp: A3:2017-Sensitive Data Exposure
+    technology: javascript

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-00c821af
+  pattern: "OP_REQUIRES_OK(\n    $CONTEXT,\n    $CONTEXT->allocate_output(\n     \
+    \   0, TensorShape({$BATCH_SIZE, $OUT_HEIGHT, $OUT_WIDTH, $CHANNELS}),\n     \
+    \   &$OUTPUT));\n"
+  pattern-not: "TensorShape $SHAPE;\nOP_REQUIRES_OK($CONTEXT,\n               TensorShape::BuildTensorShape(\n\
+    \                   {$BATCH_SIZE, $OUT_HEIGHT, $OUT_WIDTH, $CHANNELS}, &$SHAPE));\n\
+    OP_REQUIRES_OK($CONTEXT, $CONTEXT->allocate_output(0, $SHAPE, &$OUTPUT));\n"
+  languages:
+  - cpp
+  message: 'Directly passing TensorShape constructor parameters to allocate_output
+    can lead
+
+    to potential memory safety issues. The safer approach is to first construct
+
+    a TensorShape object and then pass it to allocate_output. This ensures proper
+
+    shape validation and memory allocation.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/00c821af032ba9e5f5fa3fe14690c8d28a657624
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

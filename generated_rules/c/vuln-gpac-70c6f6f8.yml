@@ -1,0 +1,25 @@
+rules:
+- id: vuln-gpac-70c6f6f8
+  pattern: '$INFO->fieldType = GF_SG_VRML_SFNODE
+
+    '
+  pattern-not: '$INFO->fieldType = GF_SG_VRML_MFNODE
+
+    '
+  languages:
+  - c
+  message: 'Detected incorrect field type assignment. Using GF_SG_VRML_SFNODE instead
+    of GF_SG_VRML_MFNODE can lead to incorrect scene graph node handling and potential
+    security vulnerabilities. Replace GF_SG_VRML_SFNODE with GF_SG_VRML_MFNODE to
+    ensure proper node type handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/70c6f6f832dccff814a19a74d87b97b3d68a4af5
+    category: security
+    cwe:
+    - CWE-665
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

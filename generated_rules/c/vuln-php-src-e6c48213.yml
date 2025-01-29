@@ -1,0 +1,34 @@
+rules:
+- id: vuln-php-src-e6c48213
+  pattern: "void simplestring_addn(simplestring* $TARGET, const char* $SOURCE, int\
+    \ $ADD_LEN) {\n  ...\n  int $NEWSIZE = $TARGET->len + $ADD_LEN + 1;\n  int $INCR\
+    \ = $TARGET->size * 2;\n  $NEWSIZE = $NEWSIZE - ($NEWSIZE % $INCR) + $INCR;\n\
+    \  ...\n}\n"
+  pattern-not: "void simplestring_addn(simplestring* $TARGET, const char* $SOURCE,\
+    \ size_t $ADD_LEN) {\n  ...\n  size_t $NEWSIZE = $TARGET->size, $INCR = 0;\n \
+    \ if((SIZE_MAX - $ADD_LEN) < $TARGET->len || (SIZE_MAX - $ADD_LEN - 1) < $TARGET->len)\
+    \ {\n    return;\n  }\n  $NEWSIZE = $TARGET->len + $ADD_LEN + 1;\n  $INCR = $TARGET->size\
+    \ * 2;\n  if ($INCR) {\n    $NEWSIZE = $NEWSIZE - ($NEWSIZE % $INCR) + $INCR;\n\
+    \  }\n  if($NEWSIZE < ($TARGET->len + $ADD_LEN + 1)) {\n    return;\n  }\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Potential integer overflow vulnerability in string concatenation function.
+
+    The original code uses ''int'' type for length calculations which can overflow,
+
+    leading to buffer allocation issues. Use ''size_t'' type instead and add proper
+
+    overflow checks as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e6c48213c22ed50b2b987b479fcc1ac709394caa
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

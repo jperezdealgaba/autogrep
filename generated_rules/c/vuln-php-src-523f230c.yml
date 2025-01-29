@@ -1,0 +1,27 @@
+rules:
+- id: vuln-php-src-523f230c
+  pattern: "if ($VAR[($VAR_LEN - 1)] == $CHAR) {\n  ...\n}\n"
+  pattern-not: "if ($VAR_LEN >= 1 && $VAR[($VAR_LEN - 1)] == $CHAR) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected potential out-of-bounds array access. Accessing array elements
+    without
+
+    first checking if the index is within bounds can lead to undefined behavior.
+
+    Always verify array bounds before accessing elements. In this case, add a length
+
+    check (e.g., ''if (len >= 1 && array[len - 1] == char)'') before accessing the
+    array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/523f230c831d7b33353203fa34aee4e92ac12bba
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

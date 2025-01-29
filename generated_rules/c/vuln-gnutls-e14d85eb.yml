@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gnutls-e14d85eb
+  pattern: "if (($PAD + $TOTAL) % $LEN > $LEN - 9\n    && $TOTAL % $LEN <= $LEN -\
+    \ 9) {\n  ...\n}\n"
+  pattern-not: "if ($PARAMS->mac && $PARAMS->mac->id == $GNUTLS_MAC_SHA384)\n    $V\
+    \ = 17;\nelse\n    $V = 9;\nif (($PAD + $TOTAL) % $LEN > $LEN - $V\n    && $TOTAL\
+    \ % $LEN <= $LEN - $V) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a potential timing leakage vulnerability in CBC ciphersuites.
+    The original code uses a fixed value of 9 for padding checks, which can lead to
+    timing side-channel attacks. The fix introduces a variable padding value based
+    on the hash function used, mitigating the timing leakage. To fix this, ensure
+    that padding checks use variable values based on the cryptographic context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/e14d85eb8b1987d86f7b1d101a0e7795675d20d4
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

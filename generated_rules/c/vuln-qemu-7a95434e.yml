@@ -1,0 +1,22 @@
+rules:
+- id: vuln-qemu-7a95434e
+  pattern: "if (!strcmp($NAME, VIRTFS_META_DIR)) {\n  ...\n}\n"
+  pattern-not: "if (local_is_mapped_file_metadata($CTX, $NAME)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Direct comparison of file names with VIRTFS_META_DIR is vulnerable to
+    path traversal attacks. Use the dedicated local_is_mapped_file_metadata() function
+    instead, which provides proper validation and security checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/7a95434e0ca8a037fd8aa1a2e2461f92585eb77b
+    category: security
+    cwe:
+    - CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - c

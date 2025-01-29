@@ -1,0 +1,23 @@
+rules:
+- id: vuln-go-d384ebde
+  pattern: 't.Skipf("not supported on solaris or illumos, see golang.org/issue/7399")
+
+    '
+  pattern-not: 't.Skipf("not supported on solaris or illumos, see issue 7399")
+
+    '
+  languages:
+  - go
+  message: 'The code contains a redundant reference to the issue URL in the Skipf
+    message. This can lead to confusion and maintenance issues. Remove the redundant
+    URL reference to keep the code clean and maintainable.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/d384ebde60a7e720f83fb10e6fa9cbf989a8866f
+    category: maintainability
+    cwe:
+    - CWE-546
+    technology:
+    - go

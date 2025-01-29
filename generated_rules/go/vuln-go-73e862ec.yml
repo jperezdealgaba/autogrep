@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-73e862ec
+  pattern: 'strings.ReplaceAll($S, "{"+$K+"}", $V)
+
+    '
+  pattern-not: 'strings.NewReplacer($OLDNEW...).Replace($S)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of strings.ReplaceAll in a loop for multiple replacements.
+    This can lead to inconsistent results due to iteration order and multiple replacements
+    of the same pattern. Use strings.NewReplacer instead, which ensures each match
+    is replaced exactly once and is independent of iteration order.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/73e862eced80553479b7f19d572e9ca4e07bf585
+    category: security
+    cwe:
+    - CWE-1234
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/strings#Replacer
+    technology:
+    - go

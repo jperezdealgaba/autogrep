@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-027d7241
+  pattern: "for i := 0; ; i++ {\n  ...\n  if $COND {\n    ...\n  }\n}\n"
+  pattern-not: "for i := 0; i < MaxVarintLen64; i++ {\n  ...\n  if $COND {\n    ...\n\
+    \  }\n  return $X, overflow\n}\n"
+  languages:
+  - go
+  message: 'Detected an unbounded loop in varint decoding that can lead to excessive
+    memory consumption or denial of service.
+
+    The original code lacked a maximum iteration limit, potentially allowing malicious
+    input to cause resource exhaustion.
+
+    Fix by adding a maximum iteration limit (MaxVarintLen64) and proper overflow handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/027d7241ce050d197e7fabea3d541ffbe3487258
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - go

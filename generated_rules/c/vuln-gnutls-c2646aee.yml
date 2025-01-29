@@ -1,0 +1,33 @@
+rules:
+- id: vuln-gnutls-c2646aee
+  pattern: "if ($SESSION->key.totp.last_result == 0) {\n  $TYPE $VAR;\n  memcpy($SESSION->key.initial_stek,\
+    \ $KEY->data, $KEY->size);\n  $VAR = totp_next($SESSION);\n  if ($VAR < 0)\n \
+    \   return $FUNC($VAR);\n  $SESSION->key.totp.last_result = $VAR;\n  $SESSION->key.totp.was_rotated\
+    \ = 0;\n  return $SUCCESS;\n}\nreturn $INVALID_REQUEST;\n"
+  pattern-not: "if (unlikely($SESSION->key.totp.last_result != 0))\n  return $INVALID_REQUEST;\n\
+    memcpy($SESSION->key.initial_stek, $KEY->data, $KEY->size);\n$SESSION->key.totp.was_rotated\
+    \ = 0;\nreturn 0;\n"
+  languages:
+  - c
+  message: 'The code fails to properly handle the case where `session->key.totp.last_result`
+    is non-zero, leading to potential security vulnerabilities. The patch ensures
+    that the function returns an invalid request error when `last_result` is non-zero,
+    preventing incorrect state transitions. Without this check, the function could
+    proceed with an invalid state, potentially leading to security issues such as
+    improper key rotation or state management. To fix this, ensure that the function
+    immediately returns an error when `last_result` is non-zero, as shown in the patched
+    version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/c2646aeee94e71cb15c90a3147cf3b5b0ca158ca
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology:
+    - c

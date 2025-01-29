@@ -1,0 +1,33 @@
+rules:
+- id: vuln-chakracore-0ac4253c
+  pattern: '$CLASS::CaptureValues($BLOCK, $INFO)
+
+    '
+  pattern-not: '$CLASS::CaptureValues($BLOCK, $INFO, $ARGS)
+
+    '
+  pattern-inside: "class $CLASS {\n  ...\n  void CaptureValues(BasicBlock *, BailOutInfo\
+    \ *);\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Missing argsToCapture parameter in CaptureValues call can lead to incorrect
+
+    bailout behavior in ChakraCore''s JIT compiler. This could potentially cause
+
+    security vulnerabilities by failing to properly track changed symbols during
+
+    optimization. Always pass the argsToCapture parameter to ensure proper
+
+    symbol tracking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/0ac4253cbc2d7f63e638a4930b552814bd64aa5d
+    category: security
+    cwe: 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/chakra-core/ChakraCore/commit/0ac4253cbc2d7f63e638a4930b552814bd64aa5d
+    technology:
+    - cpp

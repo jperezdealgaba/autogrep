@@ -1,0 +1,28 @@
+rules:
+- id: vuln-vim-32acf1f1
+  pattern: "$FUNC($ARG);\n...\nif ($VAR != $SOURCE) {\n    $REG_PREV_SUB = $VAR;\n\
+    } else {\n    $REG_PREV_SUB = vim_strsave($VAR);\n}\n"
+  pattern-not: '$FUNC($ARG);
+
+    ...
+
+    $REG_PREV_SUB = vim_strsave($VAR);
+
+    '
+  languages:
+  - c
+  message: 'The code does not consistently allocate a copy of the string, which can
+    lead to invalid memory access in recursive calls. This vulnerability can cause
+    undefined behavior or crashes. Always allocate a copy of the string to ensure
+    it remains valid across recursive calls.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/32acf1f1a72ebb9d8942b9c9d80023bf1bb668ea
+    category: security
+    cwe:
+    - CWE-119
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

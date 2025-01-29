@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-584acf34
+  pattern: "if ($DST_BITS >= $END ||\n    $DST_BITS + $S->regs.dst_x + ($S->regs.dst_y\
+    \ + $S->regs.dst_height) * $DST_STRIDE >= $END) {\n  ...\n}\n"
+  pattern-not: "if ($DST_BITS >= $END || $DST_BITS + $DST_X + ($DST_Y + $S->regs.dst_height)\
+    \ * $DST_STRIDE >= $END) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses `s->regs.dst_x` and `s->regs.dst_y` without considering
+    the direction flags, which could lead to incorrect memory access. This vulnerability
+    can cause memory corruption or out-of-bounds access. The fix involves calculating
+    `dst_x` and `dst_y` based on the direction flags (`DST_X_LEFT_TO_RIGHT` and `DST_Y_TOP_TO_BOTTOM`).
+    Always ensure that coordinates are correctly calculated based on the direction
+    flags before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/584acf34cb05f16e13a46d666196a7583d232616
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-a71c775b
+  pattern: "if ($TYPE == TYPE_DISK && $CMD_BUF[2] == 0xb0) {\n  $MAX_TRANSFER = blk_get_max_transfer($BLK)\
+    \ / $BLOCKSIZE;\n  assert($MAX_TRANSFER);\n  stl_be_p(&$BUF[8], $MAX_TRANSFER);\n\
+    \  stl_be_p(&$BUF[12], MIN_NON_ZERO($MAX_TRANSFER, ldl_be_p(&$BUF[12])));\n}\n"
+  pattern-not: "if ($TYPE == TYPE_DISK && ($CMD_BUF[1] & 0x01)) {\n  $PAGE = $CMD_BUF[2];\n\
+    \  if ($PAGE == 0xb0) {\n    $MAX_TRANSFER = blk_get_max_transfer($BLK) / $BLOCKSIZE;\n\
+    \    assert($MAX_TRANSFER);\n    stl_be_p(&$BUF[8], $MAX_TRANSFER);\n    stl_be_p(&$BUF[12],\
+    \ MIN_NON_ZERO($MAX_TRANSFER, ldl_be_p(&$BUF[12])));\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code directly checks for the VPD Block Limits page (0xb0) without
+    verifying if the EVPD (Enable Vital Product Data) bit is set in the SCSI command.
+    This can lead to incorrect handling of SCSI commands and potential security issues.
+    The fix involves checking the EVPD bit before processing the VPD Block Limits
+    page.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/qemu/qemu/commit/a71c775b24ebc664129eb1d9b4c360590353efd5
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp: A04:2021 - Insecure Design
+    technology:
+    - c

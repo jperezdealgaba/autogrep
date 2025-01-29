@@ -1,0 +1,31 @@
+rules:
+- id: vuln-bitcoin-a206b0ea
+  pattern: "if (!$TXDB.EraseTxIndex($THIS))\n    return error($MSG);\n"
+  pattern-not: '$TXDB.EraseTxIndex($THIS);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potentially unsafe transaction index erasure pattern. Failing
+    to erase a transaction index can lead to transaction duplication attacks where
+    older transactions can be overwritten, allowing for double-spending or coinbase
+    duplication. This vulnerability is particularly dangerous as it can enable the
+    removal of the ability to spend the first instance of a transaction even after
+    being sent to another address. Always handle transaction index erasure carefully,
+    considering BIP30 rules and potential reorganization scenarios.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sipa/bitcoin/commit/a206b0ea12eb4606b93323268fc81a4f1f952531
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp:
+    - 'A01: Broken Access Control'
+    references:
+    - https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki
+    - http://r6.ca/blog/20120206T005236Z.html
+    technology:
+    - cpp

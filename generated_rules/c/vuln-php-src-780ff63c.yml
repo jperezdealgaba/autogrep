@@ -1,0 +1,28 @@
+rules:
+- id: vuln-php-src-780ff63c
+  pattern: 'fprintf(stderr, $MSG);
+
+    '
+  pattern-not: '/* fprintf(stderr, $MSG); */
+
+    '
+  languages:
+  - c
+  message: 'Detected direct usage of fprintf(stderr, ...) for error logging in production
+    code.
+
+    This practice can expose sensitive information and create security vulnerabilities.
+
+    Instead, use proper logging mechanisms or comment out debug statements.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/php/php-src/commit/780ff63c377dc79de2c04d6b341913ab0102135b
+    category: security
+    cwe:
+    - 'CWE-200: Information Exposure'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

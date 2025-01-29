@@ -1,0 +1,28 @@
+rules:
+- id: vuln-sudo-1f863857
+  pattern: "if ($MODE & ($FLAG1|$FLAG2)) {\n  ...\n}\n"
+  pattern-not: "if (ISSET($MODE, $FLAG1|$FLAG2)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe bitwise operation in condition check. Using the bitwise
+
+    AND operator (&) directly with flags can lead to incorrect evaluations
+
+    when multiple flags are combined. Use the ISSET macro instead to properly
+
+    check if specific flags are set in the mode variable. This vulnerability
+
+    could lead to incorrect privilege checks and potential security bypass.
+
+    Replace ''if (mode & flag)'' with ''if (ISSET(mode, flag))''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/1f8638577d0c80a4ff864a2aad80a0d95488e9a8
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - c

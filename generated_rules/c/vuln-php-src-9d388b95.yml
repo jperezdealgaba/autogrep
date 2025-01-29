@@ -1,0 +1,27 @@
+rules:
+- id: vuln-php-src-9d388b95
+  pattern: 'memchr($POS + 1, ''.'', $LEN - ($POS - $FILENAME) + 1)
+
+    '
+  pattern-not: 'memchr($POS + 1, ''.'', $LEN - ($POS - $FILENAME) - 1)
+
+    '
+  languages:
+  - c
+  message: "Detected potential off-by-one error in memchr length calculation. \nUsing\
+    \ '+1' instead of '-1' in the length calculation can lead to reading beyond buffer\
+    \ boundaries. \nThis vulnerability could result in memory corruption or information\
+    \ disclosure. \nFix by using '-1' instead of '+1' in the length calculation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/9d388b95c54ea053ce6f194defe1ff6673195747
+    category: security
+    cwe:
+    - 193
+    - 125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/193.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

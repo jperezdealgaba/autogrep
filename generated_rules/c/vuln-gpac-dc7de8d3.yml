@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gpac-dc7de8d3
+  pattern: "for (i=0; i<nbFields; i++) {\n  GF_Node *new_node = gf_bifs_dec_node(codec,\
+    \ bs, field->NDTtype);\n  if (new_node) {\n    e = gf_node_register(new_node,\
+    \ is_mem_com ? NULL : node);\n    if (e) return e;\n    ...\n    if (codec->force_keep_qp)\
+    \ {\n      e = gf_node_list_add_child_last(field->far_ptr, new_node, &last);\n\
+    \      if (e) return e;\n    }\n  } else {\n    return codec->LastError ? codec->LastError\
+    \ : GF_NON_COMPLIANT_BITSTREAM;\n  }\n}\n"
+  pattern-not: "for (i=0; i<nbFields; i++) {\n  GF_Node *new_node = gf_bifs_dec_node(codec,\
+    \ bs, field->NDTtype);\n  if (new_node) {\n    e = gf_node_register(new_node,\
+    \ is_mem_com ? NULL : node);\n    if (e) goto exit;\n    ...\n    if (codec->force_keep_qp)\
+    \ {\n      e = gf_node_list_add_child_last(field->far_ptr, new_node, &last);\n\
+    \      if (e) goto exit;\n    }\n  } else {\n    e = codec->LastError ? codec->LastError\
+    \ : GF_NON_COMPLIANT_BITSTREAM;\n    goto exit;\n  }\n}\n"
+  languages:
+  - c
+  message: "The code directly returns errors within a loop without proper cleanup,\
+    \ which can lead to resource leaks and inconsistent states. \nUse a goto exit\
+    \ pattern to ensure proper cleanup and error handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/dc7de8d3d604426c7a6e628d90cb9fb88e7b4c2c
+    category: security
+    cwe:
+    - CWE-404
+    technology:
+    - c

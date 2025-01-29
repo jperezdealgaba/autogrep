@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpipam-70f1e82d
+  pattern: '$_POST[''instructions''] = preg_replace(''#<script(.*?)>(.*?)</script>#is'',
+    '''', $_POST[''instructions'']);
+
+    '
+  pattern-not: '$_POST[''instructions''] = $User->noxss_html($_POST[''instructions'']);
+
+    '
+  languages:
+  - php
+  message: 'Insecure XSS filtering detected. The use of `preg_replace` to remove `<script>`
+    tags is insufficient for XSS protection as it does not handle other HTML tags
+    or event attributes. Replace with a proper HTML sanitizer like `noxss_html` to
+    ensure comprehensive XSS protection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/70f1e82dfb75010e39be64a983a645d48732ef26
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

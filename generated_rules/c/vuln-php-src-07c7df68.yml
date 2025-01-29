@@ -1,0 +1,27 @@
+rules:
+- id: vuln-php-src-07c7df68
+  pattern: '!zend_hash_exists($MANIFEST, $LINKNAME, strlen($LINKNAME))
+
+    '
+  pattern-not: '!zend_hash_exists($MANIFEST, $LINKNAME, strnlen($LINKNAME, $MAXLEN))
+
+    '
+  languages:
+  - c
+  message: 'Unsafe use of strlen() on potentially non-null-terminated strings can
+    lead to buffer overreads.
+
+    Replace strlen() with strnlen() when handling strings with a known maximum length
+    to prevent reading beyond the intended buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/07c7df68bd68bbe706371fccc77c814ebb335d9e
+    category: security
+    cwe:
+    - CWE-126
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

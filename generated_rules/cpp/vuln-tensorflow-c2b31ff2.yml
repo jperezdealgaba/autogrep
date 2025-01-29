@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-c2b31ff2
+  pattern: "DCHECK($SET.find($NAME) == $SET.end())\n  << \"AttrDef names must be unique,\
+    \ but '\" << $NAME\n  << \"' appears more than once\";\n"
+  pattern-not: "if ($SET.find($NAME) != $SET.end()) {\n  LOG(ERROR) << \"AttrDef names\
+    \ must be unique, but '\" << $NAME\n             << \"' appears more than once\"\
+    ;\n}\n"
+  languages:
+  - cpp
+  message: 'Using DCHECK for uniqueness validation is unsafe as it''s only active
+    in debug builds.
+
+    This can lead to undetected duplicate AttrDef names in production.
+
+    Replace DCHECK with proper error logging using LOG(ERROR) to ensure validation
+    in all builds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c2b31ff2d3151acb230edc3f5b1832d2c713a9e0
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    references:
+    - https://google.github.io/styleguide/cppguide.html#CHECK_DCHECK_and_NULL
+    technology:
+    - cpp

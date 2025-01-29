@@ -1,0 +1,24 @@
+rules:
+- id: vuln-go-0d347544
+  pattern: "{\n    \"_html_template_attrescaper\": true,\n    \"_html_template_nospaceescaper\"\
+    : true,\n    \"_html_template_htmlescaper\": true,\n}\n"
+  pattern-not: "{\n    \"_html_template_attrescaper\": true,\n    \"_html_template_htmlescaper\"\
+    : true,\n}\n"
+  languages:
+  - go
+  message: 'Detected the presence of ''_html_template_nospaceescaper'' in the template
+    escaper map. This can lead to incorrect handling of empty attribute values in
+    HTML templates, potentially causing XSS vulnerabilities. Remove ''_html_template_nospaceescaper''
+    to ensure proper escaping of empty attributes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0d347544cbca0f42b160424f6bc2458ebcc7b3fc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - go

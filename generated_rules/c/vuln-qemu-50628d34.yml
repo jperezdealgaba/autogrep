@@ -1,0 +1,29 @@
+rules:
+- id: vuln-qemu-50628d34
+  pattern: "void $FUNC(QemuConsole *$CON, int $SRC_X, int $SRC_Y, int $DST_X, int\
+    \ $DST_Y, int $W, int $H) {\n    ...\n    $COPY_FUNC($CON, $SRC_X, $SRC_Y, $DST_X,\
+    \ $DST_Y, $W, $H);\n    ...\n}\n"
+  pattern-not: "void $FUNC(QemuConsole *$CON, int $SRC_X, int $SRC_Y, int $DST_X,\
+    \ int $DST_Y, int $W, int $H) {\n    ...\n    dpy_gfx_update($CON, $DST_X, $DST_Y,\
+    \ $W, $H);\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Found use of deprecated copy function instead of update function. The
+    copy operation
+
+    can lead to security vulnerabilities if not properly synchronized with display
+    updates.
+
+    Replace with dpy_gfx_update() to ensure proper display synchronization and avoid
+
+    potential race conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/50628d3479e4f9aa97e323506856e394fe7ad7a6
+    category: security
+    cwe:
+    - CWE-362
+    technology:
+    - c

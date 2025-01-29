@@ -1,0 +1,41 @@
+rules:
+- id: vuln-tensorflow-f6fde895
+  pattern: "OP_REQUIRES(\n    $CTX, $A_INDICES->dim_size(1) == $B_INDICES->dim_size(1),\n\
+    \    errors::InvalidArgument(\n        \"Indices' dimensions do not match: got\
+    \ \", $A_INDICES->dim_size(1),\n        \" and \", $B_INDICES->dim_size(1), \"\
+    \ for the second dimension.\"));\nconst int $NUM_DIMS = $A_INDICES->dim_size(1);\n"
+  pattern-not: "const int $NUM_DIMS = $A_INDICES->dim_size(1);\nOP_REQUIRES(\n   \
+    \ $CTX, $A_SHAPE->NumElements() == $NUM_DIMS,\n    errors::InvalidArgument(\"\
+    Second dimension of a_indices and length of \"\n                          \"a_shape\
+    \ must match, got \",\n                          $NUM_DIMS, \" and \", $A_SHAPE->NumElements()));\n\
+    OP_REQUIRES($CTX, $NUM_DIMS > 0,\n            errors::InvalidArgument(\"Tensors\
+    \ must not be empty\"));\n"
+  languages:
+  - cpp
+  message: 'Missing validation of tensor dimensions can lead to inconsistent tensor
+    operations.
+
+    The vulnerable code checks dimension matching between two tensors but doesn''t
+    validate
+
+    that the dimensions are valid and non-empty. This can cause undefined behavior
+    or
+
+    crashes when processing empty or malformed tensors.
+
+    Add validation for tensor dimensions and ensure tensors are not empty before proceeding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/f6fde895ef9c77d848061c0517f19d0ec2682f3a
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-682: Incorrect Calculation'
+    owasp: A1:2017-Injection
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/tensor
+    technology:
+    - cpp
+    - tensorflow

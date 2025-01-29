@@ -1,0 +1,21 @@
+rules:
+- id: vuln-qemu-2fe76055
+  pattern: "for ($I = 0; $I < VIRTIO_GPU_MAX_SCANOUT; $I++) {\n  ...\n}\n"
+  pattern-not: "for ($I = 0; $I < $G->conf.max_outputs; $I++) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses a hardcoded constant `VIRTIO_GPU_MAX_SCANOUT` instead of
+    the device''s configured maximum outputs, which could lead to out-of-bounds access.
+    Always use `g->conf.max_outputs` to ensure proper bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/2fe760554eb3769d70f608a158474f728ba45ba6
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

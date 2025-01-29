@@ -1,0 +1,26 @@
+rules:
+- id: vuln-dogecoin-fd44ac1e
+  pattern: 'std::set<std::pair<const CWalletTx*, unsigned int>> $VAR;
+
+    '
+  pattern-not: 'std::set<CInputCoin> $VAR;
+
+    '
+  languages:
+  - cpp
+  message: 'The code uses a raw pair of `CWalletTx*` and `unsigned int` instead of
+    the `CInputCoin` type, which is a safer and more maintainable abstraction. This
+    can lead to potential issues in coin selection logic and reduce code clarity.
+    Replace with `CInputCoin` to ensure better type safety and maintainability.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/dogecoin/dogecoin/commit/fd44ac1e8b75f6f83cc0fea20ae721de163ff9cc
+    category: security
+    cwe:
+    - CWE-710
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

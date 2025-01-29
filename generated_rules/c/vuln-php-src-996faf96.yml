@@ -1,0 +1,25 @@
+rules:
+- id: vuln-php-src-996faf96
+  pattern: "int $VAR = \n  ($EXPR1 != ' ' && $EXPR1 != '\\t')\n  && (\n    $EXPR2\
+    \ == '\\n'\n    || ($EXPR2 == '\\r' && $EXPR1 != '\\n'));\nif ($VAR) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($EXPR == '\\n' || $EXPR == '\\r') {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected deprecated HTTP header folding logic based on RFC 2616. \nThis\
+    \ is dangerous as it can lead to HTTP request smuggling or header injection attacks.\n\
+    The fix is to remove support for header folding entirely as per RFC 7230 section\
+    \ 3.2.4.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/996faf964bba1aec06b153b370a7f20d3dd2bb8b
+    category: security
+    cwe:
+    - 'CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers (''HTTP
+      Response Splitting'')'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.2.4
+    technology:
+    - c

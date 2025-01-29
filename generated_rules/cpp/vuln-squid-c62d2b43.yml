@@ -1,0 +1,24 @@
+rules:
+- id: vuln-squid-c62d2b43
+  pattern: 'strcpy($DST, $SRC);
+
+    '
+  pattern-not: 'xstrncpy($DST, $SRC, sizeof($DST));
+
+    '
+  languages:
+  - cpp
+  message: "Detected unsafe use of strcpy() which can lead to buffer overflows. \n\
+    Use xstrncpy() with proper size limits instead to prevent potential \nmemory corruption\
+    \ and security vulnerabilities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/squid-cache/squid/commit/c62d2b43ad4962ea44aa0c5edb4cc99cb83a413d
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A8: Software and Data Integrity Failures'
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/STR30-C.+Do+not+use+the+strcpy%28%29+function
+    technology:
+    - cpp

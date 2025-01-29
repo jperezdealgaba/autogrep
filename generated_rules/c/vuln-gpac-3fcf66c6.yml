@@ -1,0 +1,31 @@
+rules:
+- id: vuln-gpac-3fcf66c6
+  pattern: "$SIZE = (u32) $PTR->size;\n$STR = (char *)gf_malloc(sizeof(char)*$SIZE);\n\
+    ...\nwhile ($SIZE) {\n  $STR[$I] = gf_bs_read_u8($BS);\n  $SIZE--;\n  if (!$STR[$I])\n\
+    \    break;\n  $I++;\n}\nif ($I) $PTR->config = gf_strdup($STR);\ngf_free($STR);\n"
+  pattern-not: '$PTR->config = (char *)gf_malloc(sizeof(char)*((u32) $PTR->size+1));
+
+    gf_bs_read_data($BS, $PTR->config, (u32) $PTR->size);
+
+    $PTR->config[$PTR->size] = 0;
+
+    '
+  languages:
+  - c
+  message: "The code manually reads data into a buffer without properly null-terminating\
+    \ it, \nwhich can lead to buffer overflows or undefined behavior. The vulnerability\
+    \ occurs \nbecause the allocated buffer size does not account for the null terminator,\
+    \ and \nthe manual reading loop does not ensure proper termination. The fix involves\
+    \ \nallocating an extra byte for the null terminator and using gf_bs_read_data\
+    \ to \nsafely read the data. Always ensure buffers are properly null-terminated\
+    \ when \nhandling string data.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/gpac/gpac/commit/3fcf66c6031da966cf33ee89bcbefa2f8bec4b02
+    category: security
+    cwe:
+    - CWE-170
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,37 @@
+rules:
+- id: vuln-php-src-32c7c433
+  pattern: 'convert_to_null(Z_CLIENT_HTTPURL_P($VAR));
+
+    convert_to_null(Z_CLIENT_HTTPSOCKET_P($VAR));
+
+    convert_to_null(Z_CLIENT_USE_PROXY_P($VAR));
+
+    '
+  pattern-not: 'zend_hash_str_del(Z_OBJPROP_P($VAR), "httpurl", sizeof("httpurl")-1);
+
+    zend_hash_str_del(Z_OBJPROP_P($VAR), "httpsocket", sizeof("httpsocket")-1);
+
+    zend_hash_str_del(Z_OBJPROP_P($VAR), "_use_proxy", sizeof("_use_proxy")-1);
+
+    '
+  languages:
+  - c
+  message: 'The code uses `convert_to_null` to clear properties, which does not properly
+    remove them from the object. This can lead to potential security issues where
+    sensitive data remains accessible. The fix involves using `zend_hash_str_del`
+    to completely remove the properties from the object''s property table. Replace
+    `convert_to_null` with `zend_hash_str_del` to ensure properties are properly deleted.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/32c7c433ac1983c4497349051681a4f361d3d33e
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://www.php.net/manual/en/function.zend-hash-str-del.php
+    technology:
+    - c

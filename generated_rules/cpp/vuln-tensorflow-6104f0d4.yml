@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-6104f0d4
+  pattern: 'DCHECK_EQ($VAR.args_size(), 3)
+
+    '
+  pattern-not: "if ($VAR.args_size() != 3) {\n  return Status(error::INVALID_ARGUMENT,\n\
+    \                absl::StrCat(\"illegal FOR_EACH type, expected 3 args, got \"\
+    ,\n                             $VAR.args_size()));\n}\n"
+  languages:
+  - cpp
+  message: 'Using DCHECK_EQ for argument validation is unsafe in production code as
+    it
+
+    only performs checks in debug builds. This can lead to undefined behavior
+
+    when invalid input is provided in release builds. Replace DCHECK_EQ with
+
+    proper error handling that returns a Status object with an error message.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/6104f0d4091c260ce9352f9155f7e9b725eab012
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A10:2021 - Server-Side Request Forgery
+    references:
+    - https://abseil.io/tips/143
+    technology:
+    - cpp

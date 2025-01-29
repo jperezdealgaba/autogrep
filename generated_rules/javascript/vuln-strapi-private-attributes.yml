@@ -1,0 +1,20 @@
+rules:
+- id: vuln-strapi-private-attributes
+  pattern: 'privateAttributes: []
+
+    '
+  pattern-not: '$ATTRIBUTE.private === true
+
+    '
+  languages:
+  - javascript
+  message: "Use of empty privateAttributes array detected. This can lead to security\
+    \ issues as private attributes may not be properly protected. \nInstead, explicitly\
+    \ define private attributes or use the private property on individual attributes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/2fa8f30371bfd1db44c15e5747860ee5789096de
+    category: security
+    cwe: CWE-200
+    owasp: A01:2021 - Broken Access Control
+    technology: javascript

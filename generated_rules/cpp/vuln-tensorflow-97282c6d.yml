@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-97282c6d
+  pattern: 'return errors::InvalidArgument("Missing context");
+
+    '
+  pattern-not: 'return errors::InvalidArgument("SetUnknownShape: Missing context");
+
+    '
+  languages:
+  - cpp
+  message: 'Missing context validation in error handling can lead to undefined behavior
+
+    and potential security vulnerabilities. The patch adds additional context
+
+    and validation for the output_port parameter. Always validate input parameters
+
+    and provide clear error messages with context to prevent potential exploits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/97282c6d0d34476b6ba033f961590b783fa184cd
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-php-src-2baeb167
+  pattern: "if ($BGCOLOR < 0 || $BGCOLOR >= gdMaxColors) {\n  ...\n}\n"
+  pattern-not: "if ($BGCOLOR < 0 || (!$SRC->trueColor && $BGCOLOR >= gdMaxColors))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs due to an insufficient check on the `bgcolor`
+    value in GD image processing. The original check fails to consider whether the
+    image is in true color mode, potentially allowing invalid color values to be processed.
+    This could lead to out-of-bounds memory access or undefined behavior. The fix
+    adds a check for `src->trueColor` to ensure proper validation. Always include
+    the true color check when validating color values in GD image processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/2baeb167a08b0186a885208bdc8b5871f1681dc8
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

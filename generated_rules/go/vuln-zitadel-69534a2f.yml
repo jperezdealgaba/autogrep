@@ -1,0 +1,28 @@
+rules:
+- id: vuln-zitadel-69534a2f
+  pattern: "func Start(queries *query.Queries, dbClient *sql.DB, keyEncryptionAlgorithm\
+    \ crypto.EncryptionAlgorithm) (repository.Repository, error) {\n  return eventsourcing.Start(queries,\
+    \ dbClient, keyEncryptionAlgorithm)\n}\n"
+  pattern-not: "func Start(queries *query.Queries, dbClient *sql.DB, keyEncryptionAlgorithm\
+    \ crypto.EncryptionAlgorithm, externalSecure bool) (repository.Repository, error)\
+    \ {\n  return eventsourcing.Start(queries, dbClient, keyEncryptionAlgorithm, externalSecure)\n\
+    }\n"
+  languages:
+  - go
+  message: 'The Start function in the authz package is missing the externalSecure
+    parameter, which is necessary for secure token verification. This could lead to
+    insecure token handling and potential security vulnerabilities. Update the function
+    to include the externalSecure parameter and pass it to the eventsourcing.Start
+    function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/69534a2f7aa625eef613ac43e3388f28514de885
+    category: security
+    cwe:
+    - 'CWE-319: Cleartext Transmission of Sensitive Information'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - go

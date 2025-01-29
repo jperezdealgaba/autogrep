@@ -1,0 +1,21 @@
+rules:
+- id: vuln-strapi-06abcda8
+  pattern: "{\n  ...,\n  \"version\": \"4.1.9\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"4.1.10\",\n  ...\n}\n"
+  languages:
+  - json
+  message: Detected an outdated version (4.1.9) in package.json. This version may
+    contain security vulnerabilities. Update to version 4.1.10 to mitigate potential
+    risks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/06abcda86ab96fc560b3ff5e3d72c4d5c1c5d42c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - json

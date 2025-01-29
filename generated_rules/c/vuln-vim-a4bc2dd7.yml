@@ -1,0 +1,24 @@
+rules:
+- id: vuln-vim-a4bc2dd7
+  pattern: 'int $LEN = (int)STRLEN($BUF->bh_curr->b_str);
+
+    '
+  pattern-not: "int $LEN;\nif ($BUF->bh_curr == NULL || $BUF->bh_curr->b_str == NULL)\n\
+    \    return;\n$LEN = (int)STRLEN($BUF->bh_curr->b_str);\n"
+  languages:
+  - c
+  message: 'Potential NULL pointer dereference in buffer handling. Accessing `bh_curr->b_str`
+    without checking for NULL can lead to crashes or undefined behavior. Always check
+    pointer validity before dereferencing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/a4bc2dd7cccf5a4a9f78b58b6f35a45d17164323
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

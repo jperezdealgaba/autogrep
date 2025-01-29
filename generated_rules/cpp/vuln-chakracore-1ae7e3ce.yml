@@ -1,0 +1,23 @@
+rules:
+- id: vuln-chakracore-1ae7e3ce
+  pattern: '$CLASS::FromVar($PARENT)->length = 0
+
+    '
+  pattern-not: '$CLASS::FromVar($PARENT)->ClearLengthAndBufferOnDetach()
+
+    '
+  languages:
+  - cpp
+  message: "Directly setting length to 0 without clearing the buffer can lead to use-after-free\
+    \ vulnerabilities. \nUse ClearLengthAndBufferOnDetach() instead to properly handle\
+    \ buffer detaching and prevent memory corruption.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/1ae7e3ce95515758b4cd7215cb4e48539a0f4031
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp: A8:2017-Insecure Deserialization
+    technology:
+    - cpp

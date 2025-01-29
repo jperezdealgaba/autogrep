@@ -1,0 +1,26 @@
+rules:
+- id: vuln-showdoc-237ac6d4
+  pattern: "if(D(\"Attachment\")->isDangerFilename($_FILES['$FILE']['name'])){\n \
+    \ ...\n}\n"
+  pattern-not: "if(!D(\"Attachment\")->isAllowedFilename($_FILES['$FILE']['name'])){\n\
+    \  ...\n}\n"
+  languages:
+  - php
+  message: "The code uses a blacklist-based file extension check which is insecure\
+    \ and can be bypassed. \nThis could allow attackers to upload malicious files\
+    \ by using unexpected file extensions or \ndouble extensions. Instead, use a whitelist-based\
+    \ approach with the isAllowedFilename method \nto explicitly define allowed file\
+    \ types.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/237ac6d43bf3728bf3587c486a23b4a48ea7acb3
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/434.html
+    technology:
+    - php

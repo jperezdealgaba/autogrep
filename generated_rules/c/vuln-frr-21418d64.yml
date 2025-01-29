@@ -1,0 +1,27 @@
+rules:
+- id: vuln-frr-21418d64
+  pattern: 'bgp_attr_check($PEER, $ATTR)
+
+    '
+  pattern-not: 'bgp_attr_check($PEER, $ATTR, $LENGTH)
+
+    '
+  languages:
+  - c
+  message: 'The function `bgp_attr_check` is called without the required `length`
+    parameter, which can lead to improper validation of BGP attributes. This vulnerability
+    could allow an attacker to bypass security checks, potentially leading to unauthorized
+    access or other security issues. To fix this, ensure that the `bgp_attr_check`
+    function is called with all required parameters, including `length`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/21418d64af11553c402f932b0311c812d98ac3e4
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

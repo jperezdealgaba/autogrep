@@ -1,0 +1,26 @@
+rules:
+- id: vuln-php-src-3b8d4de3
+  pattern: '$BUFFER = zend_string_alloc($LEN, 0);
+
+    '
+  pattern-not: '$BUFFER = zend_string_safe_alloc(1, $LEN, 0, 0);
+
+    '
+  languages:
+  - c
+  message: 'Unsafe memory allocation using zend_string_alloc detected. This function
+    does not perform safe size checking and can lead to integer overflow vulnerabilities.
+    Replace with zend_string_safe_alloc which includes proper size checks to prevent
+    potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/3b8d4de300854b3517c7acb239b84f7726c1353c
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

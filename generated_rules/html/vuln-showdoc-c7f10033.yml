@@ -1,0 +1,30 @@
+rules:
+- id: vuln-showdoc-c7f10033
+  pattern: '<script type=text/javascript src=./static/js/app.ce464282b6119d6e6126.js></script>
+
+    '
+  pattern-not: '<script type=text/javascript src=./static/js/app.cfc810eaa6a41d90a988.js></script>
+
+    '
+  languages:
+  - html
+  message: 'Detected outdated JavaScript file version that may contain security vulnerabilities.
+
+    Using outdated versions of static assets can expose the application to known vulnerabilities.
+
+    Update to the latest version of the JavaScript file to ensure security patches
+    are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/c7f10033eba5f2b5a537f9af9ba2379138e67138
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities
+    technology:
+    - html

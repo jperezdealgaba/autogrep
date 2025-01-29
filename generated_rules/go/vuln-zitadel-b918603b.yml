@@ -1,0 +1,25 @@
+rules:
+- id: vuln-zitadel-b918603b
+  pattern: "func InstanceInterceptor($VERIFIER authz.InstanceVerifier, $HEADER string,\
+    \ $IGNORED ...string) $RETURN_TYPE {\n  ...\n}\n"
+  pattern-not: "func InstanceInterceptor($VERIFIER authz.InstanceVerifier, $HEADER,\
+    \ $EXTERNAL_DOMAIN string, $IGNORED ...string) $RETURN_TYPE {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'InstanceInterceptor function is missing the externalDomain parameter,
+    which can lead to security issues in instance verification.
+
+    The externalDomain parameter is crucial for proper origin validation and preventing
+    instance spoofing attacks.
+
+    Update the function signature to include the externalDomain parameter and use
+    it for origin validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/b918603b576d156a08b90917c14c2d019c82ffc6
+    category: security
+    cwe: 'CWE-346: Origin Validation Error'
+    owasp: 'A2: Broken Authentication'
+    technology: go

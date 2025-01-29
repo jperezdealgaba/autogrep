@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gosaml2-0f0fb74d
+  pattern: 'err = validator.Validate(bytes.NewReader($VAR))
+
+    '
+  pattern-not: 'err = rtvalidator.Validate(bytes.NewReader($VAR))
+
+    '
+  languages:
+  - go
+  message: 'The code is using an unqualified import of the xml-roundtrip-validator
+    package, which can lead to XML injection vulnerabilities. The validator should
+    be imported with a qualified alias (rtvalidator) to ensure proper validation of
+    XML responses. This vulnerability can be exploited by attackers to inject malicious
+    XML content. Use the qualified import and validation method to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/russellhaering/gosaml2/commit/0f0fb74d103c2e42a10a5379151619502fecc57b
+    category: security
+    cwe:
+    - CWE-91
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    technology:
+    - go

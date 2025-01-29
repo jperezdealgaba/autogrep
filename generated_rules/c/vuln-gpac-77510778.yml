@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gpac-77510778
+  pattern: 'gf_malloc(sizeof(char) * ($PROP_SIZE + 2))
+
+    '
+  pattern-not: 'gf_malloc(sizeof(char) * ($PROP_SIZE + 3))
+
+    '
+  languages:
+  - c
+  message: 'Insufficient memory allocation for UTF16 string dump. The original code
+    allocates only 2 extra bytes, which may lead to misalignment issues when handling
+    UTF16 strings. This can cause memory corruption or undefined behavior. Allocate
+    3 extra bytes to ensure proper alignment and null-termination.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/77510778516803b7f7402d7423c6d6bef50254c3
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

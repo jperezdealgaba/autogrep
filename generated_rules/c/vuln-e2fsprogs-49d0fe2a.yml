@@ -1,0 +1,27 @@
+rules:
+- id: vuln-e2fsprogs-49d0fe2a
+  pattern: "int $OLD_DESC_BLOCKS;\n...\nif ($OLD_DESC_BLOCKS > $FS->super->s_first_meta_bg)\
+    \ {\n  ...\n}\n"
+  pattern-not: "blk64_t $OLD_DESC_BLOCKS;\n...\nif ($OLD_DESC_BLOCKS > $FS->desc_blocks)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The variable `old_desc_blocks` is declared as `int` and compared against
+    `fs->super->s_first_meta_bg`, which can lead to integer overflow or incorrect
+    comparisons due to type mismatch. This vulnerability can cause incorrect behavior
+    in filesystem operations. Use `blk64_t` for `old_desc_blocks` and compare it against
+    `fs->desc_blocks` to ensure proper type handling and comparison logic.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tytso/e2fsprogs/commit/49d0fe2a14f2a23da2fe299643379b8c1d37df73
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

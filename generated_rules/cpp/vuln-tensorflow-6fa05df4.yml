@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-6fa05df4
+  pattern: "OP_REQUIRES($CTX, $VAR.shape().dims() >= 2,\n            errors::InvalidArgument(\"\
+    $MSG\"));\n"
+  pattern-not: "OP_REQUIRES($CTX, $VAR.shape().dims() == 2,\n            errors::InvalidArgument(absl::StrCat(\n\
+    \                \"Shape must be rank 2 but is rank \",\n                $VAR.shape().dims(),\
+    \ \" for `$ARG` argument\")));\n"
+  languages:
+  - cpp
+  message: 'Found potentially unsafe matrix dimension check. The original code only
+    verifies that the input has at least 2 dimensions (>= 2), which could allow matrices
+    with higher ranks than intended. This could lead to unexpected behavior or errors
+    in processing. The fix requires exactly 2 dimensions (== 2) and provides more
+    detailed error messages. To fix, update the dimension check to explicitly require
+    rank 2 matrices and use absl::StrCat for more informative error messages.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/6fa05df43b00038b048f4f0e51ef522da6532fec
+    category: security
+    cwe:
+    - 'CWE-1284: Improper Validation of Specified Quantity in Input'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - cpp

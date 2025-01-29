@@ -1,0 +1,42 @@
+rules:
+- id: vuln-tensorflow-40adbe4d
+  pattern: 'const auto $VAR = $CTX->input($IDX).flat<$TYPE>();
+
+    ...
+
+    $FUNC($CTX, $VAR, ...);
+
+    '
+  pattern-not: 'const Tensor& $VAR = $CTX->input($IDX);
+
+    const auto $VAR_FLAT = $VAR.flat<$TYPE>();
+
+    ...
+
+    $FUNC($CTX, $VAR_FLAT, ...);
+
+    '
+  languages:
+  - cpp
+  message: 'Directly using flat() on input tensor without validation can lead to security
+    issues.
+
+    The input tensor should be properly validated before use to ensure it matches
+    expected
+
+    dimensions and types. Always validate sparse tensors using ValidateSparseTensor()
+
+    before accessing their contents.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/40adbe4dd15b582b0210dfbf40c243a62f5119fa
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp
+    - tensorflow

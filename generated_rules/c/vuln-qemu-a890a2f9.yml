@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-a890a2f9
+  pattern: '$DEV->config_len = qemu_get_be32($F);
+
+    '
+  pattern-not: "$CONFIG_LEN = qemu_get_be32($F);\nif ($CONFIG_LEN != $DEV->config_len)\
+    \ {\n    error_report(\"Unexpected config length 0x%x. Expected 0x%zx\",\n   \
+    \              $CONFIG_LEN, $DEV->config_len);\n    return -1;\n}\n"
+  languages:
+  - c
+  message: 'Detected a direct assignment of a configuration length without validation.
+    This can lead to security vulnerabilities where an attacker could provide a malicious
+    configuration length, potentially causing memory corruption or other undefined
+    behavior. Always validate the configuration length against the expected value
+    before assignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/a890a2f9137ac3cf5b607649e66a6f3a5512d8dc
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

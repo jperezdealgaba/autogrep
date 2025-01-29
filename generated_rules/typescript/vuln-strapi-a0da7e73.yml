@@ -1,0 +1,27 @@
+rules:
+- id: vuln-strapi-a0da7e73
+  pattern: 'import { formatISO, parse } from ''date-fns'';
+
+    '
+  pattern-not: 'import { formatISO } from ''date-fns'';
+
+    '
+  languages:
+  - typescript
+  message: 'Detected unnecessary import of ''parse'' from ''date-fns''. This can lead
+    to increased bundle size and potential security risks by including unused functions.
+    Remove the unused import to optimize the code and reduce potential attack surface.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/strapi/strapi/commit/a0da7e73e1496d835fe71a2febb14f70170135c7
+    category: security
+    cwe:
+    - CWE-1164
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - typescript

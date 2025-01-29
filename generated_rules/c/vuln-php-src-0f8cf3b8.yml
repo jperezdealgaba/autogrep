@@ -1,0 +1,28 @@
+rules:
+- id: vuln-php-src-0f8cf3b8
+  pattern: 'memchr($VAR->ptr, ''&'', $VAR->end - $VAR->ptr)
+
+    '
+  pattern-not: 'memchr($VAR->ptr + $VAR->already_scanned, ''&'', $VAR->end - ($VAR->ptr
+    + $VAR->already_scanned))
+
+    '
+  languages:
+  - c
+  message: 'The code uses memchr() to search for ''&'' characters in a string but
+    doesn''t account for previously scanned portions of the buffer. This can lead
+    to incorrect parsing of URL query parameters and potential security vulnerabilities.
+    The fix adds an ''already_scanned'' field to track processed portions of the buffer.
+    Always track and skip already processed portions of buffers when parsing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/0f8cf3b8497dc45c010c44ed9e96518e11e19fc3
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

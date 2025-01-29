@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-a1e1511d
+  pattern: 'int $VAR = TfLiteIntArrayGetSizeInBytes($SIZE);
+
+    '
+  pattern-not: 'size_t $VAR = TfLiteIntArrayGetSizeInBytes($SIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of ''int'' instead of ''size_t'' for storing the result of
+    TfLiteIntArrayGetSizeInBytes. This can lead to integer overflow vulnerabilities
+    when handling large sizes. Always use ''size_t'' for memory size calculations
+    to prevent overflow issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/a1e1511dde36b3f8aa27a6ec630838e7ea40e091
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-git-cf8f6ce0
+  pattern: 'transport = transport_get($REMOTE, $REMOTE->url[0]);
+
+    ...
+
+    '
+  pattern-not: 'transport = transport_get($REMOTE, $PATH ? $PATH : $REMOTE->url[0]);
+
+    ...
+
+    '
+  languages:
+  - c
+  message: 'Directly using remote->url[0] without null check can lead to null pointer
+    dereference.
+
+    This is dangerous as it can cause crashes or undefined behavior when the URL is
+    null.
+
+    Fix it by using a ternary operator to check for null path before using remote->url[0].
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/git-for-windows/git/commit/cf8f6ce02a13f4d1979a53241afbee15a293fce9
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

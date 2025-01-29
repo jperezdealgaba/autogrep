@@ -1,0 +1,30 @@
+rules:
+- id: vuln-chakracore-8264b9bc
+  pattern: '$LOOP->landingPad->InsertAfter($INSTR);
+
+    '
+  pattern-not: '$INSTR = IR::Instr::New($OPCODE, $INDUCTION_VAR, $INDUCTION_VAR, $SIZE_OPND,
+    $LOOP->GetFunc());
+
+    $LOOP->landingPad->InsertInstrBefore($INSTR, $LOOP->memOpInfo->instr);
+
+    $INSTR->ConvertToBailOutInstr($LOOP->bailOutInfo, $BAILOUT_CONDITION);
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly inserts an instruction after the landing pad without
+    proper bailout handling. This can lead to incorrect execution flow when an overflow
+    occurs, as the MemOp operation might be performed before bailing out, causing
+    unintended side effects. The fix involves placing the instruction before the MemOp
+    and converting it to a bailout instruction to ensure proper handling of overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/8264b9bcdb08daf4309415319c7a8e03d1736dce
+    category: security
+    cwe: 'CWE-682: Incorrect Calculation'
+    owasp: 'A6: Security Misconfiguration'
+    technology:
+    - cpp

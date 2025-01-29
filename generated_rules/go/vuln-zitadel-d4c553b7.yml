@@ -1,0 +1,28 @@
+rules:
+- id: vuln-zitadel-d4c553b7
+  pattern: 'http_utils.WithPrefix(http_utils.PrefixSecure)
+
+    '
+  pattern-not: 'http_utils.WithPrefix(http_utils.PrefixHost)
+
+    '
+  languages:
+  - go
+  message: 'Using http_utils.PrefixSecure with cookies can lead to browser rejection
+    when the host prefix is set. This happens because browsers reject cookies that
+    have both secure and domain attributes set. Instead, use http_utils.PrefixHost
+    and ensure the domain is cleared when secure is true.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/d4c553b75a214e41299af010ef4b26174a0f802c
+    category: security
+    cwe:
+    - 'CWE-614: Sensitive Cookie in HTTPS Session Without ''Secure'' Attribute'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#cookie_prefixes
+    technology:
+    - go

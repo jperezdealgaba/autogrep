@@ -1,0 +1,35 @@
+rules:
+- id: vuln-go-43063521
+  pattern: '$Z[$N-1] = $C1 + $C2
+
+    if $Z[$N-1] < $C1 { ... }
+
+    '
+  pattern-not: '$CX := $C1 + $C2
+
+    $CY := $CX + $C3
+
+    $Z[$N-1] = $CY
+
+    if $CX < $C2 || $CY < $C3 { ... }
+
+    '
+  languages:
+  - go
+  message: 'The original code contains a vulnerability in the Montgomery multiplication
+    implementation where it fails to properly handle carry propagation. This can lead
+    to incorrect results in cryptographic operations, potentially causing security
+    vulnerabilities. The fix introduces additional carry checks to ensure correctness.
+    To fix this, ensure that all carry bits are properly accounted for and checked.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/4306352182bf94f86f0cfc6a8b0ed461cbf1d82c
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - go

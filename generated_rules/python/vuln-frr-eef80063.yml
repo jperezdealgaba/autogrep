@@ -1,0 +1,28 @@
+rules:
+- id: vuln-frr-eef80063
+  pattern: '["git", "log", "--no-merges", "--pretty=format:''%s%d''", $TAG + ".."
+    + $BRANCH]
+
+    '
+  pattern-not: '["git", "log", "--no-merges", "--pretty=format:''%s''", $TAG + ".."
+    + $BRANCH]
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure git log format that includes refnames (%d). This could
+    expose sensitive information about the repository structure.
+
+    Use a format that only includes commit messages (%s) to avoid information disclosure.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/eef8006341e85d80d0a3c21a642ced3b73a42375
+    category: security
+    cwe: CWE-200
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://git-scm.com/docs/pretty-formats
+    technology:
+    - python

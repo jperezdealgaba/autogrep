@@ -1,0 +1,26 @@
+rules:
+- id: vuln-nasm-3079f796
+  pattern: "$VAR = readnum($TEXT, &$ERR);\nif ($ERR) {\n  nasm_error(ERR_NONFATAL,\
+    \ \"unable to parse parameter count `%s'\", $TEXT);\n}\n"
+  pattern-not: '$VAR = read_param_count($TEXT);
+
+    '
+  languages:
+  - c
+  message: 'The code directly uses readnum() without proper bounds checking, which
+    can lead to invalid parameter counts being accepted. This vulnerability could
+    allow out-of-bounds values to be processed, potentially causing undefined behavior
+    or security issues. The fix introduces a new read_param_count() function that
+    validates the input is within [0, INT_MAX] range. Always validate numeric inputs
+    against expected ranges and use dedicated validation functions when available.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/3079f7966dbed4497e36d5067cbfd896a90358cb
+    category: security
+    cwe:
+    - 'CWE-1284: Improper Validation of Specified Quantity in Input'
+    owasp: A1:2017-Injection
+    technology:
+    - c

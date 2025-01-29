@@ -1,0 +1,20 @@
+rules:
+- id: vuln-tensorflow-20cb1872
+  pattern: "OP_REQUIRES($CONTEXT, $NUM_SEGMENTS > 0,\n            $ERROR_MESSAGE)\n"
+  pattern-not: "OP_REQUIRES($CONTEXT, $NUM_SEGMENTS >= 0,\n            $ERROR_MESSAGE)\n"
+  languages:
+  - cpp
+  message: "Detected a potentially unsafe check for positive number of segments. \n\
+    The check should allow non-negative values (including zero) to prevent \ninvalid\
+    \ argument errors. This can lead to unexpected behavior or crashes \nwhen processing\
+    \ zero segments.\nFix: Change the condition to `num_segments >= 0`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/20cb18724b0bf6c09071a3f53434c4eec53cc147
+    category: security
+    cwe:
+    - CWE-1254
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - cpp

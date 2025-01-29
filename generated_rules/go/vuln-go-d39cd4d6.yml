@@ -1,0 +1,29 @@
+rules:
+- id: vuln-go-d39cd4d6
+  pattern: "func pathOK($R rune) bool {\n  ...\n  return false\n}\n"
+  pattern-not: "func pathOK($R rune) bool {\n  ...\n  return unicode.IsLetter($R)\n\
+    }\n"
+  languages:
+  - go
+  message: 'The path validation function incorrectly rejects Unicode letters, which
+    can lead to
+
+    security issues by blocking valid import paths. This restriction could be exploited
+
+    to bypass security checks or prevent legitimate package imports. The fix is to
+    use
+
+    unicode.IsLetter() to properly validate Unicode characters in paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/d39cd4d6d73ffc8f47c8f3cec7dbe57a4f3f4980
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp: A03:2021 - Injection
+    references:
+    - https://golang.org/issue/29101
+    technology:
+    - go

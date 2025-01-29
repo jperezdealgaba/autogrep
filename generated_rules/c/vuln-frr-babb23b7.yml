@@ -1,0 +1,29 @@
+rules:
+- id: vuln-frr-babb23b7
+  pattern: "if (CHECK_FLAG($FLAGS, BGP_ATTR_FLAG_TRANS) &&\n    CHECK_FLAG($FLAGS,\
+    \ BGP_ATTR_FLAG_OPTIONAL) &&\n    CHECK_FLAG($FLAGS, BGP_ATTR_FLAG_PARTIAL))\n\
+    \    return BGP_ATTR_PARSE_WITHDRAW;\n...\nreturn BGP_ATTR_PARSE_ERROR_NOTIFYPLS;\n"
+  pattern-not: "if (CHECK_FLAG($FLAGS, BGP_ATTR_FLAG_TRANS) &&\n    CHECK_FLAG($FLAGS,\
+    \ BGP_ATTR_FLAG_OPTIONAL) &&\n    CHECK_FLAG($FLAGS, BGP_ATTR_FLAG_PARTIAL))\n\
+    \    return BGP_ATTR_PARSE_WITHDRAW;\n...\nreturn BGP_ATTR_PARSE_WITHDRAW;\n"
+  languages:
+  - c
+  message: 'The code handles malformed partial optional attributes by resetting the
+    session, which can lead to denial of service. Instead, such attributes should
+    be treated as withdrawals to prevent session resets. This vulnerability can be
+    exploited to disrupt BGP sessions. The fix is to ensure that malformed attributes
+    are treated as withdrawals rather than triggering session resets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/babb23b74855e23c987a63f8256d24e28c044d07
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc7606
+    technology:
+    - c

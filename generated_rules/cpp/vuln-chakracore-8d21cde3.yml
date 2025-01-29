@@ -1,21 +1,38 @@
 rules:
 - id: vuln-chakracore-8d21cde3
   pattern: "insertBeforeInstr->InsertBefore(IR::Instr::New(Js::OpCode::Add_I4,\n \
-    \                                              $...ARGS));\n"
-  pattern-not: '$INSTR = IR::Instr::New(...);
-
-    $INSERT->InsertBefore($INSTR);
-
-    $INSTR->ConvertToBailOutInstr(...);
-
-    '
+    \                                              $LOOP_COUNT,\n                \
+    \                               $MINUS_ONE,\n                                \
+    \               IR::IntConstOpnd::New(1, $TYPE, $FUNC, true),\n              \
+    \                                 $FUNC));\n"
+  pattern-not: "IR::Instr* $INCR_INSTR = IR::Instr::New(Js::OpCode::Add_I4,\n    $LOOP_COUNT,\n\
+    \    $MINUS_ONE,\n    IR::IntConstOpnd::New(1, $TYPE, $FUNC, true),\n    $FUNC);\n\
+    \ninsertBeforeInstr->InsertBefore($INCR_INSTR);\n\n$INCR_INSTR->ConvertToBailOutInstr($BAILOUT_INFO,\
+    \ IR::BailOutOnFailedHoistedLoopCountBasedBoundCheck);\n"
   languages:
   - cpp
-  message: Missing bounds check bailout after integer increment operation may allow
-    overflow in loop counter optimization
+  message: 'Detected a potential overflow vulnerability in loop count increment operation.
+
+    The original code performs an Add_I4 operation directly without bounds checking,
+
+    which could lead to integer overflow. This vulnerability was fixed by adding
+
+    explicit bounds check bailout after the increment operation.
+
+    To fix this, create a separate instruction for the increment and add a bounds
+
+    check bailout using ConvertToBailOutInstr.
+
+    '
   severity: ERROR
   metadata:
-    source-url: github.com/Microsoft/ChakraCore/commit/8d21cde342a4e826d96eb4ac85241f876b879aed
+    source-url: github.com/chakra-core/ChakraCore/commit/8d21cde342a4e826d96eb4ac85241f876b879aed
     category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
     technology:
     - cpp

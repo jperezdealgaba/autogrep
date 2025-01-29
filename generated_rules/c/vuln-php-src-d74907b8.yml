@@ -1,0 +1,28 @@
+rules:
+- id: vuln-php-src-d74907b8
+  pattern: 'zend_parse_parameters(ZEND_NUM_ARGS(), "s|l", $PATH, $LEN, $FLAGS);
+
+    '
+  pattern-not: 'zend_parse_parameters(ZEND_NUM_ARGS(), "p|l", $PATH, $LEN, $FLAGS);
+
+    '
+  languages:
+  - c
+  message: 'The use of ''s'' format specifier in zend_parse_parameters can lead to
+    potential security vulnerabilities due to improper handling of string inputs.
+    This can result in buffer overflows or other memory corruption issues. The ''p''
+    format specifier should be used instead to ensure proper path handling and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/d74907b8575e6edb83b728c2a94df434c23e1f79
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.zend-parse-parameters.php
+    technology:
+    - c

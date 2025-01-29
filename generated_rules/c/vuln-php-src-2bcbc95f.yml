@@ -1,0 +1,26 @@
+rules:
+- id: vuln-php-src-2bcbc95f
+  pattern: "if ($W <= 0 &&\n    ((($C1 >= 0xfa && $C1 <= 0xfe) || ($C1 >= 0x8e &&\
+    \ $C1 <= 0xa0) ||\n      ($C1 >= 0x81 && $C1 <= 0x8d) || ($C1 >= 0xc7 && $C1 <=\
+    \ 0xc8))\n     && (($C > 0x39 && $C < 0x7f) || ($C > 0xa0 && $C < 0xff))) ||\n\
+    \    (($C1 == 0xc6) && ($C > 0xa0 && $C < 0xff))) {\n  ...\n}\n"
+  pattern-not: "if ($W <= 0 && is_in_cp950_pua($C1, $C)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code contains a complex and error-prone conditional check for character
+    ranges that was replaced with a safer function `is_in_cp950_pua`. This vulnerability
+    could lead to incorrect character validation, potentially causing security issues
+    such as encoding bypass. Replace the manual checks with the dedicated function
+    to ensure proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/2bcbc95f033c31b00595ed39f79c3a99b4ed0501
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

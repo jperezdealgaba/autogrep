@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tensorflow-c5da7af0
+  pattern: 'preprocess_input_exprs_arg_string($INPUT_EXPRS_STR, safe=False)
+
+    '
+  pattern-not: 'preprocess_input_exprs_arg_string($INPUT_EXPRS_STR)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe usage of `preprocess_input_exprs_arg_string` with `safe=False`.
+    This can lead to security vulnerabilities by allowing potentially dangerous input
+    expressions. Always use the safe default value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c5da7af048611aa29e9382371f0aed5018516cac
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/c5da7af048611aa29e9382371f0aed5018516cac
+    technology:
+    - python

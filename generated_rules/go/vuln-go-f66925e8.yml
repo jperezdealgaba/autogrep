@@ -1,0 +1,23 @@
+rules:
+- id: vuln-go-f66925e8
+  pattern: "if uint32($GID) == $ST.Gid || isGroupMember($GID) {\n    ...\n}\n"
+  pattern-not: "if uint32($GID) == $ST.Gid || isGroupMember(int($ST.Gid)) {\n    ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected a potential vulnerability where `isGroupMember` is called with
+    a raw GID value instead of the GID from the file stat. This can lead to incorrect
+    group membership checks and potential privilege escalation. Always use the GID
+    from the file stat (`st.Gid`) when checking group membership.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/f66925e854e71e0c54b581885380a490d7afa30c
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - go

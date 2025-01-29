@@ -1,0 +1,24 @@
+rules:
+- id: vuln-go-cbd1ca84
+  pattern: "$HV := $OUTREQ.Header.Get($H)\nif $HV == \"\" {\n    ...\n}\nif $H ==\
+    \ \"Te\" && $HV == \"trailers\" {\n    ...\n}\n"
+  pattern-not: "if httpguts.HeaderValuesContainsToken($REQ.Header[\"Te\"], \"trailers\"\
+    ) {\n    $OUTREQ.Header.Set(\"Te\", \"trailers\")\n}\n"
+  languages:
+  - go
+  message: 'The code directly checks for the "Te" header value using `Header.Get`
+    without considering multiple values or tokens. This can lead to incorrect handling
+    of HTTP trailers. Use `httpguts.HeaderValuesContainsToken` to properly check for
+    the "trailers" token in the header values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/cbd1ca84453fecf3825a6bb9f985823e8bc32b76
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - go

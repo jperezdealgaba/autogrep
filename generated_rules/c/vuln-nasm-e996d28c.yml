@@ -1,0 +1,26 @@
+rules:
+- id: vuln-nasm-e996d28c
+  pattern: "if (!$VAR) {\n  nasm_error($ERR, $MSG);\n}\nif ($COND1 && $COND2 && $COND3)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!$VAR) {\n  nasm_error($ERR, $MSG);\n} else if ($COND1 && $COND2\
+    \ && $COND3) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected an issue where conditional checks are not properly chained, which
+    could lead to incorrect error handling. The vulnerability occurs when two separate
+    if statements are used instead of an if-else chain, potentially causing unintended
+    behavior. To fix this, ensure that the second condition is checked only if the
+    first condition fails by using an else if statement.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/e996d28c70d45008085322b442b44a9224308548
+    category: security
+    cwe:
+    - CWE-670
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/670.html
+    technology:
+    - c

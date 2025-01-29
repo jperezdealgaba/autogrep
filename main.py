@@ -167,7 +167,7 @@ class AutoGrep:
                 continue
         
         # Process different repos in parallel with max 4 workers
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(max_workers=8) as executor:
             repo_futures = []
             for repo_key, patches in repo_patches.items():
                 future = executor.submit(self._process_repo_patches, patches)

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-nasm-ceec0d81
+  pattern: "if ($J != '*' && !is_unknown($F) && reloc_value($F) == 0) {\n  ...\n}\n"
+  pattern-not: "if ($J != '*' && !is_just_unknown($F) && reloc_value($F) == 0) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'The function ''is_unknown'' is incorrectly used for checking unknown values.
+    This could lead to incorrect evaluation of expressions. Use ''is_just_unknown''
+    instead to properly check for unknown values in expressions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/ceec0d818798aeaa75ed4907e6135b0247ed46b2
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

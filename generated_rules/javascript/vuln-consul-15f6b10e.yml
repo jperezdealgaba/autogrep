@@ -1,0 +1,26 @@
+rules:
+- id: vuln-consul-15f6b10e
+  pattern: '$STR.replace(/\/{2,}/g, ''/'')
+
+    '
+  pattern-not: '$STR.replace(new RegExp(`^${this.rootURL}(?=/|$)`), '''')
+
+    '
+  languages:
+  - javascript
+  message: "Detected unsafe URL normalization that removes multiple slashes. This\
+    \ can lead to security vulnerabilities \nby allowing path traversal attacks or\
+    \ bypassing security restrictions. Ember.js automatically handles double \nslashes\
+    \ in URLs, so explicit removal is unnecessary and potentially dangerous. Remove\
+    \ the redundant slash \nnormalization code.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/hashicorp/consul/commit/15f6b10e4aabb5f4a7e29de539a0030491d6d454
+    category: security
+    cwe: 'CWE-177: Improper Handling of URL Encoding (Hex Encoding)'
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - javascript
+    - ember.js

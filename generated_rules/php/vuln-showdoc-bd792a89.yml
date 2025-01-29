@@ -1,0 +1,45 @@
+rules:
+- id: vuln-showdoc-bd792a89
+  pattern: '$new_version = I("new_version");
+
+    $file_url = I("file_url");
+
+    '
+  pattern-not: '$text = file_get_contents(...);
+
+    $composer = json_decode($text, true);
+
+    $version = $composer[''version''];
+
+    $url = ...;
+
+    $res = http_post($url, array("version"=>$version));
+
+    $res_array = json_decode($res, true);
+
+    $new_version = $res_array[''data''][''new_version''];
+
+    $file_url = $res_array[''data''][''file_url''];
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure version and file URL retrieval via user input without
+    validation. This can lead to security vulnerabilities such as arbitrary file downloads
+    or version spoofing. The fix retrieves version information securely from composer.json
+    and validates the file URL before use. Always validate and sanitize inputs and
+    use trusted sources for version information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/bd792a89c0325836fbd64784f4c4117c0171416b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-php-src-907dae8b
+  pattern: 'zval_dtor($VAR);
+
+    Z_TYPE_P($VAR) = IS_STRING;
+
+    Z_STRVAL_P($VAR) = estrdup($FUNC($RESPONSE));
+
+    Z_STRLEN_P($VAR) = strlen(Z_STRVAL_P($VAR));
+
+    '
+  pattern-not: "$NAME = $FUNC($RESPONSE);\nif ($NAME) {\n  zval_dtor($VAR);\n  Z_TYPE_P($VAR)\
+    \ = IS_STRING;\n  Z_STRVAL_P($VAR) = estrdup($NAME);\n  Z_STRLEN_P($VAR) = strlen(Z_STRVAL_P($VAR));\n\
+    } else {\n  $RETVAL = NULL;\n}\n"
+  languages:
+  - c
+  message: 'Missing NULL check before using the result of XMLRPC_RequestGetMethodName().
+
+    This can lead to NULL pointer dereference if the function returns NULL.
+
+    Always check the return value of XMLRPC_RequestGetMethodName() before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/907dae8b21fcbc3979b3a9f206f10f506e452537
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

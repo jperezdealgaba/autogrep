@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jackson-databind-74aba404
+  pattern: 's.add("com.mchange.v2.c3p0.JndiRefForwardingDataSource");
+
+    s.add("com.mchange.v2.c3p0.WrapperConnectionPoolDataSource");
+
+    '
+  pattern-not: '// s.add("com.mchange.v2.c3p0.JndiRefForwardingDataSource"); // deprecated
+    by [databind#1931]
+
+    // s.add("com.mchange.v2.c3p0.WrapperConnectionPoolDataSource"); // - "" -
+
+    '
+  languages:
+  - java
+  message: Potential JNDI injection vulnerability through c3p0 data sources. These
+    classes have been deprecated due to security concerns. Remove or comment out these
+    class registrations.
+  severity: ERROR
+  metadata:
+    source-url: github.com/FasterXML/jackson-databind/commit/74aba4042fce35ee0b91bd2847e788c10040d78b
+    category: security
+    cwe: CWE-74
+    owasp: 'A1: Injection'
+    references:
+    - https://github.com/FasterXML/jackson-databind/issues/1931
+    - https://cwe.mitre.org/data/definitions/74.html
+    technology: java

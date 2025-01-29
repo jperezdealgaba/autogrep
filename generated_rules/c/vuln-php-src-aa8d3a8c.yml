@@ -1,0 +1,32 @@
+rules:
+- id: vuln-php-src-aa8d3a8c
+  pattern: "if ($BGCOLOR < 0 || (!$SRC->trueColor && $BGCOLOR >= gdMaxColors)) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($BGCOLOR < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Insecure boundary check in GD library''s interpolation code. The original
+    check
+
+    was incorrect as it allowed out-of-bounds color values in non-trueColor mode.
+
+    This could lead to memory corruption or undefined behavior. The fix removes
+
+    the redundant check and ensures proper bounds checking. Always validate color
+
+    values against the appropriate color range for the image mode.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/aa8d3a8cc612ba87c0497275f58a2317a90fb1c4
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/php/php-src/commit/aa8d3a8cc612ba87c0497275f58a2317a90fb1c4
+    technology:
+    - c

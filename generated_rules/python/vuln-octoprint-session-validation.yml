@@ -1,0 +1,17 @@
+rules:
+- id: vuln-octoprint-session-validation
+  pattern: "if $USER and $USER.is_active:\n    ...\n"
+  pattern-not: "if $USER and $USER.is_active and (not $SESSIONID or validate_session_signature($SESSIONSIG,\
+    \ $ID, $SESSIONID)):\n    ...\n"
+  languages:
+  - python
+  message: Session validation is missing. Ensure proper session signature validation
+    to prevent session hijacking attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/foosel/OctoPrint/commit/40e6217ac1a85cc5ed592873ae49db01d3005da4
+    category: security
+    cwe: 'CWE-384: Session Fixation'
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - python

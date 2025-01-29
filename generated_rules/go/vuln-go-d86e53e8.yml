@@ -1,0 +1,34 @@
+rules:
+- id: vuln-go-d86e53e8
+  pattern: "if $TOKEN, $ERR = $DECODER.rawToken(); $ERR != nil {\n    switch {\n \
+    \   case $ERR == io.EOF && $DECODER.t != nil:\n        $ERR = nil\n    case $ERR\
+    \ == io.EOF && $DECODER.stk != nil && $DECODER.stk.kind != stkEOF:\n        $ERR\
+    \ = $DECODER.syntaxError(\"unexpected EOF\")\n    }\n    return $TOKEN, $ERR\n\
+    }\n"
+  pattern-not: "if $TOKEN, $ERR = $DECODER.rawToken(); $TOKEN == nil && $ERR != nil\
+    \ {\n    if $ERR == io.EOF && $DECODER.stk != nil && $DECODER.stk.kind != stkEOF\
+    \ {\n        $ERR = $DECODER.syntaxError(\"unexpected EOF\")\n    }\n    return\
+    \ nil, $ERR\n}\n"
+  languages:
+  - go
+  message: 'Incomplete EOF handling in XML decoder can cause incorrect error propagation.
+
+    The original code fails to properly handle EOF conditions when processing XML
+    tokens,
+
+    which can lead to incorrect error handling or silent failures. The fix ensures
+    proper
+
+    error handling for EOF conditions and maintains token processing consistency.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/d86e53e896eca907ad67300c0bb495e3dd925358
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - go

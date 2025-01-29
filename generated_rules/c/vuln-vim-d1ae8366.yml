@@ -1,0 +1,22 @@
+rules:
+- id: vuln-vim-d1ae8366
+  pattern: "if ($REG->y_size == 0) {\n  ...\n}\n"
+  pattern-not: "if ($REG->y_size == 0 || $YCURRENT->y_array == NULL) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential null pointer dereference vulnerability. \nThe code\
+    \ checks if `y_size` is zero but fails to verify if `y_array` is NULL, \nwhich\
+    \ could lead to a null pointer dereference. \nTo fix this, ensure both `y_size`\
+    \ and `y_array` are checked before accessing `y_array`.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/vim/vim/commit/d1ae8366aff286d41e7f5bc513cc0a1af5130aad
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

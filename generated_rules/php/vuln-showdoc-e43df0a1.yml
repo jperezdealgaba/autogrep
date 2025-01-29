@@ -1,0 +1,26 @@
+rules:
+- id: vuln-showdoc-e43df0a1
+  pattern: '$login_secret_key = bin2hex(random_bytes(16));
+
+    '
+  pattern-not: '$login_secret_key = get_rand_str();
+
+    '
+  languages:
+  - php
+  message: 'Using `bin2hex(random_bytes(16))` for generating secret keys can lead
+    to insecure cryptographic practices. This method may not provide sufficient entropy
+    or meet specific security requirements. Use a dedicated secure random string generation
+    function like `get_rand_str()` instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/e43df0a190f68aefa272507d3bd54475f566c1db
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - php

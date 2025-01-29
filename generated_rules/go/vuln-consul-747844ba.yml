@@ -1,0 +1,27 @@
+rules:
+- id: vuln-consul-747844ba
+  pattern: "func $FUNC($SERVICE *structs.NodeService, $AUTHZ acl.Authorizer) error\
+    \ {\n  ...\n  $SERVICE.FillAuthzContext(&$AUTHZCONTEXT)\n  ...\n}\n"
+  pattern-not: "func $FUNC($SERVICE *structs.NodeService, $AUTHZ acl.Authorizer, $AUTHZCTXFILL\
+    \ func(*acl.AuthorizerContext)) error {\n  ...\n  $AUTHZCTXFILL(&$AUTHZCONTEXT)\n\
+    \  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected a vulnerable ACL authorization pattern where the `FillAuthzContext`
+    method is directly called within a function. This can lead to improper authorization
+    checks. Instead, the `FillAuthzContext` method should be passed as a function
+    parameter to ensure proper authorization context is applied. Update the function
+    signature to accept a `func(*acl.AuthorizerContext)` parameter and use it to fill
+    the authorization context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hashicorp/consul/commit/747844bad6410091f2c6e961216c0c5fc285a44d
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - go

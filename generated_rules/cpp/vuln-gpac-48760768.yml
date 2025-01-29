@@ -1,0 +1,51 @@
+rules:
+- id: vuln-gpac-48760768
+  pattern: '#define MAX_TILE_COLS 30
+
+    #define MAX_TILE_ROWS 33
+
+    ...
+
+    u32 tile_rows_height_ctb[MAX_TILE_ROWS];
+
+    u32 tile_cols_width_ctb[MAX_TILE_COLS];
+
+    '
+  pattern-not: '#define VVC_MAX_TILE_COLS 30
+
+    #define VVC_MAX_TILE_ROWS 33
+
+    ...
+
+    u32 tile_rows_height_ctb[VVC_MAX_TILE_ROWS];
+
+    u32 tile_cols_width_ctb[VVC_MAX_TILE_COLS];
+
+    '
+  languages:
+  - cpp
+  message: 'The code uses hardcoded array sizes with generic MAX_TILE_* macros, which
+    can lead to buffer overflows if the tile dimensions exceed these values. This
+    is particularly dangerous in media parsing where malformed input could exploit
+    these fixed limits.
+
+
+    The vulnerability was fixed by renaming the macros to VVC_MAX_TILE_* to make them
+    specific to the VVC codec and prevent accidental reuse. Always use context-specific
+    names for constants and consider using dynamic allocation or proper bounds checking
+    when dealing with variable-sized data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/48760768611f6766bf9e7378bb7cc66cebd6e49d
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://en.wikipedia.org/wiki/Buffer_overflow
+    technology:
+    - cpp

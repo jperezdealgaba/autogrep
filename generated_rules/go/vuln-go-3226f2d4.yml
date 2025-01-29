@@ -1,0 +1,25 @@
+rules:
+- id: vuln-go-3226f2d4
+  pattern: "func portOnly(hostport string) string {\n  ...\n  return $RET\n}\n"
+  pattern-not: "func portOnly(hostport string) string {\n  ...\n  _, port := splitHostPort(hostport)\n\
+    \  return port\n}\n"
+  languages:
+  - go
+  message: 'The function `portOnly` does not properly validate port numbers, which
+    can lead to incorrect handling of invalid ports. This can cause security issues
+    when processing URLs with malformed ports. Use `splitHostPort` instead, which
+    properly validates port numbers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/3226f2d492963d361af9dfc6714ef141ba606713
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://golang.org/issue/33600
+    technology:
+    - go

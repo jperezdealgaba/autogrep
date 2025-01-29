@@ -1,0 +1,24 @@
+rules:
+- id: vuln-qemu-fa365d7c
+  pattern: "if ($BSEL < 0 || $BSEL > $MAX) {\n    ...\n}\n"
+  pattern-not: "if ($BSEL < 0 || $BSEL >= $MAX) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected potential off-by-one error in boundary check. Using ''>'' instead
+    of ''>='' can lead to array index out of bounds or incorrect boundary conditions.
+    This vulnerability could cause memory corruption or security issues. Replace ''>''
+    with ''>='' to properly check the upper bound.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/fa365d7cd11185237471823a5a33d36765454e16
+    category: security
+    cwe:
+    - 'CWE-193: Off-by-one Error'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/193.html
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jackson-databind-97879838
+  pattern: 'SubTypeValidator.instance().validateSubType($CTXT, $TYPE)
+
+    '
+  pattern-not: 'SubTypeValidator.instance().validateSubType($CTXT, $TYPE, $BEANDESC)
+
+    '
+  languages:
+  - java
+  message: 'Insecure deserialization vulnerability detected. The validateSubType method
+    is called without the beanDesc parameter, which could allow unsafe deserialization
+    of untrusted types. Always include the beanDesc parameter to ensure proper type
+    validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FasterXML/jackson-databind/commit/978798382ceb72229e5036aa1442943933d6d171
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://github.com/FasterXML/jackson-databind/commit/978798382ceb72229e5036aa1442943933d6d171
+    technology:
+    - java

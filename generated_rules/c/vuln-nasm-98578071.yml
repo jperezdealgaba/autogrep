@@ -1,0 +1,26 @@
+rules:
+- id: vuln-nasm-98578071
+  pattern: 'define_label($LABEL, $SEGMENT, $OFFSET, $SPECIAL, false, false);
+
+    '
+  pattern-not: 'backend_label($LABEL, $SEGMENT, $OFFSET);
+
+    '
+  languages:
+  - c
+  message: 'Found use of deprecated define_label() function with hardcoded boolean
+    parameters.
+
+    This can lead to incorrect label handling and potential security issues.
+
+    Replace with backend_label() for proper label management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/98578071b9d71ecaa2344dd9c185237c1765041e
+    category: security
+    cwe:
+    - CWE-664
+    technology:
+    - c

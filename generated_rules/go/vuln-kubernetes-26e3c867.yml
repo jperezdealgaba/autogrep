@@ -1,0 +1,31 @@
+rules:
+- id: vuln-kubernetes-26e3c867
+  pattern: '$UID, $USERNAME, $ERR := $M.getImageUser($CONTAINER.Image)
+
+    '
+  pattern-not: '$UID, $USERNAME, $ERR := $M.getImageUser($IMAGEREF)
+
+    '
+  languages:
+  - go
+  message: 'Using container.Image directly in getImageUser can lead to security issues
+
+    as it may not properly handle image references. Instead, use imageRef which
+
+    is properly sanitized and validated. This vulnerability could allow for
+
+    bypassing security checks or executing untrusted code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kubernetes/kubernetes/commit/26e3c8674e66f0d10170d34f5445f0aed207387f
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A06:2021 - Vulnerable and Outdated Components
+    references:
+    - https://kubernetes.io/docs/concepts/containers/images/
+    technology:
+    - go

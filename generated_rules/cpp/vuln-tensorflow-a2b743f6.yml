@@ -1,0 +1,33 @@
+rules:
+- id: vuln-tensorflow-a2b743f6
+  pattern: 'DCHECK_GT($VAR.size(), 0)
+
+    '
+  pattern-not: 'OP_REQUIRES($VAR1, $VAR2.size() > 0, $VAR3)
+
+    '
+  languages:
+  - cpp
+  message: 'Using DCHECK_GT for input validation is dangerous as it is only active
+    in debug builds.
+
+    This can lead to undefined behavior in production code when invalid inputs are
+    provided.
+
+    Replace DCHECK_GT with proper error handling using OP_REQUIRES to validate inputs
+
+    in both debug and release builds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/a2b743f6017d7b97af1fe49087ae15f0ac634373
+    category: security
+    cwe:
+    - 'CWE-754: Improper Check for Unusual or Exceptional Conditions'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://github.com/tensorflow/tensorflow/blob/a2b743f6017d7b97af1fe49087ae15f0ac634373/tensorflow/core/kernels/ragged_gather_op.cc
+    technology:
+    - cpp

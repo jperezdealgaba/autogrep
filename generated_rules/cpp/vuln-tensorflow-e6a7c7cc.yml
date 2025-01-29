@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-e6a7c7cc
+  pattern: "void ValidateInputs(OpKernelContext* $CTX,\n                    const\
+    \ CSRSparseMatrix& $MATRIX,\n                    const Tensor& $TENSOR,\n    \
+    \                int* $BATCH_SIZE,\n                    int64* $NUM_ROWS) {\n\
+    \  OP_REQUIRES($CTX, $CONDITION, $ERROR);\n  ...\n}\n"
+  pattern-not: "Status ValidateInputs(const CSRSparseMatrix& $MATRIX,\n          \
+    \            const Tensor& $TENSOR,\n                      int* $BATCH_SIZE,\n\
+    \                      int64* $NUM_ROWS) {\n  if ($CONDITION)\n    return $ERROR;\n\
+    \  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Direct use of OP_REQUIRES in validation functions can lead to uncaught
+    errors.
+
+    The function should return a Status object instead to properly propagate errors.
+
+    This can cause the program to continue execution with invalid inputs.
+
+    Replace OP_REQUIRES with Status returns and proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/e6a7c7cc18c3aaad1ae0872cb0a959f5c923d2bd
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A10:2021 - Server-Side Request Forgery
+    technology:
+    - cpp

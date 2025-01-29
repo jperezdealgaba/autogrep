@@ -1,0 +1,25 @@
+rules:
+- id: vuln-strapi-73e59e6e
+  pattern: '"./build"'
+  pattern-not: '"{projectRoot}/build"'
+  languages:
+  - json
+  message: "Detected a direct reference to \"./build\" in package.json, which can\
+    \ lead to incorrect path resolution and potential security issues. \nThis is dangerous\
+    \ because it assumes the build directory is always relative to the current working\
+    \ directory, which may not be the case in all environments. \nReplace \"./build\"\
+    \ with \"{projectRoot}/build\" to ensure the correct path resolution.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/73e59e6e2cc88e9cc6fee784659cebefe1cc2cf8
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - A1:2017-Injection
+    - A5:2017-Broken Access Control
+    references:
+    - https://nx.dev/configuration/projectjson#build-targets
+    technology:
+    - json

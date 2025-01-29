@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-ac117ee8
+  pattern: "void AddBatchOffsets(Tensor* $INDICES, const Tensor& $PARAMS) {\n  ...\n\
+    }\n"
+  pattern-not: "void AddBatchOffsets(OpKernelContext* $CTX, Tensor* $INDICES, const\
+    \ Tensor& $PARAMS) {\n  OP_REQUIRES($CTX, $BATCH_SIZE != 0, errors::InvalidArgument(...));\n\
+    \  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Missing error status check and division by zero validation in AddBatchOffsets
+    function.
+
+    This can lead to division by zero vulnerabilities when batch_size is 0.
+
+    The function should validate batch_size and check the operation''s status.
+
+    Add OP_REQUIRES to validate batch_size and ensure proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/ac117ee8a8ea57b73d34665cdf00ef3303bc0b11
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/369.html
+    technology:
+    - cpp

@@ -1,0 +1,36 @@
+rules:
+- id: vuln-qemu-5d971f9e
+  pattern: "if (!mr->ops->valid.accepts) {\n    return true;\n}\n...\n$ACCESS_SIZE_MIN\
+    \ = mr->ops->valid.min_access_size;\nif (!mr->ops->valid.min_access_size) {\n\
+    \    $ACCESS_SIZE_MIN = 1;\n}\n$ACCESS_SIZE_MAX = mr->ops->valid.max_access_size;\n\
+    if (!mr->ops->valid.max_access_size) {\n    $ACCESS_SIZE_MAX = 4;\n}\n$ACCESS_SIZE\
+    \ = MAX(MIN(size, $ACCESS_SIZE_MAX), $ACCESS_SIZE_MIN);\nfor ($I = 0; $I < size;\
+    \ $I += $ACCESS_SIZE) {\n    if (!mr->ops->valid.accepts(mr->opaque, addr + $I,\
+    \ $ACCESS_SIZE, is_write, attrs)) {\n        return false;\n    }\n}\n"
+  pattern-not: "if (size > mr->ops->valid.max_access_size\n    || size < mr->ops->valid.min_access_size)\
+    \ {\n    return false;\n}\n"
+  languages:
+  - c
+  message: 'Found a potential memory access validation vulnerability. The code was
+    not properly validating
+
+    memory access sizes and alignment, which could lead to security issues. The fix
+    ensures proper
+
+    validation of access sizes against minimum and maximum allowed values. Update
+    your code to
+
+    directly validate the size parameter against the min and max access size limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/5d971f9e672507210e77d020d89e0e89165c8fc9
+    category: security
+    cwe:
+    - CWE-119
+    owasp: 'A1: Injection'
+    references:
+    - https://git.qemu.org/?p=qemu.git;a=commit;h=5d971f9e672507210e77d020d89e0e89165c8fc9
+    technology:
+    - c

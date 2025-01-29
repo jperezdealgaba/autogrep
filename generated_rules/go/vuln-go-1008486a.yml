@@ -1,0 +1,32 @@
+rules:
+- id: vuln-go-1008486a
+  pattern: 'fmt.Fprintf($F, "_CGO_%s=%s\n", $ARG)
+
+    '
+  pattern-not: 'fmt.Fprintf($F, "_CGO_%s=%s\n", $K, $ARG)
+
+    '
+  languages:
+  - go
+  message: 'Incorrect format string usage in fmt.Fprintf detected. The format string
+    expects two
+
+    arguments but only one is provided. This can lead to format string vulnerabilities
+
+    and undefined behavior. Always ensure the number of format specifiers matches
+    the
+
+    number of arguments provided. The fix is to add the missing argument.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/1008486a9ff979dbd21c7466eeb6abf378f9c637
+    category: security
+    cwe:
+    - CWE-134
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://pkg.go.dev/fmt#Fprintf
+    technology:
+    - go

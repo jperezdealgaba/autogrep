@@ -1,0 +1,26 @@
+rules:
+- id: vuln-php-src-8f4a5373
+  pattern: "if ($SRC->sx < ($CROP->x + $CROP->width - 1)) {\n  $CROP->width = $SRC->sx\
+    \ - $CROP->x + 1;\n}\n"
+  pattern-not: "if (($SRC->sx - $CROP->width) < $CROP->x) {\n  $CROP->width = $SRC->sx\
+    \ - $CROP->x;\n}\n"
+  languages:
+  - c
+  message: 'The code does not properly validate the crop dimensions against the source
+    image dimensions, which could lead to buffer overflows or invalid memory access.
+    Ensure that the crop dimensions are validated against the source image dimensions
+    before performing the crop operation. The fix involves checking if the crop dimensions
+    exceed the source image dimensions and adjusting them accordingly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/8f4a5373bb71590352fd934028d6dde5bc18530b
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

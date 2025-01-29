@@ -1,0 +1,22 @@
+rules:
+- id: vuln-vim-94f3192b
+  pattern: "if (*$PTR == NUL)\n{\n    $POS->col = 0;\n}\n"
+  pattern-not: "for ($I = 0; $I < $POS->col; ++$I)\n{\n    if ($PTR[$I] == NUL)\n\
+    \    {\n        $POS->col = $I;\n        break;\n    }\n}\n"
+  languages:
+  - c
+  message: "Detected potential buffer boundary violation by directly comparing pointer\
+    \ value with NUL. \nThis can lead to incorrect position calculations when dealing\
+    \ with empty lines or buffer boundaries. \nThe issue was fixed by adding a loop\
+    \ to check each character up to the column position.\nTo fix, implement a character-by-character\
+    \ check like in the fixed version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/94f3192b03ed27474db80b4d3a409e107140738b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A1:2017-Injection
+    technology:
+    - c

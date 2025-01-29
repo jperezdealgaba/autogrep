@@ -1,0 +1,25 @@
+rules:
+- id: vuln-vim-91c7cbfe
+  pattern: "if ($EVALARG != NULL && $EVALARG->eval_tofree == NULL)\n  $EVALARG->eval_tofree\
+    \ = $TOFREE;\nelse\n  vim_free($TOFREE);\n"
+  pattern-not: 'free_eval_tofree_later($EVALARG);
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment of memory pointer without proper cleanup can lead to
+    memory leaks or use-after-free vulnerabilities. The pointer should be handled
+    through the dedicated free_eval_tofree_later() function which ensures proper memory
+    management. Use free_eval_tofree_later() instead of direct assignment and free
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/91c7cbfe31bbef57d5fcf7d76989fc159f73ef15
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    - 'CWE-401: Improper Release of Memory Before Removing Last Reference'
+    technology:
+    - c

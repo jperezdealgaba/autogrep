@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libav-fe6eea99
+  pattern: 'av_get_packet($PB, $PKT, $SIZE);
+
+    '
+  pattern-not: "if ((ret = av_get_packet($PB, $PKT, $SIZE)) < 0)\n    return ret;\n"
+  languages:
+  - c
+  message: 'Detected unhandled return value of `av_get_packet`. This can lead to unhandled
+    errors when reading packets, potentially causing crashes or undefined behavior.
+    Always check the return value of `av_get_packet` and handle errors appropriately
+    by returning the error code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/fe6eea99efac66839052af547426518efd970b24
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Security Misconfiguration
+    technology:
+    - c

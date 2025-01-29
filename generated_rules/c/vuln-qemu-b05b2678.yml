@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-b05b2678
+  pattern: '$VAR = $STRUCT->edid_blob[$STRUCT->reg];
+
+    '
+  pattern-not: '$VAR = $STRUCT->edid_blob[$STRUCT->reg % sizeof($STRUCT->edid_blob)];
+
+    '
+  languages:
+  - c
+  message: 'Detected potential out-of-bounds array access. The array index is not
+    bounded by the array size, which could lead to memory corruption or information
+    disclosure. To fix this, ensure the index is properly bounded using a modulo operation
+    with the array size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/b05b267840515730dbf6753495d5b7bd8b04ad1c
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

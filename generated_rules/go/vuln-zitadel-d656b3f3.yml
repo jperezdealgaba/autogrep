@@ -1,0 +1,28 @@
+rules:
+- id: vuln-zitadel-d656b3f3
+  pattern: 'return nil, status.Error(codes.PermissionDenied, $ERR.Error())
+
+    '
+  pattern-not: 'return nil, status.Error(codes.NotFound, $ERR.Error())
+
+    '
+  languages:
+  - go
+  message: 'Using PermissionDenied error code for NotFound cases can leak sensitive
+    information
+
+    and provide incorrect error handling. Use NotFound error code instead to properly
+
+    handle missing resources and prevent information disclosure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/d656b3f3c97d4ba46b97ef5a7ab45aa3989b98e0
+    category: security
+    cwe:
+    - CWE-209
+    - CWE-200
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - go

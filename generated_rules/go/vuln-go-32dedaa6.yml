@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-32dedaa6
+  pattern: "func $FUNC(...) (ok bool) {\n  ...\n  return $EXPR\n}\n"
+  pattern-not: "func $FUNC(...) error {\n  ...\n  return $EXPR\n}\n"
+  languages:
+  - go
+  message: 'Detected a function returning a boolean status instead of an error. This
+    pattern
+
+    is vulnerable as it doesn''t provide proper error handling context. In cryptographic
+
+    operations, returning detailed errors is crucial for proper error handling and
+
+    security. Replace the boolean return type with error and return specific error
+
+    messages instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/32dedaa69e22f1a058ae90b9484fd4c3b46fbcbf
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021-Server Side Request Forgery
+    technology:
+    - go

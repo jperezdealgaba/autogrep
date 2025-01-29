@@ -1,0 +1,24 @@
+rules:
+- id: vuln-chakracore-6b1250b6
+  pattern: '#define CHAKRA_CORE_PATCH_VERSION 11
+
+    '
+  pattern-not: '#define CHAKRA_CORE_PATCH_VERSION 12
+
+    '
+  languages:
+  - cpp
+  message: "The version number in ChakraCore is outdated and may contain unpatched\
+    \ vulnerabilities. \nUsing an outdated version can expose applications to security\
+    \ risks. \nUpdate the version number to the latest patch version to ensure all\
+    \ security fixes are applied.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/6b1250b6ffea7006226dd937e52cf5b353fcfc15
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

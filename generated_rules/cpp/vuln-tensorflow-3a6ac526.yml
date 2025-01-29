@@ -1,0 +1,29 @@
+rules:
+- id: vuln-tensorflow-3a6ac526
+  pattern: 'output_shape.AddDim($X);
+
+    '
+  pattern-not: 'OP_REQUIRES_OK($CTX, output_shape.AddDimWithStatus($X));
+
+    '
+  languages:
+  - cpp
+  message: 'Direct use of AddDim() without error checking can lead to unhandled shape
+    dimension errors.
+
+    This is dangerous because tensor shape errors can cause undefined behavior or
+    crashes.
+
+    Use OP_REQUIRES_OK() with AddDimWithStatus() to properly handle potential errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/3a6ac52664c6c095aa2b114e742b0aa17fdce78f
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    technology:
+    - cpp

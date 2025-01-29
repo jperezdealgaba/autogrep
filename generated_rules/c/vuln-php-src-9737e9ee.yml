@@ -1,0 +1,26 @@
+rules:
+- id: vuln-php-src-9737e9ee
+  pattern: 'int $VAR = $PTLEN + $ENV_PATH_INFO ? strlen($ENV_PATH_INFO) : 0;
+
+    '
+  pattern-not: 'int $VAR = $PTLEN + ($ENV_PATH_INFO ? strlen($ENV_PATH_INFO) : 0);
+
+    '
+  languages:
+  - c
+  message: 'The ternary operator has incorrect operator precedence in the expression,
+    which can lead to incorrect calculations. The addition operation should be grouped
+    with the ternary operator result using parentheses to ensure proper evaluation
+    order. This could potentially cause security issues in path handling logic.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/9737e9ee3bd82db9dd49449c00c0d3542ee47f41
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

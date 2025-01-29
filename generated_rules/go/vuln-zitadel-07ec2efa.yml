@@ -1,0 +1,27 @@
+rules:
+- id: vuln-zitadel-07ec2efa
+  pattern: "import (\n  \"text/template\"\n  ...\n)\n"
+  pattern-not: "import (\n  \"html/template\"\n  ...\n)\n"
+  languages:
+  - go
+  message: 'Using ''text/template'' instead of ''html/template'' can lead to XSS vulnerabilities.
+
+    ''text/template'' does not escape HTML content, making it dangerous when rendering
+    user input.
+
+    Always use ''html/template'' to automatically escape HTML and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/07ec2efa9dc62f7a6c3a58c112b2879d24bc3e3c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A07:2021 - Identification and Authentication Failures
+    references:
+    - https://pkg.go.dev/html/template
+    - https://pkg.go.dev/text/template
+    technology:
+    - go

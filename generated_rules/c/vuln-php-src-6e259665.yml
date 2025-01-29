@@ -1,0 +1,23 @@
+rules:
+- id: vuln-php-src-6e259665
+  pattern: 'zend_throw_exception_ex($EXCEPTION, $TYPE, $ERRSTR);
+
+    '
+  pattern-not: 'zend_throw_exception_ex($EXCEPTION, $TYPE, "%s", $ERRSTR);
+
+    '
+  languages:
+  - c
+  message: "Detected a potentially dangerous use of `zend_throw_exception_ex` without\
+    \ a format specifier. \nThis can lead to format string vulnerabilities if the\
+    \ error string contains user-controlled data. \nAlways use a format specifier\
+    \ (e.g., \"%s\") to safely pass the error string.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/6e25966544fb1d2f3d7596e060ce9c9269bbdcf8
+    category: security
+    cwe:
+    - CWE-134
+    owasp: A1:2017-Injection
+    technology:
+    - c

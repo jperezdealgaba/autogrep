@@ -1,0 +1,29 @@
+rules:
+- id: vuln-qemu-25c01bd1
+  pattern: "ssize_t qemu_deliver_packet_iov(NetClientState *$SENDER,\n           \
+    \                 unsigned $FLAGS,\n                            const struct iovec\
+    \ *$IOV,\n                            int $IOVCNT,\n                         \
+    \   void *$OPAQUE);\n"
+  pattern-not: "ssize_t qemu_deliver_packet_iov(NetClientState *$SENDER,\n       \
+    \                     unsigned $FLAGS,\n                            const struct\
+    \ iovec *$IOV,\n                            int $IOVCNT,\n                   \
+    \         void *$OPAQUE) {\n    ...\n}\n"
+  languages:
+  - cpp
+  message: 'The function `qemu_deliver_packet_iov` is declared without proper implementation
+    or validation checks, which can lead to potential vulnerabilities such as buffer
+    overflows or null pointer dereferences. This is dangerous because it can be exploited
+    to cause crashes or execute arbitrary code. To fix this, ensure the function is
+    properly implemented with appropriate validation checks on its parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/qemu/qemu/commit/25c01bd19d0e4b66f357618aeefda1ef7a41e21a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

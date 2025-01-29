@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gnutls-c2e094ac
+  pattern: 'dummy_wait($PARAMS, $PLAINTEXT, $PAD_FAILED, $PAD, $TOTAL);
+
+    '
+  pattern-not: 'dummy_wait($PARAMS, $PLAINTEXT, $MAC_DATA, $MAX_MAC_DATA);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a timing side-channel vulnerability in the GnuTLS library.
+    The original implementation of the `dummy_wait` function did not properly account
+    for timing variations during MAC verification, which could allow an attacker to
+    infer information about the MAC or padding. The vulnerability was fixed by modifying
+    the function to ensure consistent timing behavior. To fix this issue, ensure that
+    timing variations are minimized during cryptographic operations, especially during
+    MAC verification and padding checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/c2e094acd68f7159025b2e2556d6fb4427b41dd7
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - c

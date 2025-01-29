@@ -1,0 +1,31 @@
+rules:
+- id: vuln-php-src-0e6c0654
+  pattern: 'zend_parse_parameters(ZEND_NUM_ARGS(), "ss", $FROM, $FROM_LEN, $TO, $TO_LEN)
+    == FAILURE
+
+    '
+  pattern-not: 'zend_parse_parameters(ZEND_NUM_ARGS(), "pp", $FROM, $FROM_LEN, $TO,
+    $TO_LEN) == FAILURE
+
+    '
+  languages:
+  - c
+  message: 'The use of "ss" format specifier in zend_parse_parameters can lead to
+    incorrect handling of path strings, potentially causing security vulnerabilities.
+    The "ss" specifier expects simple strings, which may not handle null bytes or
+    other special characters correctly. Replace "ss" with "pp" to properly handle
+    path strings with proper length checking and null byte handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/0e6c0654ed06751ced134515f7629c40bd979d7f
+    category: security
+    cwe:
+    - CWE-170
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.zend-parse-parameters.php
+    technology:
+    - c

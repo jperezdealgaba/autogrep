@@ -1,0 +1,23 @@
+rules:
+- id: vuln-php-src-56754a7f
+  pattern: "if ($DATALEN < 0 || ($P) + $DATALEN >= $MAX) {\n  ...\n}\n"
+  pattern-not: "if ($DATALEN < 0 || ($MAX - ($P)) <= $DATALEN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in a boundary check.
+    The original condition `(*p) + datalen >= max` can lead to integer overflow, bypassing
+    the intended boundary check. This can result in out-of-bounds memory access. The
+    fix changes the condition to `(max - (*p)) <= datalen` to avoid the overflow.
+    Always ensure boundary checks are performed in a way that prevents integer overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/56754a7f9eba0e4f559b6ca081d9f2a447b3f159
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

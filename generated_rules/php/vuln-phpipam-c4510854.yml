@@ -1,0 +1,33 @@
+rules:
+- id: vuln-phpipam-c4510854
+  pattern: '$adldap->group()->search(adLDAP::ADLDAP_SECURITY_GLOBAL_GROUP, true, "*$_POST[$VAR]*")
+
+    '
+  pattern-not: '$esc_dfilter = ldap_escape($_POST["$VAR"], null, LDAP_ESCAPE_FILTER);
+
+    $adldap->group()->search(adLDAP::ADLDAP_SECURITY_GLOBAL_GROUP, true, "*$esc_dfilter*")
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped LDAP filter input which can lead to LDAP injection
+    vulnerabilities.
+
+    LDAP injection allows attackers to alter LDAP queries, potentially accessing unauthorized
+    data or bypassing authentication.
+
+    Always use `ldap_escape` with `LDAP_ESCAPE_FILTER` to sanitize LDAP filter inputs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/c451085476074943eb4056941005c0b61db566c5
+    category: security
+    cwe:
+    - CWE-90
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-community/attacks/LDAP_Injection
+    technology:
+    - php

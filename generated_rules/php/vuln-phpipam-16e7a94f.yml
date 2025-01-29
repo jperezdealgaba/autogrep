@@ -1,0 +1,32 @@
+rules:
+- id: vuln-phpipam-16e7a94f
+  pattern: '$field[''ftype''] = $field[''fieldType'']."(".$field[''fieldSize''].")"
+
+    '
+  pattern-not: '$field[''ftype''] = $field[''fieldType'']."( :enumset )"
+
+    '
+  languages:
+  - php
+  message: 'Detected direct string concatenation of field type and size which could
+    lead to SQL injection vulnerabilities.
+
+    This is dangerous because it allows for unparameterized SQL queries, making the
+    application vulnerable to SQL injection attacks.
+
+    To fix this, use parameterized queries with placeholders like '':enumset'' and
+    bind the parameters separately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/16e7a94fb69412e569ccf6f2fe0a1f847309c922
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

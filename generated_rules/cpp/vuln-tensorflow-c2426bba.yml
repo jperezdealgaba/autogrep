@@ -1,0 +1,28 @@
+rules:
+- id: vuln-tensorflow-c2426bba
+  pattern: 'int64_t $NUM_ELEMS = TensorShape($T.tensor_shape()).num_elements();
+
+    '
+  pattern-not: 'int64_t $NUM_ELEMS = PartialTensorShape($T.tensor_shape()).num_elements();
+
+    '
+  languages:
+  - cpp
+  message: 'Using TensorShape instead of PartialTensorShape for num_elements() calculation
+    can lead to incorrect tensor shape handling. This is dangerous because it may
+    cause memory corruption or incorrect tensor operations. Replace TensorShape with
+    PartialTensorShape to properly handle potentially incomplete shape information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c2426bba00a01de6913738df8fa78e0215fcce02
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/partial-tensor-shape
+    technology:
+    - cpp

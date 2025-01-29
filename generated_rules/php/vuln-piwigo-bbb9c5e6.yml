@@ -1,0 +1,32 @@
+rules:
+- id: vuln-piwigo-bbb9c5e6
+  pattern: 'redirect(empty($redirect_to) ? $HOME_URL : $redirect_to);
+
+    '
+  pattern-not: "redirect(\n  empty($redirect_to)\n    ? $HOME_URL\n    : substr($root_url,\
+    \ 0, strlen($root_url) - strlen(cookie_path())).$redirect_to\n  );\n"
+  languages:
+  - php
+  message: 'Detected an insecure redirect that could allow open redirect attacks.
+
+    The vulnerability occurs when user-controlled input is used directly in a redirect
+    without proper validation.
+
+    This can be exploited by attackers to redirect users to malicious websites.
+
+    To fix this, ensure redirects are validated and sanitized, and use absolute URLs
+    with proper domain constraints.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/bbb9c5e6b5bb44ad231050f6fb9f624a4925c5f8
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Open_redirect
+    technology:
+    - php

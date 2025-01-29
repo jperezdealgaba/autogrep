@@ -1,0 +1,33 @@
+rules:
+- id: vuln-php-src-1a23ebc1
+  pattern: "if (UNEXPECTED(Z_ISUNDEF_P(data))) {\n  if (Z_TYPE(key) == IS_LONG) {\n\
+    \    zend_hash_index_del(ht, Z_LVAL(key));\n  } else {\n    zend_hash_del_ind(ht,\
+    \ Z_STR(key));\n  }\n} else {\n  var_push_dtor(var_hash, data);\n}\n"
+  pattern-not: 'var_push_dtor(var_hash, data);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerable code conditionally deletes hash entries when data is undefined,
+
+    which can lead to memory corruption or use-after-free vulnerabilities. The fix
+
+    removes this conditional deletion and always calls var_push_dtor, ensuring
+
+    proper memory management. This vulnerability could be exploited to cause
+
+    crashes or potentially execute arbitrary code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/1a23ebc1fff59bf480ca92963b36eba5c1b904c4
+    category: security
+    cwe:
+    - CWE-416
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html

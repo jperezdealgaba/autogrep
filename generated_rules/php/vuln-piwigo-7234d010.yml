@@ -1,0 +1,31 @@
+rules:
+- id: vuln-piwigo-7234d010
+  pattern: "if (isset($_GET['group_id']) and is_numeric($_GET['group_id']))\n{\n \
+    \ $page['group'] = $_GET['group_id'];\n}\nelse\n{\n  die('group_id URL parameter\
+    \ is missing');\n}\n"
+  pattern-not: "if (!isset($_GET['group_id']))\n{\n  fatal_error('group_id URL parameter\
+    \ is missing');\n}\ncheck_input_parameter('group_id', $_GET, false, PATTERN_ID);\n\
+    $page['group'] = $_GET['group_id'];\n"
+  languages:
+  - php
+  message: 'Detected unvalidated direct usage of $_GET[''group_id''] parameter. This
+    can lead to security vulnerabilities like SQL injection or XSS. The parameter
+    should be validated using check_input_parameter() function with proper pattern
+    validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/7234d0108e7da33dd097b9a272c87b1c26be46b8
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

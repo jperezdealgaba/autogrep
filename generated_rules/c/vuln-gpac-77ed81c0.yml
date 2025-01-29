@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gpac-77ed81c0
+  pattern: "if (!$VAR) $VAR = 1;\n...\nif ($VAR > 1) {\n  ...\n}\n"
+  pattern-not: "if (!$VAR) $VAR = 1;\nelse if ((s32) $VAR < 0) {\n  GF_LOG(GF_LOG_ERROR,\
+    \ GF_LOG_CONTAINER, (\"[iso file] Too many samples %u in packed sample\\n\", $VAR));\n\
+    \  return $ERR;\n}\n...\nif ($VAR > 1) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly validate the `nb_pack` parameter, which could
+    lead to integer overflow or other undefined behavior. This vulnerability occurs
+    when the parameter is not checked for negative values before being used in calculations.
+    The patch adds a validation check to ensure `nb_pack` is not negative. To fix
+    this, always validate input parameters for valid ranges before using them in calculations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/gpac/gpac/commit/77ed81c069e10b3861d88f72e1c6be1277ee7eae
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

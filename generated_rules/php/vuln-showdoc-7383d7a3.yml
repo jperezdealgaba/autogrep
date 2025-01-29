@@ -1,0 +1,26 @@
+rules:
+- id: vuln-showdoc-7383d7a3
+  pattern: "if (\n    strstr(strip_tags(strtolower($VAR['name'])), \".php\")\n   \
+    \ || strstr(strip_tags(strtolower($VAR['name'])), \".htm\")\n    || strstr(strip_tags(strtolower($VAR['name'])),\
+    \ \".svg\")\n) {\n    ...\n}\n"
+  pattern-not: "if ($VAR->isDangerFilename($VAR['name'])) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a direct check for dangerous file extensions using strstr and
+    strtolower. This approach is error-prone and may miss variations of dangerous
+    extensions. Use a centralized function like isDangerFilename to ensure consistent
+    and secure file name validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/7383d7a3c1b0807b6f397ba7df415a0ce7ccc436
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    technology:
+    - php

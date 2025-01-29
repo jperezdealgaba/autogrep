@@ -1,0 +1,34 @@
+rules:
+- id: vuln-gnutls-6be35136
+  pattern: '_gnutls_x509_decode_string(NULL, $DATA, $SIZE, $OUTPUT)
+
+    '
+  pattern-not: '_gnutls_x509_decode_string(ASN1_ETYPE_OCTET_STRING, $DATA, $SIZE,
+    $OUTPUT)
+
+    '
+  languages:
+  - c
+  message: 'Using NULL as the first argument to _gnutls_x509_decode_string can lead
+    to
+
+    security vulnerabilities by not properly specifying the expected ASN.1 type.
+
+    This can result in incorrect parsing of encoded data and potential security
+
+    issues. Always specify the appropriate ASN.1 type (e.g., ASN1_ETYPE_OCTET_STRING)
+
+    to ensure proper decoding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/6be35136333b5d6289f23209cf896e741462909a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp: 'A5: Security Misconfiguration'
+    technology:
+    - c
+    references:
+    - https://www.gnutls.org/manual/html_node/ASN1-decoding.html

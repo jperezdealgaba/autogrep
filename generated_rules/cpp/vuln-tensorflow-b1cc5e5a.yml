@@ -1,0 +1,32 @@
+rules:
+- id: vuln-tensorflow-b1cc5e5a
+  pattern: 'OP_REQUIRES_OK($CONTEXT, ValidateInput($INDICES, $VALUES, $SHAPES, $DENSE))
+
+    '
+  pattern-not: 'OP_REQUIRES_OK($CONTEXT, ValidateInput($INDICES, $VALUES, $SHAPES,
+    $DENSE, $INTERNAL_TYPE))
+
+    '
+  languages:
+  - cpp
+  message: 'Missing internal type validation in SparseCrossOp can lead to type mismatch
+    vulnerabilities.
+
+    This vulnerability occurs when input validation doesn''t check for proper data
+    types,
+
+    potentially leading to incorrect processing or security issues.
+
+    Fix by adding internal type validation as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/b1cc5e5a50e7cee09f2c6eb48eb40ee9c4125025
+    category: security
+    cwe:
+    - CWE-1289
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - cpp

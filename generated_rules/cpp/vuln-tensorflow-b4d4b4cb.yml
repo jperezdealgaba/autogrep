@@ -1,0 +1,40 @@
+rules:
+- id: vuln-tensorflow-b4d4b4cb
+  pattern: "inline void ScatterNd(const RuntimeShape& $INDICES_SHAPE,\n          \
+    \            const $INDICES_T* $INDICES_DATA,\n                      const RuntimeShape&\
+    \ $UPDATES_SHAPE,\n                      const $UPDATES_T* $UPDATES_DATA,\n  \
+    \                    const RuntimeShape& $OUTPUT_SHAPE,\n                    \
+    \  $UPDATES_T* $OUTPUT_DATA) {\n  ...\n  TFLITE_DCHECK(0 <= $IDX && $IDX < $OUTPUT_SHAPE.Dims($J));\n\
+    \  ...\n}\n"
+  pattern-not: "inline TfLiteStatus ScatterNd(const RuntimeShape& $INDICES_SHAPE,\n\
+    \                              const $INDICES_T* $INDICES_DATA,\n            \
+    \                  const RuntimeShape& $UPDATES_SHAPE,\n                     \
+    \         const $UPDATES_T* $UPDATES_DATA,\n                              const\
+    \ RuntimeShape& $OUTPUT_SHAPE,\n                              $UPDATES_T* $OUTPUT_DATA)\
+    \ {\n  ...\n  if ($TO_POS < 0 || $TO_POS + $SLICE_SIZE > $OUTPUT_FLAT_SIZE) {\n\
+    \    return kTfLiteError;\n  }\n  ...\n  return kTfLiteOk;\n}\n"
+  languages:
+  - cpp
+  message: 'The ScatterNd function does not properly validate array bounds, which
+    can lead to out-of-bounds memory access. This vulnerability can result in memory
+    corruption, crashes, or potential exploitation. The function should validate indices
+    and return an error status when out-of-bounds access is detected. Update the function
+    to include proper bounds checking and return a TfLiteStatus indicating success
+    or failure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/b4d4b4cb019bd7240a52daa4ba61e3cc814f0384
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    - 'A8: Software and Data Integrity Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - cpp

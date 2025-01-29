@@ -1,0 +1,29 @@
+rules:
+- id: vuln-php-src-95433e8e
+  pattern: 'register int $X, $Y;
+
+    '
+  pattern-not: 'register size_t $X, $Y;
+
+    '
+  languages:
+  - c
+  message: 'Using ''int'' for loop counters or array indices can lead to integer overflow
+    vulnerabilities when dealing with large data sizes. This can cause out-of-bounds
+    memory access or incorrect behavior. Use ''size_t'' instead of ''int'' for variables
+    that represent sizes, indices, or loop counters to prevent integer overflow and
+    ensure correct handling of large data sizes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/95433e8e339dbb6b5d5541473c1661db6ba2c451
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-go-31d06b58
+  pattern: 't.Skip("TODO(#53977): 1.18.5 contains unreleased changes from vendored
+    modules")
+
+    '
+  languages:
+  - go
+  message: 'Skipping tests for unreleased changes in vendored modules can lead to
+    undetected issues. Ensure all changes are properly tested before release.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/31d06b58fa2448c8e98ac78a97cc9a52dc2aa035
+    category: testing
+    technology:
+    - go

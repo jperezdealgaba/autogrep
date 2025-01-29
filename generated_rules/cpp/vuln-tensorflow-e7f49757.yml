@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tensorflow-e7f49757
+  pattern: 'Tensor $TENSOR($TYPE, TensorShape($SHAPE));
+
+    '
+  pattern-not: 'Tensor $TENSOR;
+
+    OP_REQUIRES_OK($CTX, $CTX->allocate_temp($TYPE, TensorShape($SHAPE), &$TENSOR));
+
+    '
+  languages:
+  - cpp
+  message: "Direct Tensor initialization without error checking can lead to resource\
+    \ allocation failures going undetected. \nUse OP_REQUIRES_OK with allocate_temp\
+    \ to properly handle allocation errors.\nThis vulnerability could cause undefined\
+    \ behavior or crashes when memory allocation fails.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/e7f497570abb6b4ae5af4970620cd880e4c0c904
+    category: security
+    cwe:
+    - CWE-476
+    - CWE-703
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

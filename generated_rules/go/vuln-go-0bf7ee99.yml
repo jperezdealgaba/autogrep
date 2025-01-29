@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-0bf7ee99
+  pattern: "$VAR, $ERR := io.ReadAll($R)\n...\nif $ERR != nil {\n  ...\n}\n"
+  pattern-not: "$VAR, $ERR := readSpecialFile($R)\n...\nif $ERR != nil {\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected use of io.ReadAll without size limit on special file reading.
+
+    This can lead to unbounded memory allocation when reading malicious
+
+    tar archives. Use readSpecialFile instead which enforces a maximum
+
+    size limit of 1MB on special file content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0bf7ee9977c0218562c50a0b0f0d9cbdf33f65e6
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - go

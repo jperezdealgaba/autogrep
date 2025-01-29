@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-e4ba4003
+  pattern: '$X.abs, $_, $_, $ERR = $X.abs.scan($R, 10, true)
+
+    '
+  pattern-not: '$X.abs, $_, $_, $ERR = $X.abs.scan($R, 0, true)
+
+    '
+  languages:
+  - go
+  message: 'The code uses a hardcoded base of 10 for scanning floating-point numbers,
+    which can lead to incorrect parsing of non-decimal numbers. This can cause security
+    issues when handling untrusted input. Use a base of 0 to allow automatic detection
+    of the number base.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/e4ba40030f9ba4b61bb28dbf78bb41a7b14e6788
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - go

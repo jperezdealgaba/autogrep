@@ -1,0 +1,39 @@
+rules:
+- id: vuln-phpipam-94ec73ff
+  pattern: '$tcp = $_POST[''wsize''];
+
+    $delay = $_POST[''delay''];
+
+    $fsize = $_POST[''fsize''];
+
+    '
+  pattern-not: '$tcp = filter_var($_POST[''wsize''], FILTER_VALIDATE_INT, ["options"
+    => ["min_range"=>1024, "max_range"=>65536]]) ?: die(_("Invalid input"));
+
+    $delay = filter_var($_POST[''delay''], FILTER_VALIDATE_FLOAT, ["options" => ["min_range"=>0.1,
+    "max_range"=>1000]]) ?: die(_("Invalid input"));
+
+    $fsize = filter_var($_POST[''fsize''], FILTER_VALIDATE_FLOAT, ["options" => ["min_range"=>100,
+    "max_range"=>4096]]) ?: die(_("Invalid input"));
+
+    '
+  languages:
+  - php
+  message: 'Detected unvalidated input from $_POST directly assigned to variables.
+    This can lead to security vulnerabilities such as injection attacks or unexpected
+    behavior due to invalid input. Always validate and sanitize user inputs using
+    filter_var with appropriate filters and ranges.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/94ec73ff1d33926b75b811ded6f0b4a46088a7ec
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.filter-var.php
+    technology:
+    - php

@@ -1,0 +1,35 @@
+rules:
+- id: vuln-php-src-089f7c0b
+  pattern: '$FUNC($IM, $OUT, ...);
+
+    $RV = gdDPExtractData($OUT, $SIZE);
+
+    '
+  pattern-not: "if (!$FUNC($IM, $OUT, ...)) {\n  $RV = gdDPExtractData($OUT, $SIZE);\n\
+    } else {\n  $RV = NULL;\n}\n"
+  languages:
+  - c
+  message: 'Found unsafe handling of image processing function return value. The code
+    directly calls
+
+    gdDPExtractData without checking if the image processing function succeeded. This
+    could lead
+
+    to processing invalid image data or null pointers. Always check the return value
+    of image
+
+    processing functions before extracting data. Use the pattern ''if (!func(...))
+    { ... }'' to
+
+    properly handle errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/089f7c0bc28d399b0420aa6ef058e4c1c120b2ae
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - c

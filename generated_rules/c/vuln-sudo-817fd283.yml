@@ -1,0 +1,38 @@
+rules:
+- id: vuln-sudo-817fd283
+  pattern: 'sudo_ttyname_scan($DIR, $RDEV, true, $NAME, $NAMELEN)
+
+    '
+  pattern-not: 'sudo_ttyname_scan($DIR, $RDEV, $NAME, $NAMELEN)
+
+    '
+  languages:
+  - c
+  message: 'The function sudo_ttyname_scan() was vulnerable to a security issue where
+    it
+
+    would perform a breadth-first scan of directories without checking if they
+
+    were world-writable. This could allow an attacker to manipulate the search
+
+    path and potentially cause the function to return an incorrect or malicious
+
+    tty device. The fix removes the breadth-first scan and adds a check for
+
+    world-writable directories. Update the code to use the fixed version of
+
+    sudo_ttyname_scan() without the ''builtin'' parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/817fd283124c61e8d5c8243b9ba276ba37ed87fe
+    category: security
+    cwe:
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/276.html
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control
+    technology:
+    - c

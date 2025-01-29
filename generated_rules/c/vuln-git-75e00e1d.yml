@@ -1,0 +1,26 @@
+rules:
+- id: vuln-git-75e00e1d
+  pattern: 'credential_from_url(&$C, $URL);
+
+    '
+  pattern-not: "if (credential_from_potentially_partial_url(&$C, $URL) < 0) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Direct use of credential_from_url() without error handling can lead to
+    security issues when processing partial URLs. This could cause credential lookup
+    failures or incorrect credential handling. Always use credential_from_potentially_partial_url()
+    with proper error handling as shown in the fix.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/git-for-windows/git/commit/75e00e1d48eb7034705e9715b6b1af542cc1be4b
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://github.com/git-for-windows/git/commit/75e00e1d48eb7034705e9715b6b1af542cc1be4b
+    technology:
+    - c

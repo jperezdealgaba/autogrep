@@ -1,0 +1,21 @@
+rules:
+- id: vuln-strapi-c7859155
+  pattern: "{\n  \"version\": \"3.2.4\",\n  ...\n}\n"
+  pattern-not: "{\n  \"version\": \"3.2.5\",\n  ...\n}\n"
+  languages:
+  - json
+  message: Outdated version of Strapi detected. Using outdated versions can expose
+    your application to known vulnerabilities. Update to the latest version to ensure
+    security patches are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/c78591553f5509fcadc8c719f6af6f1bf0e734f3
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://strapi.io/security
+    technology:
+    - json

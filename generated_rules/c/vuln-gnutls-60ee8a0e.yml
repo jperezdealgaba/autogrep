@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gnutls-60ee8a0e
+  pattern: 'gnutls_certificate_set_verify_flags($XCRED, GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT)
+
+    '
+  pattern-not: 'gnutls_certificate_set_verify_flags($XCRED, 0)
+
+    '
+  languages:
+  - c
+  message: 'The use of GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT in gnutls_certificate_set_verify_flags
+    is dangerous as it allows the acceptance of insecure X.509 Version 1 certificates.
+    This can lead to security vulnerabilities due to the lack of modern security features
+    in Version 1 certificates. Replace GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT with GNUTLS_VERIFY_DO_NOT_ALLOW_X509_V1_CA_CRT
+    or set the flags to 0 to enforce stricter certificate validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/60ee8a0eb9975d123002b1cffbefd60a8cd5fae6
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://www.gnutls.org/manual/gnutls.html#gnutls_005fcertificate_005fset_005fverify_005fflags
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-showdoc-d1c9ed0d
+  pattern: '[..., ''.mov'',''.webmv'',''.m3u8a'',''.flac'',''.mkv'', ...]
+
+    '
+  pattern-not: '[..., ''.mov'',''.webmv'',''.flac'',''.mkv'', ...]
+
+    '
+  languages:
+  - php
+  message: 'The code contains an insecure file extension ''.m3u8a'' in the allowed
+    list, which could be exploited for malicious file uploads. This vulnerability
+    could allow attackers to upload harmful files that may execute arbitrary code
+    or cause other security issues. Remove the ''.m3u8a'' extension from the list
+    to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/d1c9ed0d77ea5d56f09be0c492361dca8af745bb
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

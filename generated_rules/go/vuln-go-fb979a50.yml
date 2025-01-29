@@ -1,0 +1,32 @@
+rules:
+- id: vuln-go-fb979a50
+  pattern: "func ($DEC *Decoder) decIgnoreOpFor($WIREID typeId, $INPROGRESS map[typeId]*decOp)\
+    \ *decOp {\n    ...\n    $ELEMOP := $DEC.decIgnoreOpFor($ELEMID, $INPROGRESS)\n\
+    \    ...\n}\n"
+  pattern-not: "func ($DEC *Decoder) decIgnoreOpFor($WIREID typeId, $INPROGRESS map[typeId]*decOp,\
+    \ $DEPTH int) *decOp {\n    ...\n    if $DEPTH > maxIgnoreNestingDepth {\n   \
+    \     error_(errors.New(\"invalid nesting depth\"))\n    }\n    $ELEMOP := $DEC.decIgnoreOpFor($ELEMID,\
+    \ $INPROGRESS, $DEPTH+1)\n    ...\n}\n"
+  languages:
+  - go
+  message: 'Detected recursive decoding operation without depth limit check.
+
+    This can lead to unbounded recursion and stack exhaustion when decoding maliciously
+    crafted data.
+
+    Add a depth parameter and check against maxIgnoreNestingDepth to prevent stack
+    overflow attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/fb979a50823e5a0575cf6166b3f17a13364cbf81
+    category: security
+    cwe:
+    - CWE-674
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/674.html
+    technology:
+    - go

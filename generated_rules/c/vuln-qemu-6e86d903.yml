@@ -1,0 +1,28 @@
+rules:
+- id: vuln-qemu-6e86d903
+  pattern: "if (($VAR->trnmod & $MASK) &&\n    (!($VAR->trnmod & $BLK_CNT_EN) || $VAR->blkcnt\
+    \ == 0)) {\n    ...\n}\n"
+  pattern-not: "if (!($VAR->trnmod & $BLK_CNT_EN) || !$VAR->blkcnt) {\n    qemu_log_mask(LOG_UNIMP,\
+    \ \"infinite transfer is not supported\\n\");\n    return;\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly handle infinite transfer conditions in SDHCI
+    controller,
+
+    which could lead to potential security vulnerabilities. The patch adds a check
+
+    to explicitly prevent infinite transfers by verifying block count enablement
+
+    and non-zero block count. To fix this, ensure proper validation of transfer
+
+    parameters before processing data transfers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/6e86d90352adf6cb08295255220295cf23c4286e
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    technology:
+    - c

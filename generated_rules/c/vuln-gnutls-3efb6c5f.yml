@@ -1,0 +1,23 @@
+rules:
+- id: vuln-gnutls-3efb6c5f
+  pattern: "if ($DATA_SIZE <= (ssize_t) ($RESPONDER_IDS * 2)) {\n  ...\n}\n"
+  pattern-not: "if ($DATA_SIZE < (ssize_t)$RID_BYTES) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "The vulnerability involves an incorrect bounds check that could lead to\
+    \ memory corruption. \nThe original code checks if the data size is less than\
+    \ or equal to the product of responder IDs and 2, \nwhich may not correctly account\
+    \ for the actual data size. This could result in buffer overflows or \nother memory-related\
+    \ issues. The fix involves a more accurate bounds check using the actual byte\
+    \ count.\nEnsure that bounds checks accurately reflect the data size being processed.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/gnutls/gnutls/commit/3efb6c5fd0e3822ec11879d5bcbea0e8d322cd03
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

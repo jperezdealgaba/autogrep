@@ -1,0 +1,27 @@
+rules:
+- id: vuln-chakracore-1e5d3f5e
+  pattern: '$VAR = $GLOBOPT->GenerateInductionVariableChangeForMemOp($LOOP, $UNROLL);
+
+    '
+  pattern-not: '$VAR = $GLOBOPT->GenerateInductionVariableChangeForMemOp($LOOP, $UNROLL,
+    $LOOP->memOpInfo->instr);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `GenerateInductionVariableChangeForMemOp` is being called
+    without the required `instr` parameter, which can lead to incorrect memory operations
+    and potential security vulnerabilities. This missing parameter was fixed in the
+    patch to ensure proper validation of loop unrolling factors. Always include the
+    `instr` parameter when calling this function to prevent invalid memory operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/1e5d3f5e4f4feb37a6844f654d351ddcc53e2046
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

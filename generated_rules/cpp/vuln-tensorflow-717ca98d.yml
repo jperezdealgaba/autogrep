@@ -1,0 +1,29 @@
+rules:
+- id: vuln-tensorflow-717ca98d
+  pattern: 'const int64_t $OUT_SIZE = $IN.dim_size($DIM) - ($BEFORE + $AFTER);
+
+    '
+  pattern-not: "const int64_t $IN_SIZE = $IN.dim_size($DIM);\nconst int64_t $TOTAL_PADDING\
+    \ = $BEFORE + $AFTER;\nOP_REQUIRES(\n    $CONTEXT, $TOTAL_PADDING < $IN_SIZE &&\
+    \ $TOTAL_PADDING >= 0,\n    $ERROR_MESSAGE);\nconst int64_t $OUT_SIZE = $IN_SIZE\
+    \ - $TOTAL_PADDING;\n"
+  languages:
+  - cpp
+  message: 'Detected unsafe calculation of output size without validating padding
+    values.
+
+    This can lead to integer overflow or negative size calculations if the padding
+
+    values are too large. Always validate that the total padding is less than the
+
+    input dimension size and is non-negative before performing the subtraction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/717ca98d8c3bba348ff62281fdf38dcb5ea1ec92
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    technology:
+    - cpp

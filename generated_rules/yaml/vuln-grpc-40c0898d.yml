@@ -1,0 +1,27 @@
+rules:
+- id: vuln-grpc-40c0898d
+  pattern: "- name: large_metadata_bad_client_test\n  gtest: true\n  build: test\n\
+    \  language: c++\n  headers:\n  - test/core/bad_client/bad_client.h\n  - test/core/end2end/cq_verifier.h\n\
+    \  src:\n  - test/core/bad_client/bad_client.cc\n  - test/core/bad_client/tests/large_metadata.cc\n\
+    \  - test/core/end2end/cq_verifier.cc\n  deps:\n  - grpc_test_util\n"
+  pattern-not: "- name: large_metadata_bad_client_test\n  ...\n"
+  languages:
+  - yaml
+  message: 'The YAML configuration for the large_metadata_bad_client_test is vulnerable
+    due to incorrect or missing dependencies. This could lead to runtime errors or
+    security issues when the test is executed. Ensure that all necessary dependencies
+    are correctly specified and that the configuration is up to date.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/grpc/grpc/commit/40c0898d97b67b4ff4f1b0704c9ed35f3535dde5
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - yaml

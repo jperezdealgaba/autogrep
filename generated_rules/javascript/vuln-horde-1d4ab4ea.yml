@@ -1,0 +1,24 @@
+rules:
+- id: vuln-horde-1d4ab4ea
+  pattern: 'DIMP.baseWindow.$VAR
+
+    '
+  pattern-not: 'DimpCore.base
+
+    '
+  languages:
+  - javascript
+  message: "Direct access to baseWindow object detected. This can lead to security\
+    \ vulnerabilities \nas it exposes global window object properties. Use the encapsulated\
+    \ DimpCore.base \ninterface instead to maintain proper access control and prevent\
+    \ potential security issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/1d4ab4eae68e0b38ed57f251079ab5341547e2b4
+    category: security
+    cwe: CWE-668
+    owasp: A4:2017-Insecure Direct Object References
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A4_2017-Insecure_Direct_Object_References
+    technology:
+    - javascript

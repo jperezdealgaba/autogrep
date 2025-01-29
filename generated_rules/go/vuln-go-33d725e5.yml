@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-33d725e5
+  pattern: "if $N + $DIRLEN + $I <= len($B) {\n  return $I\n}\n"
+  pattern-not: "if $N + $DIRLEN + $I > len($B) {\n  return -1\n}\nreturn $I\n"
+  languages:
+  - go
+  message: 'Detected unsafe ZIP comment boundary check that could lead to truncated
+    comment processing.
+
+    This vulnerability could allow malicious ZIP files to bypass validation checks
+    by hiding
+
+    additional data in truncated comments. The fix is to return -1 when the comment
+    is truncated
+
+    rather than proceeding with potentially invalid data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/33d725e5758bf1fea62e6c77fc70b57a828a49f5
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - go

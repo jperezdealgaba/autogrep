@@ -1,0 +1,26 @@
+rules:
+- id: vuln-horde-ab07a1b4
+  pattern: "<package>\n  ...\n  <notes>\n    * \n  </notes>\n  ...\n</package>\n"
+  pattern-not: "<package>\n  ...\n  <notes>\n    * [jan] SECURITY: Fix XSS vulnerability\
+    \ in menu bar exposed by only a few applications (Bug #14213).\n  </notes>\n \
+    \ ...\n</package>\n"
+  languages:
+  - xml
+  message: 'Detected potential XSS vulnerability in XML notes section. The patch adds
+    security notes to address an XSS vulnerability in the menu bar. Unsecured XML
+    notes can lead to injection attacks. Ensure security notes are properly documented
+    and vulnerabilities are addressed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/ab07a1b447de34e13983b4d7ceb18b58c3a358d8
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - xml

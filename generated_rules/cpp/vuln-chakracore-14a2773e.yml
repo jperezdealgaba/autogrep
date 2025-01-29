@@ -1,0 +1,28 @@
+rules:
+- id: vuln-chakracore-14a2773e
+  pattern: 'scriptContext->GetThreadContext()->SetPendingFinallyException($EXCEPTION);
+
+    ...
+
+    $CONTINUATION = $CALL($ADDR, $FRAME, $SPILLSIZE, $ARGSIZE, $EXCEPTION);
+
+    '
+  pattern-not: "{\n    Js::JavascriptExceptionOperators::PendingFinallyExceptionStack\
+    \ $STACK(scriptContext, $EXCEPTION);\n    $CONTINUATION = $CALL($ADDR, $FRAME,\
+    \ $SPILLSIZE, $ARGSIZE, $EXCEPTION);\n}\n"
+  languages:
+  - cpp
+  message: 'Directly setting and not properly managing pending finally exceptions
+    can lead to resource leaks and incorrect exception handling. Use the PendingFinallyExceptionStack
+    RAII wrapper to ensure proper cleanup of exception state.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/14a2773eeefb39a6c89c0f6a80072f3cc4b06a78
+    category: security
+    cwe:
+    - CWE-401
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

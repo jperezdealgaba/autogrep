@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpipam-ee5ef63f
+  pattern: "if(isset($_COOKIE['phpipamredirect'])) {\n  ...\n  print \"<input type='hidden'\
+    \ name='phpipamredirect' id='phpipamredirect' value='\".@$_COOKIE['phpipamredirect'].\"\
+    '>\";\n  ...\n}\n"
+  pattern-not: "if(!empty($_COOKIE['phpipamredirect'])) {\n  ...\n  print \"<input\
+    \ type='hidden' name='phpipamredirect' id='phpipamredirect' value='\".escape_input($_COOKIE['phpipamredirect']).\"\
+    '>\";\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where cookie values are used
+    without proper validation or escaping. This can lead to Cross-Site Scripting (XSS)
+    attacks if the cookie value is controlled by an attacker. Use `!empty()` instead
+    of `isset()` to ensure the cookie is not empty, and always escape user inputs
+    with `escape_input()` before using them in output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/ee5ef63fb5774f12ed580a8b3e6e05d3e61dfcdc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

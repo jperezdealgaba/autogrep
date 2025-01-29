@@ -1,0 +1,25 @@
+rules:
+- id: vuln-go-8fcee8ab
+  pattern: "if $HEADER.Get(\"Content-Type\") == \"\" {\n  $HEADER.Set(\"Content-Type\"\
+    , \"text/html; charset=utf-8\")\n}\n"
+  pattern-not: "if _, hasType := $HEADER[\"Content-Type\"]; $CODE != http.StatusNotModified\
+    \ && !hasType {\n  $HEADER.Set(\"Content-Type\", http.DetectContentType($P))\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected hardcoded Content-Type header without content sniffing. This
+    can lead to incorrect content type detection, potentially causing security issues
+    or rendering problems. Use http.DetectContentType to automatically detect the
+    appropriate content type based on the content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/8fcee8abbea1bb959c63a6944f9ddf490a97f802
+    category: security
+    cwe:
+    - CWE-436
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - go

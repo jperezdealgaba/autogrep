@@ -1,0 +1,29 @@
+rules:
+- id: vuln-showdoc-2b34e267
+  pattern: '$uid = I("post.uid");
+
+    '
+  pattern-not: '$uid = I("post.uid/d");
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe input handling in PHP code. The code directly uses user
+    input from POST without proper type casting, which can lead to type confusion
+    vulnerabilities and potential security issues. Always sanitize user input by using
+    type casting (e.g., /d for integers) to prevent unexpected behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/2b34e267e4186125f99bfa420140634ad45801fb
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://www.php.net/manual/en/function.intval.php
+    - https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html
+    technology:
+    - php

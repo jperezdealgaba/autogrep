@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gpac-c1b9c794
+  pattern: "XMT_ODLink *$VAR = gf_list_last($PARSER->od_links);\nif ((GF_Descriptor\
+    \ *) $VAR->od == $DESC) {\n  gf_list_pop_back($PARSER->od_links);\n  if ($VAR->desc_name)\
+    \ gf_free($VAR->desc_name);\n  gf_list_del($VAR->mf_urls);\n  gf_free($VAR);\n\
+    }\n"
+  pattern-not: 'xmt_remove_link_for_descriptor($PARSER, $DESC);
+
+    '
+  languages:
+  - c
+  message: 'The code directly manipulates the linked list without proper checks, which
+    can lead to memory corruption or use-after-free vulnerabilities. The fix introduces
+    a dedicated function `xmt_remove_link_for_descriptor` to handle the removal of
+    links safely. Always use dedicated functions for complex memory operations to
+    ensure proper resource management and avoid vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/c1b9c794bad8f262c56f3cf690567980d96662f5
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

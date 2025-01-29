@@ -1,0 +1,23 @@
+rules:
+- id: vuln-bc-java-9c165791
+  pattern: 'ScalarUtil.$METHOD($LAST, $S, $NU, $NV, $P)
+
+    '
+  pattern-not: 'ScalarUtil.$METHOD($LAST, $S, $NU, $NV, $P, $T)
+
+    '
+  languages:
+  - java
+  message: 'Missing temp array parameter in ScalarUtil.addShifted_NP or ScalarUtil.subShifted_NP
+    call. This can lead to incorrect calculations in cryptographic operations, potentially
+    compromising security. Always pass the temp array parameter to ensure proper handling
+    of intermediate values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bcgit/bc-java/commit/9c165791b68a204678b48ec11e4e579754c2ea49
+    category: security
+    cwe: CWE-682
+    owasp: A03:2021-Injection
+    technology: java

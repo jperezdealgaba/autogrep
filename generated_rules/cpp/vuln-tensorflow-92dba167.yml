@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tensorflow-92dba167
+  pattern: 'CHECK($VAR != nullptr) << $MESSAGE;
+
+    '
+  pattern-not: "if ($VAR == nullptr) {\n  VLOG($LEVEL) << $MESSAGE;\n  return $RETVAL;\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'Using CHECK for null pointer validation can lead to program termination
+    without proper error handling. Instead, use conditional checks to handle null
+    pointers gracefully and return appropriate error states. This prevents crashes
+    and allows for better error recovery.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/92dba16749fae36c246bec3f9ba474d9ddeb7662
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A10:2021 - Server-Side Request Forgery
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/EXP34-C.+Do+not+dereference+null+pointers
+    technology:
+    - cpp

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-chakracore-ef75eace
+  pattern: 'IR::RegOpnd::New(StackSym::FindOrCreate($SYM, $REGSLOT, $FUNC), $TYPE,
+    $FUNC)
+
+    '
+  pattern-not: 'IR::RegOpnd::New($SYM, $TYPE, $FUNC)
+
+    '
+  languages:
+  - cpp
+  message: 'Directly using StackSym::FindOrCreate without checking if the environment
+    register needs special handling can lead to incorrect optimization. When dealing
+    with nested functions, the environment register might become boxed during execution
+    and needs to be loaded fresh each time. This vulnerability could cause incorrect
+    behavior in optimized code. Fix by checking if the function does stack nested
+    functions and if the symID matches the environment register, and handle it appropriately
+    by loading the environment fresh each time.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/ef75eace57c0754428699485f10970ca0fb7a54d
+    category: security
+    cwe:
+    - CWE-665
+    owasp: A1:2017-Injection
+    technology:
+    - cpp

@@ -1,0 +1,20 @@
+rules:
+- id: vuln-piwigo-6530720d
+  pattern: "array_diff(\n  $ADMIN_THEMES,\n  array($CONF['admin_theme'])\n)\n"
+  pattern-not: "$RESULT = array_diff(\n  $ADMIN_THEMES,\n  array($CONF['admin_theme'])\n\
+    );\n$RESULT\n"
+  languages:
+  - php
+  message: "Direct use of `array_diff` without storing the result can lead to unintended\
+    \ behavior or security issues. \nAlways store the result of `array_diff` in a\
+    \ variable to ensure proper handling and avoid potential vulnerabilities.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/6530720d5112fb9a99fe3f3b7c3b8bd720774fd2
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - php

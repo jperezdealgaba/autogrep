@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libav-76f7e70a
+  pattern: 'init_get_bits(&$GB, $DATA + $OFFSET, ($SIZE - $OFFSET) * 8);
+
+    '
+  pattern-not: "$RET = init_get_bits8(&$GB, $DATA + $OFFSET, $SIZE - $OFFSET);\nif\
+    \ ($RET < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly calls `init_get_bits` without checking the return value,
+    which can lead to processing invalid or zero-sized data. This can cause undefined
+    behavior or crashes. Always check the return value of `init_get_bits8` and handle
+    errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/76f7e70aa04fc5dbef5242b11cbf8fe4499f61d4
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

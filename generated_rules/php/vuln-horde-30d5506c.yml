@@ -1,0 +1,28 @@
+rules:
+- id: vuln-horde-30d5506c
+  pattern: "if ($node->hasAttribute('href') &&\n    preg_match(\"/\\s*data:/i\", $node->getAttribute('href')))\
+    \ {\n    $remove[] = 'href';\n}\n"
+  pattern-not: "foreach ($attributes as $attribute) {\n    if ($node->hasAttribute($attribute)\
+    \ &&\n        preg_match(\"/\\s*data:/i\", $node->getAttribute($attribute))) {\n\
+    \        $remove[] = $attribute;\n    }\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential XSS vulnerability due to insufficient validation
+    of data URLs in link-like elements. This can allow attackers to inject malicious
+    scripts via data URLs. To fix this, ensure that all relevant attributes (e.g.,
+    ''href'', ''xlink:href'', ''action'') are checked for data URLs and removed if
+    found.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/30d5506c20d26efbb9942fbdc6f981a0bd333b97
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/XSS/
+    technology:
+    - php

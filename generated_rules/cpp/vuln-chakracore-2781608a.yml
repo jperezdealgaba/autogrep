@@ -1,0 +1,28 @@
+rules:
+- id: vuln-chakracore-2781608a
+  pattern: '$BASEVALUETYPE.IsAnyArray() && $BASEVALUETYPE.GetObjectType() != ObjectType::ObjectWithArray
+
+    '
+  pattern-not: '$BASEVALUETYPE.IsArray()
+
+    '
+  languages:
+  - cpp
+  message: 'The use of `IsAnyArray()` combined with a check against `ObjectType::ObjectWithArray`
+    can lead to incorrect type handling, potentially causing security vulnerabilities.
+    This pattern should be replaced with a direct check using `IsArray()` to ensure
+    proper type validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/2781608a34eacc32f9262e2304a534648235be6b
+    category: security
+    cwe:
+    - CWE-483
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/483.html
+    technology:
+    - cpp

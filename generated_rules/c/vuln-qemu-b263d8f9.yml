@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-b263d8f9
+  pattern: "if ($S->blksize && ($S->cmdreg & $SDHC_CMD_DATA_PRESENT)) {\n  ...\n}\n"
+  pattern-not: "if (!$TIMEOUT && $S->blksize && ($S->cmdreg & $SDHC_CMD_DATA_PRESENT))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing timeout check in SDHCI command handling. This vulnerability could
+
+    lead to improper handling of commands when a timeout occurs, potentially
+
+    causing security issues or system instability. The fix adds a timeout check
+
+    to prevent execution of the command when a timeout has occurred.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/b263d8f928001b5cfa2a993ea43b7a5b3a1811e8
+    category: security
+    cwe:
+    - 'CWE-834: Excessive Iteration'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

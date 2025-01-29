@@ -1,0 +1,27 @@
+rules:
+- id: vuln-chakracore-6d0f5de1
+  pattern: '$WALKER.GetJavascriptArgs()
+
+    '
+  pattern-not: '$WALKER.GetJavascriptArgs(true)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe use of GetJavascriptArgs() without boxing arguments. When
+    bailing out or returning arguments to script, the arguments must be boxed to ensure
+    proper pointer identity and correctness during the transition to the interpreter.
+    This can lead to incorrect behavior or security issues when multiple vars point
+    to the same object. Use GetJavascriptArgs(true) to ensure proper boxing of arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/6d0f5de1e0331fd6dd4f1ee0c0032430bcb131c3
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-786
+    owasp: A8:2017-Insecure Deserialization
+    technology:
+    - cpp

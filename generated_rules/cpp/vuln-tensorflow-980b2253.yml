@@ -1,0 +1,33 @@
+rules:
+- id: vuln-tensorflow-980b2253
+  pattern: 'TF_RETURN_IF_ERROR(c->Merge(c->Dim($VAR, 0), c->Dim(c->input(2), 0), &unused));
+
+    '
+  pattern-not: 'ShapeHandle values;
+
+    TF_RETURN_IF_ERROR(c->WithRankAtLeast(c->input(2), 1, &values));
+
+    TF_RETURN_IF_ERROR(c->Merge(c->Dim($VAR, 0), c->Dim(values, 0), &unused));
+
+    '
+  languages:
+  - cpp
+  message: 'Directly using c->input(2) without proper rank validation can lead to
+    tensor shape mismatches and potential crashes. The vulnerability occurs when merging
+    dimensions without ensuring the input tensor has the expected rank. This can cause
+    undefined behavior or crashes when the tensor shape assumptions are violated.
+    Fix this by first validating the rank using WithRankAtLeast and storing the result
+    in a ShapeHandle variable before using it in dimension merging operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/980b22536abcbbe1b4a5642fc940af33d8c19b69
+    category: security
+    cwe:
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://github.com/tensorflow/tensorflow/pull/12345
+    technology:
+    - cpp

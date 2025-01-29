@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-cd31fd0c
+  pattern: 'const TfLiteTensor* $INPUT = GetInput($CONTEXT, $NODE, $INDEX);
+
+    '
+  pattern-not: 'const TfLiteTensor* $INPUT;
+
+    TF_LITE_ENSURE_OK($CONTEXT, GetInputSafe($CONTEXT, $NODE, $INDEX, &$INPUT));
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly uses `GetInput` to retrieve a tensor without checking
+    for errors, which can lead to null pointer dereferences or undefined behavior
+    if the tensor retrieval fails. This vulnerability can cause crashes or security
+    issues in the application. Always use `GetInputSafe` with error handling (`TF_LITE_ENSURE_OK`)
+    to ensure the tensor is retrieved safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/cd31fd0ce0449a9e0f83dcad08d6ed7f1d6bef3f
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/cd31fd0ce0449a9e0f83dcad08d6ed7f1d6bef3f
+    technology:
+    - cpp

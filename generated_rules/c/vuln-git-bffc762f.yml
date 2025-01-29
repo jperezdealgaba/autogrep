@@ -1,0 +1,23 @@
+rules:
+- id: vuln-git-bffc762f
+  pattern: "if (stat($PATH, $STAT) < 0) {\n  ...\n}\n"
+  pattern-not: "if ($FLAGS & DIR_ITERATOR_FOLLOW_SYMLINKS)\n  $ERR = stat($PATH, $STAT);\n\
+    else\n  $ERR = lstat($PATH, $STAT);\n\nif ($ERR < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Direct use of `stat()` without considering symlink handling can lead to\
+    \ security vulnerabilities. \nUse `stat()` or `lstat()` based on the `DIR_ITERATOR_FOLLOW_SYMLINKS`\
+    \ flag to properly handle symlinks.\nThis prevents potential security issues where\
+    \ symlinks could be exploited to access unintended files.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/git-for-windows/git/commit/bffc762f87ae8d18c6001bf0044a76004245754c
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/59.html
+    technology:
+    - c

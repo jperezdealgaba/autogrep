@@ -1,0 +1,32 @@
+rules:
+- id: vuln-frr-30b5c2a4
+  pattern: "if ($CONDITION || $ATTR_PARSE_RET == BGP_ATTR_PARSE_EOR) {\n  ...\n}\n"
+  pattern-not: "if ($CONDITION) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected improper handling of BGP_ATTR_PARSE_EOR return value. This can
+    lead to malformed attribute processing in BGP updates. The vulnerability occurs
+    when BGP_ATTR_PARSE_EOR is used as a condition in control flow without proper
+    error handling. Instead, bgp_attr_malformed should be called to handle the error
+    case properly.
+
+    This is dangerous as it could allow malformed BGP attributes to be processed incorrectly,
+    potentially leading to network instability or security issues.
+
+    To fix this, replace the BGP_ATTR_PARSE_EOR check with proper error handling using
+    bgp_attr_malformed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/30b5c2a434d25981e16792f6f50162beb517ae4d
+    category: security
+    cwe:
+    - 'CWE-754: Improper Check for Unusual or Exceptional Conditions'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc4271
+    technology:
+    - bgp
+    - networking

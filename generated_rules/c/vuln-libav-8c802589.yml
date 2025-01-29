@@ -1,0 +1,31 @@
+rules:
+- id: vuln-libav-8c802589
+  pattern: '$DEST = $BASE + ($EXPR << $SHIFT)
+
+    '
+  pattern-not: '$DEST = $BASE + $EXPR * (1 << $SHIFT)
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects a potentially unsafe use of bitwise shift operations
+    in pointer arithmetic, which can lead to incorrect memory access. The original
+    code used a bitwise shift (`<<`) directly in the pointer arithmetic, which can
+    be error-prone and less readable. The fix replaces the shift with a multiplication
+    by `(1 << SHIFT)`, which is safer and more explicit. Always prefer arithmetic
+    operations that clearly express the intent to avoid potential memory corruption
+    or undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/8c80258913b7b412185a2038b4e852bee572767a
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/682.html
+    technology:
+    - c

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-gpac-7d4538e1
+  pattern: "if (!stricmp($ATT_NAME, $STR)) {\n  strcpy($DEST, $SRC);\n}\n"
+  pattern-not: "if (!stricmp($ATT_NAME, $STR)) {\n  strncpy($DEST, $SRC, $SIZE);\n\
+    \  $DEST[$SIZE]=0;\n}\n"
+  languages:
+  - c
+  message: "Detected unsafe use of strcpy() which can lead to buffer overflows. \n\
+    Replace with strncpy() and ensure proper null-termination to prevent \npotential\
+    \ security vulnerabilities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/7d4538e104f2b3ff6a65a41394795654e6972339
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Buffer Overflow'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

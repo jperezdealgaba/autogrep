@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-595a65a3
+  pattern: "void GatherNd(const RuntimeShape& $PARAMS_SHAPE,\n              const\
+    \ $PARAMS_T* $PARAMS_DATA,\n              const RuntimeShape& $INDICES_SHAPE,\n\
+    \              const $INDICES_T* $INDICES_DATA,\n              const RuntimeShape&\
+    \ $OUTPUT_SHAPE,\n              $PARAMS_T* $OUTPUT_DATA) {\n  ...\n}\n"
+  pattern-not: "TfLiteStatus GatherNd(const RuntimeShape& $PARAMS_SHAPE,\n       \
+    \               const $PARAMS_T* $PARAMS_DATA,\n                      const RuntimeShape&\
+    \ $INDICES_SHAPE,\n                      const $INDICES_T* $INDICES_DATA,\n  \
+    \                    const RuntimeShape& $OUTPUT_SHAPE,\n                    \
+    \  $PARAMS_T* $OUTPUT_DATA) {\n  ...\n  if ($FROM_POS < 0 || $FROM_POS + $RES_SLICE_SIZE\
+    \ > $PARAMS_SHAPE.FlatSize()) {\n    return kTfLiteError;\n  }\n  ...\n  return\
+    \ kTfLiteOk;\n}\n"
+  languages:
+  - cpp
+  message: "Detected a potential out-of-bounds memory access vulnerability in the\
+    \ GatherNd function. \nThe function does not validate indices, which could lead\
+    \ to reading beyond the bounds of the input array. \nTo fix this, add bounds checking\
+    \ and return an error status when indices are out of bounds.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/595a65a3e224a0362d7e68c2213acfc2b499a196
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - cpp

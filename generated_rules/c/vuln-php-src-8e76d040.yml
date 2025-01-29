@@ -1,0 +1,30 @@
+rules:
+- id: vuln-php-src-8e76d040
+  pattern: '$CTXT->options &= ~XML_PARSE_DTDLOAD;
+
+    '
+  pattern-not: '$OLD = php_libxml_disable_entity_loader(1);
+
+    php_libxml_disable_entity_loader($OLD);
+
+    '
+  languages:
+  - c
+  message: 'Disabling DTD loading using `XML_PARSE_DTDLOAD` is not sufficient to prevent
+    XXE attacks. Instead, use `php_libxml_disable_entity_loader` to properly disable
+    entity loading. This vulnerability can lead to XML External Entity (XXE) attacks,
+    which may allow an attacker to read arbitrary files or conduct server-side request
+    forgery (SSRF) attacks. To fix this, replace the `~XML_PARSE_DTDLOAD` operation
+    with calls to `php_libxml_disable_entity_loader`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/8e76d0404b7f664ee6719fd98f0483f0ac4669d6
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:XXE
+    technology:
+    - c

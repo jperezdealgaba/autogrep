@@ -1,0 +1,20 @@
+rules:
+- id: vuln-strapi-634d9e39
+  pattern: "{\n  ...,\n  \"version\": \"4.10.7\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"4.10.8\",\n  ...\n}\n"
+  languages:
+  - json
+  message: Outdated version detected. Using version 4.10.7 may expose the application
+    to known vulnerabilities. Upgrade to version 4.10.8 to mitigate these risks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/634d9e39ded7cfdd26fbbea54e216c64b1afee1d
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - json

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-showdoc-3caa3233
+  pattern: "public function upload($_files, $file_key, $uid, $item_id = 0, $page_id\
+    \ = 0) {\n    ...\n    if (!$this->isAllowedFilename($_files[$file_key]['name']))\
+    \ {\n    ...\n    }\n}\n"
+  pattern-not: "public function upload($_files, $file_key, $uid, $item_id = 0, $page_id\
+    \ = 0, $check_filename = true) {\n    ...\n    if ($check_filename && !$this->isAllowedFilename($_files[$file_key]['name']))\
+    \ {\n    ...\n    }\n}\n"
+  languages:
+  - php
+  message: 'Missing filename validation check in file upload function. This vulnerability
+    allows attackers to upload files with potentially dangerous extensions if the
+    validation is bypassed. The patch adds a $check_filename parameter to control
+    when filename validation is performed. Always validate file names and extensions
+    before processing uploads.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/3caa32334db0c277b84e993eaca2036f5d1dbef8
+    category: security
+    cwe:
+    - 'CWE-434: Unrestricted Upload of File with Dangerous Type'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    technology:
+    - php

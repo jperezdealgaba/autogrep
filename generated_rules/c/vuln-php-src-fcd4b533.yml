@@ -1,0 +1,36 @@
+rules:
+- id: vuln-php-src-fcd4b533
+  pattern: '$OLD = php_libxml_disable_entity_loader(1);
+
+    ...
+
+    php_libxml_disable_entity_loader($OLD);
+
+    '
+  pattern-not: '$OLD = php_libxml_disable_entity_loader(1 TSRMLS_CC);
+
+    ...
+
+    php_libxml_disable_entity_loader($OLD TSRMLS_CC);
+
+    '
+  languages:
+  - c
+  message: 'Missing TSRMLS_CC parameter in php_libxml_disable_entity_loader calls.
+
+    This can lead to thread safety issues in the XML entity loader, potentially causing
+    crashes or security vulnerabilities.
+
+    Always include the TSRMLS_CC macro when calling php_libxml_disable_entity_loader
+    in threaded environments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/fcd4b5335a6df4e0676ee32e2267ca71d70fe623
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization'
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - c

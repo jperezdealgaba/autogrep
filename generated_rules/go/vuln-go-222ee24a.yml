@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-222ee24a
+  pattern: "if !ascii.EqualFold(textproto.TrimString($VAR), \"chunked\") {\n  ...\n\
+    }\n"
+  pattern-not: "if !ascii.EqualFold($VAR, \"chunked\") {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected use of textproto.TrimString with ascii.EqualFold which can lead
+    to improper chunked transfer encoding validation. This can allow malicious clients
+    to bypass security checks by adding whitespace or other characters. Remove textproto.TrimString
+    and use direct string comparison with ascii.EqualFold.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/222ee24a0046ae61679f4d97967e3b4058a3b90e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A07: Identification and Authentication Failures'
+    references:
+    - https://pkg.go.dev/net/textproto#TrimString
+    - https://pkg.go.dev/strings#EqualFold
+    technology:
+    - go

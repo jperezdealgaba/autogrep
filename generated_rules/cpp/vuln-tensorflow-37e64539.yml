@@ -1,0 +1,36 @@
+rules:
+- id: vuln-tensorflow-37e64539
+  pattern: "auto $SIZE = (std::is_integral<$T>::value\n                 ? ((Eigen::numext::abs($LIMIT\
+    \ - $START) +\n                     Eigen::numext::abs($DELTA) - $T(1)) /\n  \
+    \                  Eigen::numext::abs($DELTA))\n                 : (Eigen::numext::ceil(\n\
+    \                       Eigen::numext::abs(($LIMIT - $START) / $DELTA))));\n"
+  pattern-not: "int64_t $SIZE;\nif (std::is_integral<$T>::value) {\n  $SIZE = Eigen::divup(static_cast<int64_t>(Eigen::numext::abs($LIMIT\
+    \ - $START)),\n                       static_cast<int64_t>(Eigen::numext::abs($DELTA)));\n\
+    } else {\n  auto $SIZE_AUTO =\n      Eigen::numext::ceil(Eigen::numext::abs(($LIMIT\
+    \ - $START) / $DELTA));\n  if ($SIZE_AUTO > std::numeric_limits<int64_t>::max())\
+    \ {\n    return errors::InvalidArgument(\"Requires (($LIMIT - $START) / $DELTA)\
+    \ <= \",\n                                   std::numeric_limits<int64_t>::max());\n\
+    \  }\n  $SIZE = static_cast<int64_t>($SIZE_AUTO);\n}\n"
+  languages:
+  - cpp
+  message: 'Detected potential integer overflow vulnerability in size calculation.
+
+    The original code directly calculates the size without checking if it fits into
+    int64_t, which can lead to undefined behavior.
+
+    The fix introduces proper checks and uses `Eigen::divup` for safer integer division.
+
+    To fix this, ensure that the size calculation is checked against the maximum value
+    of int64_t and use safer division methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/37e64539cd29fcfb814c4451152a60f5d107b0f0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

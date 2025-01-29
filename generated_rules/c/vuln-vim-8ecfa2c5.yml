@@ -1,0 +1,47 @@
+rules:
+- id: vuln-vim-8ecfa2c5
+  pattern: 'if (buflist_findnr($JMP->fmark.fnum) == NULL)
+
+    ...
+
+    if (buflist_getfile($JMP->fmark.fnum, $JMP->fmark.mark.lnum, 0, FALSE) == FAIL)
+
+    ...
+
+    $CURWIN->w_cursor = $JMP->fmark.mark;
+
+    '
+  pattern-not: 'fmark_T $FMARK = $JMP->fmark;
+
+    ...
+
+    if (buflist_findnr($FMARK.fnum) == NULL)
+
+    ...
+
+    if (buflist_getfile($FMARK.fnum, $FMARK.mark.lnum, 0, FALSE) == FAIL)
+
+    ...
+
+    $CURWIN->w_cursor = $FMARK.mark;
+
+    '
+  languages:
+  - c
+  message: 'Direct use of a pointer''s structure field in multiple function calls
+    can lead to use-after-free or invalid memory access if the pointer becomes invalid
+    between calls. This vulnerability occurs when the structure pointed to by `jmp`
+    could be freed or modified by an autocommand or other asynchronous event. To fix
+    this, make a local copy of the structure fields before using them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/8ecfa2c56b4992c7f067b92488aa9acea5a454ad
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

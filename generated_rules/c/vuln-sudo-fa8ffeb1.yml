@@ -1,0 +1,28 @@
+rules:
+- id: vuln-sudo-fa8ffeb1
+  pattern: 'getln($FD, $BUF, $BUFSIZ, ISSET($FLAGS, TGP_MASK), $ERRVAL);
+
+    '
+  pattern-not: 'getln($FD, $BUF, $BUFSIZ, $FEEDBACK, $ERRVAL);
+
+    '
+  languages:
+  - c
+  message: 'Directly passing ISSET(flags, TGP_MASK) to getln() without proper feedback
+    control can lead to security issues. The feedback mode should only be enabled
+    when echo can be disabled. Store the ISSET result in a boolean variable and control
+    its usage based on neednl condition to ensure proper feedback handling.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/fa8ffeb17523494f0e8bb49a25e53635f4509078
+    category: security
+    cwe:
+    - CWE-358
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://github.com/sudo-project/sudo/commit/fa8ffeb17523494f0e8bb49a25e53635f4509078
+    technology:
+    - c

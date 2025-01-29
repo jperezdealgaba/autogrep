@@ -1,0 +1,35 @@
+rules:
+- id: vuln-tensorflow-8dc723fc
+  pattern: 'int $SIZE = $EXPR;
+
+    ...
+
+    $SIZE = $NUM_FRAMES * $HEIGHT * $WIDTH * $CHANNELS;
+
+    '
+  pattern-not: 'ptrdiff_t $SIZE = $EXPR;
+
+    ...
+
+    $SIZE = ptrdiff_t($NUM_FRAMES) * $HEIGHT * $WIDTH * $CHANNELS;
+
+    '
+  languages:
+  - cpp
+  message: 'Potential integer overflow vulnerability detected. Using ''int'' for buffer
+    size calculations can lead to overflow when dealing with large images. This can
+    cause memory corruption or crashes. Use ''ptrdiff_t'' type for buffer size calculations
+    and explicitly cast multiplicands to prevent overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/8dc723fcdd1a6127d6c970bd2ecb18b019a1a58d
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A5: Security Misconfiguration'
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow
+    technology:
+    - cpp

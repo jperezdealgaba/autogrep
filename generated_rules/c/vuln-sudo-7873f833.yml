@@ -1,0 +1,26 @@
+rules:
+- id: vuln-sudo-7873f833
+  pattern: '$RET = !strcmp($STR1, $STR2);
+
+    debug_return_int($RET ? $SUCCESS : $FAILURE);
+
+    '
+  pattern-not: "if (strcmp($STR1, $STR2) == 0)\n  $RET = $SUCCESS;\nelse\n  $RET =\
+    \ $FAILURE;\ndebug_return_int($RET);\n"
+  languages:
+  - c
+  message: 'The code directly assigns the result of strcmp to a return variable without
+    proper error handling. This can lead to incorrect authentication results. Instead,
+    explicitly check the result of strcmp and set the return value accordingly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/7873f8334c8d31031f8cfa83bd97ac6029309e4f
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - c

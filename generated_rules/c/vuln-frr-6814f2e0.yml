@@ -1,0 +1,31 @@
+rules:
+- id: vuln-frr-6814f2e0
+  pattern: "if ($RET != BGP_ATTR_PARSE_ERROR) {\n    ...\n}\n"
+  pattern-not: "if ($RET == BGP_ATTR_PARSE_PROCEED) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe handling of BGP attribute parsing. The code continues
+    processing
+
+    when it should treat certain cases as errors. This could allow processing of
+
+    malformed BGP updates with missing mandatory attributes, potentially leading to
+
+    security issues. The fix is to explicitly check for BGP_ATTR_PARSE_PROCEED and
+
+    treat other cases as errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/6814f2e0138a6ea5e1f83bdd9085d9a77999900b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc4271
+    technology:
+    - bgp
+    - networking

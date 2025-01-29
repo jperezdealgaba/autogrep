@@ -1,0 +1,29 @@
+rules:
+- id: vuln-qemu-fa7505c1
+  pattern: 'esp_fifo_pop_buf(&$S->cmdfifo, NULL, $S->cmdfifo_cdb_offset)
+
+    '
+  pattern-not: 'esp_fifo_pop_buf(&$S->cmdfifo, NULL, MIN($S->cmdfifo_cdb_offset, fifo8_num_used(&$S->cmdfifo)))
+
+    '
+  languages:
+  - c
+  message: 'The code directly uses `cmdfifo_cdb_offset` as the length parameter in
+    `esp_fifo_pop_buf`, which can lead to buffer overflows if the offset exceeds the
+    available data in the FIFO. This vulnerability can be exploited to corrupt memory
+    or cause undefined behavior. The fix is to use `MIN` to ensure the length does
+    not exceed the available data in the FIFO.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/fa7505c154d4d00ad89a747be2eda556643ce00e
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

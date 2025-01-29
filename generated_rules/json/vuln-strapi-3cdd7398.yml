@@ -1,0 +1,26 @@
+rules:
+- id: vuln-strapi-3cdd7398
+  pattern: "{\n  \"policies\": []\n}\n"
+  pattern-not: "{\n  \"policies\": [\n    [\"admin::hasPermissions\", [\"plugins::content-type-builder.read\"\
+    ]]\n  ]\n}\n"
+  languages:
+  - json
+  message: 'Missing access control policies in Strapi routes configuration. This vulnerability
+    allows unauthorized access to sensitive content type builder endpoints. The fix
+    adds ''admin::hasPermissions'' policy to enforce proper authorization checks.
+    Ensure all routes have appropriate access control policies to prevent unauthorized
+    access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/3cdd73987950d5c7976701047b38203e902007bb
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - json

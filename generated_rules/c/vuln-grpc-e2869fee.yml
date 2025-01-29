@@ -1,0 +1,36 @@
+rules:
+- id: vuln-grpc-e2869fee
+  pattern: 'strncpy($UN->sun_path, $URI->path, sizeof($UN->sun_path) - 1);
+
+    $UN->sun_path[sizeof($UN->sun_path) - 1] = ''\0'';
+
+    '
+  pattern-not: 'const size_t $MAXLEN = sizeof($UN->sun_path);
+
+    const size_t $PATH_LEN = strnlen($URI->path, $MAXLEN);
+
+    if ($PATH_LEN == $MAXLEN) return $VAL;
+
+    strcpy($UN->sun_path, $URI->path);
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe strncpy usage that can lead to string truncation without\
+    \ proper length checking. \nThis pattern is dangerous because it assumes the source\
+    \ string will fit in the destination buffer, \npotentially leading to truncated\
+    \ strings and incorrect length calculations. \nThe fix is to use strnlen to check\
+    \ the source string length before copying and handle cases \nwhere the string\
+    \ is too long.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/grpc/grpc/commit/e2869fee8db5f7a94858b551089c45bbb1bd943b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/STR31-C.+Guarantee+that+storage+for+strings+has+sufficient+space+for+character+data+and+the+null+terminator
+    technology:
+    - c

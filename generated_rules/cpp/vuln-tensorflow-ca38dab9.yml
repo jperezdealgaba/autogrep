@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tensorflow-ca38dab9
+  pattern: 'return errors::Internal($MESSAGE, $DEBUG_STRING);
+
+    '
+  pattern-not: 'return errors::InvalidArgument($MESSAGE, $DEBUG_STRING);
+
+    '
+  languages:
+  - cpp
+  message: "Using `errors::Internal` for invalid input validation can mask logical\
+    \ errors and lead to incorrect error handling. \nUse `errors::InvalidArgument`\
+    \ instead to clearly indicate that the error is due to invalid input rather than\
+    \ an internal system error.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/ca38dab9d3ee66c5de06f11af9a4b1200da5ef75
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/errors
+    technology:
+    - cpp

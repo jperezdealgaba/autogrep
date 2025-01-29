@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-66ae37d8
+  pattern: '$VAR = g_malloc($SIZE * sizeof(void *))
+
+    '
+  pattern-not: '$VAR = g_malloc0($SIZE * sizeof(void *))
+
+    '
+  languages:
+  - c
+  message: "The use of 'g_malloc' without zeroing the allocated memory can lead to\
+    \ information disclosure vulnerabilities. \nThe patch replaces 'g_malloc' with\
+    \ 'g_malloc0' to ensure the memory is zero-initialized, preventing potential leaks\
+    \ of sensitive data. \nAlways use 'g_malloc0' when allocating memory that may\
+    \ contain sensitive information.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/66ae37d8cc313f89272e711174a846a229bcdbd3
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c

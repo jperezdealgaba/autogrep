@@ -1,0 +1,28 @@
+rules:
+- id: vuln-e2fsprogs-8dbe7b47
+  pattern: "if ($B >= $H->qh_info.u.v2_mdqi.dqi_qtree.dqi_blocks) {\n  log_err($MSG,\
+    \ $B, $H->qh_info.u.v2_mdqi.dqi_qtree.dqi_blocks, $NAME);\n}\n"
+  pattern-not: "if ($B >= $H->qh_info.u.v2_mdqi.dqi_qtree.dqi_blocks) {\n  log_err($MSG,\
+    \ $B, $H->qh_info.u.v2_mdqi.dqi_qtree.dqi_blocks, $NAME);\n  return -1;\n}\n"
+  languages:
+  - c
+  message: 'The code fails to return an error after detecting an illegal reference
+    in the quota file.
+
+    This can lead to continued processing of corrupted data, potentially causing undefined
+    behavior.
+
+    Ensure to return an error code after logging the issue to prevent further processing
+    of invalid data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tytso/e2fsprogs/commit/8dbe7b475ec5e91ed767239f0e85880f416fc384
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

@@ -1,0 +1,35 @@
+rules:
+- id: vuln-frr-c37119df
+  pattern: "if (!CHECK_FLAG($ATTR->flag, ATTR_FLAG_BIT(BGP_ATTR_MP_REACH_NLRI)) &&\n\
+    \    CHECK_FLAG($ATTR->flag, ATTR_FLAG_BIT(BGP_ATTR_MP_UNREACH_NLRI)))\n    return\
+    \ BGP_ATTR_PARSE_PROCEED;\n"
+  pattern-not: "if (!CHECK_FLAG($ATTR->flag, ATTR_FLAG_BIT(BGP_ATTR_MP_REACH_NLRI))\
+    \ &&\n    CHECK_FLAG($ATTR->flag, ATTR_FLAG_BIT(BGP_ATTR_MP_UNREACH_NLRI)))\n\
+    \    return $TYPE ? BGP_ATTR_PARSE_MISSING_MANDATORY\n                : BGP_ATTR_PARSE_PROCEED;\n"
+  languages:
+  - c
+  message: 'A BGP UPDATE message containing MP_UNREACH_NLRI without proper attribute
+    validation
+
+    can lead to improper handling of network routes. The vulnerability occurs when
+
+    MP_UNREACH_NLRI is present without MP_REACH_NLRI, but mandatory attributes are
+    not
+
+    properly checked. This could allow invalid or malicious routes to be processed.
+
+    The fix adds proper validation by returning BGP_ATTR_PARSE_MISSING_MANDATORY when
+
+    mandatory attributes are missing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/c37119df45bbf4ef713bc10475af2ee06e12f3bf
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A5: Security Misconfiguration'
+    technology:
+    - c

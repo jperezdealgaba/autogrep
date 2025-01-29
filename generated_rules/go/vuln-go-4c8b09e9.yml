@@ -1,0 +1,31 @@
+rules:
+- id: vuln-go-4c8b09e9
+  pattern: 'hasSignatureAndHash: $CONDITION
+
+    '
+  pattern-not: 'hasSignatureAlgorithm: $CONDITION
+
+    '
+  languages:
+  - go
+  message: 'The use of hasSignatureAndHash indicates outdated TLS 1.2 support. This
+    field was renamed to hasSignatureAlgorithm
+
+    to better reflect its purpose and align with modern cryptographic standards. Using
+    the old field name may lead
+
+    to compatibility issues and reduced security. Replace hasSignatureAndHash with
+    hasSignatureAlgorithm.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/4c8b09e9183390d6ab80d3f53a9fe5f6ace92f06
+    category: security
+    cwe: 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp: 'A6: Security Misconfiguration'
+    references:
+    - https://tools.ietf.org/html/rfc5246#section-7.4.1.4.1
+    - https://golang.org/pkg/crypto/tls/
+    technology:
+    - go

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-8faa6ea6
+  pattern: 'ctx->allocate_output(0, TensorShape({$DIM1, $DIM2, $DIM3, $DIM4}), &$OUTPUT);
+
+    '
+  pattern-not: 'ctx->allocate_output(0, $TENSORSHAPE, &$OUTPUT);
+
+    '
+  languages:
+  - cpp
+  message: 'Directly constructing TensorShape within allocate_output can lead to potential
+    memory corruption or undefined behavior. Use TensorShape::BuildTensorShape to
+    properly construct the shape before passing it to allocate_output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/8faa6ea692985dbe6ce10e1a3168e0bd60a723ba
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/tensor-shape
+    technology:
+    - cpp

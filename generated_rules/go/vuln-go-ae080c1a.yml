@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-ae080c1a
+  pattern: "if !strings.Contains(strings.ToLower($HEADER.get(\"Connection\")), \"\
+    keep-alive\") {\n  ...\n}\n"
+  pattern-not: "if headerValuesContainsToken($HEADER[\"Connection\"], \"close\") ||\
+    \ !headerValuesContainsToken($HEADER[\"Connection\"], \"keep-alive\") {\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected insecure handling of HTTP Connection headers. The original code
+    uses a simple string comparison which can be bypassed due to improper handling
+    of multiple values and whitespace. This can lead to misinterpretation of the Connection
+    header, potentially causing security issues. Use headerValuesContainsToken for
+    proper token matching.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/ae080c1aecb129a3230e7afecdb4a16ad3da9b3c
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-6.1
+    technology:
+    - go

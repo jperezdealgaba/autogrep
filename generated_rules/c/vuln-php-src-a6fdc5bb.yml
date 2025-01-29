@@ -1,0 +1,25 @@
+rules:
+- id: vuln-php-src-a6fdc5bb
+  pattern: "if (!memcmp($P + 1, \"K\\5\\6\", 3)) {\n  ...\n}\n"
+  pattern-not: "if (($P - $BUF) + sizeof($LOCATOR) <= $SIZE && !memcmp($P + 1, \"\
+    K\\5\\6\", 3)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code performs a memory comparison without checking the bounds of the
+    buffer, which could lead to out-of-bounds memory access. This is dangerous as
+    it can cause crashes or be exploited for arbitrary code execution. Always ensure
+    buffer bounds are checked before performing memory operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/a6fdc5bb27b20d889de0cd29318b3968aabb57bd
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

@@ -1,0 +1,33 @@
+rules:
+- id: vuln-go-312920c0
+  pattern: '$HOST := cleanHost($HOST_VAR)
+
+    '
+  pattern-not: '$HOST := $HOST_VAR
+
+    $HOST, $ERR := httpguts.PunycodeHostPort($HOST)
+
+    '
+  languages:
+  - go
+  message: 'The use of `cleanHost` function is vulnerable to improper host header
+    sanitization, which can lead to request smuggling or injection attacks. The function
+    does not properly validate or normalize host headers, allowing malicious input
+    to bypass security checks. Use `httpguts.PunycodeHostPort` and `httpguts.ValidHostHeader`
+    instead to ensure proper host header validation and normalization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/312920c00aac9897b2a0693e752390b5b0711a5a
+    category: security
+    cwe:
+    - CWE-113
+    - CWE-444
+    owasp: 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-5.4
+    - https://tools.ietf.org/html/rfc7230#section-2.7
+    - https://tools.ietf.org/html/rfc3986#section-3.2.2
+    technology:
+    - go

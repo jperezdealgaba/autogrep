@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-5dd7b86b
+  pattern: 'size_t $SIZE_BOUND = $SS->ByteSize() + $HEADER_BYTES + (MaxBytesPerElement($DT)
+    * $NUM_ELEMENTS);
+
+    '
+  pattern-not: "size_t $MAX_BYTES_PER_ELEMENT = MaxBytesPerElementOrZero($DT);\nif\
+    \ ($MAX_BYTES_PER_ELEMENT == 0) {\n  return $ERROR(\"Tensor slice serialization\
+    \ not implemented for dtype\", $DT);\n}\nsize_t $SIZE_BOUND = $SS->ByteSize()\
+    \ + $HEADER_BYTES + ($MAX_BYTES_PER_ELEMENT * $NUM_ELEMENTS);\n"
+  languages:
+  - cpp
+  message: 'Direct use of MaxBytesPerElement without validation can lead to unhandled
+    data type cases, potentially causing runtime errors or undefined behavior. The
+    patch adds proper validation through MaxBytesPerElementOrZero and error handling
+    for unsupported data types.
+
+    To fix this, always validate the return value of MaxBytesPerElementOrZero and
+    handle the case where it returns 0 with appropriate error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/5dd7b86b84a864b834c6fa3d7f9f51c87efa99d4
+    category: security
+    cwe:
+    - CWE-754
+    owasp: A10:2021-Server-Side Request Forgery
+    technology:
+    - cpp

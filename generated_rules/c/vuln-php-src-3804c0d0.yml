@@ -1,0 +1,29 @@
+rules:
+- id: vuln-php-src-3804c0d0
+  pattern: "if (zend_hash_find(&EG(symbol_table), $VAR, sizeof($VAR), (void **) &$DATA)\
+    \ != FAILURE) {\n  ...\n}\n"
+  pattern-not: "if (zend_hash_find(&EG(symbol_table), $VAR, sizeof($VAR), (void **)\
+    \ &$DATA) != FAILURE && Z_TYPE_PP($DATA) == IS_STRING) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing type check after zend_hash_find() can lead to potential type confusion
+    vulnerabilities.
+
+    Always verify the type of the retrieved data before using it to ensure it matches
+    the expected type (IS_STRING in this case).
+
+    This vulnerability could be exploited to cause unexpected behavior or crashes.
+
+    Fix by adding a type check: `&& Z_TYPE_PP(data) == IS_STRING`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/3804c0d00fa6e629173fb1c8c61f8f88d5fe39b9
+    category: security
+    cwe:
+    - 'CWE-843: Access of Resource Using Incompatible Type (''Type Confusion'')'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-go-fa60c381
+  pattern: 'fmt.Fprintf($FFLG, "_CGO_%s=%s\n", $K, strings.Join($V, " "))
+
+    '
+  pattern-not: "for _, $ARG := range $V {\n  fmt.Fprintf($FFLG, \"_CGO_%s=%s\\n\"\
+    , $ARG)\n}\n"
+  languages:
+  - go
+  message: 'The vulnerable code uses strings.Join to concatenate arguments, which
+    can lead to incorrect handling of flags. This can cause security issues when processing
+    untrusted input. The fix is to iterate over the arguments and process them individually.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/fa60c381ed06c12f9c27a7b50ca44c5f84f7f0f4
+    category: security
+    cwe:
+    - CWE-88
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - go

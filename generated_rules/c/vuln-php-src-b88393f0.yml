@@ -1,0 +1,29 @@
+rules:
+- id: vuln-php-src-b88393f0
+  pattern: "if (((st_entry *)$STACK->elements[$I])->data) {\n  ...\n}\n"
+  pattern-not: "if (((st_entry *)$STACK->elements[$I])->data\n    && ((st_entry *)$STACK->elements[$I])->type\
+    \ != ST_FIELD) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing type check in WDDX data validation. This vulnerability could lead
+    to incorrect
+
+    handling of data types, potentially causing crashes or security issues. Always
+    validate
+
+    data types when accessing complex structures. Add a check for `type != ST_FIELD`
+    in the
+
+    condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/b88393f08a558eec14964a55d3c680fe67407712
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

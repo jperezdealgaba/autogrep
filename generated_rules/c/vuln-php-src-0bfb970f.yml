@@ -1,0 +1,22 @@
+rules:
+- id: vuln-php-src-0bfb970f
+  pattern: "if (read != entry.uncompressed_filesize) {\n  ...\n}\n"
+  pattern-not: "if (read != entry.uncompressed_filesize || read <= 8) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Missing bounds check for 'read' variable can lead to security vulnerabilities.\
+    \ \nAlways validate that the read size is positive and within expected bounds\
+    \ to \nprevent potential memory corruption or denial of service attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/0bfb970f43acd1e81d11be1154805f86655f15d5
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

@@ -1,0 +1,54 @@
+rules:
+- id: vuln-php-src-dda81f05
+  pattern: 'len = spprintf(&fullpath, 0, "%s/%s", dest, entry->filename);
+
+    ...
+
+    slash = zend_memrchr(entry->filename, ''/'', entry->filename_len);
+
+    ...
+
+    fullpath[dest_len + (slash - entry->filename) + 1] = ''\0'';
+
+    ...
+
+    fullpath[dest_len + (slash - entry->filename) + 1] = ''/'';
+
+    '
+  pattern-not: 'len = spprintf(&fullpath, 0, "%s/%s", dest, filename);
+
+    ...
+
+    slash = zend_memrchr(filename, ''/'', filename_len);
+
+    ...
+
+    fullpath[dest_len + (slash - filename) + 1] = ''\0'';
+
+    ...
+
+    fullpath[dest_len + (slash - filename) + 1] = ''/'';
+
+    '
+  languages:
+  - c
+  message: 'The code directly uses entry->filename without proper path sanitization,
+    which could lead to path traversal vulnerabilities. The patch adds proper path
+    sanitization by using a virtual_file_ex function to strip ''..'' from the path
+    and restrict it to be under the destination directory. Always sanitize file paths
+    before using them in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/dda81f0505217a95db065e6bf9cc2d81eb902417
+    category: security
+    cwe:
+    - 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - c

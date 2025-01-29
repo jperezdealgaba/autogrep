@@ -1,0 +1,28 @@
+rules:
+- id: vuln-php-src-20ce2fe8
+  pattern: 'if ($VAR != '':'') goto $LABEL;
+
+    '
+  pattern-not: 'if ($VAR <= ''/'') goto $LABEL;
+
+    if ($VAR >= '';'') goto $LABEL;
+
+    '
+  languages:
+  - c
+  message: "The code contains an incomplete character range check in a conditional\
+    \ statement. \nThis vulnerability arises when only a single character is checked\
+    \ instead of a range, which can lead to bypasses or incorrect parsing. \nThe fix\
+    \ involves checking for a range of characters (<= '/' and >= ';') to ensure proper\
+    \ validation. \nUpdate the condition to use a range check instead of a single\
+    \ character comparison.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/20ce2fe8e3c211a42fee05a461a5881be9a8790e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

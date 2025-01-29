@@ -1,0 +1,31 @@
+rules:
+- id: vuln-vim-bd228fd0
+  pattern: 'STRCPY($DEST, "/\\\\");
+
+    STRCPY($DEST + 3, $SRC + 1);
+
+    '
+  pattern-not: 'vim_snprintf((char *)$DEST, $IOSIZE, "/\\\\%s", $SRC + 1);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe string concatenation using STRCPY. This can lead to buffer
+    overflows
+
+    if the source string is too long. Use vim_snprintf with proper size checking instead
+
+    to ensure safe string operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/bd228fd097b41a798f90944b5d1245eddd484142
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

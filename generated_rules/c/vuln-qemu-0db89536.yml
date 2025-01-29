@@ -1,0 +1,24 @@
+rules:
+- id: vuln-qemu-0db89536
+  pattern: "if ($S->current_req) {\n  ...\n  scsi_req_continue($S->current_req);\n\
+    \  $S->data_in_ready = false;\n  ...\n}\n"
+  pattern-not: "if (!$S->current_req) {\n  return;\n}\n...\nscsi_req_continue($S->current_req);\n\
+    $S->data_in_ready = false;\n...\nif (!$S->current_req) {\n  return;\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential null pointer dereference vulnerability. The code
+    accesses `current_req` without checking if it is null after the initial check.
+    This could lead to a crash or undefined behavior if `current_req` becomes null
+    during execution. Ensure that `current_req` is checked before each use to prevent
+    null pointer dereference.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/0db895361b8a82e1114372ff9f4857abea605701
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2021-Security Misconfiguration
+    technology:
+    - c

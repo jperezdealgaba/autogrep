@@ -1,0 +1,23 @@
+rules:
+- id: vuln-sudo-e99082e0
+  pattern: init_parse_tree($TREE)
+  pattern-not: init_parse_tree($TREE, $LHOST, $SHOST)
+  languages:
+  - c
+  message: 'Detected insecure initialization of parse tree without host parameters.
+
+    This vulnerability could allow improper host validation in sudoers configuration.
+
+    Always provide local and source host parameters when initializing parse trees.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/e99082e05b9f0dd0e0f47fa1d2e1b9d922ea8c4c
+    category: security
+    cwe: 'CWE-284: Improper Access Control'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://www.sudo.ws/security/advisories/
+    technology:
+    - c

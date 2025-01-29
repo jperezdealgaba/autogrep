@@ -1,0 +1,31 @@
+rules:
+- id: vuln-piwigo-cb93551d
+  pattern: '$params[''name''] = pwg_db_real_escape_string($params[''name''])
+
+    '
+  pattern-not: '$params[''name''] = pwg_db_real_escape_string(strip_tags(stripslashes($params[''name''])))
+
+    '
+  languages:
+  - php
+  message: 'Detected potential security vulnerability where user input is not properly
+    sanitized before being passed to a database function. This could allow for XSS
+    or SQL injection attacks. The fix requires using strip_tags and stripslashes before
+    pwg_db_real_escape_string to properly sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/cb93551d847563a7f90a8af31a32de97b20ae0b4
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

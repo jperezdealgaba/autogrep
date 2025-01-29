@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gpac-348d7722
+  pattern: "if (gf_bs_available($BS) < $SIZE) {\n  ...\n}\n"
+  pattern-not: "if ((gf_bs_available($BS) < $SIZE) || ($SIZE > $MAX_SIZE)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Missing size validation check can lead to buffer overflow. The code checks
+    if there is enough data available but fails to validate if the requested size
+    exceeds the maximum allowed buffer size. This can lead to memory corruption or
+    crashes. Fix by adding a size check against a defined maximum buffer size constant.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/348d7722c1e90c7811b43b0eed5c2aca2cb8a717
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

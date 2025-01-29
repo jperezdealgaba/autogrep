@@ -1,0 +1,33 @@
+rules:
+- id: vuln-tensorflow-239139d2
+  pattern: 'TF_RETURN_IF_ERROR($CTX->step_container()->Lookup($RM, $CONTAINER + $TA_HANDLE,
+    $TENSOR_ARRAY));
+
+    '
+  pattern-not: '$SC = $CTX->step_container();
+
+    if ($SC == nullptr) return $ERROR;
+
+    TF_RETURN_IF_ERROR($SC->Lookup($RM, $CONTAINER + $TA_HANDLE, $TENSOR_ARRAY));
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential null pointer dereference in TensorFlow code. The
+    step container is accessed directly without a null check, which could lead to
+    a crash or undefined behavior. Always check if the step container is null before
+    using it. The fix involves adding a null check before accessing the container.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/239139d2ae6a81ae9ba499ad78b56d9b2931538a
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-go-0d1615b2
+  pattern: "if _, ok := $E.(bailout); !ok {\n  ...\n}\n"
+  pattern-not: "$BAIL, $OK := $E.(bailout)\nif !$OK {\n  ...\n} else if $BAIL.$MSG\
+    \ != \"\" {\n  ...\n}\n"
+  languages:
+  - go
+  message: "Potential stack exhaustion vulnerability detected. The code does not properly\
+    \ handle \nbailout panics with message and position information, which could lead\
+    \ to \ninsufficient error reporting and potential stack exhaustion. Update the\
+    \ code to \nproperly handle bailout panics with message and position information\
+    \ as shown in \nthe pattern-not example.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0d1615b23f9a558aa0a1957b4c81596220eb8ec4
+    category: security
+    cwe:
+    - CWE-400
+    - CWE-755
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - go

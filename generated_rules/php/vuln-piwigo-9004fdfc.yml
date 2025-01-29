@@ -1,0 +1,27 @@
+rules:
+- id: vuln-piwigo-9004fdfc
+  pattern: 'if (empty($sections[$i]) or $sections[$i]==''..'')
+
+    '
+  pattern-not: "if (empty($sections[$i]))\n  continue;\n}\nif ($sections[$i] == '..'\
+    \ or !preg_match('/^[a-zA-Z_\\.-]+$/', $sections[$i]))\n{\n  die('invalid section\
+    \ token ['.htmlentities($sections[$i]).']');\n"
+  languages:
+  - php
+  message: "The code is vulnerable to path traversal attacks due to insufficient validation\
+    \ of section tokens. \nThe original check only verifies if the section is empty\
+    \ or equals '..', which is insufficient to prevent malicious input. \nTo fix this,\
+    \ validate the section token using a regular expression to ensure it only contains\
+    \ allowed characters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/9004fdfc0b4a11cb32e9e15a5f67e4ec827e82dc
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

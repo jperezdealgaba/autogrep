@@ -1,0 +1,24 @@
+rules:
+- id: vuln-vim-c3d27ada
+  pattern: "if (!bufref_valid(&bufref)) {\n  ...\n}\n"
+  pattern-not: "if (!bufref_valid(&bufref) || !win_valid_any_tab($WP)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: "This pattern detects a missing window validity check in Vim's spell.c\
+    \ file. \nThe vulnerability occurs when the code fails to verify if the window\
+    \ is still valid \nbefore proceeding with operations, which can lead to use-after-free\
+    \ or invalid memory \naccess when the window is closed. To fix this, ensure that\
+    \ both buffer and window \nvalidity checks are performed using `bufref_valid`\
+    \ and `win_valid_any_tab` respectively.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/c3d27ada14acd02db357f2d16347acc22cb17e93
+    category: security
+    cwe:
+    - CWE-416
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-horde-7ce7ed91
+  pattern: "this.auto_save_interval = new PeriodicalExecuter(function() {\n    if\
+    \ ($('compose').visible()) {\n        var curr_hash = MD5.hash($('to', 'cc', 'bcc',\
+    \ 'subject').invoke('getValue').join('\\0') + (IMP_Compose_Base.editor_on ? this.rte.getData()\
+    \ : $F('composeMessage')));\n        if (this.last_msg && curr_hash != this.last_msg)\
+    \ {\n            this.uniqueSubmit('autoSaveDraft');\n        }\n        this.last_msg\
+    \ = curr_hash;\n    }\n}.bind(this), DIMP.conf_compose.auto_save_interval_val\
+    \ * 60);\n"
+  pattern-not: "this.auto_save_interval = new PeriodicalExecuter(function() {\n  \
+    \  if ($('compose').visible()) {\n        var hdrs = MD5.hash($('to', 'cc', 'bcc',\
+    \ 'subject').invoke('getValue').join('\\0')), msg;\n        if (this.md5_hdrs)\
+    \ {\n            msg = this.msgHash();\n            if (this.md5_hdrs != hdrs\
+    \ || this.md5_msg != msg) {\n                this.uniqueSubmit('autoSaveDraft');\n\
+    \            }\n        } else {\n            msg = this.md5_msgOrig;\n      \
+    \  }\n        this.md5_hdrs = hdrs;\n        this.md5_msg = msg;\n    }\n}.bind(this),\
+    \ DIMP.conf_compose.auto_save_interval_val * 60);\n"
+  languages:
+  - javascript
+  message: Insecure message hash comparison detected. The original patch separates
+    header and message hashes to ensure accurate change detection. Use separate hashes
+    for headers and message content to prevent false positives in auto-save drafts.
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/7ce7ed91b17089d0468c00ae9f743b58516d9bef
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - javascript

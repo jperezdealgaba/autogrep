@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tensorflow-1e206bae
+  pattern: "if ($OUTPUT->type == $KTFLITEFLOAT32 || $OUTPUT->type == $KTFLITEINT32)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($OUTPUT->type == $KTFLITEFLOAT32) {\n  ...\n} else if ($OUTPUT->type\
+    \ == $KTFLITEINT32) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "Detected potential division by zero vulnerability in TensorFlow Lite's\
+    \ division operation. \nThe code fails to properly check for zero values in the\
+    \ denominator when handling integer division, \nwhich can lead to undefined behavior\
+    \ or crashes. The fix adds explicit checks for non-zero values \nin the denominator\
+    \ for integer types.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/1e206baedf8bef0334cca3eb92bab134ef525a28
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/369.html
+    technology:
+    - cpp

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-2a7adf4c
+  pattern: "func dedupEnv($ENV []string) []string {\n    ...\n}\n"
+  pattern-not: "func dedupEnv($ENV []string) ([]string, error) {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'The function `dedupEnv` does not handle environment variables containing
+    NUL characters, which can lead to security vulnerabilities. NUL characters in
+    environment variables can cause unexpected behavior or security issues when passed
+    to child processes. Update the function to return an error and filter out any
+    environment variables containing NUL characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/2a7adf4ccde9734becf41acf8274d1a190f2ec64
+    category: security
+    cwe:
+    - CWE-78
+    - CWE-88
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/os/exec#Cmd
+    technology:
+    - go

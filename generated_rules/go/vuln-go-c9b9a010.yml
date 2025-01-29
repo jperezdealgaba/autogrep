@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-c9b9a010
+  pattern: "if $N.Cmp($PARAMS.N) >= 0 {\n  ...\n}\n"
+  pattern-not: "if $N.Cmp($PARAMS.N) >= 0 || len($IN) > len($OUT) {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Missing bounds check on input length in elliptic curve scalar multiplication.
+
+    This vulnerability could allow for buffer overflows when processing maliciously
+
+    crafted inputs. The fix adds a length check to ensure the input doesn''t exceed
+
+    the output buffer size. Always validate input lengths before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/c9b9a010eb06e32e424dc8ffffcc37c8717ad03a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp: A1:2017-Injection
+    references:
+    - https://github.com/golang/go/issues/52075
+    - https://en.wikipedia.org/wiki/Buffer_overflow
+    technology:
+    - go

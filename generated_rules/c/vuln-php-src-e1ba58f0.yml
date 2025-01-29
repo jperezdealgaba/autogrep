@@ -1,0 +1,32 @@
+rules:
+- id: vuln-php-src-e1ba58f0
+  pattern: 'strchr($S, ''#'')
+
+    '
+  pattern-not: 'memchr($S, ''#'', ($UE - $S))
+
+    '
+  languages:
+  - c
+  message: 'Using strchr() without length limitation can lead to buffer over-read
+    vulnerabilities.
+
+    This is dangerous because it can read beyond the intended memory boundaries, potentially
+    exposing sensitive information or causing crashes.
+
+    Replace strchr() with memchr() and specify the length of the string to search
+    within.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e1ba58f068f4bfc8ced75bb017cd31d8beddf3c2
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

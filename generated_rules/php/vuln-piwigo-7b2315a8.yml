@@ -1,0 +1,28 @@
+rules:
+- id: vuln-piwigo-7b2315a8
+  pattern: '$template->append(''search_words'', $SEARCH[''q'']);
+
+    '
+  pattern-not: '$template->append(''search_words'', htmlspecialchars($SEARCH[''q'']));
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped user input being passed to template rendering. This
+    can lead to Cross-Site Scripting (XSS) vulnerabilities as malicious input is not
+    properly sanitized. Use htmlspecialchars() to escape HTML special characters in
+    user-controlled input before rendering it in templates.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/7b2315a88b9e554967e7ae2ef112c9d1d58222a9
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

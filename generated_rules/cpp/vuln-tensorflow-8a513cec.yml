@@ -1,0 +1,22 @@
+rules:
+- id: vuln-tensorflow-8a513cec
+  pattern: 'DCHECK($VAR != nullptr);
+
+    '
+  pattern-not: "if ($VAR == nullptr) {\n  return Status($ERROR, $MESSAGE);\n}\n"
+  languages:
+  - cpp
+  message: 'Use of DCHECK without proper null pointer validation can lead to crashes
+    or undefined behavior if the check fails in production builds. Replace DCHECK
+    with explicit null pointer validation and return an appropriate error status.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/8a513cec4bec15961fbfdedcaa5376522980455c
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

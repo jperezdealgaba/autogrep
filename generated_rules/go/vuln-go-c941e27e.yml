@@ -1,0 +1,25 @@
+rules:
+- id: vuln-go-c941e27e
+  pattern: "if !strings.Contains($REPO_ROOT, \"://\") {\n    return nil, fmt.Errorf($ERROR_MSG,\
+    \ $URL_STR, $REPO_ROOT)\n}\n"
+  pattern-not: "if err := validateRepoRootScheme($REPO_ROOT); err != nil {\n    return\
+    \ nil, fmt.Errorf($ERROR_MSG, $URL_STR, $REPO_ROOT, err)\n}\n"
+  languages:
+  - go
+  message: 'Detected insecure validation of repository root URL scheme. The previous
+    implementation only checked for the presence of "://" without validating the scheme
+    format, which could allow invalid or malicious URLs. Use the `validateRepoRootScheme`
+    function to properly validate the URL scheme according to RFC 3986 section 3.1.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/c941e27e70c3e06e1011d2dd71d72a7a06a9bcbc
+    category: security
+    cwe:
+    - CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc3986#section-3.1
+    technology:
+    - go

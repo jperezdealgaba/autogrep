@@ -1,0 +1,28 @@
+rules:
+- id: vuln-tensorflow-2b7100d6
+  pattern: "OP_REQUIRES(context, $SHAPE.NumElements() != 0,\n            errors::InvalidArgument(\n\
+    \                \"The shape argument requires at least one element.\"));\n"
+  pattern-not: "OP_REQUIRES(context, $SHAPE.NumElements() > 0,\n            errors::InvalidArgument(\n\
+    \                \"The shape argument requires at least one element.\"));\n"
+  languages:
+  - cpp
+  message: 'The vulnerability occurs when checking if the number of elements in a
+    shape tensor is non-zero using ''!= 0''. This is incorrect because it allows for
+    negative values, which can lead to undefined behavior or security issues. The
+    correct check should be ''> 0'' to ensure at least one positive element. This
+    fix prevents potential crashes or exploits that could arise from invalid shape
+    tensors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/2b7100d6cdff36aa21010a82269bc05a6d1cc74a
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.tensorflow.org/
+    technology:
+    - cpp

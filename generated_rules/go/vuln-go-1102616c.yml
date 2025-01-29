@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-1102616c
+  pattern: "func validateRepoRootScheme($REPO_ROOT string) error {\n    $END := strings.Index($REPO_ROOT,\
+    \ \"://\")\n    if $END <= 0 {\n        return errors.New(\"no scheme\")\n   \
+    \ }\n    ...\n    return nil\n}\n"
+  pattern-not: "func validateRepoRoot($REPO_ROOT string) error {\n    $URL, $ERR :=\
+    \ url.Parse($REPO_ROOT)\n    if $ERR != nil {\n        return $ERR\n    }\n  \
+    \  if $URL.Scheme == \"\" {\n        return errors.New(\"no scheme\")\n    }\n\
+    \    return nil\n}\n"
+  languages:
+  - go
+  message: 'The vulnerable function validateRepoRootScheme uses manual string parsing
+    to validate URL schemes, which can lead to incorrect validation of malicious URLs.
+    This could allow attackers to bypass URL scheme restrictions. Use the standard
+    library''s url.Parse function instead, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/1102616c772c262175f5ba5f12d6b574d0ad9101
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A6:2021 - Vulnerable and Outdated Components
+    technology:
+    - go

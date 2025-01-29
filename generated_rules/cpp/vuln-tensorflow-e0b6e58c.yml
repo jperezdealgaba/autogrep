@@ -1,0 +1,29 @@
+rules:
+- id: vuln-tensorflow-e0b6e58c
+  pattern: 'components.reserve($FINALIZED->output_dtypes().size());
+
+    '
+  pattern-not: 'const int $NUM = $FINALIZED->output_dtypes().size();
+
+    components.reserve($NUM);
+
+    '
+  languages:
+  - cpp
+  message: 'Potential memory allocation issue due to direct use of output_dtypes().size()
+    in reserve().
+
+    This can lead to incorrect memory allocation if the size changes between calls.
+
+    Store the size in a variable first to ensure consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/e0b6e58c328059829c3eb968136f17aa72b6c876
+    category: security
+    cwe:
+    - 'CWE-789: Uncontrolled Memory Allocation'
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

@@ -1,0 +1,40 @@
+rules:
+- rules:
+  - id: vuln-php-src-5c0455bf
+  pattern: 'if (yych <= ''/'') goto yy1287;
+
+    if (yych <= ''9'') goto yy1286;
+
+    goto yy1287;
+
+    '
+  pattern-not: "if (yych <= '@') {\n    if (yych <= 0x1F) {\n        if (yych == '\\\
+    t') goto yy1287;\n    } else {\n        if (yych <= ' ') goto yy1287;\n      \
+    \  if (yych <= '/') goto yy1284;\n        if (yych <= '9') goto yy1286;\n    }\n\
+    } else {\n    if (yych <= '`') {\n        if (yych <= 'A') goto yy1289;\n    \
+    \    if (yych == 'P') goto yy1289;\n    } else {\n        if (yych <= 'a') goto\
+    \ yy1289;\n        if (yych == 'p') goto yy1289;\n    }\n}\n"
+  languages:
+  - c
+  message: 'The vulnerable code uses a simple character range check that can be bypassed.
+
+    The patch adds more comprehensive validation by checking for specific character
+    ranges
+
+    and handling edge cases. This prevents potential parsing issues and security vulnerabilities.
+
+    Always validate input with comprehensive range checks and handle all edge cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/5c0455bf2c8cd3c25401407f158e820aa3b239e1
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c
+  id: vuln-php-src-5c0455bf

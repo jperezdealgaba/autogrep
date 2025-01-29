@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libav-fb147308
+  pattern: 'uint8_t $VAR[8];
+
+    '
+  pattern-not: 'uint8_t $VAR[8 + FF_INPUT_BUFFER_PADDING_SIZE];
+
+    '
+  languages:
+  - c
+  message: "Detected a buffer declaration without sufficient padding, which can lead\
+    \ to buffer overflow vulnerabilities. \nThis is dangerous because it can allow\
+    \ attackers to overwrite adjacent memory, potentially leading to arbitrary code\
+    \ execution. \nTo fix this, ensure that the buffer includes FF_INPUT_BUFFER_PADDING_SIZE\
+    \ for proper padding.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/fb1473080223a634b8ac2cca48a632d037a0a69d
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

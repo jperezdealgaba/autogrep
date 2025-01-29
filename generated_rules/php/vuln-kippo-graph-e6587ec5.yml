@@ -1,0 +1,28 @@
+rules:
+- id: vuln-kippo-graph-e6587ec5
+  pattern: '$file_link = trim($VAR);
+
+    '
+  pattern-not: '$file_link = explode(" ", trim(xss_clean($VAR)))[0];
+
+    '
+  languages:
+  - php
+  message: 'The code directly trims and uses user input without proper sanitization,
+    which can lead to Cross-Site Scripting (XSS) vulnerabilities. This is dangerous
+    because it allows attackers to inject malicious scripts into the application.
+    To fix this, ensure that user input is sanitized using `xss_clean` before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ikoniaris/kippo-graph/commit/e6587ec598902763110b70c8bd0a72f7951b4997
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

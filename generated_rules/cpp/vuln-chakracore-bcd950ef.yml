@@ -1,0 +1,28 @@
+rules:
+- id: vuln-chakracore-bcd950ef
+  pattern: 'JavascriptOperators::NewScObject($CONSTRUCTOR, Js::Arguments($CALLINFO,
+    $ARGS), $SCRIPTCTX)
+
+    '
+  pattern-not: 'TypedArrayBase::TypedArrayCreate($CONSTRUCTOR, &Js::Arguments($CALLINFO,
+    $ARGS), $LENGTH, $SCRIPTCTX)
+
+    '
+  languages:
+  - cpp
+  message: "Using JavascriptOperators::NewScObject for TypedArray construction without\
+    \ validation can lead to security vulnerabilities. \nThe patch replaces it with\
+    \ TypedArrayBase::TypedArrayCreate which includes proper validation of the typed\
+    \ array and its buffer. \nAlways use TypedArrayBase::TypedArrayCreate for creating\
+    \ typed arrays to ensure proper validation and prevent potential detached buffer\
+    \ access or invalid length issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/bcd950efee487bdfd73cd1282de4e02e82e62629
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

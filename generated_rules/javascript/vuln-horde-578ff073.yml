@@ -1,0 +1,29 @@
+rules:
+- id: vuln-horde-578ff073
+  pattern: '$ELT = ''<span class="'' + $C + ''" title="'' + $L.escapeHTML() + ''"
+    style="background:'' + (($B) ? $B.escapeHTML() : '''') + '';color:'' + $F.escapeHTML()
+    + ''">'' + $L.truncate(10).escapeHTML() + ''</span>'';
+
+    '
+  pattern-not: '$ELT = ''<span class="'' + $C + ''" title="'' + $L.escapeHTML().gsub(''"'',
+    ''&quot;'') + ''" style="background:'' + (($B) ? $B.escapeHTML().gsub(''"'', ''&quot;'')
+    : '''') + '';color:'' + $F.escapeHTML().gsub(''"'', ''&quot;'') + ''">'' + $L.truncate(10).escapeHTML()
+    + ''</span>'';
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability due to unescaped double quotes in HTML attributes.\
+    \ \nThis can allow attackers to inject arbitrary HTML or JavaScript. \nFix by\
+    \ properly escaping double quotes using .gsub('\"', '&quot;') on all user-controlled\
+    \ strings.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/578ff073724d9c179663098d8ff0076e8b361cfb
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+    technology: javascript

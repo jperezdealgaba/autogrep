@@ -1,0 +1,28 @@
+rules:
+- id: vuln-piwigo-796f726e
+  pattern: '$user_agent = $_SERVER[''HTTP_USER_AGENT''];
+
+    '
+  pattern-not: '$user_agent = strip_tags($_SERVER[''HTTP_USER_AGENT'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected direct assignment of HTTP_USER_AGENT without sanitization. This
+    can lead to XSS vulnerabilities if the user agent string contains malicious HTML
+    or JavaScript. Always sanitize user input using functions like strip_tags() before
+    using it in your application.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/796f726ed1409b22e0e50a1aa20f1731641d3e35
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

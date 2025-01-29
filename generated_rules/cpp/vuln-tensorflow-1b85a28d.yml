@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-1b85a28d
+  pattern: "const $TYPE* $D = static_cast<$TYPE*>($K.data());\nsize_t $S = $K.AllocatedBytes();\n\
+    std::vector<$TYPE> $VEC;\n$VEC.reserve($S);\nfor (int $I = 0; $I < $S; $I++) {\n\
+    \  $VEC.push_back($D[$I]);\n}\n"
+  pattern-not: "if (DataTypeCanUseMemcpy($K.dtype())) {\n  return H::combine(std::move(h),\
+    \ $K.tensor_data());\n} else if ($K.dtype() == DT_STRING) {\n  const auto $STRS\
+    \ = $K.unaligned_flat<tstring>();\n  for (int64_t $I = 0, $N = $K.NumElements();\
+    \ $I < $N; ++$I) {\n    h = H::combine(std::move(h), $STRS($I));\n  }\n  return\
+    \ h;\n} else {\n  DCHECK(false) << \"Unimplemented dtype \" << DataTypeString($K.dtype())\
+    \ << std::endl;\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly copies raw data from a tensor without checking if the
+    data type supports memcpy or handling string types properly. This can lead to
+    incorrect behavior or crashes when dealing with unsupported data types. The fix
+    should include proper type checking and handling for different data types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/1b85a28d395dc91f4d22b5f9e1e9a22e92ccecd6
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/1b85a28d395dc91f4d22b5f9e1e9a22e92ccecd6
+    technology:
+    - cpp

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-nasm-6ac6ac57
+  pattern: '$EOP->val = $SUBEXPR->val;
+
+    $EOP->type = $SUBEXPR->type;
+
+    $EOP->dup *= $SUBEXPR->dup;
+
+    nasm_free($SUBEXPR);
+
+    '
+  pattern-not: "if (!$SUBEXPR->elem)\n    $SUBEXPR->elem = $EOP->elem;\n$SUBEXPR->dup\
+    \ *= $EOP->dup;\nnasm_free($EOP);\n$EOP = $SUBEXPR;\n"
+  languages:
+  - c
+  message: "This pattern detects a potentially dangerous memory management issue where\n\
+    a structure is freed without considering its associated allocated buffer.\nThis\
+    \ can lead to use-after-free or double-free vulnerabilities. The fix \ninvolves\
+    \ properly transferring ownership of the buffer before freeing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/6ac6ac57e3d01ea8ed4ea47706eb724b59176461
+    category: security
+    cwe:
+    - CWE-416
+    technology:
+    - c

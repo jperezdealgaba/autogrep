@@ -1,0 +1,40 @@
+rules:
+- id: vuln-chakracore-f00612bb
+  pattern: 'nonTempSyms.Or(&fromData->nonTempSyms);
+
+    tempTransferredSyms.Or(&fromData->tempTransferredSyms);
+
+    MergeDependencies(tempTransferDependencies, fromData->tempTransferDependencies,
+    deleteData);
+
+    '
+  pattern-not: "this->nonTempSyms.Or(&fromData->nonTempSyms);\nthis->tempTransferredSyms.Or(&fromData->tempTransferredSyms);\n\
+    this->MergeDependencies(this->tempTransferDependencies, fromData->tempTransferDependencies,\
+    \ deleteData);\nif (this->tempTransferDependencies)\n{\n    FOREACH_HASHTABLE_ENTRY(BVSparse<JitArenaAllocator>\
+    \ *, bucket, this->tempTransferDependencies)\n    {\n        if (bucket.element->Test(&this->nonTempSyms))\n\
+    \        {\n            this->nonTempSyms.Set(bucket.value);\n        }\n    }\
+    \ NEXT_HASHTABLE_ENTRY;\n}\n"
+  languages:
+  - cpp
+  message: 'Missing ''this'' pointer in member function calls can lead to incorrect
+    object state manipulation.
+
+    This vulnerability occurs when class member functions are called without explicitly
+    specifying the ''this'' pointer,
+
+    which can cause unintended side effects or incorrect state changes.
+
+    Always use ''this->'' when accessing class members to ensure proper object state
+    management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/f00612bbc3657f1ec33a9e7d575c16a5489d06aa
+    category: security
+    cwe:
+    - CWE-628
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

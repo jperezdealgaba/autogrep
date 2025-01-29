@@ -1,0 +1,23 @@
+rules:
+- id: vuln-nasm-9b7ee09a
+  pattern: "if ($TYPE == TOK_PREPROC_ID && $TEXT[1] == '!') {\n  ...\n}\n"
+  pattern-not: "if ($TYPE == TOK_PREPROC_ID && $TEXT &&\n    $TEXT[0] && $TEXT[1]\
+    \ == '!') {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential null pointer dereference in the preprocessor token\
+    \ check. \nThe code accesses `t->text[1]` without first verifying that `t->text`\
+    \ is non-null and `t->text[0]` is valid. \nThis can lead to undefined behavior\
+    \ or crashes if `t->text` is null. \nTo fix this, ensure that `t->text` is checked\
+    \ for null and that `t->text[0]` is valid before accessing `t->text[1]`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/9b7ee09abfd426b99aa1ea81d19a3b2818eeabf9
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

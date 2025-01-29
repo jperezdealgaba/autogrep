@@ -1,0 +1,31 @@
+rules:
+- id: vuln-strapi-921d3096
+  pattern: 'const _ = require(''lodash'');
+
+    ...
+
+    _.trim($VAR)
+
+    '
+  pattern-not: 'const { trim } = require(''lodash/fp'');
+
+    ...
+
+    trim($VAR)
+
+    '
+  languages:
+  - javascript
+  message: Using lodash directly instead of the functional programming version (lodash/fp)
+    can lead to unnecessary code bloat and potential security issues. Import specific
+    functions from lodash/fp instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/strapi/strapi/commit/921d30961d6ba96cc098f2aea197350a49f990bd
+    category: security
+    cwe: CWE-1104
+    owasp: A09:2021 - Security Logging and Monitoring Failures
+    references:
+    - https://lodash.com/docs/4.17.15
+    technology:
+    - javascript

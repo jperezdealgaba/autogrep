@@ -1,0 +1,24 @@
+rules:
+- id: vuln-php-src-c50cef1d
+  pattern: '#define JEWISH_SDN_MAX $MAX
+
+    '
+  pattern-not: '#define JEWISH_SDN_MAX 324542846L
+
+    '
+  languages:
+  - c
+  message: "The macro JEWISH_SDN_MAX is defined with a value that may cause integer\
+    \ overflow. \nThis can lead to undefined behavior or incorrect calculations in\
+    \ the calendar functions. \nThe fix increases the value to 324542846L to prevent\
+    \ overflow and ensure correct operation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/c50cef1dc54ffd1d0fb71d1afb8b2c3cb3c5b6ef
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

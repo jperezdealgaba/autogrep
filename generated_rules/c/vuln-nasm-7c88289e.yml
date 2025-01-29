@@ -1,0 +1,40 @@
+rules:
+- id: vuln-nasm-7c88289e
+  pattern: 'char *$P;
+
+    ...
+
+    $P = nasm_malloc($LEN + 1);
+
+    ...
+
+    set_text_free($T, $P, $LEN);
+
+    '
+  pattern-not: 'char *$P, *$FROM;
+
+    ...
+
+    $FROM = $P = nasm_malloc($LEN + 1);
+
+    ...
+
+    set_text_free($T, $FROM, $LEN);
+
+    '
+  languages:
+  - c
+  message: "Detected a potential vulnerability where the wrong pointer is passed to\
+    \ `set_text_free`. \nThis can lead to incorrect memory management, potentially\
+    \ causing memory leaks or undefined behavior.\nThe fix involves using a separate\
+    \ pointer (`from`) to track the allocated memory and pass it to `set_text_free`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/7c88289e222dc5ef9f53f9e86ecaab1924744b88
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

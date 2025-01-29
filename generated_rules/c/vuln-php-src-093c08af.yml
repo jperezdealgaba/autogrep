@@ -1,0 +1,30 @@
+rules:
+- id: vuln-php-src-093c08af
+  pattern: "if (strncmp($VAR, \"__Host-\", sizeof(\"__Host-\")-1) == 0 && strncmp($VAR_NAME,\
+    \ \"__Host-\", sizeof(\"__Host-\")-1) != 0) {\n    ...\n}\nif (strncmp($VAR, \"\
+    __Secure-\", sizeof(\"__Secure-\")-1) == 0 && strncmp($VAR_NAME, \"__Secure-\"\
+    , sizeof(\"__Secure-\")-1) != 0) {\n    ...\n}\n"
+  pattern-not: "if (php_is_forbidden_variable_name($VAR, $VAR_LEN, $VAR_NAME)) {\n\
+    \    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected direct comparison of mangled variable names without using the
+    dedicated validation function.
+
+    This could lead to security vulnerabilities if the validation logic is not consistently
+    applied.
+
+    Use the php_is_forbidden_variable_name() function instead to ensure consistent
+    validation of mangled variable names.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/093c08af25fb323efa0c8e6154aa9fdeae3d3b53
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-nasm-6299a311
+  pattern: "if (nasm_stricmp(tok_text(tline), $X) == 0) {\n  ...\n} else if (nasm_stricmp(tok_text(tline),\
+    \ $Y) == 0) {\n  ...\n} else if (nasm_stricmp(tok_text(tline), $Z) == 0) {\n \
+    \ ...\n}\n"
+  pattern-not: "{\n  const char *$ARG = tok_text(tline);\n  if (nasm_stricmp($ARG,\
+    \ $X) == 0) {\n    ...\n  } else if (nasm_stricmp($ARG, $Y) == 0) {\n    ...\n\
+    \  } else if (nasm_stricmp($ARG, $Z) == 0) {\n    ...\n  }\n}\n"
+  languages:
+  - c
+  message: 'Repeated calls to tok_text(tline) in conditionals can lead to performance
+    issues
+
+    and potential inconsistencies. The function call should be cached in a variable
+
+    before the comparisons. Store the result of tok_text(tline) in a variable and
+
+    use that variable for all subsequent comparisons.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/6299a3114ce0f3acd55d07de201a8ca2f0a83059
+    category: performance
+    cwe:
+    - CWE-400
+    technology:
+    - c

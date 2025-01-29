@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tensorflow-dcc21c7b
+  pattern: 'DCHECK_EQ($ARG, $NODES.size())
+
+    '
+  pattern-not: "if ($ARG != $NODES.size()) {\n  return errors::Internal(...);\n}\n"
+  languages:
+  - cpp
+  message: 'Dangerous use of DCHECK_EQ for critical validation. DCHECK is only active
+    in debug builds,
+
+    leaving release builds vulnerable to undefined behavior when the condition fails.
+    Replace
+
+    with proper error handling that works in all build configurations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/dcc21c7bc972b10b6fb95c2fb0f4ab5a59680ec2
+    category: security
+    cwe: 'CWE-754: Improper Check for Unusual or Exceptional Conditions'
+    owasp: 'M7: Improper Error Handling'
+    technology:
+    - cpp

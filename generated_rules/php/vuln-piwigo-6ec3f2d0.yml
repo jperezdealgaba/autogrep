@@ -1,0 +1,30 @@
+rules:
+- id: vuln-piwigo-6ec3f2d0
+  pattern: '$http_headers[] = ''Content-Disposition: attachment; filename="''.$element_info[''file''].''";'';
+
+    '
+  pattern-not: '$http_headers[] = ''Content-Disposition: attachment; filename="''.htmlspecialchars_decode($element_info[''file'']).''";'';
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to HTTP Header Injection due to the direct inclusion
+    of user-controlled input in the HTTP header. This can allow attackers to inject
+    malicious headers or content, leading to security issues such as XSS or response
+    splitting. Always sanitize user input using functions like `htmlspecialchars_decode`
+    or `htmlspecialchars` before including it in HTTP headers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/6ec3f2d0fae0437f0c2cc8c475a26fb6aeb0d4cb
+    category: security
+    cwe:
+    - CWE-113
+    - CWE-116
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/attacks/HTTP_Header_Injection
+    technology:
+    - php

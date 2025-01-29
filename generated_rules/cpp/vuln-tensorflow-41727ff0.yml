@@ -1,0 +1,32 @@
+rules:
+- id: vuln-tensorflow-41727ff0
+  pattern: "const int $NUM_DIMS = $A_SHAPE->dim_size(0);\nOP_REQUIRES($CTX, $NUM_DIMS\
+    \ > 0,\n            errors::InvalidArgument(\"Invalid input_a shape. Received:\
+    \ \",\n                                    $A_SHAPE->DebugString()));\n"
+  pattern-not: "const int $NUM_DIMS = $A_INDICES->dim_size(1);\nOP_REQUIRES($CTX,\
+    \ $B_INDICES->dim_size(1) == $NUM_DIMS,\n            errors::InvalidArgument(\n\
+    \                \"Input indices must have the same dimension, got \",\n     \
+    \           $NUM_DIMS, \" and \", $B_INDICES->dim_size(1)));\nOP_REQUIRES(\n \
+    \   $CTX, $A_SHAPE->NumElements() == $NUM_DIMS,\n    errors::InvalidArgument(\"\
+    Second dimension of a_indices and length of \"\n                            \"\
+    a_shape must match, got \",\n                            $NUM_DIMS, \" and \"\
+    , $A_SHAPE->NumElements()));\nOP_REQUIRES($CTX, $NUM_DIMS > 0,\n            errors::InvalidArgument(\"\
+    Tensors must not be empty\"));\n"
+  languages:
+  - cpp
+  message: "The code incorrectly derives the number of dimensions from the wrong tensor\
+    \ shape, \nwhich can lead to incorrect tensor operations and potential crashes\
+    \ or undefined behavior. \nThe vulnerability arises from using `a_shape->dim_size(0)`\
+    \ instead of `a_indices->dim_size(1)` \nto determine the number of dimensions.\
+    \ This can result in mismatched tensor dimensions \nand invalid operations. To\
+    \ fix this, ensure that the number of dimensions is derived \nfrom the correct\
+    \ tensor and that all dimensions are properly validated.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/tensorflow/tensorflow/commit/41727ff06111117bdf86b37db198217fd7a143cc
+    category: security
+    cwe:
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

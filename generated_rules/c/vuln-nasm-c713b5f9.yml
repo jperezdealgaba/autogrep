@@ -1,0 +1,28 @@
+rules:
+- id: vuln-nasm-c713b5f9
+  pattern: 'return sizes[bsii($STR, $NAMES, $SIZE)+1];
+
+    '
+  pattern-not: 'return $STR ? sizes[bsii($STR, $NAMES, $SIZE)+1] : 0;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential null pointer dereference vulnerability. The function
+    `bsii` may return a value that leads to accessing an invalid index in the `sizes`
+    array if `$STR` is null. This can cause undefined behavior or crashes. To fix
+    this, add a null check before accessing the array, as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/c713b5f994cf7b29164c3b6838b91f0499591434
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

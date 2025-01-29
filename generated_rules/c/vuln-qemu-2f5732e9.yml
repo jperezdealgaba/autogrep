@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-2f5732e9
+  pattern: "if ($CONFIG_LEN != $VDEV->config_len) {\n    $ERROR_REPORT(...);\n   \
+    \ return -1;\n}\nqemu_get_buffer($F, $VDEV->config, $VDEV->config_len);\n"
+  pattern-not: "qemu_get_buffer($F, $VDEV->config, MIN($CONFIG_LEN, $VDEV->config_len));\n\
+    while ($CONFIG_LEN > $VDEV->config_len) {\n    qemu_get_byte($F);\n    $CONFIG_LEN--;\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code directly uses the device''s config length without validating
+    the incoming config length, which can lead to buffer overflows or underflows.
+    This is dangerous because it can result in memory corruption or information disclosure.
+    The fix involves using MIN to ensure only the valid portion of the config is read
+    and skipping any excess bytes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/2f5732e9648fcddc8759a8fd25c0b41a38352be6
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - c

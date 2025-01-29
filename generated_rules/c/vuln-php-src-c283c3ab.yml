@@ -1,0 +1,37 @@
+rules:
+- id: vuln-php-src-c283c3ab
+  pattern: 'xmlSubstituteEntitiesDefault(1);
+
+    ...
+
+    xmlSubstituteEntitiesDefault($PREV);
+
+    xmlLoadExtDtdDefaultValue = $PREV2;
+
+    '
+  pattern-not: 'PHP_LIBXML_SANITIZE_GLOBALS($X);
+
+    ...
+
+    PHP_LIBXML_RESTORE_GLOBALS($X);
+
+    '
+  languages:
+  - c
+  message: "Found unsafe manipulation of libxml global state without proper sanitization.\n\
+    Directly modifying libxml globals like xmlSubstituteEntitiesDefault and \nxmlLoadExtDtdDefaultValue\
+    \ without proper cleanup can lead to security\nvulnerabilities and state pollution\
+    \ between requests. \nUse PHP_LIBXML_SANITIZE_GLOBALS and PHP_LIBXML_RESTORE_GLOBALS\
+    \ macros instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/c283c3ab0ba45d21b2b8745c1f9c7cbfe771c975
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.php.net/manual/en/class.libxmlerror.php
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-php-src-c818d0d0
+  pattern: "char $BUF[18];\n...\nif(strlen($TEXT) < 17) {\n  return -1;\n}\n...\n\
+    *$VALUE = mktime($TM);\n"
+  pattern-not: "char $BUF[30];\n...\nif ($P2 - $BUF >= sizeof($BUF)) {\n  return -1;\n\
+    }\n...\n*$VALUE = mkgmtime($TM);\n"
+  languages:
+  - c
+  message: 'The code uses a fixed-size buffer and `strlen` check which can lead to
+    buffer overflows or crashes when handling invalid datetime values. This vulnerability
+    was fixed by increasing the buffer size and using proper bounds checking. Always
+    ensure proper buffer size and bounds checking when handling datetime values to
+    prevent crashes and potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/c818d0d01341907fee82bdb81cab07b7d93bb9db
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-131
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

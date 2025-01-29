@@ -1,0 +1,43 @@
+rules:
+- id: vuln-php-src-426aeb28
+  pattern: '$TMP = emalloc($LEN + 1);
+
+    memcpy($TMP, $S, $LEN);
+
+    ...
+
+    efree($TMP);
+
+    '
+  pattern-not: '$TMP = safe_emalloc($STR_LEN, 1, $LEN + 1);
+
+    memcpy($TMP, $STR_VAL, $STR_LEN);
+
+    memcpy($TMP + $STR_LEN, $S, $LEN);
+
+    ...
+
+    efree($TMP);
+
+    '
+  languages:
+  - c
+  message: 'Unsafe memory allocation and copy operations detected. The use of `emalloc`
+    followed by `memcpy` without proper bounds checking can lead to buffer overflows.
+    This vulnerability is dangerous as it can be exploited to execute arbitrary code
+    or cause a denial of service. To fix this, use `safe_emalloc` to ensure proper
+    bounds checking and handle string concatenation safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/426aeb2808955ee3d3f52e0cfb102834cdb836a5
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

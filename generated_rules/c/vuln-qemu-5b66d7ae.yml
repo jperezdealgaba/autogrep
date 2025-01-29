@@ -1,0 +1,36 @@
+rules:
+- id: vuln-qemu-5b66d7ae
+  pattern: 'int64_t min = $ADDR + ((int64_t)$BLT_HEIGHT - 1) * $PITCH;
+
+    int32_t max = $ADDR + $BLT_WIDTH;
+
+    if (min < 0 || max > $VRAM_SIZE) { ... }
+
+    '
+  pattern-not: 'int64_t min = $ADDR + ((int64_t)$BLT_HEIGHT - 1) * $PITCH - $BLT_WIDTH;
+
+    if (min < -1 || $ADDR >= $VRAM_SIZE) { ... }
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in memory boundary
+    checks.
+
+    The original code fails to account for the full range of possible memory addresses,
+
+    which could lead to out-of-bounds memory access. The fixed version correctly
+
+    calculates the minimum address and checks for valid bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/5b66d7ae89411c01657ebfe76b9a8be346a4b1be
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp: 'A1: Injection'
+    technology:
+    - c

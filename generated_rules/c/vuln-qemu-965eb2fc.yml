@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-965eb2fc
+  pattern: 'diff = int128_sub($SECTION->mr->size, int128_make64($ADDR));
+
+    *plen = int128_get64(int128_min(diff, int128_make64(*plen)));
+
+    '
+  pattern-not: "$MR = $SECTION->mr;\nif (memory_region_is_ram($MR)) {\n    diff =\
+    \ int128_sub($MR->size, int128_make64($ADDR));\n    *plen = int128_get64(int128_min(diff,\
+    \ int128_make64(*plen)));\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe memory region size calculation without checking if the
+    region is RAM.
+
+    This can lead to incorrect memory access and potential security vulnerabilities.
+
+    The fix involves checking if the memory region is RAM before performing the calculation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/965eb2fcdfe919ecced6c34803535ad32dc1249c
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

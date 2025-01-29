@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-7f61f469
+  pattern: "static int\n$FUNC(...) {\n    ...\n    if (($VAR1 > $MAX) || ($VAR2 >\
+    \ $MAX)) {\n        return -1;\n    }\n    ...\n}\n"
+  pattern-not: "static void\n$FUNC(...) {\n    ...\n    if (!$VAR1\n        || $VAR1\
+    \ > $MAX\n        || !$VAR2\n        || $VAR2 > $MAX) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The function performs bounds checking on ring buffer sizes but fails to
+    check for zero values, which could lead to division by zero or other undefined
+    behavior. The fix adds checks for zero values and changes the return type to void
+    since the function doesn''t need to return a value. Always validate both upper
+    and lower bounds of critical parameters and consider whether return values are
+    actually needed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/7f61f4690dd153be98900a2a508b88989e692753
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp: A1:2017-Injection
+    technology:
+    - c

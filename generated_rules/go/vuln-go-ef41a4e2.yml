@@ -1,0 +1,23 @@
+rules:
+- id: vuln-go-ef41a4e2
+  pattern: 'io.Copy($FILE, io.MultiReader($BUFFER, $PART))
+
+    '
+  pattern-not: 'io.CopyBuffer(writerOnly{$FILE}, $PART, $COPYBUF)
+
+    '
+  languages:
+  - go
+  message: "Using io.Copy with io.MultiReader can lead to inefficient memory usage\
+    \ and potential resource exhaustion. \nThe fix introduces a reusable buffer and\
+    \ uses io.CopyBuffer for more efficient copying. \nReplace io.Copy with io.CopyBuffer\
+    \ and use a reusable buffer for better memory management.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/ef41a4e2face45e580c5836eaebd51629fc23f15
+    category: performance
+    cwe:
+    - CWE-400
+    owasp: A9:2021 - Security Logging and Monitoring Failures
+    technology:
+    - go

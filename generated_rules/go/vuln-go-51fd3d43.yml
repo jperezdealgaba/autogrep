@@ -1,0 +1,29 @@
+rules:
+- id: vuln-go-51fd3d43
+  pattern: 'b.runOut($DIR, $IMPORT_PATH, nil, b.PkgconfigCmd(), $FLAG, "--", $PKGS)
+
+    '
+  pattern-not: 'b.runOut($DIR, $IMPORT_PATH, nil, b.PkgconfigCmd(), $FLAG, $PFLAGS,
+    "--", $PKGS)
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure handling of pkg-config flags in Go build process. The
+    vulnerability allows for potential injection of unsafe flags when processing package
+    arguments. The fix ensures that flags are properly separated from package arguments
+    using a dedicated variable. Always separate flags from package arguments to prevent
+    flag injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/51fd3d43da17fa897aa6e0bfbfdb1844f3579fbf
+    category: security
+    cwe:
+    - CWE-88
+    owasp: 'A1: Injection'
+    references:
+    - https://golang.org/s/invalidflag
+    technology:
+    - go

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-php-src-fadb1f8c
+  pattern: 'fpm_scoreboard_proc_get($CHILD->wp->scoreboard, $CHILD->scoreboard_i)
+
+    '
+  pattern-not: 'fpm_scoreboard_proc_get_from_child($CHILD)
+
+    '
+  languages:
+  - c
+  message: 'Direct access to scoreboard procs using child->wp->scoreboard and child->scoreboard_i
+    is unsafe. Use fpm_scoreboard_proc_get_from_child() instead to ensure proper bounds
+    checking and access control.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/fadb1f8c1d08ae62b4f0a16917040fde57a3b93b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    technology:
+    - c

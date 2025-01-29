@@ -1,0 +1,43 @@
+rules:
+- id: vuln-strapi-b2e0ec5d
+  pattern: "{\n  ...,\n  \"version\": \"3.0.0-beta.17.4\",\n  ...,\n  \"dependencies\"\
+    : {\n    ...,\n    \"strapi\": \"3.0.0-beta.17.4\",\n    \"strapi-admin\": \"\
+    3.0.0-beta.17.4\",\n    \"strapi-hook-bookshelf\": \"3.0.0-beta.17.4\",\n    \"\
+    strapi-hook-knex\": \"3.0.0-beta.17.4\",\n    \"strapi-hook-mongoose\": \"3.0.0-beta.17.4\"\
+    ,\n    \"strapi-middleware-views\": \"3.0.0-beta.17.4\",\n    \"strapi-plugin-content-manager\"\
+    : \"3.0.0-beta.17.4\",\n    \"strapi-plugin-content-type-builder\": \"3.0.0-beta.17.4\"\
+    ,\n    \"strapi-plugin-documentation\": \"3.0.0-beta.17.4\",\n    \"strapi-plugin-email\"\
+    : \"3.0.0-beta.17.4\",\n    \"strapi-plugin-graphql\": \"3.0.0-beta.17.4\",\n\
+    \    \"strapi-plugin-upload\": \"3.0.0-beta.17.4\",\n    \"strapi-plugin-users-permissions\"\
+    : \"3.0.0-beta.17.4\",\n    \"strapi-provider-email-mailgun\": \"3.0.0-beta.17.4\"\
+    ,\n    \"strapi-provider-upload-aws-s3\": \"3.0.0-beta.17.4\",\n    \"strapi-utils\"\
+    : \"3.0.0-beta.17.4\",\n    ...\n  },\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"3.0.0-beta.17.5\",\n  ...,\n  \"dependencies\"\
+    : {\n    ...,\n    \"strapi\": \"3.0.0-beta.17.5\",\n    \"strapi-admin\": \"\
+    3.0.0-beta.17.5\",\n    \"strapi-hook-bookshelf\": \"3.0.0-beta.17.5\",\n    \"\
+    strapi-hook-knex\": \"3.0.0-beta.17.5\",\n    \"strapi-hook-mongoose\": \"3.0.0-beta.17.5\"\
+    ,\n    \"strapi-middleware-views\": \"3.0.0-beta.17.5\",\n    \"strapi-plugin-content-manager\"\
+    : \"3.0.0-beta.17.5\",\n    \"strapi-plugin-content-type-builder\": \"3.0.0-beta.17.5\"\
+    ,\n    \"strapi-plugin-documentation\": \"3.0.0-beta.17.5\",\n    \"strapi-plugin-email\"\
+    : \"3.0.0-beta.17.5\",\n    \"strapi-plugin-graphql\": \"3.0.0-beta.17.5\",\n\
+    \    \"strapi-plugin-upload\": \"3.0.0-beta.17.5\",\n    \"strapi-plugin-users-permissions\"\
+    : \"3.0.0-beta.17.5\",\n    \"strapi-provider-email-mailgun\": \"3.0.0-beta.17.5\"\
+    ,\n    \"strapi-provider-upload-aws-s3\": \"3.0.0-beta.17.5\",\n    \"strapi-utils\"\
+    : \"3.0.0-beta.17.5\",\n    ...\n  },\n  ...\n}\n"
+  languages:
+  - json
+  message: Detected outdated Strapi package versions (3.0.0-beta.17.4). Using outdated
+    versions can expose your application to security vulnerabilities and bugs. Upgrade
+    all Strapi packages to version 3.0.0-beta.17.5 or later.
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/b2e0ec5d1f33d82c321c03a469832061e9fbca00
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://strapi.io/documentation/developer-docs/latest/update-migration-guides/migration-guides.html
+    technology:
+    - json

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-frr-d28c9042
+  pattern: "bgp_notify_send_with_data(\n  $PEER, BGP_NOTIFY_UPDATE_ERR,\n  BGP_NOTIFY_UPDATE_OPT_ATTR_ERR,\
+    \ $STARTP, $TOTAL\n);\n"
+  pattern-not: 'bgp_attr_malformed($ARGS, BGP_NOTIFY_UPDATE_OPT_ATTR_ERR, $ARGS->total);
+
+    '
+  languages:
+  - c
+  message: 'The code directly calls `bgp_notify_send_with_data` instead of using the
+    safer `bgp_attr_malformed` function.
+
+    This can lead to inconsistent error handling and potential security vulnerabilities.
+
+    Use `bgp_attr_malformed` to ensure proper error handling and attribute validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/d28c904206c0c1587caa215c903613755c3764e9
+    category: security
+    cwe:
+    - CWE-20
+    technology:
+    - c

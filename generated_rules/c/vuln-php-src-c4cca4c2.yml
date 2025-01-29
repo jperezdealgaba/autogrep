@@ -1,0 +1,25 @@
+rules:
+- id: vuln-php-src-c4cca4c2
+  pattern: "if (!strcmp($ATTS[$I], $EL) && $ATTS[++$I] && $ATTS[$I][0]) {\n  ...\n\
+    }\n"
+  pattern-not: "if (!strcmp($ATTS[$I], $EL) && $ATTS[$I+1] && $ATTS[$I+1][0]) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe array index increment within a condition. This pattern
+    can lead to out-of-bounds access or incorrect data processing. The issue arises
+    when the array index `i` is incremented within the condition check, which can
+    cause unexpected behavior. Instead, increment the index after the condition check
+    to ensure safe array access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/c4cca4c20e75359c9a13a1f9a36cb7b4e9601d29
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

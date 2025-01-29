@@ -1,0 +1,21 @@
+rules:
+- id: vuln-qemu-36a894ae
+  pattern: const MemTxAttrs $ATTRS = MEMTXATTRS_UNSPECIFIED;
+  pattern-not: const MemTxAttrs $ATTRS = { .memory = true };
+  languages:
+  - c
+  message: "The use of MEMTXATTRS_UNSPECIFIED can lead to undefined behavior or security\
+    \ vulnerabilities \nas it does not explicitly set the memory attributes. This\
+    \ can result in incorrect memory \nhandling, potentially leading to memory corruption\
+    \ or unauthorized access. To fix this, \nexplicitly set the memory attributes\
+    \ using `{ .memory = true }`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/36a894aeb64a2e02871016da1c37d4a4ca109182
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - c

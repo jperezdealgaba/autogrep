@@ -1,0 +1,25 @@
+rules:
+- id: vuln-piwigo-cc99c0f1
+  pattern: "$activate_url = get_root_url().'admin.php?page=plugins'\n  . '&amp;plugin='\
+    \ . $_GET['plugin_id']\n  . '&amp;pwg_token=' . get_pwg_token()\n  . '&amp;action=activate'\n\
+    \  . '&amp;filter=deactivated';\n"
+  pattern-not: '$activate_url = get_root_url().''admin.php?page=plugins&amp;filter=deactivated'';
+
+    '
+  languages:
+  - php
+  message: "Detected insecure URL construction using user-controlled input ($_GET['plugin_id']).\
+    \ \nThis could allow an attacker to manipulate the plugin_id parameter and potentially\
+    \ \nactivate malicious plugins. Since Piwigo 12, plugin activation should be handled\
+    \ \nthrough the plugins page interface rather than direct URL parameters. Remove\
+    \ the \nplugin_id parameter from the URL construction.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/cc99c0f1e967c5f1722a0cce30ff42374a7bbc23
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

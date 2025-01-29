@@ -1,0 +1,21 @@
+rules:
+- id: vuln-qemu-e49884a9
+  pattern: "if (++$VAR > $MAX) {\n  ...\n}\n"
+  pattern-not: "if (++$VAR > $MAX || $REENTRANCY_LEVEL > $LIMIT) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential reentrancy vulnerability due to missing reentrancy\
+    \ level check. \nThis can lead to memory corruption, stack overflow, or use-after-free\
+    \ issues. \nTo fix, ensure reentrancy level is checked and limited to prevent\
+    \ infinite loops or excessive recursion.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/e49884a90987744ddb54b2fadc770633eb6a4d62
+    category: security
+    cwe:
+    - CWE-674
+    owasp: A10:2021 - Server-Side Request Forgery
+    references:
+    - https://gitlab.com/qemu-project/qemu/-/issues/1563
+    technology:
+    - c

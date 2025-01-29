@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-179821c9
+  pattern: "if $COND {\n  return errors.New(\"http: invalid Host header\")\n}\n"
+  pattern-not: "if $COND {\n  $HOST = \"\"\n} else {\n  return errors.New(\"http:\
+    \ invalid Host header\")\n}\n"
+  languages:
+  - go
+  message: 'Detected a potential Host header validation vulnerability. Previously,
+    invalid Host headers would return an error, which could lead to header or request
+    smuggling. The fix ensures that invalid Host headers are zeroed out when not using
+    a proxy, preventing potential smuggling vectors. Update the code to handle invalid
+    Host headers by setting them to an empty string when not using a proxy.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/179821c9e12d18c8134429fabe50d3dfaecb948e
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://go.dev/issue/61431
+    technology:
+    - go

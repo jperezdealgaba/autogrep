@@ -1,0 +1,27 @@
+rules:
+- id: vuln-php-src-35ceea92
+  pattern: '$VAR->socket_mode = 0666
+
+    '
+  pattern-not: '$VAR->socket_mode = 0660
+
+    '
+  languages:
+  - c
+  message: 'Detected insecure socket mode setting (0666). This allows any user to
+    read/write to the socket, which can lead to unauthorized access or data manipulation.
+    Change the socket mode to 0660 to restrict access to the owner and group only.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/35ceea928b12373a3b1e3eecdc32ed323223a40d
+    category: security
+    cwe:
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/276.html
+    technology:
+    - c

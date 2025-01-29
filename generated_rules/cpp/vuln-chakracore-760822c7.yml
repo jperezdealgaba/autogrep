@@ -1,0 +1,29 @@
+rules:
+- id: vuln-chakracore-760822c7
+  pattern: "bool $VAR = false;\nif (TryOptimizeCallInstrWithFixedMethod($CALL, $INLINEEDATA,\
+    \ false, true, false, true, $VAR))\n{\n    Assert($CALL->m_opcode == Js::OpCode::CallIFixed);\n\
+    \    Assert($CALL->GetFixedFunction()->GetFuncInfoAddr() == $INLINEEDATA->GetFunctionInfoAddr());\n\
+    }\nelse\n{\n    IR::BailOutInstr * $BAILOUT = IR::BailOutInstr::New(Js::OpCode::BailOnNotBuiltIn,\
+    \ IR::BailOutOnInlineFunction, $CALL, $CALL->m_func);\n    InsertFunctionObjectCheck($CALL,\
+    \ $CALL, $BAILOUT, $INLINEEDATA);\n}\n"
+  pattern-not: 'IR::ByteCodeUsesInstr* $VAR = EmitFixedMethodOrFunctionObjectChecksForBuiltIns($CALL,
+    $CALL, $INLINEEDATA, false, true, false, true);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected vulnerable inline function optimization in ChakraCore. The original
+    code performs unsafe function object checks and bailout handling which could lead
+    to security vulnerabilities. The code was fixed by using EmitFixedMethodOrFunctionObjectChecksForBuiltIns
+    which provides safer handling of built-in function checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/760822c7bf4ffd5e773da14bc35d9c07d672f0c7
+    category: security
+    cwe:
+    - CWE-125
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

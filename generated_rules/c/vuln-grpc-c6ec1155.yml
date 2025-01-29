@@ -1,0 +1,30 @@
+rules:
+- id: vuln-grpc-c6ec1155
+  pattern: '$ERR->arena_capacity = (uint8_t)(3 * $ERR->arena_capacity / 2);
+
+    '
+  pattern-not: '$ERR->arena_capacity = (uint8_t)GPR_MIN(UINT8_MAX - 1, (3 * $ERR->arena_capacity
+    / 2));
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe integer arithmetic in arena capacity calculation that
+    could lead to integer overflow.
+
+    The original code directly multiplies and divides the capacity without checking
+    for overflow, which could result in incorrect memory allocation.
+
+    The fix uses GPR_MIN to ensure the result doesn''t exceed UINT8_MAX - 1. Always
+    use safe arithmetic operations when dealing with potentially large values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/grpc/grpc/commit/c6ec1155d026c91b1badb07ef1605bb747cff064
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp: 'A2: Cryptographic Failures'
+    technology:
+    - c

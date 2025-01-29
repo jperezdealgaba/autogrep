@@ -1,0 +1,25 @@
+rules:
+- id: vuln-zitadel-4a262e42
+  pattern: '$VAR.BrowserInfo.ToUserAgent()
+
+    '
+  pattern-not: '$VAR.ToUserAgent()
+
+    '
+  languages:
+  - go
+  message: "Directly accessing BrowserInfo's ToUserAgent method can lead to null pointer\
+    \ dereference if BrowserInfo is nil. \nUse the AuthRequest's ToUserAgent method\
+    \ instead, which safely handles nil BrowserInfo.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/4a262e42abac2208b02fefaf68ba1a5121649f04
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - go

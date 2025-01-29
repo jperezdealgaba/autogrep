@@ -1,0 +1,23 @@
+rules:
+- id: vuln-strapi-6e44e1e6
+  pattern: "{\n  ...,\n  \"version\": \"4.14.5\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"4.15.0\",\n  ...\n}\n"
+  languages:
+  - json
+  message: 'Detected outdated Strapi version 4.14.5. This version may contain security
+    vulnerabilities that have been fixed in version 4.15.0. It is recommended to update
+    all package versions to 4.15.0 to ensure security fixes are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/6e44e1e68db5153e485e61bdc03f42efb0311406
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://strapi.io/changelog
+    technology:
+    - json

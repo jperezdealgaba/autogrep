@@ -1,0 +1,28 @@
+rules:
+- id: vuln-squid-76f48392
+  pattern: 'return !connector && !securer && !reader && !writer && Adaptation::Initiate::doneAll();
+
+    '
+  pattern-not: "return !waitingForDns && !connector && !securer && !reader && !writer\
+    \ &&\n       Adaptation::Initiate::doneAll();\n"
+  languages:
+  - cpp
+  message: 'The code is missing a check for the `waitingForDns` flag, which could
+    lead to a race condition or incorrect state management when handling DNS lookups.
+    This vulnerability could cause the application to proceed with operations before
+    DNS resolution is complete, potentially leading to undefined behavior or security
+    issues. To fix this, ensure the `waitingForDns` flag is included in the condition
+    check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/squid-cache/squid/commit/76f483922f428702de8c68b6d3fcd4875297a095
+    category: security
+    cwe:
+    - CWE-362
+    owasp: 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - cpp

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-horde-4c3e18f1
+  pattern: 'if (empty($DN)) { ... }
+
+    if (empty($PASSWORD)) { ... }
+
+    '
+  pattern-not: 'if (is_null($DN)) { ... }
+
+    if (is_null($PASSWORD)) { ... }
+
+    '
+  languages:
+  - php
+  message: "Using `empty()` to check for null values in LDAP bind parameters can lead\
+    \ to security vulnerabilities. \nAn empty string or other falsy values might be\
+    \ accepted as valid input, potentially allowing unauthorized access. \nUse `is_null()`\
+    \ instead to explicitly check for null values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/4c3e18f1724ab39bfef10c189a5b52036a744d55
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

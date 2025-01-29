@@ -1,0 +1,29 @@
+rules:
+- id: vuln-git-12294990
+  pattern: "if (!$NORMCOND)\n  return 0;\n...\n$RETVAL = match_urls($URL, $NORMINFO,\
+    \ $MATCHED);\n"
+  pattern-not: "if ($NORMCOND)\n  $RETVAL = match_urls($URL, $NORMINFO, $MATCHED);\n\
+    else if ($COLLECT->fallback_match_fn)\n  $RETVAL = $COLLECT->fallback_match_fn($CONFIGURL,\
+    \ $COLLECT->cb);\nelse\n  $RETVAL = 0;\n"
+  languages:
+  - c
+  message: 'The code contains a vulnerability where it returns early without considering
+    fallback mechanisms for URL matching. This can lead to incomplete or incorrect
+    credential matching, potentially exposing sensitive information. The fix ensures
+    that if the primary URL matching fails, a fallback mechanism is used to attempt
+    the match, improving security and reliability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/git-for-windows/git/commit/12294990c90e043862be9eb7eb22c3784b526340
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control/
+    technology:
+    - c

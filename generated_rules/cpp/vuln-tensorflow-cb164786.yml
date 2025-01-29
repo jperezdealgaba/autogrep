@@ -1,0 +1,22 @@
+rules:
+- id: vuln-tensorflow-cb164786
+  pattern: 'DCHECK($RET.status().ok()) << $MSG;
+
+    '
+  pattern-not: "if (!$RET.status().ok()) {\n  $VAR = $RET.status();\n  return;\n}\n"
+  languages:
+  - cpp
+  message: "Using DCHECK with status checks can lead to unhandled errors in release\
+    \ builds. \nThe DCHECK macro is only active in debug builds, making status errors\
+    \ go \nunnoticed in production. Instead, explicitly check the status and handle\
+    \ \nerrors appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/tensorflow/tensorflow/commit/cb164786dc891ea11d3a900e90367c339305dc7b
+    category: reliability
+    cwe:
+    - CWE-754
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    technology:
+    - cpp

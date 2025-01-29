@@ -1,0 +1,38 @@
+rules:
+- id: vuln-php-src-8d2539fa
+  pattern: 'object_init_ex(&$OBJ, $PCE);
+
+    zend_hash_merge(Z_OBJPROP($OBJ), Z_ARRVAL($ENT->data), zval_add_ref, 0);
+
+    ...
+
+    zval_ptr_dtor(&$ENT->data);
+
+    ZVAL_COPY_VALUE(&$ENT->data, &$OBJ);
+
+    '
+  pattern-not: "if (object_init_ex(&$OBJ, $PCE) != SUCCESS || EG(exception)) {\n \
+    \ zval_ptr_dtor(&$ENT->data);\n  ZVAL_UNDEF(&$ENT->data);\n  php_error_docref(NULL,\
+    \ E_WARNING, \"Class %s can not be instantiated\", Z_STRVAL($ENT->data));\n} else\
+    \ {\n  zend_hash_merge(Z_OBJPROP($OBJ), Z_ARRVAL($ENT->data), zval_add_ref, 0);\n\
+    \  ...\n  zval_ptr_dtor(&$ENT->data);\n  ZVAL_COPY_VALUE(&$ENT->data, &$OBJ);\n\
+    }\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when object initialization is not checked for
+    success before proceeding with object manipulation. This can lead to undefined
+    behavior if the object fails to initialize. The fix ensures that object initialization
+    is properly checked and handles the error case by cleaning up resources and issuing
+    a warning.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/8d2539fa0faf3f63e1d1e7635347c5b9e777d47b
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

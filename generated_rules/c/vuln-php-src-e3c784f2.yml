@@ -1,0 +1,31 @@
+rules:
+- id: vuln-php-src-e3c784f2
+  pattern: 'append_win_escaped_arg($STR, $ARG);
+
+    '
+  pattern-not: 'append_win_escaped_arg($STR, $ARG, $IS_CMD_ARG);
+
+    '
+  languages:
+  - c
+  message: 'Detected insecure command argument handling in Windows environment. When
+    executing commands via cmd.exe, special characters in arguments must be properly
+    escaped to prevent command injection. The patch adds proper escaping for special
+    characters like ()!^"<>&|% when the command is executed by cmd.exe. To fix this,
+    ensure that special characters are escaped appropriately when processing command
+    arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e3c784f2bfb6029b49d27783b2efc87ee6923f79
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://docs.microsoft.com/en-us/cpp/cpp/parsing-cpp-command-line-arguments
+    - https://learn.microsoft.com/en-us/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
+    technology:
+    - c

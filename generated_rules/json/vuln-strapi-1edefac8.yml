@@ -1,0 +1,21 @@
+rules:
+- id: vuln-strapi-1edefac8
+  pattern: "{\n  ...,\n  \"version\": \"4.11.5\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"4.11.7\",\n  ...\n}\n"
+  languages:
+  - json
+  message: Using outdated version 4.11.5 of Strapi packages can expose the application
+    to known vulnerabilities. Upgrade to version 4.11.7 to ensure security patches
+    are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/1edefac8a3274b936b4a8654dfbffbf9c4f71e5e
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://strapi.io/security
+    technology:
+    - json

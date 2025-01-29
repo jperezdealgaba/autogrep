@@ -1,0 +1,28 @@
+rules:
+- id: vuln-tensorflow-da855853
+  pattern: 'outputs->push_back(Tensor(*context.mutable_output($I)));
+
+    '
+  pattern-not: "const auto* $VAR = context.mutable_output($I);\nif ($VAR != nullptr)\
+    \ {\n  outputs->push_back(Tensor(*$VAR));\n} else {\n  outputs->push_back(Tensor());\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'The code directly dereferences the output of `context.mutable_output(i)`
+    without checking if it is null. This can lead to a null pointer dereference, causing
+    undefined behavior or crashes. To fix this, always check if the pointer is null
+    before dereferencing it, and handle the null case appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/da8558533d925694483d2c136a9220d6d49d843c
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

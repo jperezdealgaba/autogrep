@@ -1,0 +1,43 @@
+rules:
+- id: vuln-sudo-bd209b9f
+  pattern: 'char $VAR;
+
+    ...
+
+    $SAV = $PASS[8];
+
+    ...
+
+    $PASS[8] = ''\0'';
+
+    ...
+
+    $PASS[8] = $SAV;
+
+    '
+  pattern-not: 'char $DES_PASS[9];
+
+    ...
+
+    strlcpy($DES_PASS, $PASS, sizeof($DES_PASS));
+
+    $PASS = $DES_PASS;
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe manipulation of password array by temporarily truncating
+    it. This can lead to buffer overflows and undefined behavior. Use a separate buffer
+    with proper bounds checking instead of modifying the original array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/bd209b9f16fcd1270c13db27ae3329c677d48050
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c

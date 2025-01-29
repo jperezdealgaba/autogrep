@@ -1,0 +1,26 @@
+rules:
+- id: vuln-sudo-ab2cba0f
+  pattern: 'getln($FD, $BUF, $BUFSIZ, $FEEDBACK)
+
+    '
+  pattern-not: 'getln($FD, $BUF, $BUFSIZ, $FEEDBACK, $ERRVAL)
+
+    '
+  languages:
+  - c
+  message: 'The function `getln` is being called without an error handling mechanism,
+    which can lead to unhandled errors during password input. This can result in security
+    issues such as unhandled timeouts or read errors. To fix this, ensure that `getln`
+    is called with an additional `errval` parameter to handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/ab2cba0f5d8b286e8e52c06076efd32434f538ae
+    category: security
+    cwe:
+    - CWE-755
+    owasp:
+    - A07:2021-Identification and Authentication Failures
+    technology:
+    - c

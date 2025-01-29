@@ -1,0 +1,25 @@
+rules:
+- id: vuln-go-7a75a55c
+  pattern: 'C.FetchPEMRoots($DATA)
+
+    '
+  pattern-not: 'C.FetchPEMRoots($DATA, $UNTRUSTED_DATA)
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure usage of FetchPEMRoots without checking untrusted certificates.
+
+    This can lead to acceptance of untrusted root certificates in the certificate
+    chain.
+
+    Update to use the new FetchPEMRoots API that separates trusted and untrusted certificates.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/7a75a55cc44b92836f342e9eeb0f5b1ce20821eb
+    category: security
+    cwe: 'CWE-295: Improper Certificate Validation'
+    owasp: A09:2021 - Security Logging and Monitoring Failures
+    technology: go

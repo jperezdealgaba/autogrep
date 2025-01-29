@@ -1,0 +1,23 @@
+rules:
+- id: vuln-vim-2a585c85
+  pattern: "curbuf->b_op_end.col = $COL - 1\n    - mb_head_off($Y_ARRAY[$Y_SIZE -\
+    \ 1], $LEN);\n"
+  pattern-not: "{\n    curbuf->b_op_end.col = $COL - 1;\n    if ($LEN > 0)\n     \
+    \   curbuf->b_op_end.col -= mb_head_off($Y_ARRAY[$Y_SIZE - 1], $LEN);\n}\n"
+  languages:
+  - c
+  message: "Detected a potential vulnerability where `mb_head_off` is used without\
+    \ checking if `len > 0`. \nThis can lead to undefined behavior or crashes when\
+    \ `len` is zero or negative. \nAlways ensure to check the length before performing\
+    \ operations that depend on it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/2a585c85013be22f59f184d49612074fd9b115d7
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

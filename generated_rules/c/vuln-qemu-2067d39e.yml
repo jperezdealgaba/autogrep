@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-2067d39e
+  pattern: "if ($ADDR + $SIZE > NVME_CMBSZ_GETSIZE($N->bar.cmbsz)) {\n    return $RETURN;\n\
+    }\n"
+  pattern-not: "if ($ADDR + $SIZE > NVME_CMBSZ_GETSIZE($N->bar.cmbsz)) {\n    return;\n\
+    }\n"
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability due to missing bounds\
+    \ checking. \nThis can lead to memory corruption or unauthorized access to memory\
+    \ regions. \nEnsure proper bounds checking is implemented before accessing memory.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/2067d39e5e53b053bece6fa15711640123c119ed
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

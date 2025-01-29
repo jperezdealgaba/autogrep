@@ -1,0 +1,27 @@
+rules:
+- id: vuln-frr-3515178d
+  pattern: "if (*$PNT & $MASK) {\n  ...\n}\n"
+  pattern-not: "if ($PNT < $P_END && *$PNT & $MASK) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to missing bounds
+    check before pointer dereference.
+
+    This is dangerous as it could allow reading past the end of a buffer, leading
+    to undefined behavior or memory corruption.
+
+    Always validate that pointers are within bounds before dereferencing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/3515178de4a56d66ed948a774efcbe4a854e1ca7
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

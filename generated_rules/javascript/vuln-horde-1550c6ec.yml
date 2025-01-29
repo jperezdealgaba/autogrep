@@ -1,0 +1,27 @@
+rules:
+- id: vuln-horde-1550c6ec
+  pattern: '$(''$ELEMENT'').update($TEXT + '' ('' + $F($VAR) + '')'')
+
+    '
+  pattern-not: '$(''$ELEMENT'').update($TEXT + '' ('' + $F($VAR).escapeHTML() + '')'')
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability detected. User input is being directly inserted\
+    \ into the DOM without proper escaping. \nThis can lead to cross-site scripting\
+    \ attacks where malicious scripts can be executed in the victim's browser.\nTo\
+    \ fix this, always escape user input using .escapeHTML() or similar sanitization\
+    \ methods before inserting it into the DOM.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/1550c6ecd7204f9579fcbb09ec7089e01b0771e2
+    category: security
+    cwe: CWE-79
+    owasp: A03:2021 - Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html
+    technology:
+    - javascript
+    - dom

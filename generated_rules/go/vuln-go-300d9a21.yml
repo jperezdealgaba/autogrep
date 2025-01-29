@@ -1,0 +1,29 @@
+rules:
+- id: vuln-go-300d9a21
+  pattern: "func fixTransferEncoding($METHOD string, $HEADER Header) ([]string, error)\
+    \ {\n  ...\n  delete($HEADER, \"Content-Length\")\n  ...\n}\n"
+  pattern-not: "func fixTransferEncoding($ISRESPONSE bool, $METHOD string, $HEADER\
+    \ Header) ([]string, error) {\n  ...\n  if len($HEADER[\"Content-Length\"]) >\
+    \ 0 {\n    if !$ISRESPONSE {\n      return nil, errors.New(\"http: invalid Content-Length\
+    \ with Transfer-Encoding\")\n    }\n    delete($HEADER, \"Content-Length\")\n\
+    \  }\n  ...\n}\n"
+  languages:
+  - go
+  message: "Detected a potential HTTP request smuggling vulnerability due to improper\
+    \ handling of Content-Length and Transfer-Encoding headers. \nThe original code\
+    \ deleted the Content-Length header without proper validation when Transfer-Encoding\
+    \ was present, which could allow request smuggling attacks. \nTo fix this, ensure\
+    \ proper validation of Content-Length headers when Transfer-Encoding is present,\
+    \ especially for HTTP requests.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/300d9a21583e7cf0149a778a0611e76ff7c6680f
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.3.2
+    technology:
+    - go

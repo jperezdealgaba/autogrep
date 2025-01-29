@@ -1,0 +1,27 @@
+rules:
+- id: vuln-strapi-0b4a8109
+  pattern: '"immer": "^7.0.8"'
+  pattern-not: '"immer": "^7.0.14"'
+  languages:
+  - json
+  message: 'Using immer version ^7.0.8 is vulnerable and should be updated to ^7.0.14
+    or higher.
+
+    Older versions may contain security vulnerabilities that could lead to code execution
+    or other security issues.
+
+    Update the dependency to the latest secure version to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/0b4a8109e2c1862950de2c1a383727334d789f66
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021 - Security Logging and Monitoring Failures
+    references:
+    - https://github.com/immerjs/immer/releases
+    technology:
+    - json

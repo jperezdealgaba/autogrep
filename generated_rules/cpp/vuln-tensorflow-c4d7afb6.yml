@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-c4d7afb6
+  pattern: "void CalculateOutputIndexValueRowID(\n    OpKernelContext* $CONTEXT, const\
+    \ RowPartitionTensor& $VALUE_ROWIDS,\n    ...) {\n    ...\n    DCHECK_LT($CURRENT_VALUE_ROWID,\
+    \ $PARENT_OUTPUT_INDEX.size());\n    ...\n    DCHECK_LT($NEXT_VALUE_ROWID, $PARENT_OUTPUT_INDEX.size());\n\
+    \    ...\n}\n"
+  pattern-not: "Status CalculateOutputIndexValueRowID(\n    const RowPartitionTensor&\
+    \ $VALUE_ROWIDS,\n    ...) {\n    ...\n    if ($CURRENT_VALUE_ROWID >= $PARENT_OUTPUT_INDEX.size())\
+    \ {\n        return errors::InvalidArgument(\n            \"Got current_value_rowid=\"\
+    , $CURRENT_VALUE_ROWID,\n            \" which is not less than \", $PARENT_OUTPUT_INDEX.size());\n\
+    \    }\n    ...\n    if ($NEXT_VALUE_ROWID >= $PARENT_OUTPUT_INDEX.size()) {\n\
+    \        return errors::InvalidArgument(\n            \"Got next_value_rowid=\"\
+    , $NEXT_VALUE_ROWID,\n            \" which is not less than \", $PARENT_OUTPUT_INDEX.size());\n\
+    \    }\n    ...\n}\n"
+  languages:
+  - cpp
+  message: 'The function `CalculateOutputIndexValueRowID` uses `DCHECK_LT` to validate
+    array bounds, which is unsafe in production builds. This can lead to out-of-bounds
+    access if the check fails. Replace `DCHECK_LT` with proper error handling using
+    `if` statements and return an error status.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/tensorflow/tensorflow/commit/c4d7afb6a5986b04505aca4466ae1951686c80f6
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

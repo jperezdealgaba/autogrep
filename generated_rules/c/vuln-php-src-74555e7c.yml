@@ -1,0 +1,28 @@
+rules:
+- id: vuln-php-src-74555e7c
+  pattern: free($RBUF);
+  pattern-not: efree($RBUF);
+  languages:
+  - c
+  message: 'The use of ''free()'' instead of ''efree()'' can lead to memory management
+    issues in PHP extensions.
+
+    ''free()'' should not be used directly in PHP extensions as it bypasses PHP''s
+    internal memory management system.
+
+    Replace ''free()'' with ''efree()'' to ensure proper memory handling within PHP''s
+    memory management system.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/74555e7c26b2c61bb8e67b7d6a6f4d2b8eb3a5f3
+    category: security
+    cwe:
+    - CWE-763
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.php.net/manual/en/internals2.memory.management.php
+    technology:
+    - c

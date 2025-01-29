@@ -1,0 +1,31 @@
+rules:
+- id: vuln-showdoc-409c8a12
+  pattern: '<script type=text/javascript src=./static/js/app.8a9350efdba95123bddd.js></script>
+
+    '
+  pattern-not: '<script type=text/javascript src=./static/js/app.f55134787766bd0dbf66.js></script>
+
+    '
+  languages:
+  - html
+  message: 'Detected a vulnerable JavaScript file reference. The file hash in the
+    URL appears to be outdated,
+
+    which could lead to loading of incorrect or malicious JavaScript code. Always
+    ensure JavaScript
+
+    files reference the correct version to prevent security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/409c8a1208bbb847046a9496303192980f2e6219
+    category: security
+    cwe:
+    - 'CWE-829: Inclusion of Functionality from Untrusted Control Sphere'
+    owasp:
+    - 'A6: Vulnerable and Outdated Components'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Vulnerable_and_Outdated_Components
+    technology:
+    - html

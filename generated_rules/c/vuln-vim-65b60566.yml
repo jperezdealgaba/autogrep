@@ -1,0 +1,26 @@
+rules:
+- id: vuln-vim-65b60566
+  pattern: 'len2 += MB_CHAR2LEN($VAR);
+
+    '
+  pattern-not: 'len2 += enc_utf8 ? utf_ptr2len(rex.line + col + len2) : MB_CHAR2LEN($VAR);
+
+    '
+  languages:
+  - c
+  message: 'The code uses MB_CHAR2LEN without checking if the encoding is UTF-8, which
+    can lead to incorrect character length calculations and potential security vulnerabilities.
+    Always check the encoding before using MB_CHAR2LEN and use the appropriate function
+    for UTF-8 encoding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/65b605665997fad54ef39a93199e305af2fe4d7f
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

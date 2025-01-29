@@ -1,0 +1,22 @@
+rules:
+- id: vuln-go-9210eaf7
+  pattern: "if int64(uint($EXP)) != $EXP {\n  panic(\"exponent too large\")\n}\n"
+  pattern-not: "if $EXP < -1e7 || $EXP > 1e7 {\n  return nil, false\n}\n"
+  languages:
+  - go
+  message: "Detected an unsafe exponent check that could lead to denial of service.\
+    \ \nThe original code panics when an exponent is too large, which can be exploited\
+    \ to crash the application. \nInstead, return an error or handle the large exponent\
+    \ gracefully to avoid service disruption.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/9210eaf7dc704612a6eda97c482012f779fd833b
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://github.com/golang/go/issues/45910
+    technology:
+    - go

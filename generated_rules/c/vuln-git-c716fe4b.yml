@@ -1,0 +1,33 @@
+rules:
+- id: vuln-git-c716fe4b
+  pattern: "void credential_from_url(struct credential *$C, const char *$URL) {\n\
+    \  ...\n  $CREDENTIAL_ACCESS($C->$FIELD);\n  ...\n}\n"
+  pattern-not: "void credential_from_url(struct credential *$C, const char *$URL)\
+    \ {\n  if (credential_from_url_gently($C, $URL, 0) < 0) {\n    ...\n  }\n}\n"
+  languages:
+  - c
+  message: 'Detected potential URL component injection vulnerability. The code accesses
+    credential fields
+
+    directly without checking for newline characters, which could lead to injection
+    attacks.
+
+    The vulnerability allows attackers to inject malicious input via newline characters
+    in URL components.
+
+    To fix, use `credential_from_url_gently` which includes proper validation of URL
+    components.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/git-for-windows/git/commit/c716fe4bd917e013bf376a678b3a924447777b2d
+    category: security
+    cwe:
+    - 'CWE-93: Improper Neutralization of CRLF Sequences (''CRLF Injection'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/93.html
+    technology:
+    - c

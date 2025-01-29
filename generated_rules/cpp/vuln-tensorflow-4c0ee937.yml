@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-4c0ee937
+  pattern: 'sparse::SparseTensor::Create($INDICES, $VALUES, TensorShape($SHAPE.vec<int64>()),
+    $SPARSE_TENSOR)
+
+    '
+  pattern-not: 'sparse::SparseTensor::Create($INDICES, $VALUES, $DENSE_SHAPE, $SPARSE_TENSOR)
+
+    '
+  languages:
+  - cpp
+  message: "Directly constructing a TensorShape from a vector of int64 can lead to\
+    \ integer overflow vulnerabilities. \nThis is dangerous because it can cause incorrect\
+    \ tensor shape calculations, leading to memory corruption or out-of-bounds access.\
+    \ \nTo fix this, construct the dense shape separately and add dimensions with\
+    \ proper bounds checking.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/4c0ee937c0f61c4fc5f5d32d9bb4c67428012a60
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

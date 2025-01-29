@@ -1,0 +1,27 @@
+rules:
+- id: vuln-vim-34f8117d
+  pattern: mb_ptr2char_adv(&$VAR)
+  pattern-not: mb_cptr2char_adv(&$VAR)
+  languages:
+  - c
+  message: 'The use of mb_ptr2char_adv() is unsafe as it may lead to incorrect character
+    handling.
+
+    This function should be replaced with mb_cptr2char_adv() for proper multi-byte
+    character processing.
+
+    Using the incorrect function can cause security issues and incorrect behavior
+    when handling multi-byte characters.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/vim/vim/commit/34f8117dec685ace52cd9e578e2729db278163fc
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/vim/vim/commit/34f8117dec685ace52cd9e578e2729db278163fc
+    technology:
+    - c

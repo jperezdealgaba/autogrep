@@ -1,0 +1,34 @@
+rules:
+- id: vuln-go-e8e7facf
+  pattern: '$ENV := $B.cCompilerEnv()
+
+    ...
+
+    $RUN := $B.run(..., $ENV, ...)
+
+    '
+  pattern-not: '$ENV := $B.cgoEnv()
+
+    ...
+
+    $RUN := $B.run(..., $ENV, ...)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of `cCompilerEnv()` instead of `cgoEnv()` which can lead
+    to incorrect environment variable settings for cgo operations. This can cause
+    issues with the C compiler and linker flags, potentially leading to misconfigured
+    builds. Use `cgoEnv()` to ensure proper environment variables are set.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/e8e7facfaa47bf21007c0a1c679debba52ec3ea0
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2021-Security Misconfiguration
+    technology:
+    - go

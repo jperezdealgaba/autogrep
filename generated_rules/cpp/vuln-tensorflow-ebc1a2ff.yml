@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-ebc1a2ff
+  pattern: "bool $FUNC(const NodeDef& $NODE, const GraphProperties& $PROPERTIES) const\
+    \ {\n  ...\n  return false;\n}\n"
+  pattern-not: "Status $FUNC(const NodeDef& $NODE, const GraphProperties& $PROPERTIES)\
+    \ const {\n  ...\n  return errors::Internal(...);\n}\n"
+  languages:
+  - cpp
+  message: 'The function `IsSimplifiableReshape` was previously returning a boolean
+    `false` in error cases without providing detailed error information. This can
+    lead to silent failures and make debugging difficult. The patch changes the return
+    type to `Status` and returns detailed error messages. To fix this, ensure that
+    functions handling critical operations return detailed error information instead
+    of simple boolean values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/ebc1a2ffe5a7573d905e99bd0ee3568ee07c12c1
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A10:2021 - Insufficient Logging & Monitoring
+    references:
+    - https://en.wikipedia.org/wiki/Error_handling
+    technology:
+    - cpp

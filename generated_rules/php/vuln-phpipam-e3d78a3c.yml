@@ -1,0 +1,32 @@
+rules:
+- id: vuln-phpipam-e3d78a3c
+  pattern: "print \"\t <button class='btn btn-xs btn-default btn-success open_popup'\
+    \ data-script='app/admin/subnets/find_free_section_subnets.php'  data-class='700'\
+    \ rel='tooltip' data-container='body'  data-placement='top' title='\"._('Search\
+    \ for free subnets in section ').\" $section[name]'  data-sectionId='$section[id]'><i\
+    \ class='fa fa-sm fa-search'></i></button>\";\n"
+  pattern-not: "print \"\t <button class='btn btn-xs btn-default btn-success open_popup'\
+    \ data-script='app/admin/subnets/find_free_section_subnets.php' data-csrf_cookie='$csrf_ffss'\
+    \ data-class='700' rel='tooltip' data-container='body'  data-placement='top' title='\"\
+    ._('Search for free subnets in section ').\" $section[name]'  data-sectionId='$section[id]'><i\
+    \ class='fa fa-sm fa-search'></i></button>\";\n"
+  languages:
+  - php
+  message: 'Missing CSRF token in form submission. This makes the application vulnerable
+    to Cross-Site Request Forgery attacks where an attacker can trick users into performing
+    unwanted actions. Always include a CSRF token in forms and validate it on the
+    server side.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/e3d78a3c1e5b86e18bef86c65ab4f1976e294371
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

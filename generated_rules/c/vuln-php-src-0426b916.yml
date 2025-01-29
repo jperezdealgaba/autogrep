@@ -1,0 +1,32 @@
+rules:
+- id: vuln-php-src-0426b916
+  pattern: 'zval_ptr_dtor(&var_hash->data[$I]);
+
+    '
+  pattern-not: "if (HAS_WAKEUP_FLAG($ZV)) {\n  $ZV = WITHOUT_WAKEUP_FLAG($ZV);\n \
+    \ ...\n  zval_ptr_dtor(&$ZV);\n} else {\n  zval_ptr_dtor(&$ZV);\n}\n"
+  languages:
+  - c
+  message: 'Direct zval destruction without checking for wakeup flags can lead to
+
+    memory corruption and use-after-free vulnerabilities. The patch adds
+
+    proper wakeup flag handling before destruction. Always check for wakeup
+
+    flags and handle them appropriately before destroying zvals.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/0426b916df396a23e5c34514e4f2f0627efdcdf0
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp:
+    - 'A8: Insecure Deserialization'
+    technology:
+    - c
+    references:
+    - https://www.php.net/manual/en/language.oop5.magic.php#object.wakeup
+    - https://www.php.net/manual/en/function.unserialize.php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-php-src-16b3003f
+  pattern: "return object_common2(UNSERIALIZE_PASSTHRU,\n        object_common1(UNSERIALIZE_PASSTHRU,\
+    \ ZEND_STANDARD_CLASS_DEF_PTR));\n"
+  pattern-not: "$ELEMENTS = object_common1(UNSERIALIZE_PASSTHRU, ZEND_STANDARD_CLASS_DEF_PTR);\n\
+    if ($ELEMENTS < 0) {\n    return 0;\n}\nreturn object_common2(UNSERIALIZE_PASSTHRU,\
+    \ $ELEMENTS);\n"
+  languages:
+  - c
+  message: 'The code directly returns the result of `object_common2` without checking
+    if `object_common1` returned a negative value, which can lead to unsafe unserialization.
+    This vulnerability can be exploited to cause unexpected behavior or crashes. To
+    fix this, ensure that the result of `object_common1` is checked before proceeding
+    with `object_common2`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/16b3003ffc6393e250f069aa28a78dc5a2c064b2
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization
+    technology:
+    - c

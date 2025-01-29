@@ -1,0 +1,30 @@
+rules:
+- id: vuln-go-76f8b730
+  pattern: "func $FUNC($PATTERN string) (matches []string, err error) {\n  ...\n \
+    \ $M, $ERR = Glob($DIR)\n  ...\n}\n"
+  pattern-not: "func $FUNC($PATTERN string) (matches []string, err error) {\n  ...\n\
+    \  $M, $ERR = globWithLimit($DIR, $DEPTH+1)\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected use of Glob without depth limit, which can lead to stack exhaustion
+    vulnerabilities (CVE-2022-30632).
+
+    This vulnerability occurs when processing paths with a large number of separators,
+    potentially causing a denial of service.
+
+    To fix this, use the `globWithLimit` function with a depth limit to prevent stack
+    exhaustion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/76f8b7304d1f7c25834e2a0cc9e88c55276c47df
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-30632
+    technology:
+    - go

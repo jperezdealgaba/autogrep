@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libav-83b2b34d
+  pattern: "while ($LENGTH >= 4) {\n  ...\n  if ($EXTRACT_LENGTH > $LENGTH) {\n  \
+    \  ...\n  }\n  ...\n  $LENGTH -= $CONSUMED;\n}\n"
+  pattern-not: "while (bytestream2_get_bytes_left(&$BC) >= 4) {\n  ...\n  if ($EXTRACT_LENGTH\
+    \ > bytestream2_get_bytes_left(&$BC)) {\n    ...\n  }\n  ...\n  bytestream2_skip(&$BC,\
+    \ $CONSUMED);\n}\n"
+  languages:
+  - c
+  message: 'The code directly manipulates buffer length and pointer without proper
+    bounds checking, which can lead to out-of-bounds access vulnerabilities. This
+    pattern was fixed by using the `bytestream2` API for safer buffer handling. Replace
+    direct buffer manipulation with `bytestream2` functions to ensure proper bounds
+    checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/83b2b34d06e74cc8775ba3d833f9782505e17539
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-php-src-b158091e
+  pattern: 'BF_set_key($KEY, $EXPANDED, $INITIAL)
+
+    '
+  pattern-not: 'BF_set_key($KEY, $EXPANDED, $INITIAL, $SIGN_EXTENSION_BUG)
+
+    '
+  languages:
+  - c
+  message: 'The function `BF_set_key` is vulnerable to sign extension bugs when processing
+    certain characters in the key. This can lead to incorrect cryptographic hashes
+    being generated, potentially compromising security. The fix involves adding a
+    parameter to handle sign extension bugs explicitly. Update the function call to
+    include the `sign_extension_bug` parameter to ensure correct behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/b158091ed6f725e443b9a49fe7212596bd1c218b
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://en.wikipedia.org/wiki/Sign_extension
+    technology:
+    - c

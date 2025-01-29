@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nasm-3144e84a
+  pattern: '$P = nasm_skip_string($P - 1) + 1;
+
+    '
+  pattern-not: "$P = nasm_skip_string($P - 1);\nif (*$P)\n    $P++;\n"
+  languages:
+  - c
+  message: 'This pattern detects a potential vulnerability where the code increments
+    the pointer without checking if it points to a valid character. This could lead
+    to out-of-bounds memory access, which is dangerous as it can cause crashes, data
+    corruption, or even arbitrary code execution. To fix this, ensure that the pointer
+    is only incremented if it points to a valid character.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/3144e84add8b152cc7a71e44617ce6f21daa4ba3
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

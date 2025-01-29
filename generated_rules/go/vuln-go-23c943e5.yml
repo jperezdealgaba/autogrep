@@ -1,0 +1,36 @@
+rules:
+- id: vuln-go-23c943e5
+  pattern: "scheme := $VCS.Scheme[0]\nif $VCS.PingCmd != \"\" {\n  ...\n  if $VCS.Ping($S,\
+    \ $REPO) == nil {\n    scheme = $S\n    break\n  }\n}\n"
+  pattern-not: "scheme, err := func() (string, error) {\n  ...\n  if $VCS.PingCmd\
+    \ == \"\" {\n    return $S, nil\n  }\n  if err := $VCS.Ping($S, $REPO); err ==\
+    \ nil {\n    return $S, nil\n  }\n  return \"\", fmt.Errorf(\"no %sprotocol found\
+    \ for repository\", $SECURITYFRAG)\n}()\nif err != nil {\n  return nil, err\n\
+    }\n"
+  languages:
+  - go
+  message: 'The code directly assigns the first scheme without proper error handling
+    when pinging repositories.
+
+    This can lead to using insecure protocols when secure ones are available.
+
+    The fix adds proper error handling and security checks when selecting repository
+    protocols.
+
+    Always handle errors properly and verify protocol security when working with VCS
+    repositories.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/23c943e5296c6fa3a6f9433bd929306c4dbf2aa3
+    category: security
+    cwe:
+    - CWE-358
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/358.html
+    - https://owasp.org/www-project-top-ten/2021/A02_2021-Cryptographic_Failures
+    technology:
+    - go

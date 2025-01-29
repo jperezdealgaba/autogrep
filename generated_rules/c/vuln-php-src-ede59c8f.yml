@@ -1,0 +1,24 @@
+rules:
+- id: vuln-php-src-ede59c8f
+  pattern: "if (len >= sizeof($VAR.s)) {\n    len = sizeof($VAR.s) - sz;\n}\n"
+  pattern-not: "$SZ = sizeof($VAR.s) - sz;\nif (len >= $SZ) {\n    len = $SZ;\n}\n"
+  languages:
+  - c
+  message: "This rule detects a potential buffer overflow vulnerability caused by\
+    \ incorrect length validation. \nThe original code compares the length directly\
+    \ with the size of the buffer without considering the offset, \nwhich can lead\
+    \ to writing beyond the buffer's bounds. The fix introduces a proper calculation\
+    \ of the \nmaximum allowed length before the comparison. To fix this, always calculate\
+    \ the maximum allowed length \nseparately and use it in the comparison.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/ede59c8feb4b80e1b94e4abdaa0711051e2912ab
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

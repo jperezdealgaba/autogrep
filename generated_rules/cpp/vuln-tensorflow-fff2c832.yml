@@ -1,0 +1,44 @@
+rules:
+- id: vuln-tensorflow-fff2c832
+  pattern: '$TYPE $VAR = GetInput($CONTEXT, $NODE, $INDEX)->$FIELD;
+
+    ...
+
+    $TYPE $VAR2 = GetOutput($CONTEXT, $NODE, $INDEX2)->$FIELD2;
+
+    '
+  pattern-not: 'const $TYPE* $VAR = GetInput($CONTEXT, $NODE, $INDEX);
+
+    TF_LITE_ENSURE($CONTEXT, $VAR != nullptr);
+
+    $TYPE $VAR3 = $VAR->$FIELD;
+
+    ...
+
+    const $TYPE* $VAR2 = GetOutput($CONTEXT, $NODE, $INDEX2);
+
+    TF_LITE_ENSURE($CONTEXT, $VAR2 != nullptr);
+
+    $TYPE $VAR4 = $VAR2->$FIELD2;
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe direct dereferencing of tensor pointers without null checks.
+
+    This can lead to null pointer dereference vulnerabilities. Always check the
+
+    pointer returned by GetInput/GetOutput using TF_LITE_ENSURE before accessing its
+    fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/fff2c8326280c07733828f990548979bdc893859
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - cpp

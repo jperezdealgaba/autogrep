@@ -1,0 +1,35 @@
+rules:
+- id: vuln-qemu-ff82911c
+  pattern: 'aio_set_fd_handler($CONTEXT, $FD, ..., nbd_reply_ready, ..., ..., ...)
+
+    '
+  pattern-not: 'aio_set_fd_handler($CONTEXT, $FD, ..., nbd_read_reply_entry, ...,
+    ..., ...)
+
+    '
+  languages:
+  - c
+  message: 'The use of nbd_reply_ready callback in aio_set_fd_handler is vulnerable
+    to race conditions
+
+    and improper synchronization. This can lead to data corruption or crashes when
+    handling
+
+    NBD requests. The issue was fixed by replacing nbd_reply_ready with nbd_read_reply_entry
+
+    which properly handles coroutine synchronization. Use the updated callback function
+    to
+
+    ensure proper synchronization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/ff82911cd3f69f028f2537825c9720ff78bc3f19
+    category: security
+    cwe:
+    - CWE-362
+    - CWE-367
+    owasp: 'A2: Cryptographic Failures'
+    technology:
+    - c

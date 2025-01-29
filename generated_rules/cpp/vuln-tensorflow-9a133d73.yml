@@ -1,0 +1,28 @@
+rules:
+- id: vuln-tensorflow-9a133d73
+  pattern: 'int64 $ID = $CTX->session_state()->GetNewId();
+
+    '
+  pattern-not: "auto $SESSION_STATE = $CTX->session_state();\nOP_REQUIRES($CTX, $SESSION_STATE\
+    \ != nullptr,\n            errors::FailedPrecondition(\n                \"GetSessionHandle\
+    \ called on null session state\"));\nint64 $ID = $SESSION_STATE->GetNewId();\n"
+  languages:
+  - cpp
+  message: 'Directly calling GetNewId() on session_state() without a null check can
+    lead to null pointer dereference. This is dangerous as it can cause the application
+    to crash or behave unexpectedly. The fix involves first checking if session_state()
+    is null and handling the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/9a133d73ae4b4664d22bd1aa6d654fec13c52ee1
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

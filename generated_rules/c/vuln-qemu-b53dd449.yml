@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-b53dd449
+  pattern: 'memory_region_del_subregion($MEM, &$DEV->msix_table_mmio);
+
+    memory_region_del_subregion($MEM, &$DEV->msix_pba_mmio);
+
+    '
+  pattern-not: 'msix_uninit($DEV, $MEM, $MEM);
+
+    '
+  languages:
+  - c
+  message: 'Direct removal of MSI-X table and PBA memory regions without using msix_uninit
+    can lead to resource management issues. This can cause memory leaks or incorrect
+    state management in the QEMU XHCI controller. Use msix_uninit() instead to properly
+    clean up MSI-X resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/b53dd4495ced2432a0b652ea895e651d07336f7e
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.qemu.org/docs/master/system/devices/msix.html
+    technology:
+    - c

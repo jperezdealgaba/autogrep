@@ -1,0 +1,29 @@
+rules:
+- id: vuln-qemu-edfe2eb4
+  pattern: '$VAR = $VALUE & 0x3ff;
+
+    '
+  pattern-not: '$VAR = $VALUE & 0xf;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability due to incorrect bitmasking.
+
+    The code uses a bitmask of 0x3ff which allows up to 10 bits, but should only allow
+
+    4 bits (0xf). This could lead to out-of-bounds access or incorrect interrupt handling.
+
+    Replace the bitmask with 0xf to properly limit the value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/edfe2eb4360cde4ed5d95bda7777edcb3510f76a
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

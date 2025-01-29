@@ -1,0 +1,34 @@
+rules:
+- id: vuln-gpac-eb71812f
+  pattern: 'fprintf(stderr, "\t%s\n", (char *) $UDTA);
+
+    '
+  pattern-not: "fprintf(stderr, \"\\t\");\nfor ($IDX=0; $IDX<$UDTA_SIZE; $IDX++) {\n\
+    \  if (!$UDTA[$IDX]) break;\n  fprintf(stderr, \"%c\", $UDTA[$IDX]);\n}\nfprintf(stderr,\
+    \ \"\\n\");\n"
+  pattern-inside: "if (gf_utf8_is_legal($UDTA, $UDTA_SIZE)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly prints user-controlled data using %s format specifier
+    without proper bounds checking,
+
+    which could lead to information disclosure or crashes if the data contains null
+    bytes or is malformed.
+
+    The fix adds proper bounds checking and character-by-character printing with null
+    byte handling.
+
+    Always validate and sanitize user-controlled data before printing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/eb71812fcc10e9c5348a5d1c61bd25b6fa06eaed
+    category: security
+    cwe: 'CWE-125: Out-of-bounds Read'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

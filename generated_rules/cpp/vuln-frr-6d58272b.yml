@@ -1,0 +1,24 @@
+rules:
+- id: vuln-frr-6d58272b
+  pattern: "struct $STRUCT {\n  u_char $CODE;\n  u_char $LENGTH;\n  struct capability_mp\
+    \ $MPC;\n};\n"
+  pattern-not: "struct $STRUCT {\n  u_char $CODE;\n  u_char $LENGTH;\n  struct capability_mp_data\
+    \ $MPC;\n};\n"
+  languages:
+  - cpp
+  message: 'The structure ''capability'' contains a direct reference to ''capability_mp'',
+    which lacks proper alignment and packing. This can lead to memory misalignment
+    issues and potential security vulnerabilities. Use ''capability_mp_data'' instead
+    and ensure proper packing with ''#pragma pack'' directives.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/6d58272b4cf96f0daa846210dd2104877900f921
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

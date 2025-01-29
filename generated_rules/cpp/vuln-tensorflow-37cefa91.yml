@@ -1,0 +1,34 @@
+rules:
+- id: vuln-tensorflow-37cefa91
+  pattern: "$RETURN_TYPE RangeSize($TYPE start, $TYPE limit, $TYPE delta) {\n  if\
+    \ (((delta > 0) && (limit < start)) || ((delta < 0) && (limit > start))) {\n \
+    \   return 0;\n  }\n  return (std::is_integral<$TYPE>::value\n            ? ((std::abs(limit\
+    \ - start) + std::abs(delta) - 1) /\n               std::abs(delta))\n       \
+    \     : std::ceil(std::abs((limit - start) / delta)));\n}\n"
+  pattern-not: "$RETURN_TYPE RangeSize($TYPE start, $TYPE limit, $TYPE delta) {\n\
+    \  ...\n  OP_REQUIRES($CONTEXT, $SIZE_AUTO <= std::numeric_limits<int64_t>::max(),\n\
+    \              errors::InvalidArgument(\"Requires ((limit - start) / delta) <=\
+    \ \",\n                                     std::numeric_limits<int64_t>::max()));\n\
+    \  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected potential integer overflow in range size calculation. The original
+    code
+
+    doesn''t check if the calculated size exceeds the maximum value of int64_t, which
+
+    could lead to integer overflow and undefined behavior. The fix adds a check to
+
+    ensure the size is within bounds before casting to int64_t.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/37cefa91bee4eace55715eeef43720b958a01192
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - cpp

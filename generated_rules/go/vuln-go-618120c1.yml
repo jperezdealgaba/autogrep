@@ -1,0 +1,24 @@
+rules:
+- id: vuln-go-618120c1
+  pattern: "const $MAX_CACHED_HEADERS = $N\n...\nif len($SC.canonHeader) < $MAX_CACHED_HEADERS\
+    \ {\n    ...\n}\n"
+  pattern-not: "const $MAX_CACHED_HEADERS_SIZE = $SIZE\n...\nif $SC.canonHeaderKeysSize\
+    \ + $SIZE <= $MAX_CACHED_HEADERS_SIZE {\n    $SC.canonHeaderKeysSize += $SIZE\n\
+    \    ...\n}\n"
+  languages:
+  - go
+  message: "Detected a vulnerable header cache size check that could lead to unbounded\
+    \ memory usage. \nThe original code only checks the number of cached headers but\
+    \ doesn't account for their size, \nwhich could allow an attacker to cause excessive\
+    \ memory consumption by sending many unique headers.\nFix by implementing a size-based\
+    \ limit on the total size of cached headers, as shown in the patch.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/618120c165669c00a1606505defea6ca755cdc27
+    category: security
+    cwe:
+    - 'CWE-770: Allocation of Resources Without Limits or Throttling'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - go

@@ -1,0 +1,36 @@
+rules:
+- id: vuln-go-e46abcb8
+  pattern: "$P[0] = -1\n$P[1] = -1\n...\ngoto error\n...\nerror:\nif $P[0] >= 0 {\n\
+    \    Close($P[0])\n    Close($P[1])\n}\n"
+  pattern-not: '$P[0] = -1
+
+    $P[1] = -1
+
+    ...
+
+    Close($P[0])
+
+    Close($P[1])
+
+    ForkLock.Unlock()
+
+    return 0, $ERR
+
+    '
+  languages:
+  - go
+  message: 'Detected a potential resource leak in error handling. The original code
+    skips closing file descriptors when jumping to the error label, which can lead
+    to resource exhaustion. Ensure that file descriptors are always closed, even in
+    error cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/e46abcb816fb20663483f84fe52e370790a99bee
+    category: security
+    cwe:
+    - CWE-772
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    technology:
+    - go

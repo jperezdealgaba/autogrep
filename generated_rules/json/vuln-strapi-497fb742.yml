@@ -1,0 +1,39 @@
+rules:
+- id: vuln-strapi-497fb742
+  pattern: "{\n  ...,\n  \"dependencies\": {\n    ...,\n    \"strapi\": \"3.0.1\"\
+    ,\n    \"strapi-admin\": \"3.0.1\",\n    \"strapi-connector-bookshelf\": \"3.0.1\"\
+    ,\n    \"strapi-connector-mongoose\": \"3.0.1\",\n    \"strapi-middleware-views\"\
+    : \"3.0.0\",\n    \"strapi-plugin-content-manager\": \"3.0.1\",\n    \"strapi-plugin-content-type-builder\"\
+    : \"3.0.1\",\n    \"strapi-plugin-documentation\": \"3.0.1\",\n    \"strapi-plugin-email\"\
+    : \"3.0.1\",\n    \"strapi-plugin-graphql\": \"3.0.1\",\n    \"strapi-plugin-upload\"\
+    : \"3.0.1\",\n    \"strapi-plugin-users-permissions\": \"3.0.1\",\n    \"strapi-provider-email-mailgun\"\
+    : \"3.0.1\",\n    \"strapi-provider-upload-aws-s3\": \"3.0.0\",\n    \"strapi-provider-upload-cloudinary\"\
+    : \"3.0.0\",\n    \"strapi-utils\": \"3.0.1\"\n  },\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"dependencies\": {\n    ...,\n    \"strapi\": \"3.0.2\"\
+    ,\n    \"strapi-admin\": \"3.0.2\",\n    \"strapi-connector-bookshelf\": \"3.0.2\"\
+    ,\n    \"strapi-connector-mongoose\": \"3.0.2\",\n    \"strapi-middleware-views\"\
+    : \"3.0.2\",\n    \"strapi-plugin-content-manager\": \"3.0.2\",\n    \"strapi-plugin-content-type-builder\"\
+    : \"3.0.2\",\n    \"strapi-plugin-documentation\": \"3.0.2\",\n    \"strapi-plugin-email\"\
+    : \"3.0.2\",\n    \"strapi-plugin-graphql\": \"3.0.2\",\n    \"strapi-plugin-upload\"\
+    : \"3.0.2\",\n    \"strapi-plugin-users-permissions\": \"3.0.2\",\n    \"strapi-provider-email-mailgun\"\
+    : \"3.0.2\",\n    \"strapi-provider-upload-aws-s3\": \"3.0.2\",\n    \"strapi-provider-upload-cloudinary\"\
+    : \"3.0.2\",\n    \"strapi-utils\": \"3.0.2\"\n  },\n  ...\n}\n"
+  languages:
+  - json
+  message: 'Detected outdated Strapi dependencies with known vulnerabilities. Using
+    versions 3.0.1 and 3.0.0 exposes the application to security risks. Upgrade all
+    Strapi packages to version 3.0.2 or later to mitigate these vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/497fb742eb795b1135e4e0c20ef638c4ab50dd72
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://strapi.io/blog/security-releases
+    technology:
+    - json

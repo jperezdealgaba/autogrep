@@ -1,0 +1,22 @@
+rules:
+- id: vuln-bc-java-8a73f089
+  pattern: "private static byte[] generateDefaultPersonalizationString()\n{\n    return\
+    \ Arrays.concatenate(Strings.toByteArray(\"Default\"), Strings.toUTF8ByteArray(getVIMID()),\
+    \ ...);\n}\n"
+  pattern-not: "private static byte[] generateDefaultPersonalizationString(SecureRandom\
+    \ random)\n{\n    return Arrays.concatenate(Strings.toByteArray(\"Default\"),\
+    \ random.generateSeed(16), ...);\n}\n"
+  languages:
+  - java
+  message: "The use of a static personalization string without proper entropy can\
+    \ lead to predictable DRBG output. \nThis can be exploited in cryptographic operations,\
+    \ compromising security. \nAlways use a secure random source for generating personalization\
+    \ strings.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/bcgit/bc-java/commit/8a73f08931450c17c749af067b6a8185abdfd2c0
+    category: security
+    cwe: CWE-331
+    owasp: A3:2017-Sensitive Data Exposure
+    technology:
+    - java

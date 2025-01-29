@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gpac-328c6d68
+  pattern: '$ENT->internal_type = GF_ISOM_SAMPLE_ENTRY_MP4S;
+
+    '
+  pattern-not: "if ($ENT->internal_type != GF_ISOM_SAMPLE_ENTRY_MP4S)\n  return GF_ISOM_INVALID_MEDIA;\n"
+  languages:
+  - c
+  message: 'Setting internal_type to GF_ISOM_SAMPLE_ENTRY_MP4S without proper validation
+    can lead to media processing vulnerabilities. The patch adds validation checks
+    before using the internal_type field. Always validate media type before processing
+    to prevent invalid media handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/328c6d682698fdb9878dbb4f282963d42c538c01
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - c

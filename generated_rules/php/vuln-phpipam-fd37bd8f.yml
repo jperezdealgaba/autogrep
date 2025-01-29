@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpipam-fd37bd8f
+  pattern: 'include("$FILE");
+
+    '
+  pattern-not: 'require("$FILE");
+
+    '
+  languages:
+  - php
+  message: "Using include() instead of require() for critical files can lead to security\
+    \ vulnerabilities \nif the file is missing, as execution will continue silently.\
+    \ This can allow attackers to \nbypass security checks or cause unexpected behavior.\
+    \ Always use require() for critical \nfile inclusions to ensure execution stops\
+    \ if the file is not found.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/fd37bd8fb2b9c306079db505e0e3fe79a096c31c
+    category: security
+    cwe:
+    - CWE-471
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - php

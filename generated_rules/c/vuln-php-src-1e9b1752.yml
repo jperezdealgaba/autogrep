@@ -1,0 +1,26 @@
+rules:
+- id: vuln-php-src-1e9b1752
+  pattern: "if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", $VAR1, $VAR2) == FAILURE)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (zend_parse_parameters(ZEND_NUM_ARGS(), \"p\", $VAR1, $VAR2) ==\
+    \ FAILURE) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of ''s'' in zend_parse_parameters can lead to path-related vulnerabilities
+    by not properly handling null paths.
+
+    This can be exploited to bypass security checks or cause unexpected behavior.
+
+    Replace ''s'' with ''p'' in zend_parse_parameters to ensure proper null path checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/1e9b175204e3286d64dfd6c9f09151c31b5e099a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

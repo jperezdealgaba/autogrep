@@ -1,0 +1,28 @@
+rules:
+- id: vuln-kubernetes-5b9fd7d9
+  pattern: '$BLOB_CLIENT.CreateContainer($NAME, azs.ContainerAccessTypeContainer)
+
+    '
+  pattern-not: '$BLOB_CLIENT.CreateContainer($NAME, azs.ContainerAccessTypePrivate)
+
+    '
+  languages:
+  - go
+  message: 'Using `ContainerAccessTypeContainer` for Azure Blob storage creates a
+    publicly accessible container, which can lead to unauthorized access to sensitive
+    data. Use `ContainerAccessTypePrivate` to ensure the container is not publicly
+    accessible.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kubernetes/kubernetes/commit/5b9fd7d99055ea6f2b4da954eba0cca5e5dcbd87
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.microsoft.com/en-us/azure/storage/blobs/anonymous-read-access-configure
+    technology:
+    - go

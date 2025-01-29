@@ -1,0 +1,38 @@
+rules:
+- id: vuln-phpipam-f6a49fd9
+  pattern: '$subnet = (array) $Tools->fetch_object("subnets", "id", $_GET[''subnetId'']);
+
+    $addresses = $Addresses->fetch_subnet_addresses($_GET[''subnetId''], "ip_addr",
+    "asc");
+
+    if (!is_array($addresses)) { $addresses = array(); }
+
+    '
+  pattern-not: "$subnet = $Tools->fetch_object(\"subnets\", \"id\", $_GET['subnetId']);\n\
+    if (!is_object($subnet) || $Subnets->check_permission($User->user, $_GET['subnetId'],\
+    \ $subnet) == User::ACCESS_NONE) {\n  $Result->fatal_http_error(404, _(\"Subnet\
+    \ not found\"));\n}\n$subnet = (array) $subnet;\n$addresses = $Addresses->fetch_subnet_addresses($_GET['subnetId'],\
+    \ \"ip_addr\", \"asc\") ? : [];\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to unauthorized access due to missing permission
+    checks when fetching subnet data.
+
+    This can allow attackers to access restricted resources by manipulating the `subnetId`
+    parameter.
+
+    Ensure proper permission checks are performed before accessing subnet data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/f6a49fd9f93b7d7e0a4fbf1d35338502eed35953
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology:
+    - php

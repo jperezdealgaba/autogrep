@@ -1,0 +1,25 @@
+rules:
+- id: vuln-frr-ba6a8f1a
+  pattern: '$ATTR->flag |= ATTR_FLAG_BIT(BGP_ATTR_PREFIX_SID);
+
+    '
+  pattern-not: 'SET_FLAG($ATTR->flag, ATTR_FLAG_BIT(BGP_ATTR_PREFIX_SID));
+
+    '
+  languages:
+  - c
+  message: 'Direct bitwise OR assignment on flags without using the SET_FLAG macro
+    can lead to improper flag setting. This could cause incorrect handling of BGP
+    attributes. Use the SET_FLAG macro instead to ensure proper flag manipulation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/ba6a8f1a31e1a88df2de69ea46068e8bd9b97138
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

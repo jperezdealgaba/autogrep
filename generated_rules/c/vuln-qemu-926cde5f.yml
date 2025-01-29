@@ -1,0 +1,28 @@
+rules:
+- id: vuln-qemu-926cde5f
+  pattern: 'minlen = ($DMALEN < 32) ? $DMALEN : 32;
+
+    '
+  pattern-not: 'minlen = ($DMALEN < ESP_CMDBUF_SZ) ? $DMALEN : ESP_CMDBUF_SZ;
+
+    '
+  languages:
+  - c
+  message: 'This rule detects the use of a hardcoded buffer size (32) instead of the
+    defined constant ESP_CMDBUF_SZ. This can lead to buffer overflow vulnerabilities
+    if the buffer size is smaller than expected. Always use the defined constant ESP_CMDBUF_SZ
+    to ensure the correct buffer size is used.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/926cde5f3e4d2504ed161ed0cb771ac7cad6fd11
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

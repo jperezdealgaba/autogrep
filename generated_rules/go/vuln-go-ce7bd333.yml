@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-ce7bd333
+  pattern: 'bytes.TrimRight($VAR, "\t\n\f\r \u2028\u2029")
+
+    '
+  pattern-not: 'bytes.TrimRight($VAR, jsWhitespace)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of incomplete JS whitespace characters in bytes.TrimRight.
+    This can lead to improper handling of JavaScript whitespace characters, potentially
+    causing security issues in template escaping. Replace with the `jsWhitespace`
+    constant to ensure all JS whitespace characters are properly trimmed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/ce7bd33345416e6d8cac901792060591cafc2797
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
+    technology:
+    - go

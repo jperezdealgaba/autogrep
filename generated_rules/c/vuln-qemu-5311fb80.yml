@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-5311fb80
+  pattern: 'rtl8139_do_receive(qemu_get_queue($NIC), $BUF, $SIZE, $DO_INTERRUPT);
+
+    '
+  pattern-not: 'qemu_receive_packet(qemu_get_queue($NIC), $BUF, $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of the vulnerable rtl8139_do_receive function which may lead
+    to improper packet handling. This function has been replaced by qemu_receive_packet
+    to ensure correct packet processing and avoid potential security issues. Replace
+    rtl8139_do_receive with qemu_receive_packet to fix this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/5311fb805a4403bba024e83886fa0e7572265de4
+    category: security
+    cwe:
+    - CWE-119
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-27b41736
+  pattern: "[](int $START, int $LIMIT) {\n  ...\n}\n"
+  pattern-not: "[](int64 $START, int64 $LIMIT) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Potential integer overflow vulnerability detected. The lambda function
+    parameters
+
+    are using ''int'' type instead of ''int64'' which could lead to integer overflow
+
+    in large-scale computations. Use ''int64'' type instead to prevent this.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/27b417360cbd671ef55915e4bb6bb06af8b8a832
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Integer_overflow
+    - https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow
+    technology:
+    - cpp

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-showdoc-56e450c3
+  pattern: '[..., ''.txt'', ''.md'', ''.psd'', ''.csv'', ...]
+
+    '
+  pattern-not: '[..., ''.txt'', ''.psd'', ''.csv'', ...]
+
+    '
+  languages:
+  - php
+  message: 'Detected potential insecure file extension whitelisting. The ''.md'' extension
+    was removed in the patch, likely due to security concerns. Including potentially
+    dangerous file extensions in whitelists can lead to security vulnerabilities.
+    Review and update the file extension whitelist to only include safe, necessary
+    extensions.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/star7th/showdoc/commit/56e450c3adf75c707500d7231a78c9fc894c7f13
+    category: security
+    cwe:
+    - 'CWE-434: Unrestricted Upload of File with Dangerous Type'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    technology:
+    - php

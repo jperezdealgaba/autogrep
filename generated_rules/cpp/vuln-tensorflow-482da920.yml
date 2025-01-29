@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-482da920
+  pattern: '$VAR = $CONTEXT->input($INDEX).flat<$TYPE>()(0);
+
+    '
+  pattern-not: "const Tensor& $VAR = $CONTEXT->input($INDEX);\nOP_REQUIRES($CONTEXT,\
+    \ $VAR.NumElements() == 1,\n            errors::InvalidArgument(\"Padding must\
+    \ be scalar.\"));\n$VAR2 = $VAR.flat<$TYPE>()(0);\n"
+  languages:
+  - cpp
+  message: "Directly accessing tensor elements without checking their size can lead\
+    \ to undefined behavior or crashes. \nThe vulnerability occurs when a tensor is\
+    \ assumed to be scalar without validation, which can result in out-of-bounds access\
+    \ if the tensor has more than one element.\nTo fix this, always validate the tensor\
+    \ size using OP_REQUIRES before accessing its elements.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/482da92095c4d48f8784b1f00dda4f81c28d2988
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/requires
+    technology:
+    - cpp

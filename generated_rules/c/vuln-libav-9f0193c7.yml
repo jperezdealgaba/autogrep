@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libav-9f0193c7
+  pattern: '$X->bit_rate += ($Y << $Z) * $W;
+
+    '
+  pattern-not: "$Y <<= $Z;\nif ($Y < INT_MAX / $W &&\n    $Y * $W < INT_MAX - $X->bit_rate)\
+    \ {\n    $X->bit_rate += $Y * $W;\n} else\n    $X->bit_rate = 0;\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in bit rate calculation.
+
+    The code performs arithmetic operations without proper bounds checking, which
+    could lead to integer overflows.
+
+    To fix this, add bounds checking before performing arithmetic operations and handle
+    overflow cases appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/9f0193c778175cea3fb43f17acf9b90b4d862d33
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A2: Cryptographic Failures'
+    technology:
+    - c

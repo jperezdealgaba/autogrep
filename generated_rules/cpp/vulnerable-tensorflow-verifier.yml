@@ -1,0 +1,23 @@
+rules:
+- id: vulnerable-tensorflow-verifier
+  pattern: "if (!Verify($BUFFER, $SIZE)) {\n  ...\n}\n"
+  pattern-not: "if (!::tflite::Verify($BUFFER, $SIZE, $RESOLVER, $REPORTER)) {\n \
+    \ ...\n}\n"
+  languages:
+  - cpp
+  message: 'The TensorFlow Lite model verifier is being called without the required
+    resolver and error reporter arguments.
+
+    This can lead to incorrect verification of model buffers and potentially allow
+    malformed models to pass verification.
+
+    Always use the full Verify() function with both resolver and error reporter arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/41335abb46f80ca644b5738550daef6136ba5476
+    category: security
+    cwe: 'CWE-345: Insufficient Verification of Data Authenticity'
+    owasp: 'OWASP Top 10 2021 A05: Security Misconfiguration'
+    technology: cpp

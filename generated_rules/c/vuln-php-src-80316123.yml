@@ -1,0 +1,27 @@
+rules:
+- id: vuln-php-src-80316123
+  pattern: 'memcpy(((php_stream_dirent *) $BUF)->d_name, $VAL, $TO_READ);
+
+    ((php_stream_dirent *) $BUF)->d_name[$TO_READ + 1] = ''\0'';
+
+    '
+  pattern-not: 'PHP_STRLCPY($DIRENT->d_name, $VAL, sizeof($DIRENT->d_name), $LEN);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability in memcpy usage for
+    copying directory entry names. The original code does not properly check the size
+    of the destination buffer, which could lead to buffer overflow. Use PHP_STRLCPY
+    or similar safe string copying functions that enforce buffer size limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/80316123f3e9dcce8ac419bd9dd43546e2ccb5ef
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    technology:
+    - c

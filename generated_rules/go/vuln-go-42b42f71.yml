@@ -1,0 +1,22 @@
+rules:
+- id: vuln-go-42b42f71
+  pattern: "for $X.Sign() == -1 {\n  ...\n}\n"
+  pattern-not: "if $X.Sign() == -1 {\n  ...\n}\n"
+  languages:
+  - go
+  message: "The use of a loop to check for a negative sign is inefficient and potentially\
+    \ dangerous. \nThis can lead to unnecessary iterations and performance issues.\
+    \ \nReplace the loop with a simple conditional check to ensure the code is both\
+    \ efficient and safe.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/42b42f71cf8f5956c09e66230293dfb5db652360
+    category: security
+    cwe:
+    - CWE-835
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/835.html
+    technology:
+    - go

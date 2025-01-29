@@ -1,0 +1,33 @@
+rules:
+- id: vuln-go-0765da58
+  pattern: "url := *$URL\nif len($ELEM) > 0 {\n  $ELEM = append([]string{$URL.EscapedPath()},\
+    \ $ELEM...)\n  $P := path.Join($ELEM...)\n  if strings.HasSuffix($ELEM[len($ELEM)-1],\
+    \ \"/\") && !strings.HasSuffix($P, \"/\") {\n    $P += \"/\"\n  }\n  url.setPath($P)\n\
+    }\n"
+  pattern-not: "$ELEM = append([]string{$URL.EscapedPath()}, $ELEM...)\nvar $P string\n\
+    if !strings.HasPrefix($ELEM[0], \"/\") {\n  $ELEM[0] = \"/\" + $ELEM[0]\n  $P\
+    \ = path.Join($ELEM...)[1:]\n} else {\n  $P = path.Join($ELEM...)\n}\nif strings.HasSuffix($ELEM[len($ELEM)-1],\
+    \ \"/\") && !strings.HasSuffix($P, \"/\") {\n  $P += \"/\"\n}\nurl := *$URL\n\
+    url.setPath($P)\n"
+  languages:
+  - go
+  message: 'The original code does not properly handle relative paths in URL construction,
+    which can lead to path traversal vulnerabilities. This can allow attackers to
+    access unauthorized resources by manipulating the path elements. The fix ensures
+    that relative paths are properly normalized and do not contain any ''../'' elements
+    that could lead to traversal. Always validate and normalize paths when constructing
+    URLs to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0765da5884adcc8b744979303a36a27092d8fc51
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - go

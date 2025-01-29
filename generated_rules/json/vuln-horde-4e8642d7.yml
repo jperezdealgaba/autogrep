@@ -1,0 +1,31 @@
+rules:
+- id: vuln-horde-4e8642d7
+  pattern: '"php": "^5.3"
+
+    '
+  pattern-not: '"php": "^5.3 || ^7"
+
+    '
+  pattern-inside: "\"require\": {\n  ...\n}\n"
+  languages:
+  - json
+  message: 'Outdated PHP version requirement detected. The package requires PHP 5.3
+    which is
+
+    no longer maintained and may contain security vulnerabilities. Update the
+
+    requirement to include PHP 7 or higher to ensure secure PHP version support.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/4e8642d754cac676ac3b6949cd2d94ce751d82ad
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://www.php.net/supported-versions.php
+    technology:
+    - json

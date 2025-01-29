@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-6972f9df
+  pattern: "OP_REQUIRES(\n    $CONTEXT, !$IS_TRAINING || $TENSOR.dim_size(3) % 4 ==\
+    \ 0,\n    $ERROR\n)\n"
+  pattern-not: "OP_REQUIRES(\n    $CONTEXT, !$IS_TRAINING || $NUM_CHANNELS % 4 ==\
+    \ 0,\n    $ERROR\n)\n"
+  languages:
+  - cpp
+  message: 'The code checks if the last dimension of a tensor is divisible by 4, but
+    should check the number of channels instead. This can lead to incorrect tensor
+    shape validation and potential security issues in training operations. The fix
+    replaces `$TENSOR.dim_size(3)` with `$NUM_CHANNELS` to properly validate the tensor
+    shape.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/6972f9dfe325636b3db4e0bc517ee22a159365c0
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/6972f9dfe325636b3db4e0bc517ee22a159365c0
+    technology:
+    - cpp

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-jackson-databind-54aa38d8
+  pattern: "if ($CLASS.isEnum()) {\n  ...\n}\n"
+  pattern-not: "if (ClassUtil.isEnumType($CLASS)) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Incorrect enum type check detected. Use `ClassUtil.isEnumType()` instead
+    of `isEnum()` to properly handle enum subclasses.
+  severity: ERROR
+  metadata:
+    source-url: github.com/FasterXML/jackson-databind/commit/54aa38d87dcffa5ccc23e64922e9536c82c1b9c8
+    category: security
+    cwe: CWE-484
+    owasp: A10:2021 - Security Misconfiguration
+    references:
+    - https://github.com/FasterXML/jackson-databind/issues/2480
+    technology:
+    - java

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-squid-671ba97a
+  pattern: 'HttpHeaderEntry::parse($FIELD_START, $FIELD_END)
+
+    '
+  pattern-not: 'HttpHeaderEntry::parse($FIELD_START, $FIELD_END, $MSG_TYPE)
+
+    '
+  languages:
+  - cpp
+  message: 'The function HttpHeaderEntry::parse is being called without the required
+    http_hdr_owner_type parameter. This can lead to improper header parsing and potential
+    security vulnerabilities, especially in handling HTTP requests with malformed
+    headers. Always include the msgType parameter to ensure proper header validation
+    and processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/squid-cache/squid/commit/671ba97abe929156dc4c717ee52ad22fba0f7443
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: 'A1: Injection'
+    references: https://tools.ietf.org/html/rfc7230#section-3.2.4
+    technology: cpp

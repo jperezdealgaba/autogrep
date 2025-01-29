@@ -1,0 +1,26 @@
+rules:
+- id: vuln-vim-249e1b90
+  pattern: "$ACTUAL = get_vim_var_str($VV);\n$EXPECTED = tv_get_string_buf_chk($TV,\
+    \ $BUF);\nif (!pattern_match($EXPECTED, $ACTUAL, $FALSE))\n{\n    $ERROR_FOUND\
+    \ = TRUE;\n    $EXPECTED_STR = $EXPECTED;\n}\n"
+  pattern-not: "$TOFREE = $ACTUAL = vim_strsave(get_vim_var_str($VV));\nif ($ACTUAL\
+    \ != NULL)\n{\n    $TV = &$LIST->lv_u.mat.lv_last->li_tv;\n    $EXPECTED = tv_get_string_buf_chk($TV,\
+    \ $BUF);\n    if (!pattern_match($EXPECTED, $ACTUAL, $FALSE))\n    {\n       \
+    \ $ERROR_FOUND = TRUE;\n        $EXPECTED_STR = $EXPECTED;\n    }\n}\nvim_free($TOFREE);\n"
+  languages:
+  - c
+  message: 'Detected a potential use-after-free vulnerability where `get_vim_var_str()`
+    result is passed directly to `pattern_match()`. This is dangerous because `pattern_match()`
+    may free the memory, leading to undefined behavior. The fix involves making a
+    copy of the string before passing it to `pattern_match()` and freeing it afterwards.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/249e1b903a9c0460d618f6dcc59aeb8c03b24b20
+    category: security
+    cwe:
+    - CWE-416
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

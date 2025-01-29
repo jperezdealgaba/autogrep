@@ -1,0 +1,30 @@
+rules:
+- id: vuln-squid-f1657a9d
+  pattern: "if (X509_NAME_oneline($FUNC($CERT.get()), $BUF, sizeof($BUF)))\n    return\
+    \ $BUF;\n"
+  pattern-not: "if (X509_NAME_oneline($FUNC($CERT.get()), $BUF, sizeof($BUF))) {\n\
+    \    return html_quote($BUF);\n}\n"
+  languages:
+  - cpp
+  message: 'Potential HTML injection vulnerability through unquoted certificate subject
+    or issuer.
+
+    The code returns raw certificate data without proper escaping, which could allow
+    HTML/JS injection if the output is rendered in a web context.
+
+    Fix by using html_quote() to properly escape the certificate data before returning
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/squid-cache/squid/commit/f1657a9decc820f748fa3aff68168d3145258031
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.openssl.org/docs/man1.1.1/man3/X509_NAME_oneline.html
+    technology:
+    - cpp

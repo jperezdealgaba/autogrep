@@ -1,0 +1,27 @@
+rules:
+- id: vuln-php-src-df4bf28f
+  pattern: 'zval_dtor($VAR);
+
+    FREE_ZVAL($VAR);
+
+    '
+  pattern-not: 'var_push_dtor_no_addref($VARHASH, &$VAR);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of `zval_dtor` and `FREE_ZVAL` which can lead to memory
+    corruption or use-after-free vulnerabilities. The patch replaces these with `var_push_dtor_no_addref`
+    to safely manage variable destruction. Always use safe variable destruction methods
+    to prevent security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/df4bf28f9f104ca3ef78ed94b497859f15b004e5
+    category: security
+    cwe:
+    - CWE-416
+    owasp: A9:2021-Security Misconfiguration
+    technology:
+    - c

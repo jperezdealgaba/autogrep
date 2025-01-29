@@ -1,0 +1,27 @@
+rules:
+- id: vuln-piwigo-4e0ab8e5
+  pattern: '$_POST[$VAR] = stripslashes($_POST[$VAR]);
+
+    '
+  pattern-not: '$_POST[$VAR] = strip_tags(stripslashes($_POST[$VAR]));
+
+    '
+  languages:
+  - php
+  message: "Detected potential Cross-Site Scripting (XSS) vulnerability due to missing\
+    \ `strip_tags` when processing user input. \nDirectly using `stripslashes` on\
+    \ `$_POST` data without sanitizing HTML tags can allow attackers to inject malicious\
+    \ scripts. \nAlways sanitize user input with `strip_tags` to remove HTML tags\
+    \ before processing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/4e0ab8e515fac8f5012ede652b92ae6261d234da
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

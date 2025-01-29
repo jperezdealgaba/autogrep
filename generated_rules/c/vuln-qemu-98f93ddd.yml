@@ -1,0 +1,31 @@
+rules:
+- id: vuln-qemu-98f93ddd
+  pattern: '$BUF = g_malloc0($SIZE);
+
+    qemu_get_buffer($F, $BUF, $SIZE * $MULTIPLIER);
+
+    g_free($BUF);
+
+    '
+  pattern-not: "for ($I = 0; $I < (int64_t)$SIZE * $MULTIPLIER; ++$I) {\n  qemu_get_byte($F);\n\
+    }\n"
+  languages:
+  - c
+  message: 'Potential integer overflow vulnerability in buffer allocation and handling.
+
+    Multiplying $SIZE by $MULTIPLIER without proper size checking can lead to
+
+    integer overflow and buffer overflows. Use 64-bit math or explicit size checks
+
+    when calculating buffer sizes that involve multiplication.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/98f93ddd84800f207889491e0b5d851386b459cf
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

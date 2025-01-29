@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-9569f5cb
+  pattern: 'sizeof(uint32_t) * $CURSOR->header.width * $CURSOR->header.height
+
+    '
+  pattern-not: 'sizeof(uint32_t) * $C->width * $C->height
+
+    '
+  languages:
+  - c
+  message: 'Detected potential integer overflow vulnerability due to incorrect size
+    calculation.
+
+    The size calculation uses header fields directly, which can lead to overflow if
+    the
+
+    width and height values are large. Use the correct structure fields to avoid this
+    issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/9569f5cb5b4bffa9d3ebc8ba7da1e03830a9a895
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-php-src-188c196d
+  pattern: '$CTXT->options -= $XML_PARSE_DTDLOAD
+
+    '
+  pattern-not: '$CTXT->options &= ~$XML_PARSE_DTDLOAD
+
+    '
+  languages:
+  - c
+  message: "Using the subtraction operator (-) to unset bit flags is incorrect and\
+    \ can lead to undefined behavior. \nInstead, use the bitwise AND NOT operator\
+    \ (&~) to properly clear the flag. \nThis vulnerability can cause unexpected behavior\
+    \ in XML parsing, potentially leading to security issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/188c196d4da60bdde9190d2fc532650d17f7af2d
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

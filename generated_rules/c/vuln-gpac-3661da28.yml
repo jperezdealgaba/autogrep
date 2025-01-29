@@ -1,0 +1,21 @@
+rules:
+- id: vuln-gpac-3661da28
+  pattern: "if ($SAMPLE_INDEX > $TRF_SDTP->sampleCount) {\n  ...\n}\n"
+  pattern-not: "if ($SAMPLE_INDEX >= $TRF_SDTP->sampleCount) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "This rule detects an off-by-one error in the comparison of sample_index\
+    \ with traf->sdtp->sampleCount. \nThe original code used a '>' comparison, which\
+    \ could lead to accessing an out-of-bounds index. \nThis vulnerability can cause\
+    \ undefined behavior or crashes. \nThe fix changes the comparison to '>=' to properly\
+    \ handle the boundary condition.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/3661da280b3eba75490e75ff20ad440c66e24de9
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

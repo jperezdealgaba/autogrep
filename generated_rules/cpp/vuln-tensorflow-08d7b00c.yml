@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tensorflow-08d7b00c
+  pattern: 'const int $VAR = $EXPR < 0 ? -$EXPR : $EXPR + 1;
+
+    '
+  pattern-not: 'const int64 $VAR = $EXPR < 0 ? -$EXPR : $EXPR + 1;
+
+    '
+  languages:
+  - cpp
+  message: 'Using ''int'' instead of ''int64'' for minimum rank calculation can lead
+    to integer overflow.
+
+    This vulnerability occurs when calculating rank based on a dimension value, which
+    could be large.
+
+    To fix this, use ''int64'' instead of ''int'' to handle larger values safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/08d7b00c0a5a20926363849f611729f53f3ec022
+    category: security
+    technology:
+    - cpp

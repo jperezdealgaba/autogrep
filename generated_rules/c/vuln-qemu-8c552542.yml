@@ -1,0 +1,29 @@
+rules:
+- id: vuln-qemu-8c552542
+  pattern: '$NC->info->receive_iov($NC, $IOV, $IOV_CNT)
+
+    '
+  pattern-not: 'qemu_receive_packet_iov($NC, $IOV, $IOV_CNT)
+
+    '
+  languages:
+  - c
+  message: 'Direct use of `nc->info->receive_iov` can lead to security vulnerabilities
+    due to potential bypass of packet validation and processing. This method should
+    be replaced with `qemu_receive_packet_iov` which ensures proper packet handling
+    and validation. Always use the recommended API to maintain security and consistency
+    in packet processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/8c552542b81e56ff532dd27ec6e5328954bdda73
+    category: security
+    cwe:
+    - CWE-676
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.qemu.org/docs/master/system/net.html
+    technology:
+    - c

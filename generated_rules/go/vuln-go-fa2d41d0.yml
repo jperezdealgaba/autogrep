@@ -1,0 +1,31 @@
+rules:
+- id: vuln-go-fa2d41d0
+  pattern: "func Glob(fsys FS, pattern string) (matches []string, err error) {\n \
+    \ ...\n  m, err = Glob(fsys, $DIR)\n  ...\n}\n"
+  pattern-not: "func globWithLimit(fsys FS, pattern string, depth int) (matches []string,\
+    \ err error) {\n  ...\n  m, err = globWithLimit(fsys, $DIR, $DEPTH+1)\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected recursive glob implementation without depth limit which could
+    lead to
+
+    stack exhaustion. This vulnerability (CVE-2022-30630) allows attackers to cause
+
+    denial of service through deep recursive paths. Add a depth limit check to
+
+    prevent stack exhaustion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/fa2d41d0ca736f3ad6b200b2a4e134364e9acc59
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-30630
+    technology:
+    - go

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-strapi-c0c191c0
+  pattern: 'if (!/^[A-Za-z0-9_-]+$/.test($PLUGIN))
+
+    '
+  pattern-not: 'if (!isValidPluginName($PLUGIN))
+
+    '
+  languages:
+  - javascript
+  message: Insecure plugin name validation using a weak regex pattern. The regex should
+    enforce that plugin names start with a letter and follow strict naming conventions.
+    Use the isValidPluginName function for proper validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/c0c191c08f05fe10d7a6b1bf9475c1a651a89362
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - javascript

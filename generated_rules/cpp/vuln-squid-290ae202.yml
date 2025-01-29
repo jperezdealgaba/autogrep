@@ -1,0 +1,34 @@
+rules:
+- id: vuln-squid-290ae202
+  pattern: "if ($FLAG && $PIPELINE.front())\n    $PIPELINE.front()->initiateClose($REASON);\n"
+  pattern-not: "if ($FLAG) {\n    debugs(33, 2, \"bailing after a write failure: \"\
+    \ << xstrerr($XERRNO));\n    LogTagsErrors $LTE;\n    $LTE.timedout = $XERRNO\
+    \ == ETIMEDOUT;\n    $LTE.aborted = !$LTE.timedout;\n    terminateAll(Error(ERR_WRITE_ERROR,\
+    \ SysErrorDetail::NewIfAny($XERRNO)), $LTE);\n    return;\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potentially unsafe error handling pattern where only the front
+    pipeline element
+
+    is closed on a write failure. This could leave other elements in an inconsistent
+    state.
+
+    The fix introduces proper error logging and terminates all connections, ensuring
+    consistent
+
+    state cleanup. Replace with the fixed version that uses terminateAll() for proper
+    cleanup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/squid-cache/squid/commit/290ae202883ac28a48867079c2fb34c40efd382b
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/248.html
+    technology:
+    - cpp

@@ -1,0 +1,19 @@
+rules:
+- id: vuln-php-src-ed52bcb3
+  pattern: "if ($VAR->n_scale > $SCALE) {\n  $VAR->n_scale = $SCALE;\n}\n"
+  pattern-not: "if ($VAR->n_scale > $SCALE) {\n  $VAR = split_bc_num($VAR);\n  $VAR->n_scale\
+    \ = $SCALE;\n}\n"
+  languages:
+  - c
+  message: "Direct modification of n_scale without calling split_bc_num() can lead\
+    \ to \nreference counting issues and potential memory corruption. Always use \n\
+    split_bc_num() before modifying n_scale to ensure proper reference counting.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/ed52bcb3dcb2e7dbc009ef8c6579fb1276ca73c1
+    category: security
+    cwe:
+    - CWE-416
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

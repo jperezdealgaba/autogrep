@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gpac-e4c1f09a
+  pattern: 'Bool dump_mode = GF_FALSE;
+
+    '
+  pattern-not: 'Bool dump_mode = use_dump_mode;
+
+    '
+  languages:
+  - c
+  message: 'Detected use of a hardcoded initialization value for a boolean flag. This
+    can lead to unexpected behavior or security vulnerabilities if the flag is intended
+    to be controlled externally. Instead, initialize the flag with a value from an
+    external source or configuration to ensure proper control flow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/e4c1f09ab9618b6af3bec6b94b8b349f2d01dbf8
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - c

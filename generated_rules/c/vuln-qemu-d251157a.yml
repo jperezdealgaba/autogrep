@@ -1,0 +1,21 @@
+rules:
+- id: vuln-qemu-d251157a
+  pattern: "if ($READY_PTR != $MGR->consumed_ptr) {\n    ...\n}\n"
+  pattern-not: "if ($READY_PTR != $MGR->consumed_ptr\n    && $READY_PTR - $MGR->consumed_ptr\
+    \ < $RING_SIZE) {\n    ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability due to missing bounds\
+    \ check when comparing ring buffer pointers. \nThis could allow an attacker to\
+    \ read/write beyond the allocated ring buffer, potentially leading to memory corruption\
+    \ or arbitrary code execution. \nAlways validate that the pointer difference is\
+    \ within the valid ring buffer size before accessing elements.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/d251157ac1928191af851d199a9ff255d330bec9
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: 'A2: Cryptographic Failures'
+    technology:
+    - c

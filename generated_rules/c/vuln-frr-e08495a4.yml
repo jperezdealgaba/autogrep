@@ -1,0 +1,21 @@
+rules:
+- id: vuln-frr-e08495a4
+  pattern: "if (PROTO_RM_MAP($ZV, $AFI, $RT)) {\n  ...\n}\n"
+  pattern-not: "if (PROTO_RM_NAME($ZV, $AFI, $RT)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected use of PROTO_RM_MAP instead of PROTO_RM_NAME in routing map checks.
+    This could lead to incorrect route map handling or potential security vulnerabilities.
+    Replace PROTO_RM_MAP with PROTO_RM_NAME to ensure proper routing map validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FRRouting/frr/commit/e08495a4a8ad4d2050691d9e5e13662d2635b2e0
+    category: security
+    cwe:
+    - CWE-676
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

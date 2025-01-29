@@ -1,0 +1,24 @@
+rules:
+- id: vuln-zitadel-4c26665b
+  pattern: "func (c *Commands) checkUserGrantPreCondition(ctx context.Context, usergrant\
+    \ *domain.UserGrant) error {\n  preConditions := NewUserGrantPreConditionReadModel(usergrant.UserID,\
+    \ usergrant.ProjectID, usergrant.ProjectGrantID)\n  ...\n}\n"
+  pattern-not: "func (c *Commands) checkUserGrantPreCondition(ctx context.Context,\
+    \ usergrant *domain.UserGrant, resourceOwner string) error {\n  preConditions\
+    \ := NewUserGrantPreConditionReadModel(usergrant.UserID, usergrant.ProjectID,\
+    \ usergrant.ProjectGrantID, resourceOwner)\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Missing resource owner validation in user grant pre-condition check. This
+    can lead to incorrect authorization checks, potentially allowing unauthorized
+    access to resources. Ensure the resource owner is validated in the pre-condition
+    check to prevent security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/4c26665b933dd763aa8c2779bce368708f7a7029
+    category: security
+    cwe: 'CWE-284: Improper Access Control'
+    owasp: A01:2021 - Broken Access Control
+    technology: go

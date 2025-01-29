@@ -1,0 +1,33 @@
+rules:
+- id: vuln-go-c77980bc
+  pattern: 'rsa.EncryptPKCS1v15($CONFIG.rand(), $CERT.PublicKey.(*rsa.PublicKey),
+    $PREMASTERSECRET)
+
+    '
+  pattern-not: "$RSAKEY, $OK := $CERT.PublicKey.(*rsa.PublicKey)\nif !$OK {\n    return\
+    \ $_, $_, errors.New($MSG)\n}\nrsa.EncryptPKCS1v15($CONFIG.rand(), $RSAKEY, $PREMASTERSECRET)\n"
+  languages:
+  - go
+  message: 'Detected unsafe type assertion when using RSA encryption. Directly casting
+    the certificate''s public key without type checking can lead to runtime panics
+    if the key type is incorrect. Always validate the key type using a type assertion
+    with a boolean check before proceeding with encryption operations.
+
+    This vulnerability can cause the application to crash when dealing with certificates
+    that don''t contain RSA public keys, potentially leading to denial of service.
+
+    To fix this, use a type assertion with a boolean check and handle the error case
+    appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/c77980bc077f3774276ab2deba78d8e6bfe4b3bd
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://pkg.go.dev/crypto/rsa#EncryptPKCS1v15
+    technology:
+    - go

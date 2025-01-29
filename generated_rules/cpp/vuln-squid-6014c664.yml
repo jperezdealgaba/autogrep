@@ -1,0 +1,31 @@
+rules:
+- id: vuln-squid-6014c664
+  pattern: '$VAR = dup($FD);
+
+    assert($VAR > -1);
+
+    '
+  pattern-not: '$VAR = dupOrExit($FD);
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly uses `dup()` without proper error handling, which can
+    lead to undefined behavior if the system call fails. This is dangerous because
+    it can cause the application to continue running in an inconsistent state. The
+    fix involves using a wrapper function `dupOrExit` that properly handles errors
+    by reporting them and exiting the process.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/squid-cache/squid/commit/6014c6648a2a54a4ecb7f952ea1163e0798f9264
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://man7.org/linux/man-pages/man2/dup.2.html
+    technology:
+    - cpp

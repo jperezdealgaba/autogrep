@@ -1,0 +1,28 @@
+rules:
+- id: vuln-horde-da6afc7e
+  pattern: '$this->_expected = @unserialize($vars[''_formvars'']);
+
+    '
+  pattern-not: '$this->_expected = @json_decode($vars[''_formvars''], true);
+
+    '
+  languages:
+  - php
+  message: 'The use of `unserialize` on user-controlled input can lead to PHP object
+    injection vulnerabilities, allowing attackers to execute arbitrary code. This
+    is particularly dangerous when dealing with form data. The fix replaces `unserialize`
+    with `json_decode`, which is safer as it does not allow for object instantiation.
+    Always use `json_decode` or other safe deserialization methods when handling user
+    input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/da6afc7e9f4e290f782eca9dbca794f772caccb3
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A08:2021-Software and Data Integrity Failures
+    technology:
+    - php

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-4154c7e0
+  pattern: 'return $CORE->mac[$R->dh] == $CORE->mac[$R->dt];
+
+    '
+  pattern-not: "return $CORE->mac[$R->dh] == $CORE->mac[$R->dt] ||\n          $CORE->mac[$R->dt]\
+    \ >= $CORE->mac[$R->dlen] / $E1000_RING_DESC_LEN;\n"
+  languages:
+  - c
+  message: 'Incomplete bounds check in e1000e network device emulation. The code only
+    checks if two MAC addresses are equal but fails to verify if the destination address
+    is within valid bounds. This could lead to out-of-bounds memory access. The fix
+    adds an additional check to ensure the destination address is within the allowed
+    range.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/4154c7e03fa55b4cf52509a83d50d6c09d743b77
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp: A1:2017-Injection
+    technology:
+    - c

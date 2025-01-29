@@ -1,0 +1,25 @@
+rules:
+- id: vuln-piwigo-1e23ed84
+  pattern: '$update[''file''] = $params[''file''];
+
+    '
+  pattern-not: "$update['file'] = strip_tags($params['file']);\nif (empty($update['file']))\n\
+    {\n  unset($update['file']);\n}\n"
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unvalidated user input being\
+    \ assigned to an array element. \nThe 'file' parameter is directly assigned without\
+    \ sanitization, allowing HTML/JS injection. \nTo fix, use strip_tags() to remove\
+    \ HTML tags and add validation to handle empty values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/1e23ed84d3a80f00b827de8aed546464674bb427
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

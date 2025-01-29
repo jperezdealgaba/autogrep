@@ -1,0 +1,47 @@
+rules:
+- id: vuln-tensorflow-b432a38f
+  pattern: 'CHECK_GE($VAR, 0);
+
+    CHECK_GE($VAR2, 0);
+
+    CHECK_LT($VAR3, $VAR4);
+
+    CHECK_LT($VAR5, $VAR6);
+
+    CHECK_GE($VAR7, 0);
+
+    CHECK_GE($VAR8, 0);
+
+    CHECK_LT($VAR9, $VAR10);
+
+    CHECK_LT($VAR11, $VAR12);
+
+    '
+  pattern-not: "OP_REQUIRES(\n    $CTX, $VAR >= 0,\n    $ERROR(\"$VAR is less than\
+    \ 0.\"));\nOP_REQUIRES(\n    $CTX, $VAR2 >= 0,\n    $ERROR(\"$VAR2 is less than\
+    \ 0.\"));\nOP_REQUIRES($CTX, $VAR3 <= $VAR4,\n            $ERROR(\"$VAR3 is greater\
+    \ than $VAR4.\"));\nOP_REQUIRES($CTX, $VAR5 <= $VAR6,\n            $ERROR(\"$VAR5\
+    \ is greater than $VAR6.\"));\nOP_REQUIRES(\n    $CTX, $VAR7 >= 0,\n    $ERROR(\"\
+    $VAR7 is less than 0.\"));\nOP_REQUIRES(\n    $CTX, $VAR8 >= 0,\n    $ERROR(\"\
+    $VAR8 is less than 0.\"));\nOP_REQUIRES($CTX, $VAR9 <= $VAR10,\n            $ERROR(\"\
+    $VAR9 is greater than $VAR10.\"));\nOP_REQUIRES($CTX, $VAR11 <= $VAR12,\n    \
+    \        $ERROR(\"$VAR11 is greater than $VAR12.\"));\n"
+  languages:
+  - cpp
+  message: 'The code uses CHECK_* macros for input validation which can lead to program
+    termination instead of proper error handling. This is dangerous as it can cause
+    the application to crash unexpectedly when receiving invalid input. Use OP_REQUIRES
+    with appropriate error handling instead to gracefully handle invalid input cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/tensorflow/tensorflow/commit/b432a38fe0e1b4b904a6c222cbce794c39703e87
+    category: security
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp: A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/requires
+    technology:
+    - cpp

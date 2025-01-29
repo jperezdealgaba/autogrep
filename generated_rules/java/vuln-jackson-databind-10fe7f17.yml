@@ -1,0 +1,22 @@
+rules:
+- id: vuln-jackson-databind-10fe7f17
+  pattern: '_testTypes1737($CLASS)
+
+    '
+  pattern-not: '_testIllegalType($CLASS)
+
+    '
+  languages:
+  - java
+  message: Potential deserialization of unsafe classes detected. Use _testIllegalType
+    instead of _testTypes1737 to properly validate and block unsafe classes.
+  severity: ERROR
+  metadata:
+    source-url: github.com/FasterXML/jackson-databind/commit/10fe7f17ea7c8da2a71e7a0c774b420a1d5c1b50
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://github.com/FasterXML/jackson-databind/commit/10fe7f17ea7c8da2a71e7a0c774b420a1d5c1b50
+    technology:
+    - java

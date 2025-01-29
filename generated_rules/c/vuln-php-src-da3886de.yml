@@ -1,0 +1,28 @@
+rules:
+- id: vuln-php-src-da3886de
+  pattern: 'REGISTER_LONG_CONSTANT("FILTER_SANITIZE_FULL_SPECIAL_CHARS", FILTER_SANITIZE_SPECIAL_CHARS,
+    CONST_CS | CONST_PERSISTENT);
+
+    '
+  pattern-not: 'REGISTER_LONG_CONSTANT("FILTER_SANITIZE_FULL_SPECIAL_CHARS", FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+    CONST_CS | CONST_PERSISTENT);
+
+    '
+  languages:
+  - c
+  message: 'Inconsistent constant registration detected. The constant ''FILTER_SANITIZE_FULL_SPECIAL_CHARS''
+    is being registered with the wrong value ''FILTER_SANITIZE_SPECIAL_CHARS''. This
+    could lead to incorrect behavior when the constant is used. Ensure that the constant
+    is registered with the correct value ''FILTER_SANITIZE_FULL_SPECIAL_CHARS''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/da3886de6dc8edab3da14331227816d6ca8e9b96
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

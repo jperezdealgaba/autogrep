@@ -1,0 +1,20 @@
+rules:
+- id: vuln-php-src-9649ca16
+  pattern: "if ($VAR == UINT_MAX) {\n  ...\n}\n"
+  pattern-not: "if ($VAR == UINT_MAX || $VAR == 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Missing boundary check for zero-length strings can lead to vulnerabilities.\
+    \ \nThe code fails to handle cases where string length is zero, which can cause\
+    \ unexpected behavior or security issues. \nAlways include a check for zero-length\
+    \ strings in boundary conditions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/9649ca1630433473a307d015ba1a79a4a7a779f5
+    category: security
+    cwe: 'CWE-125: Out-of-bounds Read'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

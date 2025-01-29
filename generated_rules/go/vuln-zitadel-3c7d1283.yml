@@ -1,0 +1,25 @@
+rules:
+- id: vuln-zitadel-3c7d1283
+  pattern: '$VIEW.UserByID($USERID, $INSTANCEID)
+
+    '
+  pattern-not: '$VIEW.UserByID($CTX, $USERID, $INSTANCEID)
+
+    '
+  languages:
+  - go
+  message: 'The UserByID function is being called without a context.Context parameter,
+    which can lead to issues with request cancellation, timeouts, and tracing. Always
+    pass a context.Context as the first parameter to ensure proper context propagation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/3c7d12834e32426416235b9e3374be0f4b9380b8
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - go

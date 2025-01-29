@@ -1,0 +1,33 @@
+rules:
+- id: vuln-go-77013065
+  pattern: "func ($C *Certificate) buildChains($CACHE map[int][][]*Certificate, $CURRENT_CHAIN\
+    \ []*Certificate, $OPTS *VerifyOptions) ([][]*Certificate, error) {\n  $ROOTS,\
+    \ $FAILED_ROOT, $ROOT_ERR := $OPTS.Roots.findVerifiedParents($C)\n  ...\n  $INTERMEDIATES,\
+    \ $FAILED_INTERMEDIATE, $INTERMEDIATE_ERR := $OPTS.Intermediates.findVerifiedParents($C)\n\
+    \  ...\n}\n"
+  pattern-not: "func ($C *Certificate) buildChains($CACHE map[*Certificate][][]*Certificate,\
+    \ $CURRENT_CHAIN []*Certificate, $SIG_CHECKS *int, $OPTS *VerifyOptions) ([][]*Certificate,\
+    \ error) {\n  ...\n  for _, $ROOT_NUM := range $OPTS.Roots.findPotentialParents($C)\
+    \ {\n    ...\n  }\n  for _, $INTERMEDIATE_NUM := range $OPTS.Intermediates.findPotentialParents($C)\
+    \ {\n    ...\n  }\n}\n"
+  languages:
+  - go
+  message: 'Detected use of findVerifiedParents in certificate chain verification
+    which can lead to excessive signature checks and potential DoS. The function may
+    perform an unbounded number of signature verification attempts when processing
+    malicious certificate chains. Use findPotentialParents with a signature check
+    counter instead to limit the number of verification attempts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/770130659b6fb2acf271476579a3644e093dda7f
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://go.dev/issue/47143
+    technology:
+    - go

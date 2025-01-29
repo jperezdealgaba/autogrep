@@ -1,0 +1,20 @@
+rules:
+- id: vuln-go-1dd24caf
+  pattern: "if ($SIZE - $DIR_SIZE)/$DIV >= $RECORDS {\n  ...\n}\n"
+  pattern-not: "if $DIR_SIZE < $SIZE && ($SIZE - $DIR_SIZE)/$DIV >= $RECORDS {\n \
+    \ ...\n}\n"
+  languages:
+  - go
+  message: "Detected potential integer overflow vulnerability in archive/zip reader.\
+    \ \nThe code performs arithmetic operations without checking for overflow conditions,\n\
+    which could allow bypassing security checks. Always verify that the first operand\
+    \ \nis smaller than the second before subtraction to prevent overflow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/1dd24caf08985066b309af6bc461780c73e05c35
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A10:2021 - Server-Side Request Forgery
+    technology:
+    - go
