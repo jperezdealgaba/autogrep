@@ -1,0 +1,30 @@
+rules:
+- id: vuln-symfony-5129d3f5
+  pattern: '$METADATA->addConstraint(new Valid(array(''traverse'' => true)));
+
+    '
+  pattern-not: '$METADATA->addConstraint(new Valid(array(''traverse'' => true, ''deep''
+    => $DEEP)));
+
+    '
+  languages:
+  - php
+  message: 'The Valid constraint is missing the ''deep'' parameter, which can lead
+    to incomplete validation of nested collections. This could allow invalid data
+    to pass validation, potentially leading to security vulnerabilities or data integrity
+    issues. Always specify the ''deep'' parameter explicitly to ensure proper validation
+    of nested structures.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/5129d3f5d897ce876bbb22b617c1513afbc686ab
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://symfony.com/doc/current/validation/custom_constraint.html
+    technology:
+    - php

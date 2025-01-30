@@ -1,0 +1,30 @@
+rules:
+- id: vuln-wireshark-177962a5
+  pattern: 'copy_address_shallow(&$VAR1, &$VAR2);
+
+    '
+  pattern-not: 'copy_address_wmem(wmem_file_scope(), &$VAR1, &$VAR2);
+
+    '
+  languages:
+  - c
+  message: 'The use of ''copy_address_shallow'' can lead to memory management issues
+    and potential vulnerabilities. This function does not allocate memory properly,
+    which can cause undefined behavior or crashes. Replace ''copy_address_shallow''
+    with ''copy_address_wmem(wmem_file_scope(), ...)'' to ensure proper memory allocation
+    and management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/177962a5b4a05759b40fb6fc07a4a6eec306a9bf
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChDissectMemory.html
+    technology:
+    - c

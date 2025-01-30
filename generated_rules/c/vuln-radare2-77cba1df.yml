@@ -1,0 +1,39 @@
+rules:
+- id: vuln-radare2-77cba1df
+  pattern: "if (strlen($MSG) == 1) {\n  int $I = 0;\n  ALIGN;\n  ds_comment($DS, true,\
+    \ \"; \\\"\");\n  for ($I = 0; $I < $LEN; $I+=2) {\n    if (!$MSG[$I]) {\n   \
+    \   break;\n    }\n    if (!$MSG[$I+1]) {\n      if (IS_PRINTABLE($MSG[$I]) &&\
+    \ $MSG[$I] != '\"' && $MSG[$I] != '\\\\') {\n        ds_comment($DS, false, \"\
+    %c\", $MSG[$I]);\n      } else {\n        char *$ESCCHAR = r_str_escape_all(&$MSG[$I]);\n\
+    \        if ($ESCCHAR) {\n          ds_comment($DS, false, \"%s\", $ESCCHAR);\n\
+    \          free($ESCCHAR);\n        }\n      }\n    } else {\n      ds_comment($DS,\
+    \ false, \"\\\\u%02x%02x\", $MSG[$I+1], $MSG[$I]);\n    }\n  }\n  ds_comment($DS,\
+    \ false, \"\\\"%s\", $NL);\n} else {\n  char *$ESCSTR = r_str_escape_all($MSG);\n\
+    \  if ($ESCSTR) {\n    ALIGN;\n    ds_comment($DS, true, \"; \\\"%s\\\"%s\", $ESCSTR,\
+    \ $NL);\n    free($ESCSTR);\n  }\n}\n"
+  pattern-not: 'ds_print_str($DS, $MSG, $LEN, $STRING_FOUND);
+
+    '
+  languages:
+  - c
+  message: 'The code directly manipulates string handling without proper validation,
+    which can lead to vulnerabilities such as buffer overflows or incorrect string
+    processing. The issue was fixed by refactoring the string handling logic into
+    a dedicated function `ds_print_str` which ensures consistent and safe string processing.
+    To fix this, use the `ds_print_str` function instead of inline string manipulation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/77cba1dfeede9fdf904eba83d98b15c44f0b2052
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

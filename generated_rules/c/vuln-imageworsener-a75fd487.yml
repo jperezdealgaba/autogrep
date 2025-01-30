@@ -1,0 +1,28 @@
+rules:
+- id: vuln-imageworsener-a75fd487
+  pattern: 'lzw_add_to_dict($D, $OLDCODE, $VAL)
+
+    '
+  pattern-not: 'lzw_add_to_dict($RCTX, $D, $OLDCODE, $VAL)
+
+    '
+  languages:
+  - c
+  message: 'The function `lzw_add_to_dict` is called without the required `rctx` parameter,
+    which is necessary for proper error handling. This can lead to unhandled errors
+    during GIF decoding, potentially causing crashes or undefined behavior. Always
+    include the `rctx` parameter to ensure proper error management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jsummers/imageworsener/commit/a75fd4879c55c89651f7f247293a61eef3e51be1
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

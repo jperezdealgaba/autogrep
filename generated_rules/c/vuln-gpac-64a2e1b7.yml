@@ -1,0 +1,25 @@
+rules:
+- id: vuln-gpac-64a2e1b7
+  pattern: "for (i=0; i<$PTR->nb_entries; i++) {\n  if ($PTR->entries[i].name) gf_free($PTR->entries[i].name);\n\
+    }\nif ($PTR->entries) gf_free($PTR->entries);\n"
+  pattern-not: "if ($PTR->entries) {\n  for (i=0; i<$PTR->nb_entries; i++) {\n   \
+    \ if ($PTR->entries[i].name) gf_free($PTR->entries[i].name);\n  }\n  gf_free($PTR->entries);\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potential use-after-free vulnerability. The code frees memory
+    in a loop without checking if the pointer array is valid, which could lead to
+    undefined behavior if the array is already freed. Always check if the pointer
+    array is valid before accessing its elements and freeing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/64a2e1b799352ac7d7aad1989bc06e7b0f2b01db
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

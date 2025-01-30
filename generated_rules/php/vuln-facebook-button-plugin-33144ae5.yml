@@ -1,0 +1,24 @@
+rules:
+- id: vuln-facebook-button-plugin-33144ae5
+  pattern: "if( isset( $_REQUEST['fcbk_bttn_plgn_form_submit'] ) ) {\n    ...\n}\n"
+  pattern-not: "if( isset( $_REQUEST['fcbk_bttn_plgn_form_submit'] ) && check_admin_referer(\
+    \ plugin_basename(__FILE__), 'fcbk_bttn_plgn_nonce_name' ) ) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Missing CSRF protection in form submission handling. This vulnerability
+    allows attackers to perform actions on behalf of users without their consent.
+    Always verify requests with nonce checks using check_admin_referer() or wp_verify_nonce().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wp-plugins/facebook-button-plugin/commit/33144ae5a45ed07efe7fceca901d91365fdbf7cb
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017 - Broken Authentication
+    references:
+    - https://developer.wordpress.org/plugins/security/nonces/
+    technology:
+    - php

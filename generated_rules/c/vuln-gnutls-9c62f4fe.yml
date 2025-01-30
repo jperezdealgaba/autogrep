@@ -1,0 +1,21 @@
+rules:
+- id: vuln-gnutls-9c62f4fe
+  pattern: 'gnutls_free($VAR.cert.data);
+
+    $VAR.cert.data = NULL;
+
+    '
+  pattern-not: '_gnutls_free_datum(&$VAR.cert);
+
+    $VAR.pubkey = NULL;
+
+    '
+  languages:
+  - c
+  message: Detected insecure memory deall
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/9c62f4feb2bdd6fbbb06eb0c60bfdea80d21bbb8
+    category: security
+    technology:
+    - c

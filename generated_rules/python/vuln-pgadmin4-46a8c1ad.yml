@@ -1,0 +1,23 @@
+rules:
+- id: vuln-pgadmin4-46a8c1ad
+  pattern: 'from eventlet.green import subprocess
+
+    '
+  pattern-not: 'import subprocess
+
+    '
+  languages:
+  - python
+  message: Detected use of eventlet.green.subprocess instead of the standard subprocess
+    module. Using eventlet's subprocess can lead to unexpected behavior and security
+    issues. Use the standard subprocess module instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/pgadmin-org/pgadmin4/commit/46a8c1ad6a0797ede9ddca1ebe0fc4e2aeba9073
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://eventlet.net/doc/modules/green/subprocess.html
+    technology:
+    - python

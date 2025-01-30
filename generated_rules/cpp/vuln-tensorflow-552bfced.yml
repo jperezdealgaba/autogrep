@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tensorflow-552bfced
+  pattern: '$VAR.AppendShape($SHAPE)
+
+    '
+  pattern-not: 'OP_REQUIRES_OK($CTX, $VAR.AppendShapeWithStatus($SHAPE))
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe usage of AppendShape without error handling. This can
+    lead to undefined behavior or crashes if the shape append operation fails. Use
+    AppendShapeWithStatus with OP_REQUIRES_OK to properly handle errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/552bfced6ce4809db5f3ca305f60ff80dd40c5a3
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - cpp

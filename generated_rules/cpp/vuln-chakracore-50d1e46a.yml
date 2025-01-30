@@ -1,0 +1,27 @@
+rules:
+- id: vuln-chakracore-50d1e46a
+  pattern: '$DATA->handler.isLocked = $HANDLER->GetIsLocked();
+
+    '
+  pattern-not: '$DATA->handler.flags = $HANDLER->GetFlags();
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly assigns the `isLocked` field, which can lead to inconsistent
+    state handling. Instead, the `flags` field should be used to manage state, including
+    the locked status, to ensure proper synchronization and state management. This
+    vulnerability can cause race conditions or incorrect state handling in multi-threaded
+    environments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/50d1e46aac450f236927b309854e77fce4acd49f
+    category: security
+    cwe:
+    - CWE-367
+    - CWE-362
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - cpp

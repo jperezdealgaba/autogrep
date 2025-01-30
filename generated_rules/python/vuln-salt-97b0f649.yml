@@ -1,0 +1,25 @@
+rules:
+- id: vuln-salt-97b0f649
+  pattern: 'raise IOError(''Access denied to roster "{}"''.format($TEMPLATE))
+
+    '
+  pattern-not: 'raise IOError(''Access denied to roster "{0}"''.format($TEMPLATE))
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure string formatting in error message. Using ''{}'' style
+    formatting can lead to format string vulnerabilities when user input is involved.
+    Use explicit positional formatting with ''{0}'' instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/97b0f64923bc5382531b931625267a3c30d2f17e
+    category: security
+    cwe: 'CWE-134: Use of Externally-Controlled Format String'
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/string.html#format-string-syntax
+    technology:
+    - python

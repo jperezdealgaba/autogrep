@@ -1,0 +1,32 @@
+rules:
+- id: vuln-qemu-e9077462
+  pattern: '$STRUCT->$ARRAY[$STRUCT->$INDEX - 1]
+
+    '
+  pattern-not: '$POS = $STRUCT->$INDEX - 1;
+
+    $POS %= $LEN;
+
+    $STRUCT->$ARRAY[$POS]
+
+    '
+  languages:
+  - c
+  message: 'Direct array access using an unmodulated index can lead to out-of-bounds
+    access. This is dangerous as it can cause memory corruption or crashes. Always
+    modulate the index by the array length to ensure it stays within bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/e907746266721f305d67bc0718795fedee2e824c
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

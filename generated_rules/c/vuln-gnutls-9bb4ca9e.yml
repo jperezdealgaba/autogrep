@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gnutls-9bb4ca9e
+  pattern: 'socket_bye(&$HD, 1);
+
+    '
+  pattern-not: 'socket_bye(&$HD, 0);
+
+    '
+  languages:
+  - c
+  message: 'The function `socket_bye` is called with a non-zero parameter, which may
+    lead to improper session termination.
+
+    This can cause resource leaks or unexpected behavior in the application.
+
+    Ensure that `socket_bye` is called with a zero parameter to properly terminate
+    the session.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/9bb4ca9ec8ed504429d582ac3de28aaf8d88b1e8
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

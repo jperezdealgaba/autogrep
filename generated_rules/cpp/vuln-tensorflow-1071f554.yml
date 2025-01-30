@@ -1,0 +1,24 @@
+rules:
+- id: vuln-tensorflow-1071f554
+  pattern: 'DCHECK_GT($VAR, 0);
+
+    '
+  pattern-not: 'OP_REQUIRES($CONTEXT, $VAR > 0, $ERROR);
+
+    '
+  languages:
+  - cpp
+  message: "Using DCHECK_GT for input validation is unsafe as it can be compiled out\
+    \ in release builds. \nThis could lead to undefined behavior when invalid inputs\
+    \ are provided. \nReplace DCHECK_GT with OP_REQUIRES and provide proper error\
+    \ handling using errors::InvalidArgument.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/1071f554dbd09f7e101324d366eec5f4fe5a3ece
+    category: security
+    cwe:
+    - 'CWE-754: Improper Check for Unusual or Exceptional Conditions'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - cpp

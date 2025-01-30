@@ -1,0 +1,29 @@
+rules:
+- id: vuln-radare2-8525ad0b
+  pattern: 'r_list_pop($REF);
+
+    '
+  pattern-not: '// r_list_pop($REF);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially dangerous use of `r_list_pop` without proper handling.
+
+    This can lead to memory leaks or undefined behavior if the popped element is not
+    properly managed.
+
+    Consider reviewing the usage and ensuring proper resource management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/8525ad0b9fd596f4b251bb3d7b114e6dc7ce1ee8
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-openssl-4924b37e
+  pattern: "if ($UBITS <= BN_BITS2 && $UDP[0] == 1)\n    break;\n"
+  pattern-not: "if ($UBITS <= BN_BITS2) {\n    if ($UDP[0] == 0)\n        goto err;\n\
+    \    if ($UDP[0] == 1)\n        break;\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing check for reducible polynomials in GF2m arithmetic.
+
+    The original code only checked if the polynomial was equal to 1, missing
+
+    the case where it could be 0 (reducible polynomial). This could lead to
+
+    incorrect cryptographic computations. The fix adds a check for 0 values
+
+    and handles them appropriately with an error condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/4924b37ee01f71ae19c94a8934b80eeb2f677932
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/openssl/openssl/commit/4924b37ee01f71ae19c94a8934b80eeb2f677932
+    technology:
+    - crypto

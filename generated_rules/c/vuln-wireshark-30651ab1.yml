@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-30651ab1
+  pattern: 'tvb_memcpy($TVB, $BYTES, $OFFSET, ($OPTLEN - 4));
+
+    '
+  pattern-not: 'tvb_memcpy($TVB, $BYTES, $OFFSET, $ADDR_LEN);
+
+    '
+  languages:
+  - c
+  message: 'The calculation of the length parameter in tvb_memcpy is unsafe as it
+    directly uses (optlen - 4) without proper bounds checking. This can lead to buffer
+    overflows if optlen is not validated. Use a pre-calculated and validated length
+    variable instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/30651ab18b42e666f57ea239e58f3ff3a5e9c4ad
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

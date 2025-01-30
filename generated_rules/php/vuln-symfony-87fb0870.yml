@@ -1,0 +1,26 @@
+rules:
+- id: vuln-symfony-87fb0870
+  pattern: 'const EXTRA_VERSION = ''DEV'';
+
+    '
+  pattern-not: 'const EXTRA_VERSION = '''';
+
+    '
+  languages:
+  - php
+  message: 'The constant `EXTRA_VERSION` is set to ''DEV'', which indicates a development
+    version. This can expose the application to potential security risks as development
+    versions may contain untested or insecure code. It is recommended to set `EXTRA_VERSION`
+    to an empty string or a stable version identifier.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/symfony/symfony/commit/87fb08703e62882a7a6fdb17672070e0ee12dd65
+    category: security
+    cwe:
+    - CWE-489
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - php

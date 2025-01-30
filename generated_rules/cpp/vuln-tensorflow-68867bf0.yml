@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-68867bf0
+  pattern: 'const NodeDef* $VAR;
+
+    '
+  pattern-not: 'const NodeDef* $VAR = nullptr;
+
+    '
+  languages:
+  - cpp
+  message: 'Uninitialized pointer variables can lead to undefined behavior and potential
+    security vulnerabilities. Always initialize pointer variables to nullptr when
+    declaring them to ensure they have a defined state and prevent accidental use
+    of uninitialized memory. In this case, the NodeDef pointer was declared without
+    initialization, which could lead to undefined behavior if used before assignment.
+    The fix adds initialization to nullptr.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/68867bf01239d9e1048f98cbad185bf4761bedd3
+    category: security
+    cwe:
+    - CWE-908
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/908.html
+    - https://wiki.sei.cmu.edu/confluence/display/c/EXP33-C.+Do+not+read+uninitialized+memory
+    technology:
+    - cpp

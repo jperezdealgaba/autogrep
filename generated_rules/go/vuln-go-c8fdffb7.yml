@@ -1,0 +1,22 @@
+rules:
+- id: vuln-go-c8fdffb7
+  pattern: 't.Skip("TODO(#63427): 1.21.3 contains unreleased changes from vendored
+    modules")
+
+    '
+  languages:
+  - go
+  message: "Skipping tests that verify module dependencies can mask security issues.\
+    \ \nThis test skip indicates the code contains unreleased changes from vendored\
+    \ \nmodules, which could introduce vulnerabilities or compatibility issues. \n\
+    Remove the skip and properly verify module dependencies.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/c8fdffb790f96480cf678b9dcde657ee462b23fa
+    category: security
+    cwe:
+    - 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - go

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-salt-bca115f3
+  pattern: "if not ('token' in $LOW or 'eauth' in $LOW) and $LOW['client'] != 'ssh':\n\
+    \  ...\n"
+  pattern-not: "if not ('token' in $LOW or 'eauth' in $LOW):\n  if $LOW.get('raw_shell')\
+    \ and not $SELF.opts.get('netapi_allow_raw_shell'):\n    raise salt.exceptions.EauthAuthenticationError('Raw\
+    \ shell option not allowed.')\n"
+  languages:
+  - python
+  message: 'Detected insecure handling of raw shell commands in SSH client. The original
+    code allowed raw shell commands without proper authentication checks, which could
+    lead to command injection. Ensure that raw shell commands are explicitly disabled
+    unless ''netapi_allow_raw_shell'' is set to True.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/bca115f3f00fbde564dd2f12bf036b5d2fd08387
+    category: security
+    cwe: 'CWE-77: Command Injection'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/77.html
+    technology:
+    - python

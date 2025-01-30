@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gnutls-d223040e
+  pattern: "if ($CIPHERTEXT.size < (unsigned) $BLOCKSIZE + $HASH_SIZE) {\n  ...\n\
+    \  return $ERROR;\n}\n"
+  pattern-not: "if ($PAD > $CIPHERTEXT.size - $HASH_SIZE) {\n  ...\n  return $ERROR;\n\
+    }\n"
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect bounds check in the decryption
+    logic, where the ciphertext size is compared with the sum of the block size and
+    hash size. This can lead to potential security issues such as buffer underflows
+    or incorrect error handling in cryptographic operations. The fix changes the comparison
+    to ensure proper bounds checking. To fix this, ensure that the bounds check correctly
+    verifies the ciphertext size against the expected minimum size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/d223040e498bd50a4b9e0aa493e78587ae1ed653
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - c

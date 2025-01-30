@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tensorflow-a989426e
+  pattern: 'QuantizeMultiplierSmallerThanOneExp($VAR1->params.scale, &$VAR2, &$VAR3);
+
+    '
+  pattern-not: 'QuantizeMultiplier($VAR1->params.scale, &$VAR2, &$VAR3);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of `QuantizeMultiplierSmallerThanOneExp` without checking
+    if the multiplier is greater than one. This can lead to incorrect quantization
+    for values greater than one. Use `QuantizeMultiplier` instead, which handles both
+    cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/a989426ee1346693cc015792f11d715f6944f2b8
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - cpp

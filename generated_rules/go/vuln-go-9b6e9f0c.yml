@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-9b6e9f0c
+  pattern: '$HANDLE, $ERR = loadsystemlibrary($FILENAME)
+
+    '
+  pattern-not: '$HANDLE, $ERR = loadsystemlibrary($FILENAME, $ABSOLUTEPATH)
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure loading of system libraries without specifying an absolute
+    path. This can lead to DLL hijacking vulnerabilities where an attacker could place
+    a malicious DLL in a directory searched before the system directory. Use `loadsystemlibrary`
+    with the absolute path parameter to ensure the correct system DLL is loaded.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/9b6e9f0c8c66355c0f0575d808b32f52c8c6d21c
+    category: security
+    cwe:
+    - CWE-426
+    owasp:
+    - 'A08: Software and Data Integrity Failures'
+    references:
+    - https://learn.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order
+    technology:
+    - go

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-symfony-c935e4a3
+  pattern: "$granted = false;\nforeach ($attributes as $key => $value) {\n    if ($this->accessDecisionManager->decide($token,\
+    \ [$key => $value], $request)) {\n        $granted = true;\n        break;\n \
+    \   }\n}\nif (!$granted) {\n    ...\n}\n"
+  pattern-not: "if (!$this->accessDecisionManager->decide($token, $attributes, $request,\
+    \ true)) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Multiple attributes in access control checks are being evaluated incorrectly,
+    potentially leading to security bypasses. The original code evaluates attributes
+    in a loop with an OR condition, which could allow access if any single attribute
+    is granted. The fixed version evaluates all attributes together with an AND condition.
+    To fix this, pass the attributes array directly to the `decide` method with the
+    `allowMultipleAttributes` parameter set to true.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/c935e4a3fba6cc2ab463a6ca382858068d63cebf
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://symfony.com/doc/current/security.html
+    technology:
+    - php

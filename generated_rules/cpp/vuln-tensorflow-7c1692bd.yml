@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-7c1692bd
+  pattern: "OP_REQUIRES_OK_ASYNC(\n    $CONTEXT,\n    $CONTEXT->allocate_output(\n\
+    \        0, TensorShape({$DIM1, $DIM2, $DIM3, $DIM4}),\n        &$OUTPUT),\n \
+    \   $DONE);\n"
+  pattern-not: "OP_REQUIRES_OK_ASYNC(\n    $CONTEXT,\n    $CONTEXT->allocate_output(0,\
+    \ $SHAPE, &$OUTPUT),\n    $DONE);\n"
+  languages:
+  - cpp
+  message: 'Directly constructing TensorShape with initializer list can lead to potential
+    vulnerabilities due to hardcoded dimensions. Instead, use TensorShape::AddDimWithStatus
+    to dynamically add dimensions, which is safer and more flexible.
+
+    This vulnerability can cause issues in tensor allocation, leading to incorrect
+    tensor shapes or potential memory corruption.
+
+    To fix this, replace the direct TensorShape initialization with a series of AddDimWithStatus
+    calls.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/7c1692bd417eb4f9b33ead749a41166d6080af85
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

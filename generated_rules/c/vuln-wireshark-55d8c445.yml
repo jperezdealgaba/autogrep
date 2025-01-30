@@ -1,0 +1,30 @@
+rules:
+- id: vuln-wireshark-55d8c445
+  pattern: 'length = (gint)tvb_ensure_captured_length_remaining(tvb, offset);
+
+    '
+  pattern-not: 'length = tvb_captured_length_remaining(tvb, offset);
+
+    '
+  languages:
+  - c
+  message: 'The use of `(gint)tvb_ensure_captured_length_remaining` is potentially
+    dangerous as it may lead to integer overflow or truncation issues. This can cause
+    incorrect length calculations and lead to security vulnerabilities such as buffer
+    overflows or data corruption. Replace it with `tvb_captured_length_remaining`
+    to avoid casting and ensure proper length handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/55d8c445b47375a813c9ebb2b398951f65145a84
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-681
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/libtvbuff.html
+    technology:
+    - c

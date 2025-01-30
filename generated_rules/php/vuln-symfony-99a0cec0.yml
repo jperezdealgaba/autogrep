@@ -1,0 +1,29 @@
+rules:
+- id: vuln-symfony-99a0cec0
+  pattern: 'preg_match(''#^https?://[^/]++#i'', $path, $host)
+
+    '
+  pattern-not: 'preg_match(''#^https?:[/\\\\]{2,}+[^/]++#i'', $path, $host)
+
+    '
+  languages:
+  - php
+  message: "The URL validation pattern is insufficient and can be bypassed by using\
+    \ alternative URL formats. \nThis could lead to security vulnerabilities such\
+    \ as open redirects or SSRF attacks. \nUpdate the pattern to handle various URL\
+    \ formats, including those with backslashes and multiple slashes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/99a0cec0a6be39ce5ef38386e57339603b33ee5b
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-community/attacks/Open_redirect
+    - https://cwe.mitre.org/data/definitions/601.html
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wireshark-a9fc769d
+  pattern: 'tvb_get_bits_array(NULL, $TVB, $BIT_OFFSET, $NO_OF_BITS, $BYTES_LENGTH)
+
+    '
+  pattern-not: 'tvb_get_bits_array(wmem_packet_scope(), $TVB, $BIT_OFFSET, $NO_OF_BITS,
+    $BYTES_LENGTH)
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of NULL as first argument in tvb_get_bits_array().
+    This can lead to memory management issues since the function expects a valid memory
+    pool pointer. Always use wmem_packet_scope() or another appropriate memory pool
+    to ensure proper memory management and prevent potential crashes or memory leaks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/a9fc769d7bb4b491efb61c699d57c9f35269d871
+    category: security
+    cwe:
+    - 'CWE-476: NULL Pointer Dereference'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChDissectMemory.html
+    technology:
+    - c

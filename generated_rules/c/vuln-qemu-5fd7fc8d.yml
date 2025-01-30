@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-5fd7fc8d
+  pattern: '$BUFSIZE = $SIZE;
+
+    $BUF = g_malloc($BUFSIZE);
+
+    '
+  pattern-not: "$SURFACE_SIZE = (uint64_t) surface_width($DS) * surface_height($DS)\
+    \ * 4;\nassert($SURFACE_SIZE > 0);\nassert($SURFACE_SIZE < INT_MAX);\nif ($BUFSIZE\
+    \ < $SURFACE_SIZE) {\n  $BUFSIZE = $SURFACE_SIZE;\n  g_free($BUF);\n  $BUF = g_malloc($BUFSIZE);\n\
+    }\n"
+  languages:
+  - c
+  message: "Detected a potential integer overflow vulnerability due to missing bounds\
+    \ checking before memory allocation. \nThe code allocates a buffer without verifying\
+    \ that the size is within safe limits, which could lead to memory corruption or\
+    \ denial of service.\nTo fix this, ensure the size is validated against a maximum\
+    \ limit (e.g., INT_MAX) and resized appropriately before allocation.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/qemu/qemu/commit/5fd7fc8db92adea953ecf5917168989a28e8871f
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Security Misconfiguration'
+    technology:
+    - c

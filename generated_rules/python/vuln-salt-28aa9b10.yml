@@ -1,0 +1,25 @@
+rules:
+- id: vuln-salt-28aa9b10
+  pattern: '''Command {0!r} failed. Stderr: {1!r}''.format($CMD, $RESULT[''stderr''])
+
+    '
+  pattern-not: '''Command {0!r} failed. Stderr: {1!r}''.format($CMD, _remove_sensitive_data($RESULT[''stderr'']))
+
+    '
+  languages:
+  - python
+  message: 'Detected potential exposure of sensitive data in error messages. The patch
+    shows that HTTP credentials can be leaked in error output. Use the _remove_sensitive_data
+    function to sanitize sensitive information before logging or displaying it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/28aa9b105804ff433d8f663b2f9b804f2b75495a
+    category: security
+    cwe: CWE-200
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - python

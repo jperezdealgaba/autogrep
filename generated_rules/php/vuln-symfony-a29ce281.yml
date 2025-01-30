@@ -1,0 +1,30 @@
+rules:
+- id: vuln-symfony-a29ce281
+  pattern: 'hash_hmac(''sha256'', $class.$username.$expires.$password, $this->getSecret())
+
+    '
+  pattern-not: 'hash_hmac(''sha256'', $class.self::COOKIE_DELIMITER.$username.self::COOKIE_DELIMITER.$expires.self::COOKIE_DELIMITER.$password,
+    $this->getSecret())
+
+    '
+  languages:
+  - php
+  message: 'Detected a vulnerable token generation pattern in RememberMe functionality.
+    The code concatenates user inputs directly without delimiters, which can lead
+    to token collision vulnerabilities. An attacker could potentially craft malicious
+    input that results in the same token as another user. Fix by adding proper delimiters
+    between concatenated values using a constant like self::COOKIE_DELIMITER.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/a29ce2817cf43bb1850cf6af114004ac26c7a081
+    category: security
+    cwe:
+    - CWE-347
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A2_2021-Cryptographic_Failures.html
+    technology:
+    - php

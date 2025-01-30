@@ -1,0 +1,34 @@
+rules:
+- id: vuln-openssl-2ac4c6f7
+  pattern: 'asn1_item_embed_d2i($VAR1, $VAR2, $VAR3, $VAR4, $VAR5, $VAR6, $VAR7, $VAR8)
+
+    '
+  pattern-not: 'asn1_item_embed_d2i($VAR1, $VAR2, $VAR3, $VAR4, $VAR5, $VAR6, $VAR7,
+    $VAR8, $VAR9)
+
+    '
+  languages:
+  - c
+  message: 'Detected potentially vulnerable ASN.1 parsing code that lacks recursion
+    depth checking.
+
+    This could allow an attacker to craft malicious input that causes excessive recursion,
+
+    leading to stack exhaustion and denial of service. The code should be updated
+    to include
+
+    a depth parameter and check against ASN1_MAX_CONSTRUCTED_NEST (30).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/2ac4c6f7b2b2af20c0e2b0ba05367e454cd11b33
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+    references:
+    - https://www.openssl.org/news/secadv/20180327.txt

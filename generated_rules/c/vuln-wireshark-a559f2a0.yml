@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-a559f2a0
+  pattern: 'set_dnet_address($ADDR1, $ADDR2);
+
+    '
+  pattern-not: 'set_dnet_address($PIN, $ADDR1, $ADDR2);
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe memory handling in set_dnet_address function call. \n\
+    The original code passes addresses directly without proper memory management,\
+    \ \nwhich can lead to use-after-free or memory corruption vulnerabilities. \n\
+    The fix adds a packet_info parameter and uses wmem_strdup to safely duplicate\
+    \ strings. \nAlways use proper memory management functions when handling string\
+    \ addresses.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/a559f2a050947f793c00159c0cd4d30f403f217c
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-119
+    owasp: 'A8: Software and Data Integrity Failures'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChDissectMemory.html
+    technology:
+    - c

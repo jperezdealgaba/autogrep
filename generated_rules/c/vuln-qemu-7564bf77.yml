@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-7564bf77
+  pattern: 'g_assert_not_reached();
+
+    '
+  pattern-not: 'qemu_log_mask(LOG_UNIMP, $MSG, $FUNC, $L3_PROTO);
+
+    '
+  languages:
+  - c
+  message: 'The use of `g_assert_not_reached()` in network handling code can lead
+    to abrupt termination of the program when encountering unsupported offloads. This
+    is dangerous as it can be exploited to cause denial of service. Instead, use `qemu_log_mask()`
+    to log the event and handle it gracefully.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/qemu/qemu/commit/7564bf7701f00214cdc8a678a9f7df765244def1
+    category: security
+    cwe:
+    - 'CWE-248: Uncaught Exception'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openssl-cd30f03a
+  pattern: "static int cms_copy_content(BIO *out, BIO *in, unsigned int flags)\n{\n\
+    \  unsigned char buf[4096];\n  int r = 0, i;\n  BIO *tmpout = NULL;\n  ...\n \
+    \ tmpout = out;\n  ...\n}\n"
+  pattern-not: "static int cms_copy_content(BIO *out, BIO *in, unsigned int flags)\n\
+    {\n  unsigned char buf[4096];\n  int r = 0, i;\n  BIO *tmpout;\n  tmpout = cms_get_text_bio(out,\
+    \ flags);\n  ...\n}\n"
+  languages:
+  - c
+  message: "The vulnerability involves improper handling of BIO objects in OpenSSL's\
+    \ CMS implementation. \nThe original code directly assigns the output BIO to a\
+    \ temporary BIO pointer without proper checks, \nwhich could lead to resource\
+    \ leaks or incorrect behavior. The fix introduces a helper function \n`cms_get_text_bio`\
+    \ to properly manage BIO objects. This issue could potentially be exploited to\
+    \ \ncause memory leaks or other undefined behavior. Always use proper resource\
+    \ management functions \nwhen handling BIO objects in OpenSSL.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/cd30f03ac5bf2962f44bd02ae8d88245dff2f12c
+    category: security
+    cwe:
+    - 'CWE-401: Missing Release of Resource after Effective Lifetime'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

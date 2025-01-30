@@ -1,0 +1,33 @@
+rules:
+- id: vuln-qemu-23910d3f
+  pattern: "struct gpe_regs {\n    uint16_t sts;\n    uint16_t en;\n};\n...\nstruct\
+    \ gpe_regs gpe;\n...\nregister_ioport_write(GPE_BASE, 4, 1, gpe_writeb, s);\n\
+    register_ioport_read(GPE_BASE, 4, 1, gpe_readb, s);\n"
+  pattern-not: "struct ACPIGPE {\n    uint8_t *sts;\n    uint8_t *en;\n    uint32_t\
+    \ blk;\n    uint8_t len;\n};\n...\nACPIGPE gpe;\n...\nacpi_gpe_init(&gpe, GPE_LEN);\n\
+    register_ioport_write(GPE_BASE, GPE_LEN, 1, gpe_writeb, s);\nregister_ioport_read(GPE_BASE,\
+    \ GPE_LEN, 1, gpe_readb, s);\n"
+  languages:
+  - c
+  message: 'The code uses a fixed-size struct for GPE registers, which can lead to
+    buffer overflows or underflows. The vulnerability arises because the struct size
+    is hardcoded and not dynamically allocated based on the actual GPE length. This
+    can be exploited to read or write outside the intended memory bounds. The fix
+    involves using dynamically allocated arrays for GPE status and enable registers,
+    initialized based on the GPE length. Always ensure that memory allocation matches
+    the actual size requirements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/23910d3f669d46073b403876e30a7314599633af
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

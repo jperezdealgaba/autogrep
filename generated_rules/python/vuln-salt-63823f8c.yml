@@ -1,0 +1,24 @@
+rules:
+- id: vuln-salt-63823f8c
+  pattern: 'return bool(clean_path($OPTS[''pki_dir''], $ID))
+
+    '
+  pattern-not: 'return bool(clean_path($OPTS[''pki_dir''], $ID)) and clean_id($ID)
+
+    '
+  languages:
+  - python
+  message: Detected missing validation of ID in clean_path function. This can lead
+    to directory traversal attacks if the ID contains malicious path sequences. Ensure
+    to validate the ID using clean_id function before processing.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/63823f8c3ed02e7809fc8e61972d289bf233a9ed
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

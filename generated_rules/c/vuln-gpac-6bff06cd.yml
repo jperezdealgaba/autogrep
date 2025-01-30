@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gpac-6bff06cd
+  pattern: "if (gf_node_get_tag($NODE) != TAG_ProtoNode) {\n  ...\n}\n"
+  pattern-not: "if ($INF->name && (gf_node_get_tag($NODE) != TAG_ProtoNode)) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing null check before accessing a field in a conditional
+    statement.
+
+    This vulnerability could lead to null pointer dereference and potential crashes.
+
+    The fix adds a null check for inf->name before the tag comparison.
+
+    Always ensure proper null checks are in place before accessing structure fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/6bff06cdb8e9b4e8ed2e789ee9340877759536fd
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references: []
+    technology:
+    - c

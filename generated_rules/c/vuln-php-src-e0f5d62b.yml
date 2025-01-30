@@ -1,0 +1,28 @@
+rules:
+- id: vuln-php-src-e0f5d62b
+  pattern: 'strncpy($DEST, $SRC, strlen($SRC));
+
+    '
+  pattern-not: "if (strlcpy($DEST, $SRC, sizeof($DEST)) >= sizeof($DEST)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected unsafe use of `strncpy` which can lead to buffer overflows or
+    truncation without proper error handling. The function `strncpy` does not guarantee
+    null-termination and can result in security vulnerabilities. Use `strlcpy` instead,
+    which ensures null-termination and provides a way to detect truncation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e0f5d62bd6690169998474b62f92a8c5ddf0e699
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://man7.org/linux/man-pages/man3/strncpy.3.html
+    - https://man7.org/linux/man-pages/man3/strlcpy.3.html
+    technology:
+    - c

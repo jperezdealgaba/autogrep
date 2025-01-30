@@ -1,0 +1,22 @@
+rules:
+- id: vuln-qemu-070c4b92
+  pattern: "while (1) {\n  ...\n}\n"
+  pattern-not: "while ($DESCNT++ < $FEC_MAX_DESC) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Infinite loop vulnerability detected in network handling code. This can
+    lead to denial of service (DoS) as the loop lacks a termination condition. The
+    vulnerability was fixed by introducing a counter and a maximum descriptor limit.
+    Add a counter and a termination condition to prevent infinite loops.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/070c4b92b8cd5390889716677a0b92444d6e087a
+    category: security
+    cwe:
+    - CWE-835
+    owasp:
+    - A9:2021-Security Misconfiguration
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-0a794529
+  pattern: "if ($VAR && !g_str_equal($VAR, \"none\")) {\n  if (g_str_equal($VAR, \"\
+    passthrough\")) {\n    if ($FUNC(&$BUF)) {\n      _FDT(fdt_setprop_string($FDT,\
+    \ $OFFSET, $PROP, $BUF));\n      g_free($BUF);\n    }\n  } else {\n    _FDT(fdt_setprop_string($FDT,\
+    \ $OFFSET, $PROP, $VAR));\n  }\n}\n"
+  pattern-not: "if ($VAR) {\n  _FDT(fdt_setprop_string($FDT, $OFFSET, $PROP, $VAR));\n\
+    } else if ($COND && $FUNC(&$BUF)) {\n  _FDT(fdt_setprop_string($FDT, $OFFSET,\
+    \ $PROP, $BUF));\n  g_free($BUF);\n}\n"
+  languages:
+  - c
+  message: "The code contains a vulnerable pattern where host model and serial information\
+    \ \nis passed through without proper validation. This can lead to information\
+    \ \ndisclosure or unexpected behavior. The fix simplifies the logic and removes\
+    \ \nthe \"passthrough\" option, ensuring that only explicitly set values are used.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/0a794529bd1109aeea0c407784b40a2605e808b9
+    category: security
+    cwe:
+    - 'CWE-200: Information Exposure'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - c

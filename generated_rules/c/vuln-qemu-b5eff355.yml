@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-b5eff355
+  pattern: 'bdrv_file_open($VAR, $FILENAME, $FLAGS | BDRV_O_AUTOGROW)
+
+    '
+  pattern-not: 'bdrv_file_open($VAR, $FILENAME, $FLAGS)
+
+    '
+  languages:
+  - c
+  message: 'The use of BDRV_O_AUTOGROW flag in bdrv_file_open can lead to security
+    vulnerabilities by allowing automatic growth of the block device without proper
+    bounds checking. This can result in potential out-of-bounds access or resource
+    exhaustion. The flag has been removed in the patch to mitigate these risks. Remove
+    the BDRV_O_AUTOGROW flag from bdrv_file_open calls to ensure proper bounds checking
+    and resource management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/b5eff355460643d09e533024360fe0522f368c07
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://lists.gnu.org/archive/html/qemu-devel/2021-11/msg00000.html
+    technology:
+    - c

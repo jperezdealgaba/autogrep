@@ -1,0 +1,40 @@
+rules:
+- id: vuln-openssl-06d1dc3f
+  pattern: "if ((gen->type == GEN_OTHERNAME) && (check_type == GEN_EMAIL)) {\n   \
+    \ if (OBJ_obj2nid(gen->d.otherName->type_id) == NID_id_on_SmtpUTF8Mailbox) {\n\
+    \        san_present = 1;\n        if (gen->d.otherName->value->type == V_ASN1_UTF8STRING)\
+    \ {\n            $CSTR = gen->d.otherName->value->value.utf8string;\n        \
+    \    if ((rv = do_check_string($CSTR, 0, equal, flags, chk, chklen, peername))\
+    \ != 0)\n                break;\n        }\n    }\n}\n"
+  pattern-not: "switch (gen->type) {\ncase GEN_OTHERNAME:\n    switch (OBJ_obj2nid(gen->d.otherName->type_id))\
+    \ {\n    case NID_id_on_SmtpUTF8Mailbox:\n        if (check_type != GEN_EMAIL\n\
+    \            || gen->d.otherName->value->type != V_ASN1_UTF8STRING)\n        \
+    \    continue;\n        $CSTR = gen->d.otherName->value->value.utf8string;\n \
+    \       break;\n    }\n    break;\n}\n"
+  languages:
+  - c
+  message: 'Insecure handling of SmtpUTF8Mailbox in X.509 certificate validation.
+
+    The original code did not properly validate the email address format and type,
+
+    potentially allowing malformed or invalid email addresses to be accepted.
+
+    The fix adds proper type checking and validation according to RFC 8398.
+
+    Always validate email addresses strictly according to the appropriate RFCs
+
+    and ensure type checking is performed before processing the value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/06d1dc3fa96a2ba5a3e22735a033012aadc9f0d6
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc8398
+    technology:
+    - c

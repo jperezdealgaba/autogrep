@@ -1,0 +1,25 @@
+rules:
+- id: vuln-go-cdcd0284
+  pattern: "func (r *Resolver) LookupCNAME(ctx context.Context, host string) (string,\
+    \ error) {\n  return r.lookupCNAME(ctx, host)\n}\n"
+  pattern-not: "func (r *Resolver) LookupCNAME(ctx context.Context, host string) (string,\
+    \ error) {\n  cname, err := r.lookupCNAME(ctx, host)\n  if err != nil {\n    return\
+    \ \"\", err\n  }\n  if !isDomainName(cname) {\n    return \"\", &DNSError{Err:\
+    \ \"CNAME target is invalid\", Name: host}\n  }\n  return cname, nil\n}\n"
+  languages:
+  - go
+  message: 'The LookupCNAME function does not validate the CNAME target domain name,
+    which could lead to DNS spoofing or injection attacks. Always validate domain
+    names using isDomainName to ensure they are properly formatted and safe to use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/cdcd02842da7c004efd023881e3719105209c908
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - go

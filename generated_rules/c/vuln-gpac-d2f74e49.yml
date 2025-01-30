@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gpac-d2f74e49
+  pattern: "if ($FIELD.fieldType == GF_SG_VRML_SFNODE) {\n  $PREV_NODE = *((GF_Node\
+    \ **) $FIELD.far_ptr);\n}\n...\nif ($FIELD.fieldType == GF_SG_VRML_SFNODE) {\n\
+    \  if ($PREV_NODE) $E = gf_node_unregister($PREV_NODE, $NODE);\n}\n"
+  pattern-not: "if ($FIELD.fieldType == GF_SG_VRML_SFNODE) {\n  if (*((GF_Node **)\
+    \ $FIELD->far_ptr) != NULL) {\n    gf_node_unregister(*((GF_Node **) $FIELD->far_ptr),\
+    \ $NODE);\n    *((GF_Node **) $FIELD->far_ptr) = NULL;\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly unregister previous nodes in certain conditions,
+    which can lead to undefined behavior or memory issues. This vulnerability arises
+    when nodes are not correctly unregistered before being replaced, potentially causing
+    cyclic references or memory leaks. To fix this, ensure that previous nodes are
+    always unregistered and their pointers are set to NULL when they are no longer
+    in use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/d2f74e49f2cb8d687c0dc38f66b99e3c5c7d7fec
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c

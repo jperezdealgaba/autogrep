@@ -1,0 +1,29 @@
+rules:
+- id: vuln-chakracore-b3e3959d
+  pattern: 'paramScope->SetMustInstantiate(!$EXPR);
+
+    '
+  pattern-not: "if (!$EXPR)\n{\n    if ($CONDITION)\n    {\n        paramScope->SetMustInstantiate(true);\n\
+    \    }\n    else\n    {\n        paramScope->SetMustInstantiate(paramScope->GetHasOwnLocalInClosure());\n\
+    \    }\n}\n"
+  languages:
+  - cpp
+  message: 'The vulnerability is a missing conditional check before setting `paramScope->SetMustInstantiate`.
+    This can lead to incorrect instantiation of parameter scopes, potentially causing
+    security issues in function handling. The fix introduces proper checks to ensure
+    `SetMustInstantiate` is only called under specific conditions, preventing unintended
+    behavior. Always validate conditions before modifying scope instantiation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/b3e3959d14814f42ee2197c504c322bcbe12347d
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

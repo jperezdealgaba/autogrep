@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gnutls-c8dcbedd
+  pattern: '$FLAGS ^= GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT;
+
+    '
+  pattern-not: '$FLAGS &= ~(GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
+
+    '
+  languages:
+  - c
+  message: 'Insecure bitwise XOR operation used to modify verification flags.
+
+    This operation could potentially enable X.509 v1 CA certificates, which are considered
+    insecure.
+
+    Use bitwise AND with the negation of the flag to properly disable it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/c8dcbedd1fdc312f5b1a70fcfbc1afe235d800cd
+    category: security
+    cwe:
+    - CWE-484
+    owasp:
+    - A2:2017-Cryptographic Failures
+    references:
+    - https://wiki.openssl.org/index.php/Hardening#X.509_certificate_security
+    technology:
+    - c

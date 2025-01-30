@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ruby-net-ldap-b412ca05
+  pattern: 'srand; salt = (rand * $NUM).to_i.to_s
+
+    '
+  pattern-not: 'srand; salt = SecureRandom.random_bytes($NUM)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `rand` for generating cryptographic salts is insecure because
+    it produces predictable values. This can lead to vulnerabilities in cryptographic
+    operations. Use `SecureRandom.random_bytes` instead to generate cryptographically
+    secure random values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby-ldap/ruby-net-ldap/commit/b412ca05f6b430eaa1ce97ac95885b4cf187b04a
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://ruby-doc.org/stdlib-2.7.1/libdoc/securerandom/rdoc/SecureRandom.html
+    technology:
+    - ruby

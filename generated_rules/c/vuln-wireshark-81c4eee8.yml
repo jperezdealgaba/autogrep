@@ -1,0 +1,30 @@
+rules:
+- id: vuln-wireshark-81c4eee8
+  pattern: "if ($VAR1->rtp_dyn_payload != $VAR2)\n    rtp_free_hash_dyn_payload($VAR1->rtp_dyn_payload);\n"
+  pattern-not: '/* if ($VAR1->rtp_dyn_payload != $VAR2) */
+
+    /*     rtp_free_hash_dyn_payload($VAR1->rtp_dyn_payload); */
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a potential vulnerability where a dynamic payload is
+    freed based on an equality comparison.
+
+    This can lead to memory corruption or use-after-free vulnerabilities if the payload
+    is incorrectly freed.
+
+    The fix involves commenting out the problematic code to prevent unsafe memory
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/81c4eee84b6ee19fd27929856fa1465b1af148c6
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-4fdfccd5
+  pattern: 'proto_tree_add_int($TREE, $HF, $TVB, $OFFSET, $LENGTH, $PINFO->pseudo_header->erf.subhdr.mc_hdr)
+
+    '
+  pattern-not: 'proto_tree_add_uint($TREE, $HF, $TVB, $OFFSET, $LENGTH, $PINFO->pseudo_header->erf.subhdr.mc_hdr)
+
+    '
+  languages:
+  - c
+  message: 'The use of proto_tree_add_int() with potentially unsigned values can lead
+    to incorrect value representation and potential security issues. The function
+    proto_tree_add_uint() should be used instead for unsigned values to ensure proper
+    handling. This vulnerability could cause misinterpretation of network packet data
+    and lead to incorrect protocol analysis.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/4fdfccd56d020c1d41235994d277fc0000c0f110
+    category: security
+    cwe:
+    - 'CWE-681: Incorrect Conversion between Numeric Types'
+    owasp: 'A6: Security Misconfiguration'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/libr_packet_info.html
+    technology:
+    - c

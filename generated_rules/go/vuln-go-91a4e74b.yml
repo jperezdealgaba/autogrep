@@ -1,0 +1,36 @@
+rules:
+- id: vuln-go-91a4e74b
+  pattern: "if 4+$N < len($B) {\n  return $ERROR\n}\n"
+  pattern-not: "if $N > $MAX {\n  $ERR = fmt.Errorf($MSG, $N, $MAX)\n  break\n}\n\
+    if len($B) < 4+$N {\n  $ERR = $ERROR\n}\n"
+  languages:
+  - go
+  message: 'The code fails to properly validate handshake message length, which could
+    allow
+
+    for buffer overflows or excessive memory allocation. The vulnerability occurs
+
+    when checking if the handshake message fits within the buffer without first
+
+    verifying that the message length is within acceptable bounds. This could be
+
+    exploited by an attacker to cause a denial of service or potentially execute
+
+    arbitrary code. The fix adds proper bounds checking by first verifying the
+
+    message length against a maximum allowed value before checking if it fits in
+
+    the buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/91a4e74b98179f63a27dbff1ad68ddd0ed64363a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-130
+    owasp:
+    - A2:2021-Cryptographic Failures
+    technology:
+    - go

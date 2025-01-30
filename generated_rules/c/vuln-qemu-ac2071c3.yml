@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-ac2071c3
+  pattern: "int $DST_X = ($REG_DP_CNTL & $DST_X_LEFT_TO_RIGHT ?\n              $REG_DST_X\
+    \ : $REG_DST_X + 1 - $REG_DST_WIDTH);\nint $DST_Y = ($REG_DP_CNTL & $DST_Y_TOP_TO_BOTTOM\
+    \ ?\n              $REG_DST_Y : $REG_DST_Y + 1 - $REG_DST_HEIGHT);\n"
+  pattern-not: "unsigned $DST_X = ($REG_DP_CNTL & $DST_X_LEFT_TO_RIGHT ?\n       \
+    \            $REG_DST_X : $REG_DST_X + 1 - $REG_DST_WIDTH);\nunsigned $DST_Y =\
+    \ ($REG_DP_CNTL & $DST_Y_TOP_TO_BOTTOM ?\n                   $REG_DST_Y : $REG_DST_Y\
+    \ + 1 - $REG_DST_HEIGHT);\n"
+  languages:
+  - c
+  message: 'The use of signed integers for coordinates in display calculations can
+    lead to integer overflow or underflow vulnerabilities. This can result in incorrect
+    memory access or buffer overflows. Use unsigned integers to prevent these issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/ac2071c3791b67fc7af78b8ceb320c01ca1b5df7
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

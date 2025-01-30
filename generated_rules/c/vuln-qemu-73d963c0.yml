@@ -1,0 +1,33 @@
+rules:
+- id: vuln-qemu-73d963c0
+  pattern: 'qemu_get_be32s($F, &$OPP->nb_cpus);
+
+    ...
+
+    '
+  pattern-not: "qemu_get_be32s($F, &$NB_CPUS);\nif ($OPP->nb_cpus != $NB_CPUS) {\n\
+    \    return -EINVAL;\n}\nassert($NB_CPUS > 0 && $NB_CPUS <= $MAX_CPU);\nif ($OPP->nb_cpus\
+    \ > $MAX_CPU) {\n    error_set($ERRP, $QERR_PROPERTY_VALUE_OUT_OF_RANGE,\n   \
+    \           $TYPE_OPENPIC, \"nb_cpus\", (uint64_t)$OPP->nb_cpus,\n           \
+    \   (uint64_t)0, (uint64_t)$MAX_CPU);\n    return;\n}\n"
+  languages:
+  - c
+  message: 'The code directly assigns the number of CPUs to the OpenPIC structure
+    without validation.
+
+    This could lead to incorrect or potentially dangerous behavior if the number of
+    CPUs is out of bounds.
+
+    To fix this, validate the number of CPUs against expected bounds and handle errors
+    appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/73d963c0a75cb99c6aaa3f6f25e427aa0b35a02e
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

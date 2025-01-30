@@ -1,0 +1,26 @@
+rules:
+- id: vuln-salt-905efea1
+  pattern: 'return self.low($FUN, $LOW, full_return=False)
+
+    '
+  pattern-not: "try:\n  return self.cmd_sync($LOW)\nexcept salt.exceptions.EauthAuthenticationError\
+    \ as $EXC:\n  log.error($EXC)\n"
+  languages:
+  - python
+  message: 'Detected a potential authentication error handling vulnerability. The
+    original code directly returns the result of a low-level function call without
+    proper exception handling for authentication errors. This can lead to unhandled
+    exceptions and potential security issues. The fix includes proper exception handling
+    for EauthAuthenticationError. Always handle authentication errors explicitly to
+    prevent security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/905efea17d9740a081509780d7c44e742b99ce60
+    category: security
+    cwe: CWE-755
+    owasp: A07:2021-Identification and Authentication Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/755.html
+    technology: python

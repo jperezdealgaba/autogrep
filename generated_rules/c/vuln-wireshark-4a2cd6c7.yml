@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-4a2cd6c7
+  pattern: 'dissect_llrp_parameters($TVB, $PINFO, $PARAM_TREE, $SUBOFFSET, $PARAM_END)
+
+    '
+  pattern-not: 'dissect_llrp_parameters($TVB, $PINFO, $PARAM_TREE, $SUBOFFSET, $PARAM_END,
+    $DEPTH)
+
+    '
+  languages:
+  - c
+  message: 'Missing depth parameter in recursive function call to dissect_llrp_parameters.
+    This can lead to unbounded recursion, potentially causing a stack overflow. Add
+    a depth parameter to limit recursion depth and prevent stack overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/4a2cd6c79ecbf2cb21f985f01ce1c1e3030285ec
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/674.html
+    technology:
+    - c

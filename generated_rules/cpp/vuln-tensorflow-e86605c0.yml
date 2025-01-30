@@ -1,0 +1,23 @@
+rules:
+- id: vuln-tensorflow-e86605c0
+  pattern: "if ($X.NumElements() > 0 || $Y.NumElements() > 0) {\n  ...\n}\n"
+  pattern-not: "if ($X.NumElements() > 0 && $Y.NumElements() > 0) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "The use of the logical OR operator (`||`) in this condition may lead to\
+    \ incorrect behavior or security vulnerabilities. \nThis is dangerous because\
+    \ it can cause the condition to evaluate to true even if only one of the elements\
+    \ is non-zero, \npotentially leading to unintended operations or data corruption.\
+    \ \nTo fix this, replace the OR operator (`||`) with the AND operator (`&&`) to\
+    \ ensure both conditions are properly checked.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/e86605c0a336c088b638da02135ea6f9f6753618
+    category: security
+    cwe:
+    - CWE-570
+    - CWE-571
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - cpp

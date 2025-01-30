@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openssl-a830f551
+  pattern: 'ossl_bn_miller_rabin_is_prime($VAR, 0, $CTX, $NULL, 1, $STATUS)
+
+    '
+  pattern-not: 'ossl_bn_miller_rabin_is_prime($VAR, 5, $CTX, $NULL, 1, $STATUS)
+
+    '
+  languages:
+  - c
+  message: 'The Miller-Rabin primality test is being performed with insufficient rounds
+    (0 rounds), which reduces the reliability of the primality check. This can lead
+    to accepting composite numbers as prime, potentially compromising cryptographic
+    security. The fix is to increase the number of rounds to 5, as recommended by
+    FIPS 186-5 Section B.3 Table B.1.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/a830f551557d3d66a84bbb18a5b889c640c36294
+    category: security
+    cwe:
+    - CWE-327
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
+    technology:
+    - c

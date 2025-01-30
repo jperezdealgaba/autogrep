@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gpac-ae831621
+  pattern: '$NAME[$EXPR-1] = 0;
+
+    '
+  pattern-not: '$NAME[$EXPR ? $EXPR-1 : 0] = 0;
+
+    '
+  languages:
+  - c
+  message: 'Potential null pointer dereference vulnerability found. The code directly
+    accesses array index $EXPR-1 without checking if $EXPR is zero, which could lead
+    to out-of-bounds memory access. Always check if the size is zero before accessing
+    the array index. Fix by using a ternary operator to handle the zero case.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/ae831621a08a64e3325ce532f8b78811a1581716
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

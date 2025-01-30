@@ -1,0 +1,31 @@
+rules:
+- id: vuln-wireshark-f910cb50
+  pattern: 'guint tpdu_len = $LI + tvb_length_remaining(tvb, $LI);
+
+    '
+  pattern-not: 'guint tpdu_len = tvb_reported_length_remaining(tvb, $OFFSET);
+
+    '
+  languages:
+  - c
+  message: 'The length calculation for TPDUs in the ISO/OSI transport protocol dissector
+    is incorrect, potentially leading to buffer overflows or incorrect packet parsing.
+    The original code incorrectly adds the length indicator to the remaining buffer
+    length, which can result in an overestimation of the TPDU length. This can cause
+    security vulnerabilities such as buffer overflows or incorrect packet dissection.
+    The fix uses `tvb_reported_length_remaining` to correctly determine the length
+    of the TPDU based on the reported length of the containing PDU.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/f910cb502c9e5e01d5217bc0105fb7f0e925f31b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-126
+    owasp: 'A1: Injection'
+    references:
+    - ISO/IEC 8073
+    technology:
+    - c

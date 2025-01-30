@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-00302787
+  pattern: "const bool $VAR = $INDEX < $NODE->inputs->size && $NODE->inputs->data[$INDEX]\
+    \ != $KTFLITEOPTIONALTENSOR;\nif ($VAR) {\n  return GetMutableInput($CONTEXT,\
+    \ $NODE, $INDEX);\n}\nreturn nullptr;\n"
+  pattern-not: 'return GetInput($CONTEXT, $NODE, $INDEX);
+
+    '
+  languages:
+  - cpp
+  message: 'The code contains a vulnerability where it checks for optional tensors
+    but returns nullptr instead of handling the input directly. This can lead to null
+    pointer dereferences or incorrect handling of tensor inputs. The fix is to directly
+    return the input tensor without the optional check. Always ensure proper handling
+    of tensor inputs to avoid potential crashes or undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/00302787b788c5ff04cb6f62aed5a74d936e86c0
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

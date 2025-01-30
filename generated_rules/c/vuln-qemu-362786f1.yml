@@ -1,0 +1,29 @@
+rules:
+- id: vuln-qemu-362786f1
+  pattern: "if ($PLEN < $CSUM_OFFSET + 2) {\n    return;\n}\n"
+  pattern-not: "if ($PLEN < $CSUM_OFFSET + 2 || 14 + $HLEN + $PLEN > $LENGTH) {\n\
+    \    return;\n}\n"
+  languages:
+  - c
+  message: 'Insufficient validation of packet length can lead to buffer overflow vulnerabilities.
+
+    The original code only checks if the payload length is sufficient for the checksum
+    offset,
+
+    but fails to verify if the entire packet including headers fits within the buffer.
+
+    This can be exploited by crafting malicious packets that overflow the buffer.
+
+    Fixed by adding a check for the total packet length including headers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/362786f14a753d8a5256ef97d7c10ed576d6572b
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

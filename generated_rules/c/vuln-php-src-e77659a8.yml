@@ -1,0 +1,31 @@
+rules:
+- id: vuln-php-src-e77659a8
+  pattern: "if ($LEN >= sizeof($STRUCT->$FIELD)) {\n  $LEN = sizeof($STRUCT->$FIELD)\
+    \ - 1;\n}\n"
+  pattern-not: "if ($LEN >= sizeof($STRUCT->$FIELD)) {\n  $LEN = sizeof($STRUCT->$FIELD)\
+    \ - $SZ;\n}\n"
+  languages:
+  - c
+  message: 'The code contains a potential buffer overflow vulnerability due to incorrect
+    string length calculation.
+
+    The original code subtracts 1 from the size of the buffer to account for null
+    termination, but fails to consider the size of the pascal string length (sz).
+
+    This can lead to buffer overflows when the string length is close to the buffer
+    size.
+
+    To fix this, ensure that the size of the pascal string length is subtracted from
+    the buffer size when calculating the maximum length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e77659a8c87272e5061738a31430d2111482c426
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

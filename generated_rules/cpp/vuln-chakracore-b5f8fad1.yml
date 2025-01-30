@@ -1,0 +1,28 @@
+rules:
+- id: vuln-chakracore-b5f8fad1
+  pattern: 'ValueType::GetObject(ObjectType::Object)
+
+    '
+  pattern-not: 'ValueType::GetObject(ObjectType::UninitializedObject)
+
+    '
+  languages:
+  - cpp
+  message: 'The use of `ObjectType::Object` instead of `ObjectType::UninitializedObject`
+    can lead to incorrect object initialization, potentially causing undefined behavior
+    or security vulnerabilities. This issue was fixed by replacing `ObjectType::Object`
+    with `ObjectType::UninitializedObject` in the ChakraCore repository. Ensure that
+    objects are properly initialized to avoid such risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/b5f8fad1b00087bd0a24cc173c2dfedc4f8aee33
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/chakra-core/ChakraCore/commit/b5f8fad1b00087bd0a24cc173c2dfedc4f8aee33
+    technology:
+    - cpp

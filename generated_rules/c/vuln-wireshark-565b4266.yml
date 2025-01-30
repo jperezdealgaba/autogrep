@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wireshark-565b4266
+  pattern: 'tvb_get_ascii_7bits_string(wmem_packet_scope(), tvb, (offset << 3) + bit,
+    num_fields)
+
+    '
+  pattern-not: 'tvb_get_ascii_7bits_string(wmem_packet_scope(), tvb_out, (offset <<
+    3) + bit, num_fields)
+
+    '
+  languages:
+  - c
+  message: 'The function `tvb_get_ascii_7bits_string` is being called with the wrong
+    buffer parameter (`tvb` instead of `tvb_out`). This could lead to incorrect data
+    processing or potential security vulnerabilities due to improper memory access.
+    Always ensure the correct buffer is passed to the function. Replace `tvb` with
+    `tvb_out` to fix this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/565b42660e80e928a4f92491ba41d73f3ade4cfa
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

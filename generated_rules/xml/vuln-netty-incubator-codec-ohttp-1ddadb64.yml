@@ -1,0 +1,26 @@
+rules:
+- id: vuln-netty-incubator-codec-ohttp-1ddadb64
+  pattern: '<version>0.0.10.Final-SNAPSHOT</version>
+
+    '
+  pattern-not: '<version>0.0.10.Final</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version string in the XML file contains ''-SNAPSHOT'', which indicates
+    a development or unstable version. Using snapshot versions in production can lead
+    to instability and security risks. Replace the snapshot version with a stable
+    release version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty-incubator-codec-ohttp/commit/1ddadb6473cd3be5491d114431ed4c1a9f316001
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - xml

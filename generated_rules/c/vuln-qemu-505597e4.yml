@@ -1,0 +1,23 @@
+rules:
+- id: vuln-qemu-505597e4
+  pattern: "if (PCI_SLOT($DEV->devfn) == $SLOT) {\n  ...\n}\n"
+  pattern-not: "$INFO = container_of($QDEV->info, PCIDeviceInfo, qdev);\nif (PCI_SLOT($DEV->devfn)\
+    \ == $SLOT && !$INFO->no_hotplug) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing hotplug check in PCI device handling. This vulnerability could
+    allow unauthorized hotplugging of devices, potentially leading to security issues
+    or system instability. The fix adds a check for the ''no_hotplug'' flag in the
+    PCIDeviceInfo structure before allowing the operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/505597e4476a6bc219d0ec1362b760d71cb4fdca
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - c

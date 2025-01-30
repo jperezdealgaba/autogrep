@@ -1,0 +1,29 @@
+rules:
+- id: vuln-radare2-637f4bd1
+  pattern: 'const ut8 *$DUMP = &$BLOCK.data[++$I];
+
+    $OFFSET = r_sleb128(&$DUMP, &$BLOCK.data[$LOC->block.length]);
+
+    '
+  pattern-not: "const ut8 *$DUMP = $BLOCK.data + $I;\nif ($LOC->block.length > $BLOCK.length)\
+    \ {\n  return NULL;\n}\n$OFFSET = r_sleb128(&$DUMP, $BLOCK.data + $LOC->block.length);\n"
+  languages:
+  - c
+  message: 'The code contains a potential out-of-bounds read vulnerability due to
+    insufficient bounds checking when processing DWARF block data. The vulnerability
+    occurs when accessing memory locations without verifying that the length of the
+    block being processed is within the bounds of the available data. This could lead
+    to memory corruption or information disclosure. The fix adds a bounds check to
+    ensure the block length does not exceed the available data length before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/637f4bd1af6752e28e0a9998e954e2e9ce6fa992
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

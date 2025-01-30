@@ -1,0 +1,23 @@
+rules:
+- id: vuln-salt-0a0f46fb
+  pattern: "if $PAYLOAD.get('sig') and $SELF.opts.get('sign_pub_messages'):\n    ...\n"
+  pattern-not: "if $SELF.opts.get('sign_pub_messages'):\n    if not $PAYLOAD.get('sig',\
+    \ False):\n        raise $ERROR('Message signing is enabled but the payload has\
+    \ no signature.')\n"
+  languages:
+  - python
+  message: Insecure message signing validation detected. The code checks for the presence
+    of a signature but does not enforce it when message signing is enabled. This can
+    lead to unsigned messages being accepted, potentially allowing for message tampering
+    or spoofing. Ensure that message signing is properly enforced by raising an error
+    when a signature is missing.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/0a0f46fb1478be5eb2f90882a90390cb35ec43cb
+    category: security
+    cwe:
+    - CWE-347
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - python

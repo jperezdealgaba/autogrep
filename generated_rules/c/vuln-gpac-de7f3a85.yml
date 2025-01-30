@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gpac-de7f3a85
+  pattern: "if ($NUM1 * ($TYPE) $DEN1 < ($TYPE) $NUM2 * $DEN2) {\n  ...\n}\n"
+  pattern-not: "if (gf_timestamp_less($NUM1, $DEN1, $NUM2, $DEN2)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability due to direct arithmetic
+    comparison.
+
+    This can lead to incorrect comparisons and unexpected behavior. Use the safe comparison
+
+    function `gf_timestamp_less` to avoid this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/de7f3a852bef72a52825fd307cf4e8f486401a76
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

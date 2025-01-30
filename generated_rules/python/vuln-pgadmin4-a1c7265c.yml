@@ -1,0 +1,22 @@
+rules:
+- id: vuln-pgadmin4-a1c7265c
+  pattern: 'type($VAR) == $TYPE
+
+    '
+  pattern-not: 'isinstance($VAR, $TYPE)
+
+    '
+  languages:
+  - python
+  message: Using 'type() ==' for type checking is unsafe. Use 'isinstance()' instead
+    as it handles inheritance and is more robust.
+  severity: ERROR
+  metadata:
+    source-url: github.com/pgadmin-org/pgadmin4/commit/a1c7265c41baba3a74d1812ae0c9d86f4860eed8
+    category: security
+    cwe: CWE-484
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/functions.html#isinstance
+    technology:
+    - python

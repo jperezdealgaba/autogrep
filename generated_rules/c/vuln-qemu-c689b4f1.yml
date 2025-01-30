@@ -1,0 +1,28 @@
+rules:
+- id: vuln-qemu-c689b4f1
+  pattern: 'fopen($PATH, $MODE)
+
+    '
+  pattern-not: 'safe_open_or_create($PATH, $MODE, $ERR)
+
+    '
+  languages:
+  - c
+  message: 'Using `fopen` directly can lead to security vulnerabilities such as TOCTOU
+    (Time-of-Check to Time-of-Use) attacks and improper file permissions. The function
+    `safe_open_or_create` should be used instead to ensure proper file handling, including
+    exclusive file creation and correct permission settings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/c689b4f1bac352dcfd6ecb9a1d45337de0f1de67
+    category: security
+    cwe:
+    - CWE-367
+    - CWE-362
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://pubs.opengroup.org/onlinepubs/9699919799/functions/fopen.html
+    technology:
+    - c

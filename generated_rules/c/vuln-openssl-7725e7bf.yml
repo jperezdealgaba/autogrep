@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openssl-7725e7bf
+  pattern: "if ($RET == -1 && CRYPTO_THREAD_write_lock($LOCK)) {\n    $EX_FLAGS |=\
+    \ $EXFLAG_INVALID_POLICY;\n    CRYPTO_THREAD_unlock($LOCK);\n}\n"
+  pattern-not: "if ($RET == -1 && CRYPTO_THREAD_write_lock($LOCK)) {\n    $EX_FLAGS\
+    \ |= $EXFLAG_INVALID_POLICY;\n    CRYPTO_THREAD_unlock($LOCK);\n}\nelse {\n  \
+    \  $EX_FLAGS |= $EXFLAG_INVALID_POLICY;\n}\n"
+  languages:
+  - c
+  message: 'This pattern detects a potential race condition in OpenSSL where the EXFLAG_INVALID_POLICY
+    flag is set without proper error handling. The original code could lead to inconsistent
+    state if the lock acquisition fails, as the flag would not be set in that case.
+    This could result in incorrect policy validation. The fix ensures that the flag
+    is set regardless of whether the lock is acquired or not. Always ensure proper
+    error handling when working with thread locks and shared state.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/openssl/openssl/commit/7725e7bfe6f2ce8146b6552b44e0d226be7638e7
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - c

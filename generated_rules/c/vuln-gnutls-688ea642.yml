@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gnutls-688ea642
+  pattern: "if (len < session_id_len) {\n  ...\n}\n"
+  pattern-not: "if (len < session_id_len || session_id_len > TLS_MAX_SESSION_ID_SIZE)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This code is vulnerable to a session ID length validation issue. The original
+    check only verifies if the length is less than the session ID length, but fails
+    to check if the session ID length exceeds the maximum allowed size. This could
+    lead to buffer overflows or other security issues. To fix this, add a check to
+    ensure the session ID length does not exceed the maximum allowed size (TLS_MAX_SESSION_ID_SIZE).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/688ea6428a432c39203d00acd1af0e7684e5ddfd
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wireshark-eb0c034f
+  pattern: '#define ZBEE_ZCL_APPL_EVTALT_NUM_STRUCT_ETT               8
+
+    '
+  pattern-not: '#define ZBEE_ZCL_APPL_EVTALT_NUM_STRUCT_ETT               15
+
+    '
+  languages:
+  - c
+  message: 'The constant ZBEE_ZCL_APPL_EVTALT_NUM_STRUCT_ETT is set to an insufficient
+    value of 8, which could lead to buffer overflows or incorrect parsing of Zigbee
+    ZCL HA protocol data. This value was increased to 15 in the fix to properly handle
+    the number of event alternative structures. Always ensure protocol-specific constants
+    are set to appropriate values for the expected data structures.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/eb0c034f6e4cdbf5ae36dd9ba8e2743630b7bd38
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://zigbeealliance.org/wp-content/uploads/2019/12/07-5123-06-zigbee-cluster-library-specification.pdf
+    technology:
+    - c

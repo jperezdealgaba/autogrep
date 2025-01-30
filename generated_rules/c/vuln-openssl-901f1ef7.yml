@@ -1,0 +1,31 @@
+rules:
+- id: vuln-openssl-901f1ef7
+  pattern: 'good &= constant_time_ge($VAR, 8);
+
+    '
+  pattern-not: 'good &= constant_time_lt($VAR, 8);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the code incorrectly checks for
+    8 consecutive 0x03 bytes before a nul delimiter. The correct behavior should reject
+    the input if it is preceded by 8 consecutive 0x03 bytes. This issue was corrected
+    in OpenSSL commit 901f1ef7dacb6b3bde63233a1f623e1fa2f0f058. The incorrect check
+    can lead to security vulnerabilities in RSA SSL padding validation. To fix this,
+    ensure that the code uses `constant_time_lt` instead of `constant_time_ge` for
+    this check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/901f1ef7dacb6b3bde63233a1f623e1fa2f0f058
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    references:
+    - https://tools.ietf.org/html/rfc5246
+    technology:
+    - c

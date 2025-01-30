@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-01cff3f9
+  pattern: "OP_REQUIRES($C, $NUM_UPDATES % $N == 0,\n            errors::InvalidArgument(\n\
+    \                \"shape of indices (\", $INDICES_SHAPE.DebugString(),\n     \
+    \           \") is not compatible with the shape of updates (\",\n           \
+    \     $UPDATES_SHAPE.DebugString(), \")\"));\n"
+  pattern-not: "OP_REQUIRES(\n    $C, TensorShapeUtils::StartsWith($UPDATES_SHAPE,\
+    \ $INDICES_SHAPE),\n    errors::InvalidArgument(\n        \"The shape of indices\
+    \ (\", $INDICES_SHAPE.DebugString(),\n        \") must be a prefix of the shape\
+    \ of updates (\",\n        $UPDATES_SHAPE.DebugString(), \")\"));\n"
+  languages:
+  - cpp
+  message: 'The code checks for compatibility between indices and updates shapes using
+    a modulo operation, which is insufficient for ensuring proper shape alignment.
+    This can lead to incorrect tensor operations and potential memory corruption.
+    Use TensorShapeUtils::StartsWith to ensure the indices shape is a prefix of the
+    updates shape.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/01cff3f986259d661103412a20745928c727326f
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/01cff3f986259d661103412a20745928c727326f
+    technology:
+    - cpp

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-961c74a8
+  pattern: '$CMD->len = scsi_cdb_length($BUF);
+
+    '
+  pattern-not: "$LEN = scsi_cdb_length($BUF);\nif ($LEN < 0) {\n    return -1;\n}\n\
+    $CMD->len = $LEN;\n"
+  languages:
+  - c
+  message: "Direct assignment of scsi_cdb_length result without error checking can\
+    \ lead to security vulnerabilities. \nThe function scsi_cdb_length may return\
+    \ a negative value, which could cause undefined behavior or security issues when\
+    \ used without validation. \nAlways check the return value of scsi_cdb_length\
+    \ before assigning it to cmd->len.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/961c74a841ae6d2ef03f6684c9f74fbdf8f472b1
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/754.html
+    technology:
+    - c

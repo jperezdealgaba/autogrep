@@ -1,0 +1,36 @@
+rules:
+- id: vuln-chakracore-334471b7
+  pattern: "$T0.IsObject() && $T1.IsObject() && (\n    (\n        $T0.GetObjectType()\
+    \ == ObjectType::UninitializedObject ||\n        $T1.GetObjectType() == ObjectType::UninitializedObject\n\
+    \    ) && (\n        $T0.GetObjectType() > ObjectType::Object ||\n        $T1.GetObjectType()\
+    \ > ObjectType::Object\n    )\n)\n"
+  pattern-not: "$T0.IsObject() && $T1.IsObject() && (\n    (\n        (\n        \
+    \    $T0.GetObjectType() == ObjectType::UninitializedObject ||\n            $T1.GetObjectType()\
+    \ == ObjectType::UninitializedObject\n        ) && (\n            $T0.GetObjectType()\
+    \ > ObjectType::Object ||\n            $T1.GetObjectType() > ObjectType::Object\n\
+    \        )\n    ) || (\n        $T0.IsArrayOrObjectWithArray() ||\n        $T1.IsArrayOrObjectWithArray()\n\
+    \    )\n)\n"
+  languages:
+  - cpp
+  message: 'Detected a missing check for arrays or objects with arrays in object type
+    verification.
+
+    This can lead to incorrect object type assumptions, potentially causing security
+    vulnerabilities.
+
+    Ensure to include checks for arrays or objects with arrays when verifying object
+    types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/334471b7254c1c093deb413bac0472974e6f9181
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

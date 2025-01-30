@@ -1,0 +1,24 @@
+rules:
+- id: vuln-qemu-0e68373c
+  pattern: "if (!num_sge) {\n    ...\n    complete_work(IBV_WC_GENERAL_ERR, VENDOR_ERR_NO_SGE,\
+    \ ctx);\n}\n"
+  pattern-not: "if (!num_sge || num_sge > MAX_SGE) {\n    ...\n    complete_work(IBV_WC_GENERAL_ERR,\
+    \ VENDOR_ERR_INV_NUM_SGE, ctx);\n}\n"
+  languages:
+  - c
+  message: 'The code checks for zero `num_sge` but fails to check for an upper bound,
+    which could lead to buffer overflows or other undefined behavior. This vulnerability
+    was fixed by adding a check against `MAX_SGE`. To fix this, ensure that `num_sge`
+    is validated against both zero and a maximum allowed value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/0e68373cc2b3a063ce067bc0cc3edaf370752890
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

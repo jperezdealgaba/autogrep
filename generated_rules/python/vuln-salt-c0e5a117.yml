@@ -1,0 +1,19 @@
+rules:
+- id: vuln-salt-c0e5a117
+  pattern: "def __init__(..., mopts=None):\n    ...\n"
+  pattern-not: "def __init__(..., mopts=None, disable_custom_roster=False):\n    self.opts['__disable_custom_roster']\
+    \ = disable_custom_roster\n"
+  languages:
+  - python
+  message: Salt API should never offer a custom roster. Missing the disable_custom_roster
+    parameter can allow custom rosters, which is a security risk.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/c0e5a1171d7ce2ba8747a971c024632e0d96d848
+    category: security
+    cwe: CWE-284
+    owasp: A05:2021-Security Misconfiguration
+    references:
+    - https://docs.saltproject.io/en/latest/topics/ssh/index.html
+    technology:
+    - python

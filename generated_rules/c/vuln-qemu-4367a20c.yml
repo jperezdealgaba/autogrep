@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-4367a20c
+  pattern: '$REQ->req = NULL;
+
+    '
+  pattern-not: '$REQ = NULL;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential use-after-free vulnerability due to incorrect nullification
+    of a pointer.
+
+    This pattern matches the unsafe practice of only nullifying a pointer''s member
+    instead of the pointer itself,
+
+    which can lead to use-after-free conditions. To fix this, ensure the entire pointer
+    is set to NULL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/4367a20cc442c56b05611b4224de9a61908f9eac
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

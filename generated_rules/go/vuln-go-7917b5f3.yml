@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-7917b5f3
+  pattern: "func readMIMEHeader($R *textproto.Reader, $LIM int64) (textproto.MIMEHeader,\
+    \ error) {\n  ...\n}\n"
+  pattern-not: "func readMIMEHeader($R *textproto.Reader, $MAXMEMORY, $MAXHEADERS\
+    \ int64) (textproto.MIMEHeader, error) {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected use of deprecated `readMIMEHeader` function with only a memory
+    limit parameter.
+
+    This can lead to denial of service attacks by allowing an attacker to send an
+    excessive number of headers.
+
+    Update to the new version that includes both `maxMemory` and `maxHeaders` parameters
+    to properly limit header processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/7917b5f31204528ea72e0629f0b7d52b35b27538
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - go

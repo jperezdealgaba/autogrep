@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gnutls-42221486
+  pattern: "if ($CIPHERTEXT.size == 0) {\n  ...\n  return $ERROR_CODE;\n}\n"
+  pattern-not: "if ($CIPHERTEXT.size < $HASH_SIZE) {\n  ...\n  return $ERROR_CODE;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a vulnerability where a ciphertext size check only verifies if
+    the size is zero, rather than comparing it against the expected hash size. This
+    can lead to insufficient validation of the ciphertext, potentially allowing decryption
+    of malformed or truncated data. To fix this, ensure that the ciphertext size is
+    checked against the expected hash size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/422214868061370aeeb0ac9cd0f021a5c350a57d
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/327.html
+    technology:
+    - c

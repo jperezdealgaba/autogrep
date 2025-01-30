@@ -1,0 +1,35 @@
+rules:
+- id: vuln-wireshark-11f40896
+  pattern: "if ($GVCP_TELEGRAM_TREE != NULL)\n{\n  if ($EXTENDEDBLOCKIDS)\n  {\n \
+    \   proto_tree_add_item($GVCP_TELEGRAM_TREE, $HF_GVCP_EVENTCMD_EXTID_LENGTH, $TVB,\
+    \ $OFFSET, 2, $ENC_BIG_ENDIAN);\n    $DATA_LENGTH = tvb_get_ntohs($TVB, $OFFSET);\n\
+    \  }\n  offset += 2;\n  ...\n  if ($EXTENDEDBLOCKIDS)\n  {\n    if ($DATA_LENGTH\
+    \ > 24)\n    {\n      proto_tree_add_item($GVCP_TELEGRAM_TREE, $HF_GVCP_EVENTCMD_DATA,\
+    \ $TVB, $OFFSET, $DATA_LENGTH - 24, $ENC_NA);\n      $OFFSET += $DATA_LENGTH -\
+    \ 24;\n    }\n  }\n  else\n  {\n    proto_tree_add_item($GVCP_TELEGRAM_TREE, $HF_GVCP_EVENTCMD_DATA,\
+    \ $TVB, $OFFSET, -1, $ENC_NA);\n    return;\n  }\n}\n"
+  pattern-not: "if ($EXTENDEDBLOCKIDS)\n{\n  proto_tree_add_item($GVCP_TELEGRAM_TREE,\
+    \ $HF_GVCP_EVENTCMD_EXTID_LENGTH, $TVB, $OFFSET, 2, $ENC_BIG_ENDIAN);\n  $DATA_LENGTH\
+    \ = tvb_get_ntohs($TVB, $OFFSET);\n}\noffset += 2;\n...\nif ($EXTENDEDBLOCKIDS)\n\
+    {\n  if ($DATA_LENGTH > 24)\n  {\n    proto_tree_add_item($GVCP_TELEGRAM_TREE,\
+    \ $HF_GVCP_EVENTCMD_DATA, $TVB, $OFFSET, $DATA_LENGTH - 24, $ENC_NA);\n    $OFFSET\
+    \ += $DATA_LENGTH - 24;\n  }\n}\nelse\n{\n  proto_tree_add_item($GVCP_TELEGRAM_TREE,\
+    \ $HF_GVCP_EVENTCMD_DATA, $TVB, $OFFSET, -1, $ENC_NA);\n  return;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs due to incorrect handling of the `gvcp_telegram_tree`
+    pointer check, which can lead to null pointer dereference or incorrect data processing.
+    The fix ensures that the `gvcp_telegram_tree` pointer is not checked unnecessarily
+    and the logic is streamlined to handle `extendedblockids` correctly. This prevents
+    potential crashes or incorrect protocol dissections.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/11f40896b696e4e8c7f8b2ad96028404a83a51a4
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

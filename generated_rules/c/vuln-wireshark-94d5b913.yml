@@ -1,0 +1,32 @@
+rules:
+- id: vuln-wireshark-94d5b913
+  pattern: 'proto_tree_add_item($AVP_TREE, $HF_RADIUS_AVP_VENDOR_LEN, $TVB, $VENDOR_OFFSET,
+    $VENDOR->length_octets, ENC_BIG_ENDIAN);
+
+    '
+  pattern-not: 'proto_tree_add_item_ret_uint($AVP_TREE, $HF_RADIUS_AVP_VENDOR_LEN,
+    $TVB, $VENDOR_OFFSET, $VENDOR->length_octets, ENC_BIG_ENDIAN, &$VENDOR_ATTRIBUTE_LEN);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves the use of `proto_tree_add_item` without retrieving
+    the length of the vendor attribute, which can lead to incorrect offset calculations.
+    This can cause memory corruption or incorrect packet dissection. The fix uses
+    `proto_tree_add_item_ret_uint` to retrieve the length and ensure proper offset
+    calculation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/94d5b9134ed695563a7dc75c9f6830018659d43f
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://wiki.wireshark.org/Development/Libwireshark
+    technology:
+    - c

@@ -1,0 +1,20 @@
+rules:
+- id: vuln-salt-b49d0d4b
+  pattern: "logfile = salt.utils.path_join(\n    os.environ['TMP'],\n    '{0}.log'.format($EXE_NAME)\n\
+    )\n"
+  pattern-not: "logfile_tmp = tempfile.NamedTemporaryFile(dir=os.environ['TMP'],\n\
+    \                                          prefix=$EXE_NAME,\n               \
+    \                           suffix='.log',\n                                 \
+    \         delete=False)\nlogfile = logfile_tmp.name\nlogfile_tmp.close()\n"
+  languages:
+  - python
+  message: "Detected insecure temporary file creation using path concatenation. This\
+    \ can lead to path traversal or symlink attacks. \nUse tempfile.NamedTemporaryFile\
+    \ instead for secure temporary file handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/b49d0d4b5ca5c6f31f03e2caf97cef1088eeed81
+    category: security
+    cwe: 'CWE-377: Insecure Temporary File'
+    owasp: A9:2017-Insufficient Attack Protection
+    technology: python

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-8ed057f7
+  pattern: 'copy_address(&$VAR1, &$VAR2);
+
+    '
+  pattern-not: 'copy_address_wmem(wmem_file_scope(), &$VAR1, &$VAR2);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of copy_address() without memory scope. This can lead
+    to memory management issues and potential security vulnerabilities. Always use
+    copy_address_wmem() with an explicit memory scope like wmem_file_scope() to ensure
+    proper memory management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/8ed057f7faa709dbde34b91f0715a957837f74d9
+    category: security
+    cwe:
+    - 'CWE-789: Memory Allocation with Excessive Size Value'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChDissectMemory.html
+    technology:
+    - c

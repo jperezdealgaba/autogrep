@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-ff0507c2
+  pattern: '$SS = ($VAR1->$VAR2 >= $VAR1->$VAR3) ? $VAR1->$VAR2 : $VAR1->$VAR3;
+
+    '
+  pattern-not: '$SS = MIN($VAR1->$VAR2, $VAR1->$VAR3);
+
+    '
+  languages:
+  - c
+  message: 'The code uses a ternary operator to select the maximum value between two
+    fields, which can lead to incorrect behavior or security issues. Instead, use
+    the MIN macro to ensure the correct value is selected. This vulnerability was
+    fixed in the QEMU commit ff0507c239a246fd7215b31c5658fc6a3ee1e4c5.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/ff0507c239a246fd7215b31c5658fc6a3ee1e4c5
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

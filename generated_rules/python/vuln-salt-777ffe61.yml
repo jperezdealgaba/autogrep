@@ -1,0 +1,25 @@
+rules:
+- id: vuln-salt-777ffe61
+  pattern: '$CMD = $QUERY + $PACKAGE
+
+    $CMD = shlex.split($CMD)
+
+    '
+  pattern-not: '$CMD = $QUERY[:]
+
+    $CMD.append($PACKAGE)
+
+    '
+  languages:
+  - python
+  message: Detected unsafe command construction using string concatenation and shlex.split.
+    This can lead to command injection vulnerabilities. Use list-based command construction
+    instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/777ffe612e612fb443018c1d7983d4abe4632bb2
+    category: security
+    cwe: CWE-78
+    owasp: A1:2017-Injection
+    technology:
+    - python

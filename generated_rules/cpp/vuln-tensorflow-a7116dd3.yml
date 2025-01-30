@@ -1,0 +1,41 @@
+rules:
+- id: vuln-tensorflow-a7116dd3
+  pattern: '$NUM_ROWS = $CONTEXT->input(2).flat<int32>()(0);
+
+    $NUM_COLS = $CONTEXT->input(3).flat<int32>()(0);
+
+    $PADDING_VALUE = $CONTEXT->input(4).flat<T>()(0);
+
+    '
+  pattern-not: "auto& $NUM_ROWS_TENSOR = $CONTEXT->input(2);\nOP_REQUIRES($CONTEXT,\
+    \ TensorShapeUtils::IsScalar($NUM_ROWS_TENSOR.shape()),\n            errors::InvalidArgument(\"\
+    num_rows must be a scalar\"));\n$NUM_ROWS = $NUM_ROWS_TENSOR.flat<int32>()(0);\n\
+    \nauto& $NUM_COLS_TENSOR = $CONTEXT->input(3);\nOP_REQUIRES($CONTEXT, TensorShapeUtils::IsScalar($NUM_COLS_TENSOR.shape()),\n\
+    \            errors::InvalidArgument(\"num_cols must be a scalar\"));\n$NUM_COLS\
+    \ = $NUM_COLS_TENSOR.flat<int32>()(0);\n\nauto& $PADDING_VALUE_TENSOR = $CONTEXT->input(4);\n\
+    OP_REQUIRES($CONTEXT, TensorShapeUtils::IsScalar($PADDING_VALUE_TENSOR.shape()),\n\
+    \            errors::InvalidArgument(\"padding_value must be a scalar\"));\n$PADDING_VALUE\
+    \ = $PADDING_VALUE_TENSOR.flat<T>()(0);\n"
+  languages:
+  - cpp
+  message: 'Directly accessing tensor values without scalar validation can lead to
+    undefined behavior.
+
+    The code should first verify that the input tensors are scalars using TensorShapeUtils::IsScalar()
+
+    and OP_REQUIRES before accessing their values. This validation ensures the tensors
+    have the
+
+    expected shape and prevents potential runtime errors or security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/tensorflow/tensorflow/commit/a7116dd3913c4a4afd2a3a938573aa7c785fdfc6
+    category: security
+    cwe: 'CWE-1285: Improper Validation of Specified Quantity in Input'
+    owasp: A03:2021 - Injection
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/requires
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/tensor-shape-utils
+    technology: cpp

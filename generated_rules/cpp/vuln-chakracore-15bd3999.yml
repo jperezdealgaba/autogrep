@@ -1,0 +1,42 @@
+rules:
+- id: vuln-chakracore-15bd3999
+  pattern: 'void * $TRY_CATCH_FRAME_ADDR = nullptr;
+
+    ...
+
+    $TRY_CATCH_FRAME_ADDR = scriptContext->GetThreadContext()->GetTryCatchFrameAddr();
+
+    ...
+
+    WalkStackForCleaningUpInlineeInfo(scriptContext, nullptr, $TRY_CATCH_FRAME_ADDR);
+
+    '
+  pattern-not: 'void * $TRY_HANDLER_ADDR = nullptr;
+
+    ...
+
+    $TRY_HANDLER_ADDR = scriptContext->GetThreadContext()->GetTryHandlerAddrOfReturnAddr();
+
+    ...
+
+    WalkStackForCleaningUpInlineeInfo(scriptContext, nullptr, $TRY_HANDLER_ADDR);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected usage of deprecated `TryCatchFrameAddr` instead of the updated
+    `TryHandlerAddrOfReturnAddr`. This could lead to incorrect stack handling during
+    exception processing, potentially causing memory corruption or undefined behavior.
+    Update the code to use `TryHandlerAddrOfReturnAddr` for proper stack frame management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/15bd39993cff2bdef0d2bd46751bb7375b3592b3
+    category: security
+    cwe:
+    - CWE-825
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

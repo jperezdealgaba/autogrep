@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-da7aa869
+  pattern: 're(`-D([A-Za-z_].*)`)
+
+    '
+  pattern-not: 're(`-D([A-Za-z_][A-Za-z0-9_]*)(=[^@\-]*)?`)
+
+    '
+  languages:
+  - go
+  message: 'Insecure regular expression pattern detected. The previous pattern allowed
+    for potentially dangerous characters in macro definitions. Use the updated pattern
+    that restricts characters to alphanumeric and underscores, and properly handles
+    assignment values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/da7aa86917811a571e6634b45a457f918b8e6561
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - go

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wireshark-c52a702a
+  pattern: "if ($STATUS == PROTOCOL_BINARY_RESPONSE_NOT_MY_VBUCKET) {\n  ...\n}\n"
+  pattern-not: "if ($STATUS == PROTOCOL_BINARY_RESPONSE_NOT_MY_VBUCKET || is_xerror($DATATYPE,\
+    \ $STATUS)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a specific status without considering the data type,
+    which could lead to incorrect handling of certain error conditions. This can be
+    dangerous as it might cause the application to miss critical error states or misclassify
+    them. The fix involves adding a check for the data type using the `is_xerror`
+    function. Always ensure that both the status and data type are considered when
+    handling error conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/c52a702ae81b1ae7311a8b58e625f86fb211e7c5
+    category: security
+    cwe:
+    - CWE-754
+    owasp: A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/754.html
+    technology:
+    - c

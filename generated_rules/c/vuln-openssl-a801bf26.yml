@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openssl-a801bf26
+  pattern: "static void $FUNC(...) {\n    ...\n    $CALL(...);\n    ...\n}\n"
+  pattern-not: "static int $FUNC(...) {\n    ...\n    if (!$CALL(...))\n        return\
+    \ 0;\n    ...\n    return 1;\n}\n"
+  languages:
+  - c
+  message: 'The function does not properly handle error conditions in its return values.
+
+    This can lead to undefined behavior and potential security vulnerabilities.
+
+    The fix adds proper error handling by returning an integer status and checking
+
+    the return values of all function calls. Always check return values and
+
+    propagate errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/a801bf263849a2ef773e5bc0c86438cbba720835
+    category: security
+    cwe:
+    - CWE-252
+    owasp: A10:2021 - Security Logging and Monitoring Failures
+    technology:
+    - c

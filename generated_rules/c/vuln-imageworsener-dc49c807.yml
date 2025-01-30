@@ -1,0 +1,30 @@
+rules:
+- id: vuln-imageworsener-dc49c807
+  pattern: "*$PCODE = $CTX->img1.density_code;\nif($CTX->img1.density_code != $IW_DENSITY_UNKNOWN)\
+    \ {\n  *$PX = $CTX->img1.density_x;\n  *$PY = $CTX->img1.density_y;\n  return\
+    \ 1;\n}\nreturn 0;\n"
+  pattern-not: "*$PCODE = $IW_DENSITY_UNKNOWN;\nif($CTX->img1.density_code == $IW_DENSITY_UNKNOWN)\
+    \ {\n  return 0;\n}\nif(!iw_is_valid_density($CTX->img1.density_x, $CTX->img1.density_y,\
+    \ $CTX->img1.density_code)) {\n  return 0;\n}\n*$PX = $CTX->img1.density_x;\n\
+    *$PY = $CTX->img1.density_y;\n*$PCODE = $CTX->img1.density_code;\nreturn 1;\n"
+  languages:
+  - c
+  message: 'The original code directly assigns density values without proper validation,
+    which could lead to processing invalid density values. This can cause unexpected
+    behavior or security issues in image processing. The fix adds validation using
+    iw_is_valid_density() before assigning and using the density values. Always validate
+    input values before processing them to prevent potential security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jsummers/imageworsener/commit/dc49c807926b96e503bd7c0dec35119eecd6c6fe
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

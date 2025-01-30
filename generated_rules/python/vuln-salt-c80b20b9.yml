@@ -1,0 +1,21 @@
+rules:
+- id: vuln-salt-c80b20b9
+  pattern: "def local_batch(self, *args, **kwargs):\n    ...\n    local = salt.client.get_local_client(mopts=self.opts)\n\
+    \    return local.cmd_batch(*args, **kwargs)\n"
+  pattern-not: "def local_batch(self, *args, **kwargs):\n    ...\n    local = salt.client.get_local_client(mopts=self.opts)\n\
+    \    return local.cmd_batch(*args, **kwargs)\n"
+  languages:
+  - python
+  message: Directly returning the result of `cmd_batch` without proper validation
+    can lead to security vulnerabilities. Ensure that the batch size and other parameters
+    are properly validated before execution.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/c80b20b9575dee6ed8a9a72b1a30dcdd338998b7
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.saltproject.io/en/latest/ref/netapi/all/salt.netapi.html
+    technology:
+    - python

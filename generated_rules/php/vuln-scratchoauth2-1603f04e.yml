@@ -1,0 +1,32 @@
+rules:
+- id: vuln-scratchoauth2-1603f04e
+  pattern: 'wfMessage(''soa2-invalid-username'', $VAR)->plain()
+
+    '
+  pattern-not: 'wfMessage(''soa2-invalid-username'')->plaintextParams($VAR)->parse()
+
+    '
+  languages:
+  - php
+  message: 'Directly passing user input to wfMessage() can lead to XSS vulnerabilities.
+    The insecure version
+
+    passes the username directly as a parameter, while the secure version uses plaintextParams()
+    to
+
+    properly escape the input. Always use plaintextParams() or other safe parameter
+    handling methods
+
+    when dealing with user input in MediaWiki messages.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ScratchVerifier/ScratchOAuth2/commit/1603f04e44ef67dde6ccffe866d2dca16defb293
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-openssl-59302b60
+  pattern: "if (PKCS7_is_detached($P7) || ($IN_BIO != NULL)) {\n  ...\n}\n"
+  pattern-not: "if ($IN_BIO != NULL) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potentially insecure use of PKCS7_is_detached combined with
+    a NULL check on in_bio. This can lead to incorrect handling of detached content,
+    potentially causing security vulnerabilities. The fix involves removing the PKCS7_is_detached
+    check and relying solely on the in_bio check to ensure proper content handling.
+    Always verify the presence of content in a secure manner.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/59302b600e8d5b77ef144e447bb046fd7ab72686
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://www.openssl.org/news/secadv/20230328.txt
+    technology:
+    - c

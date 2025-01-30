@@ -1,0 +1,33 @@
+rules:
+- id: vuln-qemu-fe3c546c
+  pattern: "if ($EXPR1 + $EXPR2 > $LENGTH) {\n  ...\n}\n"
+  pattern-not: "if ($EXPR2 > $LENGTH || $EXPR1 >= $LENGTH || $EXPR1 + $EXPR2 > $LENGTH)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to insufficient
+    bounds checking.
+
+    The original condition only checks if the sum of two expressions exceeds a length
+    limit,
+
+    but does not verify if either expression individually exceeds the limit. This
+    could lead
+
+    to buffer overflows. The fix adds separate checks for each expression before checking
+
+    their sum. Always validate both individual values and their sum against length
+    limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/fe3c546c5ff2a6210f9a4d8561cc64051ca8603e
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: 'A1: Injection'
+    technology:
+    - c
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html

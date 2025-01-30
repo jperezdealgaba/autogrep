@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wireshark-e2745d74
+  pattern: 'add_tagged_field($PIN, $TREE, $TVB, $OFFSET, $FTYPE)
+
+    '
+  pattern-not: 'add_tagged_field($PIN, $TREE, $TVB, $OFFSET, $FTYPE, $IDS, $COUNT)
+
+    '
+  languages:
+  - c
+  message: 'The function `add_tagged_field` is being called without specifying valid
+    element IDs, which can lead to unexpected element processing and potential infinite
+    recursion vulnerabilities. This vulnerability occurs when the function processes
+    unexpected element IDs without validation, potentially causing malformed packet
+    handling or crashes. To fix this, always provide a list of valid element IDs and
+    their count when calling `add_tagged_field`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/e2745d741ec11f395d41c0aafa24df9dec136399
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

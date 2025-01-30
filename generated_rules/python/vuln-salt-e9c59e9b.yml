@@ -1,0 +1,20 @@
+rules:
+- id: vuln-salt-e9c59e9b
+  pattern: '$CONN.create_internet_gateway($VPC_ID)
+
+    '
+  pattern-not: '$CONN.create_internet_gateway()
+
+    '
+  languages:
+  - python
+  message: Detected potential security issue where VPC ID is passed directly to create_internet_gateway.
+    This can lead to unauthorized access or misconfiguration. Use the method without
+    explicit VPC ID parameter to ensure proper context.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/e9c59e9b8ff011e742a1c1030ee2c2504a291382
+    category: security
+    cwe: CWE-284
+    owasp: A6:2017-Security Misconfiguration
+    technology: python

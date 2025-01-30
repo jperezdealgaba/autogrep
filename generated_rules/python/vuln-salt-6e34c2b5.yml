@@ -1,0 +1,25 @@
+rules:
+- id: vuln-salt-6e34c2b5
+  pattern: 'os.stat($PATH).st_mode
+
+    '
+  pattern-not: '__salt__[''cp.stat_file'']($PATH, saltenv=$SALTENV, octal=True)
+
+    '
+  languages:
+  - python
+  message: "Detected direct file mode checking using os.stat(). This can lead to inconsistencies\
+    \ when \ncomparing file modes between master and minion. Use cp.stat_file() instead\
+    \ to ensure \nconsistent mode checking across different environments, especially\
+    \ with salt-ssh.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/6e34c2b5e5e849302af7ccd00509929c3809c658
+    category: security
+    cwe: CWE-284
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.cp.html#salt.modules.cp.stat_file
+    technology:
+    - python
+    - saltstack

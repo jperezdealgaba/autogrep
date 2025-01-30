@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-4299b90e
+  pattern: "static void cirrus_do_copy($TYPE *$VAR, int $DST, int $SRC, int $W, int\
+    \ $H) {\n  ...\n}\n"
+  pattern-not: "static int cirrus_do_copy($TYPE *$VAR, int $DST, int $SRC, int $W,\
+    \ int $H) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `cirrus_do_copy` was previously declared as `void` and did
+    not return any value, which could lead to undefined behavior or security vulnerabilities
+    when handling invalid parameters. The function should return an integer to indicate
+    success or failure, especially when checking for invalid conditions like zero
+    depth or pitch. Update the function to return an integer and handle error conditions
+    appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/4299b90e9ba9ce5ca9024572804ba751aa1a7e70
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

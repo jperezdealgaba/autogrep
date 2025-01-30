@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-3b3b0628
+  pattern: "if ($VAR >= $MAX_SIZE) {\n  error_report(\"Too many write descriptors\
+    \ in indirect table\");\n  exit(1);\n}\n"
+  pattern-not: "if ($VAR == $MAX_SIZE) {\n  error_report(\"virtio: too many write\
+    \ descriptors in indirect table\");\n  exit(1);\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves improper handling of descriptor counts in the
+    virtio implementation, which can lead to buffer overflows or incorrect memory
+    access. The original code did not properly check the number of descriptors, potentially
+    allowing too many descriptors to be processed. This can lead to memory corruption
+    or crashes. The fix ensures that the number of descriptors is correctly validated
+    before processing. Always ensure proper bounds checking when handling descriptor
+    counts in virtio implementations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/3b3b0628217e2726069990ff9942a5d6d9816bd7
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

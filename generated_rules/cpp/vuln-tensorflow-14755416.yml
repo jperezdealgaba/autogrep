@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tensorflow-14755416
+  pattern: 'CHECK_GT($VAR, 0);
+
+    '
+  pattern-not: "if ($VAR <= 0) {\n  return port::Status(port::error::INVALID_ARGUMENT,\
+    \ \"$VAR <= 0\");\n}\n"
+  languages:
+  - cpp
+  message: "The use of `CHECK_GT` to validate input can lead to program termination\
+    \ if the check fails. \nThis is dangerous because it can cause denial of service\
+    \ or unexpected program behavior. \nInstead, return a `port::Status` with an error\
+    \ message to handle invalid input gracefully.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/14755416e364f17fb1870882fa778c7fec7f16e3
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/754.html
+    technology:
+    - cpp

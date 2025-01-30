@@ -1,0 +1,25 @@
+rules:
+- id: vuln-chakracore-c2787ef8
+  pattern: 'Js::JavascriptArray* $ARRAY = Js::JavascriptArray::FromAnyArray($VALUE);
+
+    '
+  pattern-not: 'Js::JavascriptArray* $ARRAY = JavascriptArray::EnsureNonNativeArray(Js::JavascriptArray::FromAnyArray($VALUE));
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe array conversion that doesn''t ensure non-native arrays.
+
+    This can lead to security vulnerabilities when dealing with JSON objects.
+
+    Use JavascriptArray::EnsureNonNativeArray to properly handle array types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/c2787ef8fdb7401922e9ec6540e4e5895d11c631
+    category: security
+    cwe: 'CWE-843: Access of Resource Using Incompatible Type (''Type Confusion'')'
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

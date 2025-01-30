@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tensorflow-4f38b1ac
+  pattern: '$VAR1 = $VAR2->second.outputs().find($VAR3)->second.name();
+
+    '
+  pattern-not: "const auto& $VAR1 = $VAR2->second.outputs();\nconst auto& $VAR3 =\
+    \ $VAR1.find($VAR4);\nif ($VAR3 == $VAR1.end()) {\n  ...\n}\n$VAR5 = $VAR3->second.name();\n"
+  languages:
+  - cpp
+  message: 'Directly accessing the result of `find()` without checking if the key
+    exists can lead to undefined behavior. This is dangerous because it can cause
+    crashes or unexpected behavior if the key is not found. Always check if the key
+    exists before accessing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/4f38b1ac8e42727e18a2f0bde06d3bee8e77b250
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://en.cppreference.com/w/cpp/container/map/find
+    technology:
+    - cpp

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-tensorflow-480641e3
+  pattern: "OP_REQUIRES($CTX, $IN0.dims() >= 2,\n    errors::InvalidArgument(\"In[0]\
+    \ ndims must be >= 2: \", $IN0.dims()));\nOP_REQUIRES($CTX, $IN1.dims() >= 2,\n\
+    \    errors::InvalidArgument(\"In[0] ndims must be >= 2: \", $IN1.dims()));\n"
+  pattern-not: "const auto $IN0_NUM_DIMS = $IN0.dims();\nOP_REQUIRES($CTX, $IN0_NUM_DIMS\
+    \ >= 2,\n    errors::InvalidArgument(\"In[0] ndims must be >= 2: \", $IN0_NUM_DIMS));\n\
+    const auto $IN1_NUM_DIMS = $IN1.dims();\nOP_REQUIRES($CTX, $IN1_NUM_DIMS >= 2,\n\
+    \    errors::InvalidArgument(\"In[1] ndims must be >= 2: \", $IN1_NUM_DIMS));\n"
+  languages:
+  - cpp
+  message: 'Detected unsafe dimensional validation in matrix operations. The original
+    code
+
+    directly uses the dims() function in error messages, which can lead to inconsistent
+
+    state if the tensor is modified between calls. This could potentially bypass
+
+    validation checks or produce misleading error messages. Store the dimensions in
+
+    local variables before validation to ensure consistency.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/480641e3599775a8895254ffbc0fc45621334f68
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - cpp

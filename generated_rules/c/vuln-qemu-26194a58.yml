@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-26194a58
+  pattern: '$NC->info->receive($NC, $BUF, $SIZE)
+
+    '
+  pattern-not: 'qemu_receive_packet($NC, $BUF, $SIZE)
+
+    '
+  languages:
+  - c
+  message: 'Direct use of network interface''s receive function can lead to security
+    vulnerabilities. Use the safer qemu_receive_packet() function instead, which properly
+    handles packet reception with necessary security checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/26194a58f4eb83c5bdf4061a1628508084450ba1
+    category: security
+    cwe:
+    - CWE-676
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

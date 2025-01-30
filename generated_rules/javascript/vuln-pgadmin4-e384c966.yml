@@ -1,0 +1,23 @@
+rules:
+- id: vuln-pgadmin4-e384c966
+  pattern: 'return !!($FUNC(arguments));
+
+    '
+  pattern-not: 'return !!($FUNC(...arguments));
+
+    '
+  languages:
+  - javascript
+  message: Potential function call with incorrect argument handling. Using 'arguments'
+    directly without spread operator can lead to unexpected behavior. Use spread operator
+    (...) to properly pass arguments.
+  severity: ERROR
+  metadata:
+    source-url: github.com/pgadmin-org/pgadmin4/commit/e384c9665ae2e72376be7cefa8e652efcee93767
+    category: security
+    cwe: CWE-628
+    owasp: A03:2021 - Injection
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
+    technology:
+    - javascript

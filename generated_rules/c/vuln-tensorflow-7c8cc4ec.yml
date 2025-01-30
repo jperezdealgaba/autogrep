@@ -1,0 +1,36 @@
+rules:
+- id: vuln-tensorflow-7c8cc4ec
+  pattern: '$RET = (TfLiteIntArray*)malloc(TfLiteIntArrayGetSizeInBytes($SIZE));
+
+    '
+  pattern-not: 'int $ALLOC_SIZE = TfLiteIntArrayGetSizeInBytes($SIZE);
+
+    if ($ALLOC_SIZE <= 0) return NULL;
+
+    $RET = (TfLiteIntArray*)malloc($ALLOC_SIZE);
+
+    if (!$RET) return $RET;
+
+    '
+  languages:
+  - c
+  message: 'Direct use of malloc without size validation can lead to integer overflow
+    and memory corruption vulnerabilities.
+
+    The vulnerability occurs when TfLiteIntArrayGetSizeInBytes() returns a negative
+    or zero value, which can cause malloc to allocate insufficient memory.
+
+    To fix this, validate the allocation size before calling malloc and check the
+    return value of malloc.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/7c8cc4ec69cd348e44ad6a2699057ca88faad3e5
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gpac-362fc486
+  pattern: "if ($PTR->num_views) {\n  ...\n}\n"
+  pattern-not: "if ($PTR->views) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for the existence of views using ''num_views'' instead
+    of ''views''.
+
+    This could lead to null pointer dereference or incorrect logic since ''num_views''
+
+    might be non-zero even when ''views'' is null. Always check the pointer itself
+
+    rather than just its size/count field.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/362fc486b5c0eea04f26793d5623f6a9272bd85a
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

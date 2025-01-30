@@ -1,0 +1,38 @@
+rules:
+- id: vuln-openssl-b96bebac
+  pattern: "if (!BN_copy(&$KQ, &$K))\n    goto err;\nBN_set_flags(&$KQ, BN_FLG_CONSTTIME);\n\
+    ...\nif (!BN_add(&$KQ, &$KQ, $DSAREF->q))\n    goto err;\nif (BN_num_bits(&$KQ)\
+    \ <= BN_num_bits($DSAREF->q)) {\n    if (!BN_add(&$KQ, &$KQ, $DSAREF->q))\n  \
+    \      goto err;\n}\n"
+  pattern-not: "if (!BN_add(&$L, &$K, $DSAREF->q)\n    || !BN_add(&$M, &$L, $DSAREF->q)\n\
+    \    || !BN_copy(&$KQ, BN_num_bits(&$L) > $QBITS ? &$L : &$M))\n    goto err;\n\
+    BN_set_flags(&$KQ, BN_FLG_CONSTTIME);\n"
+  languages:
+  - c
+  message: 'Detected a potential timing side-channel vulnerability in DSA modular
+    exponentiation.
+
+    The original code performs a conditional addition based on the bit length of the
+    result,
+
+    which can leak timing information about the private key. The fix ensures constant-time
+
+    operations by performing both additions unconditionally and selecting the appropriate
+    result.
+
+    To fix, perform both additions unconditionally and choose the result with the
+    correct bit length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/b96bebacfe814deb99fb64a3ed2296d95c573600
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    references:
+    - https://www.openssl.org/news/secadv/20230207.txt
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-qemu-fa892e9a
+  pattern: 'int $DATASIZE = $WIDTH * $HEIGHT * sizeof(uint32_t);
+
+    '
+  pattern-not: 'size_t $DATASIZE = $WIDTH * $HEIGHT * sizeof(uint32_t);
+
+    '
+  languages:
+  - c
+  message: 'Potential integer overflow vulnerability due to using ''int'' instead
+    of ''size_t'' for buffer size calculations.
+
+    This can lead to incorrect memory allocation and potential security issues.
+
+    Always use ''size_t'' for size calculations to avoid integer overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/fa892e9abb728e76afcf27323ab29c57fb0fe7aa
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

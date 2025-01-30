@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-37cee017
+  pattern: 'lan9118_receive(qemu_get_queue($NIC), $DATA, $LEN);
+
+    '
+  pattern-not: 'qemu_receive_packet(qemu_get_queue($NIC), $DATA, $LEN);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of deprecated lan9118_receive function instead of qemu_receive_packet.
+
+    This could lead to incorrect packet handling or security vulnerabilities.
+
+    Replace lan9118_receive with qemu_receive_packet for proper packet processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/37cee01784ff0df13e5209517e1b3594a5e792d1
+    category: security
+    cwe:
+    - 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

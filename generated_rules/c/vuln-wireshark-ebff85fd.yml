@@ -1,0 +1,32 @@
+rules:
+- id: vuln-wireshark-ebff85fd
+  pattern: '$VEC.ptr = tvb_get_ptr($TVB, $OFFSET, $LEN);
+
+    $VEC.len = $LEN;
+
+    '
+  pattern-not: 'SET_CKSUM_VEC_TVB($VEC, $TVB, $OFFSET, $LEN);
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment of tvb_get_ptr() to vec.ptr and vec.len is unsafe.
+
+    Use the SET_CKSUM_VEC_TVB macro instead to ensure proper bounds checking
+
+    and memory safety. This vulnerability could lead to buffer overflows
+
+    or invalid memory access when processing network packets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/ebff85fdbbe9667f469e18686ad945f634be2682
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    technology:
+    - c
+    - network-protocols

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-wireshark-4425716d
+  pattern: "if ($TYPE == T_SRV) {\n  ...\n}\n"
+  pattern-not: "if ($TYPE == T_SRV && $NAME[0]) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing null check for DNS SRV record name before accessing first character.
+
+    This could lead to null pointer dereference if the name is empty.
+
+    Always validate that the name string is not empty before accessing its first character.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/4425716ddba99374749bd033d9bc0f4add2fb973
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

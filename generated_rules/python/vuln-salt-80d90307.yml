@@ -1,0 +1,22 @@
+rules:
+- id: vuln-salt-80d90307
+  pattern: "def clean_id($ID):\n    ...\n    if re.search(r'\\.\\.\\{sep}'.format(sep=os.sep),\
+    \ $ID):\n        return False\n    return True\n"
+  pattern-not: "def clean_id($ID):\n    ...\n    if any($X in $ID for $X in ('/',\
+    \ '\\\\', '\\0')):\n        return False\n    return True\n"
+  languages:
+  - python
+  message: Path traversal vulnerability detected. The clean_id function was not properly
+    checking for path separators, which could allow directory traversal attacks. Update
+    the function to explicitly check for '/', '\', and null bytes.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/80d90307b07b3703428ecbb7c8bb468e28a9ae6d
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

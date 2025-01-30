@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-1ab95af0
+  pattern: 'return get_drv($FDCTRL, $FDCTRL->cur_drv);
+
+    '
+  pattern-not: "$CUR_DRV = get_drv($FDCTRL, $FDCTRL->cur_drv);\nif (!$CUR_DRV->blk)\
+    \ {\n  $CUR_DRV->blk = blk_create_empty_drive();\n}\nreturn $CUR_DRV;\n"
+  languages:
+  - c
+  message: 'Potential NULL pointer dereference vulnerability detected. The function
+    returns a pointer from `get_drv` without checking if the returned `blk` field
+    is NULL. This can lead to a NULL dereference when the BlockBackend API is used.
+    To fix this, ensure that the `blk` field is initialized with a valid BlockBackend
+    or create an anonymous one if it is NULL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/1ab95af033a419e7a64e2d58e67dd96b20af5233
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

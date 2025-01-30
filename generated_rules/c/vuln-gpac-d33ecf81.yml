@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gpac-d33ecf81
+  pattern: 'if ($NBITS > 32) return $ERROR;
+
+    '
+  pattern-not: 'if (!$NBITS || $NBITS > 32) return $ERROR;
+
+    '
+  languages:
+  - c
+  message: 'The code fails to check if NbBits is zero before validating its upper
+    bound, which could lead to undefined behavior or security vulnerabilities. This
+    issue was fixed by adding a check for zero. Always validate both lower and upper
+    bounds of input values to ensure they are within expected ranges.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/d33ecf8142d9103eff9d6fd72fbab4e499e3e9b8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

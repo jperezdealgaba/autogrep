@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openssl-1f365708
+  pattern: '!TEST_str_eq($STR1, (char *)$STR2->data)
+
+    '
+  pattern-not: '!TEST_mem_eq($STR1, strlen($STR1), (char *)$STR2->data, $STR2->length)
+
+    '
+  languages:
+  - c
+  message: 'Insecure string comparison detected. The use of `TEST_str_eq` can lead
+    to vulnerabilities when comparing strings with embedded null characters or when
+    the length of the strings is not properly considered. This can result in incorrect
+    comparisons and potential security issues. Replace `TEST_str_eq` with `TEST_mem_eq`
+    to ensure proper length-based comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/1f365708a3318a5f1a395f90c38b584a58d37fb9
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

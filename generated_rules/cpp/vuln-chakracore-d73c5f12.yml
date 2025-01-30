@@ -1,23 +1,33 @@
 rules:
 - id: vuln-chakracore-d73c5f12
-  pattern: '$CTX->GetImplicitCallFlags();
+  pattern: '$CTX->ClearDisableImplicitFlags();
 
-    $CTX->ClearDisableImplicitFlags();
+    JavascriptFunction::CallRootFunctionInScript($FUNC, $ARGS);
 
-    JavascriptFunction::CallRootFunctionInScript(...);
-
-    $CTX->SetImplicitCallFlags(...);
+    $CTX->SetImplicitCallFlags($FLAGS);
 
     '
-  pattern-not: "{\n  AutoRestoreFlags $VAR(...);\n  JavascriptFunction::CallRootFunctionInScript(...);\n\
-    }\n"
+  pattern-not: "{\n  AutoRestoreFlags $VAR($CTX, $FLAGS, $DISABLEFLAGS);\n  JavascriptFunction::CallRootFunctionInScript($FUNC,\
+    \ $ARGS);\n}\n"
+  message: 'Detected unsafe manual manipulation of thread context flags around function
+    calls.
+
+    This pattern is vulnerable because it doesn''t properly restore thread context
+    flags
+
+    in case of exceptions. Use the AutoRestoreFlags RAII pattern instead to ensure
+
+    proper cleanup in all execution paths.
+
+    '
   languages:
   - cpp
-  message: Improper thread context flag management without RAII guard can lead to
-    inconsistent state and security vulnerabilities
-  severity: ERROR
+  severity: WARNING
   metadata:
-    source-url: github.com/Microsoft/ChakraCore/commit/d73c5f12d9c5cbbf64f59ae04e76a531b3e844b3
+    source-url: github.com/chakra-core/ChakraCore/commit/d73c5f12d9c5cbbf64f59ae04e76a531b3e844b3
     category: security
+    cwe:
+    - CWE-665
+    owasp: A9:2017-Using Components with Known Vulnerabilities
     technology:
     - cpp

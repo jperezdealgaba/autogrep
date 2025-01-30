@@ -1,0 +1,24 @@
+rules:
+- id: vuln-wireshark-81216a17
+  pattern: 'guint $VAR = ipmi_get_hdr($PIN)->rs_sa == $VAL;
+
+    '
+  pattern-not: "const ipmi_header_t *$HEADER = ipmi_get_hdr($PIN);\nif ($HEADER ==\
+    \ NULL)\n    return;\nguint $VAR = $HEADER->rs_sa == $VAL;\n"
+  languages:
+  - c
+  message: 'Directly dereferencing the result of ipmi_get_hdr() without NULL check
+    can lead to null pointer dereference. This is dangerous as it can cause application
+    crashes or undefined behavior. Always check if the pointer returned by ipmi_get_hdr()
+    is NULL before accessing its fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/81216a176b25dd8a616e11808a951e141a467009
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A1:2017-Injection
+    technology:
+    - c

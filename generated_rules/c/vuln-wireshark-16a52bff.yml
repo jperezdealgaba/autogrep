@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wireshark-16a52bff
+  pattern: "while ($TP && $TP->lastseq >= $SEQ && $TP->lastseq >= $SAVE_SEQ) {\n \
+    \ ...\n  $SAVE_SEQ = $TP->lastseq + 1;\n  $TP = ($TYPE *)wmem_tree_lookup32_le($RCONV->packets[$CDIR],\
+    \ $TP->lastseq - 1);\n}\n"
+  pattern-not: "while ($TP && $TP->lastseq >= $SEQ) {\n  ...\n  if ($TP->seq == 0)\
+    \ {\n    break;\n  }\n  $TP = ($TYPE *)wmem_tree_lookup32_le($RCONV->packets[$CDIR],\
+    \ $TP->seq - 1);\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential infinite loop vulnerability in packet processing
+    code. The original code could enter an infinite loop due to incorrect sequence
+    number comparison logic. The fix involves removing the redundant comparison and
+    adding a check for the first segment (seq == 0). This vulnerability could lead
+    to denial of service or excessive resource consumption.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/16a52bff6cf8ddfec8126bd40c50b65465ede0cd
+    category: security
+    cwe:
+    - CWE-835
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-salt-84d91931
+  pattern: '["ssh-keygen", "-P", ''""'', ..., "-f", $PATH, ..., "-q"]
+
+    '
+  pattern-not: '["ssh-keygen", "-P", "", ..., "-f", $PATH, ..., "-q"]
+
+    '
+  languages:
+  - python
+  message: 'Detected potentially unsafe SSH key generation with an empty passphrase.
+    Using ''""'' as a passphrase can lead to security vulnerabilities as it may be
+    interpreted differently across systems. Use an empty string "" instead to ensure
+    consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/84d91931865626a9b53558f88d6c8919a270df3a
+    category: security
+    cwe: 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - python

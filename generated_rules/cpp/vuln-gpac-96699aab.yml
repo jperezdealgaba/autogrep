@@ -1,0 +1,31 @@
+rules:
+- id: vuln-gpac-96699aab
+  pattern: 'char *gf_utf_get_utf8_string_from_bom(u8 *$DATA, u32 $SIZE, char **$OUT_PTR);
+
+    '
+  pattern-not: 'GF_Err gf_utf_get_utf8_string_from_bom(const u8 *$DATA, u32 $SIZE,
+    char **$OUT_PTR, char **$RESULT);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `gf_utf_get_utf8_string_from_bom` is vulnerable due to missing
+    parameter validation and error handling. The original version does not check if
+    `out_ptr` is NULL, which could lead to undefined behavior or crashes. Additionally,
+    it lacks a proper error return mechanism. The fixed version introduces a return
+    type `GF_Err` and adds a `result` parameter to handle the output, ensuring proper
+    error handling and parameter validation. To fix this, update the function signature
+    to include error handling and validate input parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/96699aabae042f8f55cf8a85fa5758e3db752bae
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

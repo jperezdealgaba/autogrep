@@ -1,0 +1,22 @@
+rules:
+- id: vuln-openssl-75875496
+  pattern: "if ($S->verify_mode != $SSL_VERIFY_NONE && $I <= 0) {\n    ...\n}\n"
+  pattern-not: "if ($S->verify_mode != $SSL_VERIFY_NONE && $I == 0) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The certificate verification logic is incorrect as it treats any non-positive
+    value as a verification failure, including error conditions that should be handled
+    differently. This can lead to incorrect verification results. The fix is to explicitly
+    check for i == 0 rather than i <= 0.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/758754966791c537ea95241438454aa86f91f256
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openssl-e1b568dd
+  pattern: "if ($COND) {\n    ssl_fill_hello_random($S, $FLAGS, $P, sizeof($S->s3->client_random));\n\
+    }\n"
+  pattern-not: "if ($COND && ssl_fill_hello_random($S, $FLAGS, $P, sizeof($S->s3->client_random))\
+    \ <= 0) {\n    goto err;\n}\n"
+  languages:
+  - c
+  message: 'The code does not check the return value of `ssl_fill_hello_random`, which
+    could lead to uninitialized or predictable random values. This is dangerous because
+    predictable random values can compromise the security of the SSL/TLS handshake.
+    Always check the return value of cryptographic functions and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/e1b568dd2462f7cacf98f3d117936c34e2849a6b
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

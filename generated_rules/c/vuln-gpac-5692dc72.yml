@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gpac-5692dc72
+  pattern: "if (!$CTX->in_seek) {\n  ...\n}\n"
+  pattern-not: "if (!$CTX->in_seek && $REMAIN >= $CTX->hdr.framesize) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'A missing bounds check in the AC3 reframe filter could lead to out-of-bounds
+    memory access. This vulnerability occurs when the code processes data without
+    verifying that the remaining buffer size is sufficient for the frame size. This
+    could result in memory corruption or crashes. To fix this, always ensure the remaining
+    buffer size is checked against the frame size before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/5692dc729491805e0e5f55c21d50ba1e6b19e88e
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

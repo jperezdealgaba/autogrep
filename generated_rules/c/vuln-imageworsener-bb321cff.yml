@@ -1,0 +1,29 @@
+rules:
+- id: vuln-imageworsener-bb321cff
+  pattern: 'if(!read_next_pam_token($CTX, $LINEBUF, $TOKENBUF, sizeof($TOKENBUF),
+    $CURPOS)) goto $LABEL;
+
+    '
+  pattern-not: "if(!read_next_pam_token($CTX, $LINEBUF, (int)sizeof($LINEBUF), $TOKENBUF,\
+    \ (int)sizeof($TOKENBUF), $CURPOS)) {\n  goto $LABEL;\n}\n"
+  languages:
+  - c
+  message: 'The function `read_next_pam_token` is called with an incorrect buffer
+    size for `linebuf`. This can lead to buffer overflow vulnerabilities. Always pass
+    the correct buffer size for all buffers to prevent potential security issues.
+    Fix by casting the `sizeof` result to `int` and ensuring the correct buffer size
+    is passed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jsummers/imageworsener/commit/bb321cfff3b1ab969c4cf1b692473c78672fa4ad
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

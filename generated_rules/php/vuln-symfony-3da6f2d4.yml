@@ -1,0 +1,27 @@
+rules:
+- id: vuln-symfony-3da6f2d4
+  pattern: '$result[$parentKey.$key] = "\t".$value;
+
+    '
+  pattern-not: '$result[$parentKey.$key] = "''".$value;
+
+    '
+  languages:
+  - php
+  message: "The code is vulnerable to CSV injection due to improper escaping of formula\
+    \ characters. \nThis can allow attackers to inject malicious formulas into CSV\
+    \ files, potentially leading to code execution when the file is opened in spreadsheet\
+    \ software. \nThe fix is to prepend a single quote (') instead of a tab character\
+    \ (\\t) to escape formula characters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/3da6f2d45e7536ccb2a26f52fbaf340917e208a8
+    category: security
+    cwe:
+    - CWE-1236
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/CSV_Injection
+    technology:
+    - php

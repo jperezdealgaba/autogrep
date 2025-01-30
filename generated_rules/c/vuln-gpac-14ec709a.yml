@@ -1,0 +1,23 @@
+rules:
+- id: vuln-gpac-14ec709a
+  pattern: "if (version == 1 && read->jpeg_hdr_size) {\n  ...\n}\n"
+  pattern-not: "if (version == 1 && read->jpeg_hdr_size >= 2) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability. The condition `read->jpeg_hdr_size`
+    without a lower bound check can lead to buffer overflows or undefined behavior.
+    Always ensure proper bounds checking when dealing with sizes or lengths, especially
+    in security-sensitive contexts. Fix by adding a minimum size check, e.g., `read->jpeg_hdr_size
+    >= 2`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/14ec709a1ffae23ad777c37320290caa0a754341
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

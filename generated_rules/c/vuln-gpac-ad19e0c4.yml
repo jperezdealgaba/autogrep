@@ -1,0 +1,25 @@
+rules:
+- id: vuln-gpac-ad19e0c4
+  pattern: 'if ($EXPR->pixels) gf_free($EXPR->pixels);
+
+    '
+  pattern-not: "if ($EXPR->pixels) {\n  gf_free($EXPR->pixels);\n  $EXPR->pixels =\
+    \ NULL;\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing NULL assignment after freeing memory. This can lead
+    to use-after-free vulnerabilities if the pointer is accessed after being freed.
+    Ensure that the pointer is set to NULL after freeing to prevent such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/ad19e0c4504a89ca273442b1b1483ae7adfb9491
+    category: security
+    cwe:
+    - CWE-416
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-openssl-59f5e75f
+  pattern: 'sm2_plaintext_size($KEY, $DIGEST, $MSGLEN, $PTSIZE)
+
+    '
+  pattern-not: 'sm2_plaintext_size($CT, $CT_SIZE, $PTSIZE)
+
+    '
+  languages:
+  - c
+  message: 'Detected vulnerable usage of sm2_plaintext_size with EC_KEY and EVP_MD
+    parameters.
+
+    The old version didn''t properly validate ciphertext structure and could lead
+    to
+
+    incorrect plaintext size calculation. Use the fixed version that takes ciphertext
+
+    buffer and size as parameters instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/59f5e75f3bced8fc0e130d72a3f582cf7b480b46
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

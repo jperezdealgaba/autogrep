@@ -1,0 +1,24 @@
+rules:
+- id: vuln-salt-7b3591d9
+  pattern: '$RET = self._proc_function_local(self.opts[''fun''], ...)
+
+    '
+  pattern-not: '$RET = self._proc_function(self.opts[''fun''], ...)
+
+    '
+  languages:
+  - python
+  message: Detected use of potentially insecure function _proc_function_local. This
+    function may bypass necessary security checks. Use _proc_function instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/7b3591d9cd427d46e410bc2d510e2ccfa6a23884
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://docs.saltproject.io/en/latest/ref/runners/all/salt.runners.manage.html
+    technology:
+    - python

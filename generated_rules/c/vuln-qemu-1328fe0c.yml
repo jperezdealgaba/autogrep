@@ -1,0 +1,28 @@
+rules:
+- id: vuln-qemu-1328fe0c
+  pattern: '$NEXT = $ISO_TD.offset[$RELATIVE_FRAME_NUMBER + 1];
+
+    ...
+
+    $END_ADDR = $ISO_TD.be;
+
+    '
+  pattern-not: "if ($RELATIVE_FRAME_NUMBER < $FRAME_COUNT) {\n    $NEXT = $ISO_TD.offset[$RELATIVE_FRAME_NUMBER\
+    \ + 1];\n} else {\n    $NEXT = $ISO_TD.be;\n}\n...\n$END_ADDR = $NEXT;\n"
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds array access vulnerability in USB OHCI
+    driver. The code directly accesses `iso_td.offset` without checking if `relative_frame_number
+    + 1` is within bounds. This could lead to memory corruption or crashes. The fix
+    adds bounds checking and uses a fallback value when the index is out of bounds.
+    Always validate array indices before accessing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/1328fe0c32d5474604105b8105310e944976b058
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    technology:
+    - c

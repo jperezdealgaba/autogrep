@@ -1,0 +1,26 @@
+rules:
+- id: vuln-symfony-7467bd7e
+  pattern: "if ('' !== ($VAR1 ?? '') && $VAR1 === $VAR2) {\n  ...\n}\n"
+  pattern-not: "if ('' !== ($VAR1 ?? '') && $VAR1 === $VAR2 && \\get_class($VAR3)\
+    \ === \\get_class($VAR4)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to session fixation attacks because it only checks
+    if the user identifier matches without verifying the token type. This could allow
+    an attacker to reuse a session with a different token type, potentially bypassing
+    security measures. To fix this, ensure that both the user identifier and the token
+    type are verified.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/7467bd7e3f888b333102bc664b5e02ef1e7f88b9
+    category: security
+    cwe:
+    - CWE-384
+    owasp:
+    - A2: Broken Authentication
+    references:
+    - https://symfony.com/doc/current/security/session_fixation.html
+    technology:
+    - php

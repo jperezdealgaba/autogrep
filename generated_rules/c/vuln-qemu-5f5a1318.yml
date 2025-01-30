@@ -1,0 +1,23 @@
+rules:
+- id: vuln-qemu-5f5a1318
+  pattern: "if ($ADDR > ($CONFIG_LEN - sizeof($VAL))) {\n  ...\n}\n"
+  pattern-not: "if ($ADDR + sizeof($VAL) > $CONFIG_LEN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe bounds check using subtraction. This pattern is vulnerable
+    to integer overflow when $ADDR is large. Use addition-based bounds checking instead,
+    as shown in the pattern-not example, to prevent potential buffer overflows or
+    out-of-bounds memory access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/5f5a1318653c08e435cfa52f60b6a712815b659d
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp: 'A1: Injection'
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow
+    technology:
+    - c

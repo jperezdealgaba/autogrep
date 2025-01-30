@@ -1,0 +1,33 @@
+rules:
+- id: vuln-openssl-0ed26acc
+  pattern: 'int $LEN = OBJ_obj2txt($BUF, sizeof($BUF), $OBJ, 0);
+
+    BIO_write($BIO, $BUF, $LEN);
+
+    BIO_write($BIO, "\n", 1);
+
+    '
+  pattern-not: 'OBJ_obj2txt($BUF, sizeof($BUF), $OBJ, 0);
+
+    BIO_printf($BIO, "%s\n", $BUF);
+
+    '
+  languages:
+  - c
+  message: 'Potential buffer handling vulnerability found. The original code uses
+    BIO_write with a calculated length, which could lead to issues if the buffer isn''t
+    properly null-terminated. Use BIO_printf instead to ensure proper string handling
+    and null-termination.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/0ed26acce328ec16a3aa635f1ca37365e8c7403a
+    category: security
+    cwe:
+    - CWE-120
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://www.openssl.org/docs/man3.0/man3/BIO_printf.html
+    technology:
+    - c

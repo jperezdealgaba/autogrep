@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gpac-f73da86b
+  pattern: '$CODE->LastError = SFScript_Parse($CODE, (SFScript*)$FIELD->far_ptr, $BS,
+    $NODE);
+
+    '
+  pattern-not: '$CODE->LastError = $NODE ? SFScript_Parse($CODE, (SFScript*)$FIELD->far_ptr,
+    $BS, $NODE) : $ERROR;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential null pointer dereference vulnerability. The function
+    SFScript_Parse is called without checking if the node parameter is null, which
+    could lead to undefined behavior. This was fixed by adding a conditional check
+    to handle the case where node is null.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/f73da86bf32992f62b9ff2b9c9e853e3c97edf8e
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

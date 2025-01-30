@@ -1,0 +1,25 @@
+rules:
+- id: vuln-salt-86e18b91
+  pattern: 'os.open($PATH, os.O_CREAT | os.O_WRONLY, $MODE)
+
+    '
+  pattern-not: 'os.open($PATH, os.O_CREAT | os.O_RDWR, $MODE)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure file creation using os.O_WRONLY. This can lead to race
+    conditions or incomplete file operations. Use os.O_RDWR instead to ensure proper
+    file handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/86e18b91ae006de381f71b972f1daab9239bad3c
+    category: security
+    cwe: CWE-362
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://man7.org/linux/man-pages/man2/open.2.html
+    technology:
+    - python

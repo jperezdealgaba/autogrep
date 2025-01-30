@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-8741e57d
+  pattern: 'CHECK($VAR >= 0 && $VAR < $NUM) << "Invalid input backprop index: " <<
+    $VAR << ", " << $NUM;
+
+    '
+  pattern-not: "OP_REQUIRES(\n  $CONTEXT,\n  $VAR >= 0 && $VAR < $NUM,\n  errors::InvalidArgument(\n\
+    \    \"Invalid input backprop index: \", $VAR, \", \", $NUM));\n"
+  languages:
+  - cpp
+  message: 'The code uses CHECK for input validation, which is dangerous because it
+    only works in debug builds and can be bypassed in release builds. This can lead
+    to undefined behavior or security vulnerabilities if invalid input is processed.
+    Replace CHECK with OP_REQUIRES to ensure proper error handling in all build configurations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/8741e57d163a079db05a7107a7609af70931def4
+    category: security
+    cwe:
+    - CWE-754
+    owasp: A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/op-requires
+    technology:
+    - cpp

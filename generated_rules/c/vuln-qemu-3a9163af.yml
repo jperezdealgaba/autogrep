@@ -1,0 +1,29 @@
+rules:
+- id: vuln-qemu-3a9163af
+  pattern: "$VAR->state = $STATE;\n$VAR->data_start = $ADDR;\n$VAR->data_offset =\
+    \ 0;\nif ($VAR->data_start + $VAR->blk_len > $VAR->size) {\n    $VAR->card_status\
+    \ |= $ERROR;\n}\n"
+  pattern-not: "if ($ADDR + $VAR->blk_len > $VAR->size) {\n    $VAR->card_status |=\
+    \ $ERROR;\n    return $RET;\n}\n$VAR->state = $STATE;\n$VAR->data_start = $ADDR;\n\
+    $VAR->data_offset = 0;\n"
+  languages:
+  - c
+  message: 'Potential out-of-bounds access vulnerability detected. The code checks
+    the bounds after setting the state and data pointers, which could lead to accessing
+    invalid memory if the bounds check fails. This should be fixed by performing the
+    bounds check before setting any state or data pointers and returning early if
+    the check fails.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/3a9163af4e3dd61795a35d47b702e302f98f81d6
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

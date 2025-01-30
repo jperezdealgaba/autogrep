@@ -1,0 +1,28 @@
+rules:
+- id: vuln-salt-73a156d2
+  pattern: "def hash_file(self, $PATH, $SALTENV='base'):\n  ...\n  $PATH = self._find_file($PATH,\
+    \ $SALTENV)['path']\n  if not $PATH:\n      return {}\n  ...\n"
+  pattern-not: "def hash_file(self, $PATH, $SALTENV='base'):\n  ...\n  $FND = self.__get_file_path($PATH,\
+    \ $SALTENV)\n  if $FND is None:\n      return $RET\n  try:\n      $FND_PATH =\
+    \ $FND['path']\n  except TypeError:\n      $FND_PATH = $FND\n  ...\n"
+  languages:
+  - python
+  message: 'Detected unsafe direct access to ''path'' key in dictionary without proper
+    error handling.
+
+    This can lead to TypeError exceptions when the key is missing. The code should
+    use
+
+    .get() method or try-except block to handle missing keys gracefully.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/73a156d28cafd45dcc6c2aac9f1ac3ad905695e3
+    category: security
+    cwe: CWE-703
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://docs.python.org/3/library/exceptions.html#TypeError
+    technology:
+    - python

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-kamailio-e1d8008a
+  pattern: dsize += $VAR.len;
+  pattern-not: dsize += $VAR.len + 1;
+  languages:
+  - c
+  message: 'This vulnerability occurs when the size calculation does not account for
+    an additional byte, potentially leading to buffer overflow issues. This is dangerous
+    as it can result in memory corruption, crashes, or even arbitrary code execution.
+    To fix this, ensure that the size calculation includes the necessary additional
+    byte.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kamailio/kamailio/commit/e1d8008a09d9390ebaf698abe8909e10dfec4097
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

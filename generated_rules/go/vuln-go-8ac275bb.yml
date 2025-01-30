@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-8ac275bb
+  pattern: '$VAR = os.TempDir() + $PATH
+
+    '
+  pattern-not: '$VAR = filepath.Join($DIR, $PATH)
+
+    '
+  languages:
+  - go
+  message: 'Detected unsafe path concatenation using os.TempDir(). This can lead to
+    path traversal vulnerabilities or unexpected behavior if the temporary directory
+    contains spaces. Use filepath.Join() to safely construct paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/8ac275bb01588a8c0e6c0fe2de7fd11f08feccdd
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/path/filepath#Join
+    technology:
+    - go

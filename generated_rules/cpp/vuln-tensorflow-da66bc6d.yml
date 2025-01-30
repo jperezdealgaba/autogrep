@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-da66bc6d
+  pattern: 'errors::InvalidArgument(..., " is less than loc_=", loc_);
+
+    '
+  pattern-not: 'errors::InvalidArgument(..., " must be greater than loc_ = ", loc_);
+
+    '
+  languages:
+  - cpp
+  message: 'The code contains a vulnerability where the error message incorrectly
+    checks if a value is "less than" loc_ instead of "greater than". This could lead
+    to incorrect validation logic, potentially allowing invalid operations. The fix
+    changes the error message to correctly validate that the value must be greater
+    than loc_. Always ensure that validation logic accurately reflects the intended
+    constraints.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/da66bc6d5ff466aee084f9e7397980a24890cd15
+    category: security
+    cwe:
+    - 'CWE-1284: Improper Validation of Specified Quantity in Input'
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/1284.html
+    technology:
+    - cpp

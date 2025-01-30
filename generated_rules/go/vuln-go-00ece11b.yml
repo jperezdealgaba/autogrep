@@ -1,0 +1,29 @@
+rules:
+- id: vuln-go-00ece11b
+  pattern: 't.Skip("TODO(#54376): 1.19.1 contains unreleased changes from vendored
+    modules")
+
+    '
+  pattern-not: 't.Skip(...)
+
+    '
+  languages:
+  - go
+  message: 'The test is being skipped due to unreleased changes in vendored modules,
+    which could mask potential issues in the codebase. This could lead to undetected
+    vulnerabilities or bugs in production. Ensure that all dependencies are properly
+    versioned and that tests are not skipped for reasons related to unreleased changes.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/00ece11be14efe4a97d59633c3df5e0d0c6674da
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021 - Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - go

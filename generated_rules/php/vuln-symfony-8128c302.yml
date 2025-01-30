@@ -1,0 +1,32 @@
+rules:
+- id: vuln-symfony-8128c302
+  pattern: 'new Response(sprintf(''No parser found for webhook of type "%s".'', $VAR),
+    404)
+
+    '
+  pattern-not: 'new Response(''No webhook parser found for the type given in the URL.'',
+    404, [''Content-Type'' => ''text/plain''])
+
+    '
+  languages:
+  - php
+  message: 'The response message includes user-controlled input directly, which can
+    lead to information disclosure or XSS vulnerabilities. Avoid including dynamic
+    content in error messages without proper sanitization. Instead, use generic error
+    messages without revealing internal details.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/8128c302430394f639e818a7103b3f6815d8d962
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-209
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - php

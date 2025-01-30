@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openssl-b013765a
+  pattern: "int $I;\nfor ($I = 1; $I < $FUNC($CTX->chain); $I++) {\n    ...\n}\n"
+  pattern-not: "int $I, $CBCALLED = 0;\nfor ($I = 0; $I < $FUNC($CTX->chain); $I++)\
+    \ {\n    $CBCALLED = 1;\n    ...\n}\nif (!$CBCALLED) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential security vulnerability where a loop starts at index
+    1 instead of 0,
+
+    which could lead to missing critical certificate validation. This could allow
+    improperly
+
+    validated certificates to be accepted. The fix ensures proper initialization and
+    validation
+
+    by starting the loop at 0 and adding a callback check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/b013765abfa80036dc779dd0e50602c57bb3bf95
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp: 'A5: Security Misconfiguration'
+    technology:
+    - c

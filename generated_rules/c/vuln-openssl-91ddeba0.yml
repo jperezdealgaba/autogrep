@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openssl-91ddeba0
+  pattern: "if ($DH->q) {\n  ...\n}\n"
+  pattern-not: "if ($DH->q != NULL) {\n  if (BN_ucmp($DH->p, $DH->q) > 0)\n    $Q_GOOD\
+    \ = 1;\n  else\n    *$RET |= $DH_CHECK_INVALID_Q_VALUE;\n}\nif ($Q_GOOD) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly validate the DH parameter ''q'' against ''p'',
+    which can lead to security vulnerabilities in the Diffie-Hellman key exchange.
+    Specifically, it doesn''t check if ''p'' is greater than ''q'' before using them,
+    which is a critical validation step. This could allow an attacker to exploit invalid
+    parameter values. To fix this, ensure that ''q'' is not NULL and that ''p'' is
+    greater than ''q'' before proceeding with the key exchange.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/91ddeba0f2269b017dc06c46c993a788974b1aa5
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://www.openssl.org/news/secadv/20220315.txt
+    technology:
+    - c

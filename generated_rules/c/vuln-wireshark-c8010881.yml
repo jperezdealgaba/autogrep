@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-c8010881
+  pattern: 'gtk_tree_view_column_new_with_attributes("Bytes", ..., EO_BYTES_COLUMN,
+    $VAR, ...)
+
+    '
+  pattern-not: 'gtk_tree_view_column_new_with_attributes("Size", ..., EO_BYTES_COLUMN,
+    $VAR, ...)
+
+    '
+  languages:
+  - c
+  message: 'Detected direct use of integer payload length in GTK tree view column.
+    This can lead to incorrect display of large byte values. Use format_size() to
+    properly format the byte size as a string before displaying it.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/c801088198243b6ee93c8f793a0aa15b5b38463a
+    category: security
+    cwe:
+    - CWE-704
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://developer.gnome.org/gtk3/stable/GtkTreeViewColumn.html
+    technology:
+    - c

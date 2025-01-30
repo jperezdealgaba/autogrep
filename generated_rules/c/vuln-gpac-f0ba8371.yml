@@ -1,0 +1,31 @@
+rules:
+- id: vuln-gpac-f0ba8371
+  pattern: 'if (!$MPOD->trackIDs || gf_isom_get_track_from_id($MDIA->mediaTrack->moov,
+    $MPOD->trackIDs[$REF->trackRef - 1]) == NULL) continue;
+
+    '
+  pattern-not: 'if (!$MPOD->trackIDs || !$REF->trackRef || ($REF->trackRef > $MPOD->trackIDCount))
+    continue;
+
+    if (gf_isom_get_track_from_id($MDIA->mediaTrack->moov, $MPOD->trackIDs[$REF->trackRef
+    - 1]) == NULL) continue;
+
+    '
+  languages:
+  - c
+  message: 'The code lacks proper bounds checking before accessing array elements,
+    which could lead to out-of-bounds memory access. This vulnerability can cause
+    crashes, information disclosure, or even arbitrary code execution. Always validate
+    array indices against the array size before accessing elements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/f0ba83717b6e4d7a15a1676d1fe06152e199b011
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

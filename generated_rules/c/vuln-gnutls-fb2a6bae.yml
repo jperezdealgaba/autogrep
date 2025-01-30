@@ -1,0 +1,32 @@
+rules:
+- id: vuln-gnutls-fb2a6bae
+  pattern: "const char *$FILENAME;\n...\n$FILENAME = getenv(\"GNUTLS_KEYLOGFILE\"\
+    );\n...\nif ($FILENAME == NULL)\n  return;\n...\n$FP = fopen($FILENAME, \"w\"\
+    );\n"
+  pattern-not: "const char *_gnutls_keylogfile = NULL;\n...\n_gnutls_keylogfile =\
+    \ getenv(\"GNUTLS_KEYLOGFILE\");\n...\nif (_gnutls_keylogfile == NULL)\n  _gnutls_keylogfile\
+    \ = getenv(\"SSLKEYLOGFILE\");\n...\n$FP = fopen(_gnutls_keylogfile, \"a\");\n"
+  languages:
+  - c
+  message: 'Detected insecure handling of keylog file environment variables. The original
+    code directly uses the environment variable without proper validation and uses
+    ''w'' mode which truncates the file. This can lead to security issues and unintended
+    data loss. The fix introduces a global variable and uses ''a'' mode to append
+    to the file instead of truncating it. Always validate environment variables and
+    use appropriate file modes to prevent security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/fb2a6baef79f4aadfd95e657fe5a18da20a1410e
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-377
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    - https://cwe.mitre.org/data/definitions/377.html
+    technology:
+    - c

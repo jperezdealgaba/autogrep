@@ -1,0 +1,32 @@
+rules:
+- id: vuln-openssl-4b22cce3
+  pattern: 'if ($FUNC($CTX, $NULL, $SIGALG, $PKEY)) ...
+
+    '
+  pattern-not: 'if ($FUNC($CTX, $NULL, $SIGALG, $PKEY) > 0) { }
+
+    '
+  languages:
+  - c
+  message: 'The function call in the if statement does not properly check the return
+    value,
+
+    which can lead to incorrect handling of error conditions. This can result in
+
+    security vulnerabilities such as invalid cryptographic operations. Always check
+
+    the return value explicitly against the expected condition (e.g., > 0) to ensure
+
+    proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/4b22cce3812052fe64fc3f6d58d8cc884e3cb834
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A06:2021 - Vulnerable and Outdated Components
+    technology:
+    - c

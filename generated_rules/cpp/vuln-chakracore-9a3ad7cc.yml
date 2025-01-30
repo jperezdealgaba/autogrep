@@ -1,0 +1,33 @@
+rules:
+- id: vuln-chakracore-9a3ad7cc
+  pattern: "void EmitSpreadArgToListBytecodeInstr(\n  ByteCodeGenerator *$GENERATOR,\n\
+    \  FuncInfo *$FUNCINFO,\n  Js::RegSlot $ARGLOC,\n  Js::ProfileId $CALLSITEID,\n\
+    \  Js::ArgSlot &$ARGINDEX\n) {\n  ...\n  $GENERATOR->Writer()->Reg2(Js::OpCode::LdCustomSpreadIteratorList,\
+    \ $REGVAL, $ARGLOC);\n  $GENERATOR->Writer()->ArgOut<true>(++$ARGINDEX, $REGVAL,\
+    \ $CALLSITEID);\n  ...\n}\n"
+  pattern-not: "void EmitOneArg(\n  ParseNode *$PNODE,\n  BOOL $FASSIGNREGS,\n  ByteCodeGenerator\
+    \ *$GENERATOR,\n  FuncInfo *$FUNCINFO,\n  Js::ProfileId $CALLSITEID,\n  Js::ArgSlot\
+    \ &$ARGINDEX,\n  Js::ArgSlot &$SPREADINDEX,\n  Js::RegSlot $ARGTEMPLOCATION,\n\
+    \  Js::AuxArray<uint32> *$SPREADINDICES = nullptr\n) {\n  ...\n  $GENERATOR->Writer()->Reg2(Js::OpCode::LdCustomSpreadIteratorList,\
+    \ $REGVAL, $PNODE->location);\n  if ($NOARGSOUTS) {\n    $GENERATOR->Writer()->Reg2(Js::OpCode::Ld_A,\
+    \ $ARGTEMPLOCATION, $REGVAL);\n  } else {\n    $GENERATOR->Writer()->ArgOut<true>($ARGINDEX\
+    \ + 1, $REGVAL, $CALLSITEID);\n  }\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The vulnerability involves improper handling of argument destructuring
+    in the parser, which could lead to incorrect argument evaluation or memory corruption.
+    The patch introduces proper state tracking and argument handling to ensure correct
+    behavior. To fix this, ensure that argument evaluation and destructuring are properly
+    managed using the new `EmitOneArg` function instead of the deprecated `EmitSpreadArgToListBytecodeInstr`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/chakra-core/ChakraCore/commit/9a3ad7ccba1fae1549e21369982d59d45a2ab6cf
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

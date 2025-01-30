@@ -1,0 +1,26 @@
+rules:
+- id: vuln-symfony-6c73f0ce
+  pattern: "if (self::$trustedProxies && self::$trustedHeaders[self::HEADER_CLIENT_PROTO]\
+    \ && $proto = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PROTO]))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($this->isFromTrustedProxy() && self::$trustedHeaders[self::HEADER_CLIENT_PROTO]\
+    \ && $proto = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PROTO]))\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Directly checking `self::$trustedProxies` without verifying the proxy''s
+    IP address can lead to security vulnerabilities. Attackers can spoof headers when
+    the proxy is not properly validated. Use `isFromTrustedProxy()` to ensure the
+    request is from a trusted proxy by validating the IP address.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/6c73f0ce9302a0091bbfbb96f317e400ce16ef84
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

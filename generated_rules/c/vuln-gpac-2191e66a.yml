@@ -1,0 +1,38 @@
+rules:
+- id: vuln-gpac-2191e66a
+  pattern: 'GF_LOG($LOG_LEVEL, $LOG_CATEGORY, ("[SVG Parsing] Cannot parse attribute
+    %s\n", $INFO_NAME ? $INFO_NAME : ""));
+
+    break;
+
+    '
+  pattern-not: 'GF_LOG($LOG_LEVEL, $LOG_CATEGORY, ("[SVG Parsing] Cannot parse attribute
+    \"%s\"\n", $INFO_NAME ? $INFO_NAME : ""));
+
+    return GF_OK;
+
+    '
+  languages:
+  - c
+  message: 'The SVG parser fails to properly handle attribute parsing errors by only
+    logging and breaking, without proper error handling.
+
+    This can lead to incomplete error recovery and potential security issues when
+    processing malformed SVG files.
+
+    Fix by returning an error code (GF_OK) after logging the error and adding proper
+    error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/2191e66aa7df750e8ef01781b1930bea87b713bb
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

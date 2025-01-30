@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openssl-43e6a58d
+  pattern: 'q_bits = BN_num_bits($DSAPARAM->q);
+
+    '
+  pattern-not: 'q_bits = BN_num_bits($DSAPARAM->q) + sizeof($DSAPARAM->q->d[0]) *
+    16;
+
+    '
+  languages:
+  - c
+  message: 'The code calculates the number of bits in the DSA parameter `q` without
+    considering additional padding bits. This can lead to incorrect cryptographic
+    operations and potential security vulnerabilities. The fix adds proper padding
+    by including the size of the internal representation of `q`. To fix this, ensure
+    the calculation includes the additional bits as shown in the patched version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/43e6a58d4991a451daf4891ff05a48735df871ac
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

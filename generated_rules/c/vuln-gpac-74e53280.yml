@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gpac-74e53280
+  pattern: "char $STR[1024];\n...\nwhile ($I < GF_ARRAY_LENGTH($STR)) {\n  ...\n}\n"
+  pattern-not: "char *$STR = gf_malloc(sizeof(char)*($SIZE+1));\nif (!$STR) return\
+    \ $ERROR;\n$MSIZE = $SIZE;\n$STR[$MSIZE] = 0;\nwhile ($I < $MSIZE) {\n  ...\n\
+    }\nif ($I == $MSIZE) {\n  gf_free($STR);\n  return $ERROR;\n}\ngf_free($STR);\n"
+  languages:
+  - c
+  message: 'Detected use of fixed-size buffer without proper bounds checking. This
+    can lead to buffer overflows when processing input larger than the allocated size.
+    The vulnerability was fixed by dynamically allocating memory based on input size
+    and adding proper bounds checking. Always use dynamic memory allocation with size
+    validation when handling variable-length input data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/74e53280dad7b29f85386c6a1286fb92643465da
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: 'A1: Injection'
+    technology:
+    - c

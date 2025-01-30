@@ -1,0 +1,24 @@
+rules:
+- id: vuln-qemu-de0b1bae
+  pattern: "for ($B = 0; $B < 64; $B += 16) {\n  ...\n}\n"
+  pattern-not: "for ($B = 0; $B < 64; $B += 4) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The loop increment in this code uses a step size of 16, which may lead
+    to incorrect processing of data in 4-byte increments. This can cause vulnerabilities
+    in pointer authentication (PAuth) logic, potentially leading to security issues
+    such as improper memory access or authentication bypass. The fix changes the step
+    size to 4 to ensure proper handling of 4-byte data chunks. Always ensure loop
+    increments match the data size being processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/de0b1bae6461f67243282555475f88b2384a1eb9
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

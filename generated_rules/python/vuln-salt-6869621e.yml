@@ -1,0 +1,20 @@
+rules:
+- id: vuln-salt-6869621e
+  pattern: 'import math
+
+    '
+  languages:
+  - python
+  message: Unnecessary import of 'math' module detected. This can lead to potential
+    security issues if the module contains vulnerable functions that are not actually
+    needed in the code.
+  severity: WARNING
+  metadata:
+    source-url: github.com/saltstack/salt/commit/6869621ed111408c43757f0cd2165d411e6ba592
+    category: security
+    cwe: CWE-1164
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/1164.html
+    technology:
+    - python

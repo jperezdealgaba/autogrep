@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-fc3d8e11
+  pattern: '$PR->cmd = $VAL & ~(PORT_CMD_LIST_ON | PORT_CMD_FIS_ON);
+
+    '
+  pattern-not: '$PR->cmd = ($PR->cmd & PORT_CMD_RO_MASK) | ($VAL & ~PORT_CMD_RO_MASK);
+
+    '
+  languages:
+  - c
+  message: 'The code directly modifies the command register without preserving read-only
+    fields, which can lead to unintended behavior or security vulnerabilities. This
+    issue was fixed by masking out read-only fields before applying new values. Always
+    preserve read-only fields when modifying registers to prevent unauthorized changes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/fc3d8e1138cd0c843d6fd75272633a31be6554ef
+    category: security
+    cwe:
+    - 'CWE-284: Improper Access Control'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

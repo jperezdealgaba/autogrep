@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-ee119d4a
+  pattern: 'outer_context->set_output_handle_shapes_and_types($INDEX, *$RESOURCE);
+
+    '
+  pattern-not: "std::vector<ShapeAndType> $COPIED_SHAPES_AND_TYPES;\nfor (auto& $SHAPE_AND_TYPE\
+    \ : *$RESOURCE) {\n  ShapeHandle $HANDLE;\n  TensorShapeProto $PROTO;\n  $NODE_CONTEXT->ShapeHandleToProto($SHAPE_AND_TYPE.shape,\
+    \ &$PROTO);\n  $TF_RETURN_IF_ERROR(\n      $OUTER_CONTEXT->MakeShapeFromShapeProto($PROTO,\
+    \ &$HANDLE));\n  $COPIED_SHAPES_AND_TYPES.push_back(\n      ShapeAndType($HANDLE,\
+    \ $SHAPE_AND_TYPE.dtype, $SHAPE_AND_TYPE.type));\n}\nouter_context->set_output_handle_shapes_and_types(\n\
+    \    $INDEX, $COPIED_SHAPES_AND_TYPES);\n"
+  languages:
+  - cpp
+  message: "Directly using `ShapeHandle`s from a different inference context can lead\
+    \ to use-after-free vulnerabilities. \nThe `ShapeHandle`s point to `Shape`s owned\
+    \ by a different context, which may be destroyed before they are used. \nTo fix\
+    \ this, copy the `ShapeAndType` objects to the current context.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/ee119d4a498979525046fba1c3dd3f13a039fbb1
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

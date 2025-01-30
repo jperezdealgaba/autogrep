@@ -1,0 +1,33 @@
+rules:
+- id: vuln-lightcms-52820f65
+  pattern: '$image = Image::make($data)
+
+    '
+  pattern-not: "$resource = @imagecreatefromstring($data);\nif ($resource === false)\
+    \ {\n    throw new NotReadableException(\"Unable to init from given binary data.\"\
+    );\n}\n$image = Image::make($resource);\n$image->mime = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE),\
+    \ $data);\n"
+  languages:
+  - php
+  message: 'The code directly processes binary data without proper validation, which
+    can lead to security vulnerabilities.
+
+    This is dangerous because it could allow processing of malicious files or corrupted
+    data, potentially leading to crashes or security exploits.
+
+    To fix this, validate the binary data using imagecreatefromstring and handle errors
+    appropriately before processing the image.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/eddy8/LightCMS/commit/52820f65a5e12fd63b0694a57063d9c47453b048
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.imagecreatefromstring.php
+    technology:
+    - php
