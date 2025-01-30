@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wireshark-f177008b
+  pattern: '$LINE = (guint8 *)tvb_memdup($WMEM_SCOPE, $TVB, $OFFSET, $LEN+1);
+
+    '
+  pattern-not: '$LINE = tvb_get_string_enc($WMEM_SCOPE, $TVB, $OFFSET, $LEN, $ENC);
+
+    '
+  languages:
+  - c
+  message: 'Detected potential memory leak in Wireshark dissector code. The use of
+    `tvb_memdup` with an explicit cast to `guint8 *` can lead to memory leaks if the
+    allocated memory is not properly freed. This vulnerability can cause resource
+    exhaustion and potential denial of service. Replace `tvb_memdup` with `tvb_get_string_enc`
+    to handle string extraction safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/f177008b04a530640de835ca878892e58b826d58
+    category: security
+    cwe:
+    - CWE-401
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

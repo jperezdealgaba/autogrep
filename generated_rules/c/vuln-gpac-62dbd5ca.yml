@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gpac-62dbd5ca
+  pattern: 'if (!$STSZ->sampleCount) ...
+
+    '
+  pattern-not: 'if (!$STSZ || !$STSZ->sampleCount) ...
+
+    '
+  languages:
+  - c
+  message: 'Null pointer dereference vulnerability detected. The code accesses `sampleCount`
+    without first checking if `stsz` is null. This can lead to a crash or undefined
+    behavior if `stsz` is null. Always check for null pointers before accessing their
+    members.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/62dbd5caad6b89b33535dfa19ef65419f0378303
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

@@ -1,0 +1,36 @@
+rules:
+- id: vuln-wireshark-66417b17
+  pattern: 'const int elsize = $VARSIZE ? (int)sizeof(struct data_blob) : $TYPE->size;
+
+    guint8 *data = (guint8*)wmem_alloc(wmem_packet_scope(), elsize * $NUM);
+
+    '
+  pattern-not: "const guint elsize = $VARSIZE ? (guint)sizeof(struct data_blob) :\
+    \ (guint)$TYPE->size;\nguint8 *data;\nif ((guint64)elsize * (guint64)$NUM > G_MAXUINT)\
+    \ {\n  THROW(ReportedBoundsError);\n}\ntvb_ensure_bytes_exist($TVB, $OFFSET, elsize\
+    \ * $NUM);\ndata = (guint8*)wmem_alloc(wmem_packet_scope(), elsize * $NUM);\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in memory allocation.
+
+    The code does not check for integer overflow before allocating memory, which can
+    lead to a buffer overflow.
+
+    To fix this, ensure that the multiplication of ''elsize'' and ''num'' does not
+    exceed G_MAXUINT before allocating memory.
+
+    Additionally, verify that the required data exists in the tvbuff before allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/66417b17b3570b163a16ca81f71ce5bcb10548d2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

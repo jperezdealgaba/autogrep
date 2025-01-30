@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tensorflow-f8378920
+  pattern: "if ($REGISTRATION.builtin_code == $KTFLITEBUILTINRESHAPE && $I == 1) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($REGISTRATION.builtin_code == $KTFLITEBUILTINRESHAPE && $I ==\
+    \ 1 &&\n    $TENSOR->dims->size != 1) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The code is vulnerable to incorrect handling of null buffers in the reshape
+    operator.
+
+    When the second input tensor (i == 1) is used for the shape and has a size of
+    1, a null buffer is incorrectly considered acceptable.
+
+    This can lead to incorrect tensor reshaping and potential data corruption.
+
+    To fix this, ensure that the null buffer is only accepted when the tensor dimensions
+    are not equal to 1.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/f8378920345f4f4604202d4ab15ef64b2aceaa16
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - cpp

@@ -1,0 +1,36 @@
+rules:
+- id: vuln-gpac-0fc71487
+  pattern: 'char $VAR[500];
+
+    ...
+
+    $VAR[...] = ...;
+
+    '
+  pattern-not: "char $VAR[1025];\n...\n$VAR[1024] = 0;\nif (len>1024) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to insufficient
+    buffer size.
+
+    The original code uses a fixed-size buffer of 500 bytes, which may not be sufficient
+    for all inputs, leading to buffer overflow.
+
+    This can be exploited to execute arbitrary code or cause a denial of service.
+
+    To fix this, increase the buffer size to 1025 bytes and add a length check to
+    ensure the input does not exceed the buffer size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/0fc714872ba4536a1190f93aa278b6e08f8c60df
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

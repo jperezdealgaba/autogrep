@@ -1,0 +1,23 @@
+rules:
+- id: vuln-radare2-27fe8031
+  pattern: "for (i = 0; i < $LIST.number_of_entries; i++) {\n  ...\n}\n"
+  pattern-not: "for (i = 0; i < $LIST.number_of_entries && $OFFSET < $OBJ->size; i++)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a loop that iterates through entries in a list without checking
+    the buffer size. This can lead to out-of-bounds memory access if the number of
+    entries exceeds the buffer size. Always ensure that the offset remains within
+    the buffer bounds by adding a check like `offset < obj->size`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/27fe8031782d3a06c3998eaa94354867864f9f1b
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

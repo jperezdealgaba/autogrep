@@ -1,0 +1,26 @@
+rules:
+- id: vuln-radare2-021ad4d5
+  pattern: "if ($VAR) {\n  ...\n  free($TOKENS);\n  free($LBUF);\n  return $FUNC($ACODE);\n\
+    }\n"
+  pattern-not: "if ($VAR) {\n  ...\n  goto fail;\n}\n"
+  languages:
+  - c
+  message: 'Detected direct resource cleanup and return statements without using a
+    common failure handler.
+
+    This pattern can lead to inconsistent resource management and potential memory
+    leaks.
+
+    Use a common failure handler (goto fail) to ensure consistent resource cleanup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/021ad4d59bb14fd6439cc324692a0d38359d1f4c
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

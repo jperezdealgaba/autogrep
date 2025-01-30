@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wireshark-a442a1c0
+  pattern: 'wmem_alloc($POOL, $SIZE * $MULTIPLIER)
+
+    '
+  pattern-not: 'wmem_alloc0($POOL, $SIZE * $MULTIPLIER)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of `wmem_alloc` without zero-initialization, which can lead
+    to information disclosure vulnerabilities. The function `wmem_alloc` allocates
+    memory but does not initialize it, potentially exposing sensitive data. Use `wmem_alloc0`
+    instead, which zero-initializes the allocated memory, ensuring no residual data
+    is exposed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/a442a1c0e815fd61416cf408bd74d85a042ccc6a
+    category: security
+    cwe:
+    - 'CWE-909: Missing Initialization of Resource'
+    owasp:
+    - 'A3: Sensitive Data Exposure'
+    technology:
+    - c

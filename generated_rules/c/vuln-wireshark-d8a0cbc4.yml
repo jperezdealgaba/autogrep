@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wireshark-d8a0cbc4
+  pattern: "for ($I = 1; $I <= $COUNT; $I++) {\n  ...\n  proto_item_append_text($ITEM,\
+    \ \" [%d]: (%s)\", $I, $VAL);\n  ...\n}\n"
+  pattern-not: "for ($I = 0; $I < $COUNT; $I++) {\n  ...\n  proto_item_append_text($ITEM,\
+    \ \" [%d]: (%s)\", $I+1, $VAL);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The loop starts at index 1 and uses ''i <= item_count'' as the condition,
+    which can lead to off-by-one errors and potential out-of-bounds access. This is
+    dangerous because it can cause memory corruption or crashes. To fix this, start
+    the loop at index 0 and use ''i < item_count'' as the condition, adjusting any
+    index usage inside the loop accordingly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/d8a0cbc4f2979e0b1cadbe79f0b8b4ecb92477be
+    category: security
+    cwe:
+    - 'CWE-193: Off-by-one Error'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/193.html
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-radare2-40c9f50e
+  pattern: "for ($J = 0; $J < $SECTION->size; $J += 8) {\n  ...\n}\n"
+  pattern-not: "for ($J = 0; $J + 7 < $SECTION->size; $J += 8) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This loop condition may lead to an out-of-bounds read due to insufficient
+    bounds checking.
+
+    The condition `j < section->size` does not account for the fact that 8 bytes are
+    read at each iteration,
+
+    which could result in reading past the end of the section buffer. The fix ensures
+    that there are
+
+    at least 8 bytes remaining before accessing the memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/40c9f50e127be80b9d816bce2ab2ee790831aefd
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

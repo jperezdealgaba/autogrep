@@ -1,0 +1,38 @@
+rules:
+- id: vuln-qemu-a968a380
+  pattern: 'V9fsFidState *$FIDP, $HEAD_FID;
+
+    $HEAD_FID.next = $S->fid_list;
+
+    ...
+
+    $FIDP = &$HEAD_FID;
+
+    '
+  pattern-not: 'V9fsFidState *$FIDP;
+
+    again:
+
+    ...
+
+    goto again;
+
+    '
+  languages:
+  - c
+  message: 'The code initializes a local variable `head_fid` and assigns it to a pointer
+    `fidp`, which can lead to use-after-free or other memory corruption issues when
+    `head_fid` goes out of scope. This is dangerous because it can cause undefined
+    behavior and potentially exploitable vulnerabilities. The fix removes the local
+    variable and uses a `goto` statement to handle the logic safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/a968a38005bf2568605cac7f86b9fba7fc089726
+    category: security
+    cwe:
+    - CWE-416
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

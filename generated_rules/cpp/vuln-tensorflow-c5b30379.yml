@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-c5b30379
+  pattern: 'const int $VAR = $EXPR.dimension($INDEX);
+
+    '
+  pattern-not: 'const Eigen::DenseIndex $VAR = $EXPR.dimension($INDEX);
+
+    '
+  languages:
+  - cpp
+  message: 'Using ''int'' instead of ''Eigen::DenseIndex'' for tensor dimension indexing
+    can lead to integer overflow and undefined behavior. Replace ''int'' with ''Eigen::DenseIndex''
+    to ensure safe handling of large tensor dimensions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c5b30379ba87cbe774b08ac50c1f6d36df4ebb7c
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://eigen.tuxfamily.org/dox/TensorDimensionIndexing.html
+    technology:
+    - cpp

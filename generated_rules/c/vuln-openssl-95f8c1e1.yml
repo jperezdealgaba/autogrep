@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openssl-95f8c1e1
+  pattern: 'ossl_cmp_sk_ASN1_UTF8STRING_push_str($VAR, $TEXT)
+
+    '
+  pattern-not: 'ossl_cmp_sk_ASN1_UTF8STRING_push_str($VAR, $TEXT, $LEN)
+
+    '
+  languages:
+  - c
+  message: 'Detected a call to `ossl_cmp_sk_ASN1_UTF8STRING_push_str` without specifying
+    the length parameter. This can lead to potential buffer overflows or incorrect
+    string handling. Always include the length parameter to ensure safe string operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/95f8c1e142df835d03b5b62521383a462fc5470d
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.openssl.org/
+    technology:
+    - c

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-gpac-613dbc57
+  pattern: "if ($VAR.decodingOffset <= INT32_MIN) {\n  ...\n}\n"
+  pattern-not: "if ($VAR.decodingOffset <= INT_MIN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The comparison uses INT32_MIN, which is incorrect for the context. This
+    can lead to incorrect boundary checks and potential vulnerabilities. Use INT_MIN
+    instead to ensure proper boundary checking across different platforms.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/613dbc5702b09063b101cfc3d6ad74b45ad87521
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

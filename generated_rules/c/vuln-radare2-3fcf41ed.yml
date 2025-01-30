@@ -1,0 +1,33 @@
+rules:
+- id: vuln-radare2-3fcf41ed
+  pattern: 'r_buf_read_at($BF, $FROM, $BUF, $TO - $FROM);
+
+    '
+  pattern-not: 'int $LEN = $TO - $FROM;
+
+    r_buf_read_at($BF, $FROM, $BUF, $LEN);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability arises from directly using arithmetic expressions in
+    function calls, which can lead to incorrect calculations and potential buffer
+    overflows. This is dangerous because it can cause memory corruption, leading to
+    crashes or arbitrary code execution. The fix involves calculating the length separately
+    and then using the calculated value in the function call.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/3fcf41ed96ffa25b38029449520c8d0a198745f3
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-131
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - c

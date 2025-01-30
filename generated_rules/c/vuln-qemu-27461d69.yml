@@ -1,0 +1,36 @@
+rules:
+- id: vuln-qemu-27461d69
+  pattern: "if (kvmppc_get_host_model(&$VAR)) {\n    _FDT(fdt_setprop_string($FDT,\
+    \ 0, \"host-model\", $VAR));\n    g_free($VAR);\n}\nif (kvmppc_get_host_serial(&$VAR))\
+    \ {\n    _FDT(fdt_setprop_string($FDT, 0, \"host-serial\", $VAR));\n    g_free($VAR);\n\
+    }\n"
+  pattern-not: "if ($SPAPR->host_model && !g_str_equal($SPAPR->host_model, \"none\"\
+    )) {\n    if (g_str_equal($SPAPR->host_model, \"passthrough\")) {\n        if\
+    \ (kvmppc_get_host_model(&$VAR)) {\n            _FDT(fdt_setprop_string($FDT,\
+    \ 0, \"host-model\", $VAR));\n            g_free($VAR);\n        }\n    } else\
+    \ {\n        _FDT(fdt_setprop_string($FDT, 0, \"host-model\", $SPAPR->host_model));\n\
+    \    }\n}\nif ($SPAPR->host_serial && !g_str_equal($SPAPR->host_serial, \"none\"\
+    )) {\n    if (g_str_equal($SPAPR->host_serial, \"passthrough\")) {\n        if\
+    \ (kvmppc_get_host_serial(&$VAR)) {\n            _FDT(fdt_setprop_string($FDT,\
+    \ 0, \"host-serial\", $VAR));\n            g_free($VAR);\n        }\n    } else\
+    \ {\n        _FDT(fdt_setprop_string($FDT, 0, \"host-serial\", $SPAPR->host_serial));\n\
+    \    }\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses `kvmppc_get_host_model` and `kvmppc_get_host_serial`
+    without checking if the host model or serial is set to "none" or "passthrough".
+    This can lead to unintended exposure of host information. Always validate the
+    host model and serial before setting them in the device tree.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/27461d69a0f108dea756419251acc3ea65198f1b
+    category: security
+    cwe:
+    - CWE-200
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - c

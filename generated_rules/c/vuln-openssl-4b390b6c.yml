@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openssl-4b390b6c
+  pattern: "if ($L && !BUF_MEM_grow_clean($S->init_buf, (int)$L)) {\n    SSLerr(SSL_F_TLS_GET_MESSAGE_HEADER,\
+    \ ERR_R_BUF_LIB);\n    ...\n}\n"
+  pattern-not: "if ($L && !BUF_MEM_grow_clean($S->init_buf, (int)$L + SSL3_HM_HEADER_LENGTH))\
+    \ {\n    SSLerr(SSL_F_TLS_GET_MESSAGE_HEADER, ERR_R_BUF_LIB);\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs due to insufficient buffer growth when handling
+    TLS/DTLS messages. The original code fails to account for the SSL3 header length,
+    which can lead to buffer overflows or memory corruption. This could be exploited
+    by an attacker to cause a denial of service or execute arbitrary code. The fix
+    ensures the buffer is grown to accommodate both the message and the SSL3 header
+    length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/4b390b6c3f8df925dc92a3dd6b022baa9a2f4650
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp: 'A2: Cryptographic Failures'
+    references:
+    - https://www.openssl.org/
+    technology:
+    - c

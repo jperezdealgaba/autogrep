@@ -1,0 +1,34 @@
+rules:
+- id: vuln-wireshark-d443be44
+  pattern: "static int $FUNC(tvbuff_t *tvb, int $OFFSET, proto_tree *$TREE, proto_tree\
+    \ *$PAD_TREE, ...)\n{\n    ...\n    $VAR = vType_get_type($VTYPE);\n    DISSECTOR_ASSERT($VAR\
+    \ != NULL);\n    ...\n}\n"
+  pattern-not: "static int $FUNC(tvbuff_t *tvb, packet_info *$PININFO, int $OFFSET,\
+    \ proto_tree *$TREE, proto_tree *$PAD_TREE, ...)\n{\n    ...\n    $VAR = vType_get_type($VTYPE);\n\
+    \    if ($VAR == NULL) {\n        expert_add_info($PININFO, $TI_TYPE, &ei_mswsp_invalid_variant_type);\n\
+    \        THROW_MESSAGE(ReportedBoundsError, \"Unknown type\");\n        return\
+    \ $OFFSET;\n    }\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Missing validation of variant type in dissector function. This could lead
+    to crashes
+
+    when processing malformed packets with invalid variant types. The fix adds proper
+
+    error handling using expert_add_info() and THROW_MESSAGE() when an invalid type
+    is
+
+    encountered. Always validate variant types and handle invalid cases gracefully.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/wireshark/wireshark/commit/d443be449a52f95df5754adc39e1f3472fec2f03
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - wireshark
+    - packet-dissector

@@ -1,0 +1,33 @@
+rules:
+- id: vuln-wireshark-e280c9b6
+  pattern: "int $CHARS_PROCESSED = 0;\nint $DATA_SIZE = tvb_reported_length_remaining($TVB,\
+    \ $DNS_DATA_OFFSET);\n...\n$CHARS_PROCESSED++;\n...\nif ($CHARS_PROCESSED >= $DATA_SIZE)\
+    \ {\n  ...\n}\n"
+  pattern-not: "int $POINTERS_COUNT = 0;\n...\n$POINTERS_COUNT++;\n...\nif ($INDIR_OFFSET\
+    \ == $OFFSET + 2 || $POINTERS_COUNT > $MAXDNAME/4) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential DNS parsing loop vulnerability. The original code
+    checks for
+
+    character processing count against data size, which can lead to infinite loops
+
+    if the DNS message contains circular pointers. This can cause denial of service
+
+    or excessive resource consumption. The fix introduces a pointer count mechanism
+
+    to detect both direct and indirect loops. Replace the character count check with
+
+    a pointer count check to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/e280c9b637327a65d132bfe72d917b87e6844eb5
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-symfony-7bd4a92f
+  pattern: "$this->userProvider->expects($this->once())\n  ->method('loadUserByUsername')->with($USERNAME)\n\
+    \  ->willReturn($USER);\n"
+  pattern-not: "$this->userProvider->expects($this->exactly(2))\n  ->method('loadUserByUsername')\n\
+    \  ->withConsecutive([$USERNAME], [$CURRENT_USERNAME])\n  ->will($this->onConsecutiveCalls($USER,\
+    \ $this->throwException(new UsernameNotFoundException())));\n"
+  languages:
+  - php
+  message: 'Detected a potential user enumeration vulnerability in user switching
+    logic.
+
+    The code only calls `loadUserByUsername` once, which can allow attackers to determine
+    valid usernames via timing attacks.
+
+    To fix, ensure that both successful and unsuccessful user loads are performed
+    to prevent timing-based enumeration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/7bd4a92fc9cc15d9a9fbb9eb1041e01b977f8332
+    category: security
+    cwe:
+    - CWE-203
+    owasp:
+    - A2:2017 - Broken Authentication
+    references:
+    - https://symfony.com/doc/current/security/user_provider.html
+    technology:
+    - php

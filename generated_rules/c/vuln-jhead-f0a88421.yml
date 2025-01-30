@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jhead-f0a88421
+  pattern: "void process_EXIF (unsigned char * $EXIF, int $LEN) {\n    ...\n    return;\n\
+    \    ...\n}\n"
+  pattern-not: "int process_EXIF (unsigned char * $EXIF, int $LEN) {\n    ...\n  \
+    \  return $RET;\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The function `process_EXIF` previously returned `void`, which could lead
+    to undefined behavior when handling malformed EXIF sections. This could potentially
+    cause memory leaks or other undefined behavior. The function should return an
+    integer to indicate success or failure, and the caller should handle the return
+    value appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/f0a884210cc46830b176f71fd61569adc8f230a7
+    category: security
+    cwe:
+    - CWE-252
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

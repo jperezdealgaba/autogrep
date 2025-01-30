@@ -1,0 +1,28 @@
+rules:
+- id: vuln-radare2-d45faff8
+  pattern: '$S = ($ADDR - $A) >> 4;
+
+    '
+  pattern-not: '$S = ($ADDR - $A) >> $P->seggrn;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where a hardcoded shift value (4) is
+    used instead of a configurable value (p->seggrn). This can lead to inconsistent
+    or insecure behavior in memory segmentation calculations. Always use the configurable
+    shift value (p->seggrn) to ensure proper memory handling and avoid potential security
+    risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/d45faff871c285a1daed7d051af0bc73f017fa69
+    category: security
+    cwe:
+    - CWE-682
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/682.html
+    technology:
+    - c

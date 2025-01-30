@@ -1,0 +1,30 @@
+rules:
+- id: vuln-symfony-d320d276
+  pattern: "if ($THIS->fragmentPath !== rawurldecode($REQUEST->getPathInfo())) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($REQUEST->attributes->has('_controller') || $THIS->fragmentPath\
+    \ !== rawurldecode($REQUEST->getPathInfo())) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'A security vulnerability exists where fragment URLs are not properly validated
+    when a controller is already defined.
+
+    This could allow attackers to bypass security checks by manipulating fragment
+    URLs.
+
+    To fix this, ensure that fragment validation is only performed when no controller
+    is defined.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/d320d27699abcea12479cf608908fa91bcc133d4
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://symfony.com/doc/current/components/http_kernel.html
+    technology:
+    - php

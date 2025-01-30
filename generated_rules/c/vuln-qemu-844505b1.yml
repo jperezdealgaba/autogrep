@@ -1,0 +1,21 @@
+rules:
+- id: vuln-qemu-844505b1
+  pattern: "if ($DRIVE_KIND == IDE_CD) {\n    goto abort_cmd;\n}\n"
+  pattern-not: "if (!ide_cmd_permitted($S, $VAL)) {\n    goto abort_cmd;\n}\n"
+  languages:
+  - c
+  message: "The code contains a direct check for drive kind (IDE_CD) which can lead\
+    \ to incorrect command handling. \nThis vulnerability can cause incorrect command\
+    \ execution or denial of service. \nUse the `ide_cmd_permitted` function to properly\
+    \ validate commands based on the drive kind.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/844505b12e722d9ba7060480e766351fc6313501
+    category: security
+    cwe:
+    - CWE-284
+    owasp: 'A2: Broken Authentication'
+    references:
+    - ACS-2 T13/2015-D Table B.2 Command codes
+    technology:
+    - c

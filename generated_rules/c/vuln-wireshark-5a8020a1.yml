@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wireshark-5a8020a1
+  pattern: 'static const char *$VAR;
+
+    ...
+
+    $VAR = $EXPR;
+
+    '
+  pattern-not: "static const char *$VAR = NULL;\n...\nif ($VAR) {\n  wmem_free(wmem_file_scope(),\
+    \ (void*)$VAR);\n}\n$VAR = (const char *)wmem_strdup(wmem_file_scope(), $EXPR);\n"
+  languages:
+  - c
+  message: "Detected uninitialized static pointer and unsafe assignment. \nThis can\
+    \ lead to memory leaks or undefined behavior if the pointer is reused without\
+    \ proper initialization or cleanup. \nInitialize the pointer to NULL and ensure\
+    \ proper memory management using wmem_strdup and wmem_free.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/5a8020a1b6bb73fcb8bb7eb7d53177bc8a9fc703
+    category: security
+    cwe:
+    - CWE-908
+    - CWE-665
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

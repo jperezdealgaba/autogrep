@@ -1,0 +1,30 @@
+rules:
+- id: vuln-symfony-d2f6322a
+  pattern: "class $CLASS {\n  private $locks;\n  public function __construct(string\
+    \ $root) {\n    ...\n  }\n}\n"
+  pattern-not: "class $CLASS {\n  private $locks = [];\n  private $options;\n  public\
+    \ function __construct(string $root, array $options = []) {\n    $this->options\
+    \ = array_merge([\n        'private_headers' => ['Set-Cookie'],\n    ], $options);\n\
+    \    ...\n  }\n}\n"
+  languages:
+  - php
+  message: 'The constructor does not initialize the `$locks` array and does not handle
+    private headers properly, which can lead to security vulnerabilities. The `$locks`
+    array should be initialized to prevent potential null reference issues, and private
+    headers like ''Set-Cookie'' should be excluded from caching to avoid exposing
+    sensitive information. To fix this, initialize `$locks` as an empty array and
+    add the `$options` parameter to handle private headers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/d2f6322af9444ac5cd1ef3ac6f280dbef7f9d1fb
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

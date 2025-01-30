@@ -1,0 +1,27 @@
+rules:
+- id: vuln-unbound-f6753a0f
+  pattern: 'dns_cache_store($ENV, $QINF, $REP, $A, $B, $C, $D, $FLAGS)
+
+    '
+  pattern-not: 'dns_cache_store($ENV, $QINF, $REP, $A, $B, $C, $D, $FLAGS, $QSTARTTIME)
+
+    '
+  languages:
+  - c
+  message: 'The function `dns_cache_store` is being called without the `qstarttime`
+    parameter, which is used to determine if RRsets of type NS have expired. This
+    can lead to using expired delegation points, potentially causing DNS resolution
+    issues. Always include the `qstarttime` parameter when calling `dns_cache_store`
+    to ensure proper handling of expired RRsets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NLnetLabs/unbound/commit/f6753a0f1018133df552347a199e0362fc1dac68
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-ff589551
+  pattern: "if ($S->ti_size > 0) {\n  ...\n  if (($S->rregs[$REG] & $MASK) == 0) {\n\
+    \    ...\n    $S->rregs[$FIFO] = 0;\n  } else {\n    $S->rregs[$FIFO] = $S->ti_buf[$S->ti_rptr++];\n\
+    \  }\n}\n"
+  pattern-not: "if (($S->rregs[$REG] & $MASK) == 0) {\n  ...\n  $S->rregs[$FIFO] =\
+    \ 0;\n} else if ($S->ti_rptr < $S->ti_wptr) {\n  $S->rregs[$FIFO] = $S->ti_buf[$S->ti_rptr++];\n\
+    }\n"
+  languages:
+  - c
+  message: 'The original code incorrectly checks `ti_size` before handling the PIO
+    data, which can lead to incorrect buffer handling. This could result in data corruption
+    or unexpected behavior. The fix ensures that the PIO data is handled correctly
+    by checking the `rregs` status first and then verifying the buffer pointers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/ff589551c8e8e9e95e211b9d8daafb4ed39f1aec
+    category: security
+    cwe:
+    - CWE-119
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

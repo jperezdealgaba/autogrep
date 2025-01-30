@@ -1,0 +1,36 @@
+rules:
+- id: vuln-wireshark-fe22586b
+  pattern: '$WTH->phdr.presence_flags = 0;
+
+    $WTH->phdr.caplen = $PACKET_SIZE;
+
+    $WTH->phdr.len = $PACKET_SIZE;
+
+    $WTH->phdr.ts.secs = 0;
+
+    $WTH->phdr.ts.nsecs = 0;
+
+    '
+  pattern-not: 'ber_set_pkthdr($WTH->phdr, $PACKET_SIZE);
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment to packet header fields without using the dedicated
+    function can lead to inconsistent state and potential security vulnerabilities.
+    Use the `ber_set_pkthdr` function to ensure proper initialization of the packet
+    header.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/fe22586b7904e2de46bc6960480e9e6218198fd7
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - c

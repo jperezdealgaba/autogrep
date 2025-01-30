@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tensorflow-aa0b852a
+  pattern: "if ((new_shape.size() == shape.size() + 1) && new_shape.back() == 1) {\n\
+    \  if (std::equal(shape.begin(), shape.end(), new_shape.begin()) &&\n      quant_dim\
+    \ == -1) {\n    quant_dim = shape.size() + quant_dim;\n  } else {\n    ...\n \
+    \ }\n}\n"
+  pattern-not: "if ((new_shape.size() == shape.size() + 1) && new_shape.front() ==\
+    \ 1) {\n  if (!(std::equal(shape.begin(), shape.end(), new_shape.begin() + 1)\
+    \ &&\n        quant_dim == new_shape.size() - 1)) {\n    ...\n  }\n}\n"
+  languages:
+  - cpp
+  message: "Detected incorrect handling of shape and quantization dimension in reshape\
+    \ operations. \nThe original code incorrectly shifts the quantization dimension\
+    \ when the new shape has an extra dimension at the end, \nwhich can lead to incorrect\
+    \ quantization and potential security vulnerabilities. \nThe fix ensures that\
+    \ the quantization dimension is correctly handled when the new shape has an extra\
+    \ dimension at the beginning.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/tensorflow/tensorflow/commit/aa0b852a4588cea4d36b74feb05d93055540b450
+    category: security
+    cwe:
+    - CWE-682
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

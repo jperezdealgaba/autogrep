@@ -1,0 +1,21 @@
+rules:
+- id: vuln-qemu-3592fe0c
+  pattern: "if ($S->divider == 0) {\n  ...\n}\n"
+  pattern-not: "if ($S->divider == 0 || $S->divider > $S->baudbase) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks only if the divider is zero, but does not validate if
+    the divider exceeds the baudbase. This can lead to invalid baud rate settings,
+    potentially causing undefined behavior or security vulnerabilities. To fix this,
+    ensure the divider is within the valid range by adding a check for `s->divider
+    > s->baudbase`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/3592fe0c919cf27a81d8e9f9b4f269553418bb01
+    category: security
+    cwe:
+    - CWE-682
+    technology:
+    - c

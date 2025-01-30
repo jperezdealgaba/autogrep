@@ -1,0 +1,29 @@
+rules:
+- id: vuln-tensorflow-eb921122
+  pattern: 'return Gather<$TYPE, $INDEX_TYPE>(*$PARAMS, $INPUT, $POSITIONS, $OUTPUT);
+
+    '
+  pattern-not: 'return Gather<$TYPE, $INDEX_TYPE>($CONTEXT, *$PARAMS, $INPUT, $POSITIONS,
+    $OUTPUT);
+
+    '
+  languages:
+  - cpp
+  message: 'The Gather function is missing a context parameter, which is essential
+    for error handling and validation. This can lead to unhandled errors and potential
+    security vulnerabilities, such as out-of-bounds access or invalid memory operations.
+    Always include the context parameter to ensure proper error checking and validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/eb921122119a6b6e470ee98b89e65d721663179d
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/eb921122119a6b6e470ee98b89e65d721663179d
+    technology:
+    - cpp

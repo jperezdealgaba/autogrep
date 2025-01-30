@@ -1,0 +1,20 @@
+rules:
+- id: vuln-radare2-14189710
+  pattern: "if ($TREE->root == NULL) {\n  ...\n}\n"
+  pattern-not: "if (!$TREE->root) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses explicit comparison with NULL (`== NULL`) instead of the
+    more idiomatic and safer `!` operator. While functionally equivalent, using `!`
+    is more concise and reduces the risk of errors in complex conditions. Replace
+    `if ($TREE->root == NULL)` with `if (!$TREE->root)`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/radare/radare2/commit/14189710859c27981adb4c2c2aed2863c1859ec5
+    category: best-practice
+    cwe:
+    - 'CWE-480: Use of Incorrect Operator'
+    technology:
+    - c

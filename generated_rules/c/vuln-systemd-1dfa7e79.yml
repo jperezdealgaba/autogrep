@@ -1,0 +1,37 @@
+rules:
+- id: vuln-systemd-1dfa7e79
+  pattern: 'void *$P;
+
+    ...
+
+    free($P);
+
+    '
+  pattern-not: '_cleanup_free_ void *$P = NULL;
+
+    ...
+
+    free($P);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe memory management where a pointer is not automatically
+    freed using `_cleanup_free_`.
+
+    This can lead to memory leaks or use-after-free vulnerabilities if the pointer
+    is not properly freed.
+
+    Use `_cleanup_free_` to ensure automatic cleanup of allocated memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/1dfa7e79a60de680086b1d93fcc3629b463f58bd
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-401
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-gpac-c4a5109d
+  pattern: "if (saiz && saio) {\n  ...\n}\n"
+  pattern-not: "if (saiz && saio && senc) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for the presence of `saiz` and `saio` but fails to check
+    for `senc`, which could lead to undefined behavior or security vulnerabilities.
+    Always ensure all necessary conditions are checked before proceeding with operations
+    that depend on these variables. Add a check for `senc` to prevent potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/c4a5109dad73abe25ad12d8d529a728ae98d78ca
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

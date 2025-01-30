@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tensorflow-14fea662
+  pattern: "void $CLASS::$FUNC(const $PROTO& $VAR) {\n  ...\n  $SHAPE($VAR.$FIELD());\n\
+    \  ...\n}\n"
+  pattern-not: "Status $CLASS::$FUNC(const $PROTO& $VAR) {\n  ...\n  Status $STATUS\
+    \ = $SHAPE::BuildPartialTensorShape($VAR.$FIELD(), &$SHAPE);\n  if (!$STATUS.ok())\
+    \ {\n    return $STATUS;\n  }\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "The function `FromProto` directly constructs a `PartialTensorShape` without\
+    \ error handling, which can lead to resource handle decoding failures and potential\
+    \ denial of service. \nThe vulnerability occurs when parsing resource handles\
+    \ from user-controlled input without proper validation. \nTo fix this, ensure\
+    \ that resource handle parsing includes proper error handling and status checks,\
+    \ as shown in the patched version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/14fea662350e7c26eb5fe1be2ac31704e5682ee6
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/14fea662350e7c26eb5fe1be2ac31704e5682ee6
+    technology:
+    - cpp

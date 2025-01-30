@@ -1,0 +1,34 @@
+rules:
+- id: vuln-radare2-59a9dfb6
+  pattern: 'RRegItem *$R;
+
+    ...
+
+    r_reg_set_value($REG, $R, $EXPR);
+
+    '
+  pattern-not: 'RRegItem *$R = NULL;
+
+    ...
+
+    r_reg_set_value($REG, $R, $EXPR);
+
+    '
+  languages:
+  - c
+  message: 'Detected uninitialized RRegItem pointer usage in r_reg_set_value. This
+    can lead to undefined behavior or crashes if the pointer is not properly initialized.
+    Always initialize pointers to NULL or a valid address before using them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/59a9dfb60acf8b5c0312061cffd9693fc9526053
+    category: security
+    cwe:
+    - CWE-457
+    owasp: A9:2017-Insufficient Attack Protection
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    technology:
+    - c

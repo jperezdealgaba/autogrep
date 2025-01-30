@@ -1,0 +1,26 @@
+rules:
+- id: vuln-radare2-a49bb7cf
+  pattern: '$VAR = r_str_trim($EXPR);
+
+    '
+  pattern-not: 'r_str_trim($EXPR);
+
+    $VAR = $EXPR;
+
+    '
+  languages:
+  - c
+  message: "The use of `r_str_trim` in an assignment can lead to unexpected behavior\
+    \ or vulnerabilities. \nThe function `r_str_trim` modifies the string in place,\
+    \ and assigning its return value to a variable \nis redundant and potentially\
+    \ dangerous. Instead, modify the string directly with `r_str_trim` \nand then\
+    \ use the modified string. This ensures clarity and prevents potential issues\
+    \ \nwith string manipulation.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/radare/radare2/commit/a49bb7cf6698ed4fded0f36b12e019e61df1d2f8
+    category: security
+    cwe:
+    - CWE-664
+    technology:
+    - c

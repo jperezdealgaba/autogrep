@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gpac-e7f96c2d
+  pattern: "if ($PROBE_SIZE <= 10000) {\n  gf_filter_pid_drop_packet($CTX->ipid);\n\
+    \  return GF_OK;\n}\nGF_LOG(GF_LOG_WARNING, GF_LOG_MEDIA, (\"[PCMReframe] Cannot\
+    \ find wave data chink afetr %d bytes, aborting\\n\", $PROBE_SIZE));\n"
+  pattern-not: "if (!$HDR_FOUND) {\n  if ($PROBE_SIZE <= 10000) {\n    gf_filter_pid_drop_packet($CTX->ipid);\n\
+    \    return GF_OK;\n  }\n  GF_LOG(GF_LOG_WARNING, GF_LOG_MEDIA, (\"[PCMReframe]\
+    \ Cannot find wave data chunk after %d bytes, aborting\\n\", $PROBE_SIZE));\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code lacks a proper check for the header before processing the data,
+    which could lead to incorrect handling of PCM data. This vulnerability could cause
+    the filter to drop valid packets prematurely or fail to detect corrupted data.
+    The fix introduces a header check (`hdr_found`) to ensure proper validation before
+    processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/e7f96c2d3774e4ea25f952bcdf55af1dd6e919f4
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A06:2021 - Vulnerable and Outdated Components
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

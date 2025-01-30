@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jhead-a50953a2
+  pattern: "if ($OFFSETVAL + $BYTECOUNT > $EXIFLENGTH || $OFFSETVAL < 0 || $OFFSETVAL\
+    \ > 65536) {\n  ...\n}\n"
+  pattern-not: "if ($OFFSETVAL + $BYTECOUNT > $EXIFLENGTH || $OFFSETVAL > 65536) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'The code contains a potentially unsafe integer overflow check. The comparison
+    `OffsetVal < 0` is redundant when `OffsetVal` is declared as an unsigned integer,
+    and it can lead to incorrect behavior. This vulnerability could allow for out-of-bounds
+    memory access if the check is not properly enforced. To fix this, ensure that
+    `OffsetVal` is declared as an unsigned integer and remove the redundant negative
+    check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/a50953a266583981b51a181c2fce73dad2ac5d7d
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

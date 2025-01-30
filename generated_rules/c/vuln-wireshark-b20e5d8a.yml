@@ -1,0 +1,38 @@
+rules:
+- id: vuln-wireshark-b20e5d8a
+  pattern: "$OID_TVB_LOCAL = tvb_new_subset_remaining($GSS_TVB, $START_OFFSET);\n\
+    if ($IS_VERIFIER)\n    $HANDLE = $OIDVALUE->wrap_handle;\nelse\n    $HANDLE =\
+    \ $OIDVALUE->handle;\n$LEN = call_dissector_with_data($HANDLE, $OID_TVB_LOCAL,\
+    \ $PINFO, $SUBTREE, $ENCRYPT_INFO);\nif ($LEN == 0)\n    $RETURN_OFFSET = tvb_captured_length($GSS_TVB);\n\
+    else\n    $RETURN_OFFSET = $START_OFFSET + $LEN;\ngoto $DONE;\n"
+  pattern-not: "if ($IS_VERIFIER) {\n    $HANDLE = $OIDVALUE->wrap_handle;\n    if\
+    \ ($HANDLE != NULL) {\n        $OID_TVB_LOCAL = tvb_new_subset_remaining($GSS_TVB,\
+    \ $START_OFFSET);\n        $LEN = call_dissector_with_data($HANDLE, $OID_TVB_LOCAL,\
+    \ $PINFO, $SUBTREE, $ENCRYPT_INFO);\n        if ($LEN == 0)\n            $RETURN_OFFSET\
+    \ = tvb_captured_length($GSS_TVB);\n        else\n            $RETURN_OFFSET =\
+    \ $START_OFFSET + $LEN;\n    } else {\n        proto_tree_add_item($SUBTREE, $HF_GSSAPI_AUTH_VERIFIER,\
+    \ $GSS_TVB, $OFFSET, -1, $ENC_NA);\n        $RETURN_OFFSET = tvb_captured_length($GSS_TVB);\n\
+    \    }\n} else {\n    $HANDLE = $OIDVALUE->handle;\n    if ($HANDLE != NULL) {\n\
+    \        $OID_TVB_LOCAL = tvb_new_subset_remaining($GSS_TVB, $START_OFFSET);\n\
+    \        $LEN = call_dissector_with_data($HANDLE, $OID_TVB_LOCAL, $PINFO, $SUBTREE,\
+    \ $ENCRYPT_INFO);\n        if ($LEN == 0)\n            $RETURN_OFFSET = tvb_captured_length($GSS_TVB);\n\
+    \        else\n            $RETURN_OFFSET = $START_OFFSET + $LEN;\n    } else\
+    \ {\n        proto_tree_add_item($SUBTREE, $HF_GSSAPI_AUTH_CREDENTIALS, $GSS_TVB,\
+    \ $OFFSET, -1, $ENC_NA);\n        $RETURN_OFFSET = tvb_captured_length($GSS_TVB);\n\
+    \    }\n}\ngoto $DONE;\n"
+  languages:
+  - c
+  message: 'The code lacks a NULL check before using the `handle` or `wrap_handle`
+    pointer, which could lead to a NULL pointer dereference. This vulnerability can
+    cause crashes or undefined behavior when the handle is NULL. Always check for
+    NULL before using pointers, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/b20e5d8aae2580e29c83ddaf0b6b2e640603e4aa
+    category: security
+    cwe:
+    - CWE-476
+    technology:
+    - c

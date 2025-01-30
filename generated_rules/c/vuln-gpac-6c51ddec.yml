@@ -1,0 +1,23 @@
+rules:
+- id: vuln-gpac-6c51ddec
+  pattern: "if ($NOW - $CTX->last_rcv_time < $CTX->timeout * 1000) {\n  ...\n}\n"
+  pattern-not: "if ($NOW - $CTX->last_rcv_time < $CTX->timeout) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves incorrect timeout calculation due to improper
+    unit conversion. The original code multiplies the timeout by 1000, which can lead
+    to incorrect behavior in timeout handling. This could result in premature or delayed
+    timeout detection, affecting the reliability of network operations. The fix removes
+    the multiplication by 1000, ensuring proper timeout calculation. Always verify
+    the units of time-related variables and ensure consistency in calculations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/6c51ddec7a1d8b9881e633188c88f73aae36a3ee
+    category: security
+    cwe:
+    - CWE-682
+    owasp: 'A9: Security Misconfiguration'
+    technology:
+    - c

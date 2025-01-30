@@ -1,0 +1,27 @@
+rules:
+- id: vuln-systemd-fc3c1c6e
+  pattern: 'strappend($PATH, "/X11/display")
+
+    '
+  pattern-not: 'strappend($PATH, "/X11-display")
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe path concatenation using "/X11/display".
+    This can lead to directory traversal vulnerabilities if the input is not properly
+    sanitized. Use "/X11-display" instead to avoid creating nested directories that
+    could be exploited.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/fc3c1c6e091ea16ad5600b145201ec535bbb5d7c
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-opennms-f2caf7d0
+  pattern: "private java.nio.file.Path ensureFileIsAllowed(String fileName) {\n  \
+    \  ...\n    return $PATH;\n}\n"
+  pattern-not: "private java.nio.file.Path ensureFileIsAllowed(String fileName, SecurityContext\
+    \ securityContext) {\n    ...\n    if (fileNormalized.equals(USERS_XML) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN))\
+    \ {\n        throw new ForbiddenException(\"ADMIN role is required for accessing\
+    \ users.xml file contents.\");\n    }\n    ...\n    return $PATH;\n}\n"
+  languages:
+  - java
+  message: Missing security context check when accessing sensitive files. This could
+    allow unauthorized access to critical system files like users.xml. Add a security
+    context parameter and enforce ADMIN role checks for sensitive files.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenNMS/opennms/commit/f2caf7d0b9db58b59e98506490aaca37fbf243b6
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - java

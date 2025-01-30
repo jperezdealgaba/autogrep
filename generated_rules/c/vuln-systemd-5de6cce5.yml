@@ -1,0 +1,32 @@
+rules:
+- id: vuln-systemd-5de6cce5
+  pattern: '$FUNC = open($PATH, $FLAGS1|$FLAGS2|$FLAGS3|$FLAGS4|$FLAGS5|$FLAGS6);
+
+    '
+  pattern-not: '$FUNC = open($PATH, $FLAGS1|$FLAGS2|$FLAGS3|$FLAGS4|$FLAGS5);
+
+    '
+  languages:
+  - c
+  message: 'The use of O_NONBLOCK with O_DIRECTORY in open() can lead to race conditions
+    and security vulnerabilities.
+
+    This flag combination can cause the function to fail unexpectedly, especially
+    in directory operations.
+
+    Remove O_NONBLOCK from the flags when opening directories to ensure consistent
+    behavior and avoid potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/5de6cce58b3e8b79239b6e83653459d91af6e57c
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://man7.org/linux/man-pages/man2/open.2.html
+    technology:
+    - c

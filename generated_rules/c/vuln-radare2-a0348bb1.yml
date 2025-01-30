@@ -1,0 +1,32 @@
+rules:
+- id: vuln-radare2-a0348bb1
+  pattern: 'r_hex_bin2str($BUF, R_MIN($ADDRBYTES * $OPLEN, (sizeof($BUF_HEX) - 1)
+    / 2), $BUF_HEX);
+
+    '
+  pattern-not: 'int $LEN = R_MIN($ADDRBYTES * $OPLEN, (sizeof($BUF_HEX) - 1) / 2);
+
+    r_hex_bin2str($BUF, $LEN, $BUF_HEX);
+
+    '
+  languages:
+  - c
+  message: 'The function `r_hex_bin2str` is being called with an incorrect length
+    parameter, which could lead to buffer overflows or incorrect data processing.
+    The length should be calculated separately and explicitly passed to the function
+    to ensure correctness. This vulnerability can cause memory corruption or unexpected
+    behavior in the application.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/a0348bb1b512ef27301dd7cdfb327ef5e14813fc
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

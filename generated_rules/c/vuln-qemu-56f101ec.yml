@@ -1,0 +1,35 @@
+rules:
+- id: vuln-qemu-56f101ec
+  pattern: "err = v9fs_co_name_to_path(pdu, &dpath, wnames[name_idx].data, &path);\n\
+    if (err < 0) {\n    goto out;\n}\nerr = v9fs_co_lstat(pdu, &path, &stbuf);\nif\
+    \ (err < 0) {\n    goto out;\n}\nstat_to_qid(&stbuf, &qids[name_idx]);\nv9fs_path_copy(&dpath,\
+    \ &path);\n"
+  pattern-not: "if (not_same_qid(&pdu->s->root_qid, &qid) ||\n    strcmp(\"..\", wnames[name_idx].data))\
+    \ {\n    err = v9fs_co_name_to_path(pdu, &dpath, wnames[name_idx].data,\n    \
+    \                         &path);\n    if (err < 0) {\n        goto out;\n   \
+    \ }\n    err = v9fs_co_lstat(pdu, &path, &stbuf);\n    if (err < 0) {\n      \
+    \  goto out;\n    }\n    stat_to_qid(&stbuf, &qid);\n    v9fs_path_copy(&dpath,\
+    \ &path);\n    memcpy(&qids[name_idx], &qid, sizeof(qid));\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability arises from directly copying QID (Qualified Identifier)
+    without verifying if it matches the root QID or if the path is "..". This could
+    lead to incorrect directory traversal or access to unintended files. The fix introduces
+    a check using `not_same_qid` and `strcmp` to ensure proper validation before proceeding
+    with operations. This prevents potential security issues related to unauthorized
+    access or directory traversal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/56f101ecce0eafd09e2daf1c4eeb1377d6959261
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-285
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/285.html
+    technology:
+    - c

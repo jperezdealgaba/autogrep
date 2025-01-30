@@ -1,0 +1,42 @@
+rules:
+- id: vuln-wireshark-19ed0575
+  pattern: "static void add_interface_name(wtap_block_t *int_data, int pkt_encap,\
+    \ guint32 channel) {\n  switch (pkt_encap) {\n  case WTAP_ENCAP_ETHERNET:\n  \
+    \    wtap_block_add_string_option_format(*int_data, OPT_IDB_NAME, \"ETH-%d\",\
+    \ channel);\n      break;\n  case WTAP_ENCAP_IEEE_802_11:\n      wtap_block_add_string_option_format(*int_data,\
+    \ OPT_IDB_NAME, \"WLAN-%d\", channel);\n      break;\n  case WTAP_ENCAP_FLEXRAY:\n\
+    \      wtap_block_add_string_option_format(*int_data, OPT_IDB_NAME, \"FR-%d\"\
+    , channel);\n      break;\n  case WTAP_ENCAP_LIN:\n      wtap_block_add_string_option_format(*int_data,\
+    \ OPT_IDB_NAME, \"LIN-%d\", channel);\n      break;\n  case WTAP_ENCAP_SOCKETCAN:\n\
+    \      wtap_block_add_string_option_format(*int_data, OPT_IDB_NAME, \"CAN-%d\"\
+    , channel);\n      break;\n  default:\n      wtap_block_add_string_option_format(*int_data,\
+    \ OPT_IDB_NAME, \"0x%04x-%d\", pkt_encap, channel);\n  }\n}\n"
+  pattern-not: "static void add_interface_name(wtap_block_t *int_data, int pkt_encap,\
+    \ guint32 channel, gchar *name) {\n  if (name != NULL) {\n      wtap_block_add_string_option_format(*int_data,\
+    \ OPT_IDB_NAME, name, channel);\n  } else {\n      switch (pkt_encap) {\n    \
+    \  case WTAP_ENCAP_ETHERNET:\n          wtap_block_add_string_option_format(*int_data,\
+    \ OPT_IDB_NAME, \"ETH-%d\", channel);\n          break;\n      case WTAP_ENCAP_IEEE_802_11:\n\
+    \          wtap_block_add_string_option_format(*int_data, OPT_IDB_NAME, \"WLAN-%d\"\
+    , channel);\n          break;\n      case WTAP_ENCAP_FLEXRAY:\n          wtap_block_add_string_option_format(*int_data,\
+    \ OPT_IDB_NAME, \"FR-%d\", channel);\n          break;\n      case WTAP_ENCAP_LIN:\n\
+    \          wtap_block_add_string_option_format(*int_data, OPT_IDB_NAME, \"LIN-%d\"\
+    , channel);\n          break;\n      case WTAP_ENCAP_SOCKETCAN:\n          wtap_block_add_string_option_format(*int_data,\
+    \ OPT_IDB_NAME, \"CAN-%d\", channel);\n          break;\n      default:\n    \
+    \      wtap_block_add_string_option_format(*int_data, OPT_IDB_NAME, \"0x%04x-%d\"\
+    , pkt_encap, channel);\n      }\n  }\n}\n"
+  languages:
+  - c
+  message: 'The function `add_interface_name` does not handle a custom interface name,
+    which could lead to inconsistent interface naming. This vulnerability was fixed
+    by adding a `name` parameter to handle custom interface names. Always handle custom
+    names to ensure consistent and flexible interface naming.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/19ed05756313a0181fd3188eae0557f688bfddaf
+    category: security
+    cwe:
+    - 'CWE-628: Function Call with Incorrectly Specified Arguments'
+    technology:
+    - c

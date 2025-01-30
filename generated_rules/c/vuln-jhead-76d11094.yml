@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jhead-76d11094
+  pattern: "if(strpbrk($VAR, \"\\\";'&|`\")) {\n  ...\n}\n"
+  pattern-not: "if(strpbrk($VAR, \"\\\";'&|`$\")) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected use of `strpbrk` without checking for the '$' character, which\
+    \ could allow shell command injection. \nThis is dangerous because it can lead\
+    \ to arbitrary command execution when the string is passed to `system()`. \nTo\
+    \ fix this, ensure that the '$' character is also included in the character set\
+    \ for `strpbrk`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/76d11094d17380d51a7ad53da2287c9f53a72726
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

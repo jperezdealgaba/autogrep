@@ -1,0 +1,28 @@
+rules:
+- id: vuln-qemu-5c4fe018
+  pattern: 'assert($LEN < 4096);
+
+    '
+  pattern-not: 'assert($LEN < NBD_MAX_STRING_SIZE);
+
+    '
+  languages:
+  - c
+  message: "Detected a potentially unsafe assertion that checks if a length is less\
+    \ than 4096. \nThis could lead to buffer overflows or other security issues if\
+    \ the length exceeds the expected limit. \nUse a defined constant like NBD_MAX_STRING_SIZE\
+    \ instead of a hardcoded value to ensure consistency and safety.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/5c4fe018c025740fef4a0a4421e8162db0c3eefd
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-129
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - c

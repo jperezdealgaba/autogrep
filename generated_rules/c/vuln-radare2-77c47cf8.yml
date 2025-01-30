@@ -1,0 +1,24 @@
+rules:
+- id: vuln-radare2-77c47cf8
+  pattern: "if (!$DATA) {\n  ...\n}\n"
+  pattern-not: "if (!$DATA || $LEN < 2) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code lacks a length check for the data buffer, which could lead to
+    buffer underflow or undefined behavior. This is dangerous because it can result
+    in memory corruption or crashes. To fix this, ensure that the length of the data
+    buffer is checked before accessing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/77c47cf873dd55b396da60baa2ca83bbd39e4add
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

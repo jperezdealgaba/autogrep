@@ -1,0 +1,24 @@
+rules:
+- id: vuln-systemd-63748626
+  pattern: "if ($R < 0) {\n    $R = sd_bus_reply_method_errno($REQUEST, $R, NULL);\n\
+    \    goto $FINISH;\n}\n"
+  pattern-not: "if ($R < 0)\n    goto $FAIL;\n"
+  languages:
+  - c
+  message: 'The original code fails to properly handle asynchronous PolicyKit replies,
+    leading to potential memory leaks and incorrect error handling. The patch introduces
+    a deferred event source to clean up resources after the asynchronous operation
+    completes. Ensure proper cleanup of resources in asynchronous operations to prevent
+    memory leaks and improve error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb
+    category: security
+    cwe:
+    - 'CWE-401: Improper Release of Memory Before Removing Last Reference'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-symfony-cccefe6a
+  pattern: $A === $B
+  pattern-not: hash_equals($A, $B)
+  languages:
+  - php
+  message: "Detected a vulnerable string comparison that could lead to timing attacks.\
+    \ \nUsing '===' for hash comparison is insecure because it allows timing attacks\
+    \ \nthat can reveal information about the hash. \nReplace it with 'hash_equals()'\
+    \ which provides a constant-time comparison \nto mitigate this vulnerability.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/cccefe6a7f12e776df0665aeb77fe9294c285fbb
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://www.php.net/manual/en/function.hash-equals.php
+    technology:
+    - php

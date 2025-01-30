@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-77668e4b
+  pattern: 'len = MIN(fifo8_num_used(&$S->fifo), $ESP_FIFO_SZ);
+
+    '
+  pattern-not: 'len = MIN($S->async_len, $ESP_FIFO_SZ);
+
+    len = MIN(len, fifo8_num_used(&$S->fifo));
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability occurs due to incorrect order of MIN function arguments,
+    which can lead to buffer overflow. The original code uses `fifo8_num_used(&s->fifo)`
+    as the first argument, which may return a larger value than `s->async_len`. This
+    can cause the buffer to be overrun. The fix ensures that `s->async_len` is used
+    as the first argument, followed by `fifo8_num_used(&s->fifo)` to prevent overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/77668e4b9bca03a856c27ba899a2513ddf52bb52
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    technology:
+    - c

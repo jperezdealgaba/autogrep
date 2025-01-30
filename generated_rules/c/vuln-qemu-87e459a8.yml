@@ -1,0 +1,31 @@
+rules:
+- id: vuln-qemu-87e459a8
+  pattern: "SCSIRequest *$REQ;\n...\n$REQ = scsi_req_new($DEV, $INDEX, $LUN, $BUF,\
+    \ $CMD);\nif (!$REQ) {\n  ...\n}\n...\nlen = scsi_req_enqueue($REQ);\n...\nscsi_req_continue($REQ);\n"
+  pattern-not: "$CMD->req = scsi_req_new($DEV, $INDEX, $LUN, $BUF, $CMD);\nif (!$CMD->req)\
+    \ {\n  ...\n}\n...\nlen = scsi_req_enqueue($CMD->req);\n...\nscsi_req_continue($CMD->req);\n"
+  languages:
+  - c
+  message: 'Detected potential NULL pointer dereference vulnerability in SCSI request
+    handling.
+
+    The original code creates a SCSIRequest pointer but doesn''t store it in the command
+    structure,
+
+    which could lead to NULL pointer dereference if the request fails.
+
+    The fix stores the request in the command structure and checks it properly.
+
+    Always store and check the request in the command structure to prevent NULL pointer
+    dereference.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/87e459a810d7b1ec1638085b5a80ea3d9b43119a
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

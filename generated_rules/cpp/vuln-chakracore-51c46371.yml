@@ -1,0 +1,32 @@
+rules:
+- id: vuln-chakracore-51c46371
+  pattern: "StackSym * $STACKSYM = $SYM->AsStackSym();\nbool $ISUSED = ProcessStackSymUse($STACKSYM,\
+    \ $ISNONBYTECODEUSE);\nif (!IsCollectionPass() && $ISREGOPNDUSE && this->DoMarkTempNumbers())\n\
+    {\n    Assert((block->loop != nullptr) == block->tempNumberTracker->HasTempTransferDependencies());\n\
+    \    block->tempNumberTracker->ProcessUse($STACKSYM, this);\n}\nreturn $ISUSED;\n"
+  pattern-not: "if (this->DoMarkTempNumbers())\n{\n    Assert((block->loop != nullptr)\
+    \ == block->tempNumberTracker->HasTempTransferDependencies());\n    block->tempNumberTracker->ProcessUse($STACKSYM,\
+    \ this);\n}\nreturn ProcessStackSymUse($SYM->AsStackSym(), $ISNONBYTECODEUSE);\n"
+  languages:
+  - cpp
+  message: 'The original code performs unnecessary operations when processing stack
+    symbol use, which can lead to inefficiencies and potential vulnerabilities. The
+    patch simplifies the logic by directly returning the result of `ProcessStackSymUse`
+    and only executing the temp number processing if `DoMarkTempNumbers` is true.
+    This reduces the risk of incorrect state management and improves performance.
+    To fix this, ensure that temp number processing is only done when necessary and
+    simplify the return logic.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/chakra-core/ChakraCore/commit/51c46371c917e87bbde77d66abba088309d96a3f
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/704.html
+    technology:
+    - cpp

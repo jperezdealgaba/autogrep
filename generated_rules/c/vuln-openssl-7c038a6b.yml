@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openssl-7c038a6b
+  pattern: 'BIO_printf($OUT, "  Challenge String: %s\n", $CHAL->data);
+
+    '
+  pattern-not: 'BIO_printf($OUT, "  Challenge String: %.*s\n", $CHAL->length, $CHAL->data);
+
+    '
+  languages:
+  - c
+  message: 'The code uses an insecure format string in BIO_printf that does not specify
+    the length of the input string. This can lead to buffer overflows or incorrect
+    output if the string is not null-terminated. Use the %.*s format specifier with
+    the length parameter to ensure safe string printing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/7c038a6bcd98d4bbfd2c2892a87a1138d2f7c5f3
+    category: security
+    cwe:
+    - 'CWE-134: Use of Externally-Controlled Format String'
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/134.html
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tensorflow-46d5b085
+  pattern: "if ($CONTEXT->tensors != nullptr) {\n  return &$CONTEXT->tensors[$NODE->inputs->data[$INDEX]];\n\
+    } else {\n  return $CONTEXT->GetTensor($CONTEXT, $NODE->inputs->data[$INDEX]);\n\
+    }\n"
+  pattern-not: "if ($INDEX >= 0 && $INDEX < $NODE->inputs->size) {\n  const int $TENSOR_INDEX\
+    \ = $NODE->inputs->data[$INDEX];\n  if ($TENSOR_INDEX != kTfLiteOptionalTensor)\
+    \ {\n    if ($CONTEXT->tensors != nullptr) {\n      return &$CONTEXT->tensors[$TENSOR_INDEX];\n\
+    \    } else {\n      return $CONTEXT->GetTensor($CONTEXT, $TENSOR_INDEX);\n  \
+    \  }\n  }\n}\nreturn nullptr;\n"
+  languages:
+  - cpp
+  message: 'Detected unsafe tensor access without bounds checking or validation for
+    optional tensors. This can lead to out-of-bounds access or null pointer dereference
+    if the index is invalid or points to an optional tensor. Always check the index
+    bounds and validate against kTfLiteOptionalTensor before accessing the tensor.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/46d5b0852528ddfd614ded79bccc75589f801bd9
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://www.tensorflow.org/lite/api_docs/cc/class/tflite/tensor
+    technology:
+    - cpp

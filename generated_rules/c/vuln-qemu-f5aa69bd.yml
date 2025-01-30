@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qemu-f5aa69bd
+  pattern: 'qemu_ram_ptr_length($MR, $ADDR, $LEN)
+
+    '
+  pattern-not: 'qemu_ram_ptr_length($MR, $ADDR, $LEN, $LOCK)
+
+    '
+  languages:
+  - c
+  message: 'The function `qemu_ram_ptr_length` is being called without the required
+    `lock` parameter, which could lead to unsafe memory access. This vulnerability
+    can result in race conditions or memory corruption. Always pass the appropriate
+    `lock` parameter to ensure safe memory access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/qemu/qemu/commit/f5aa69bdc3418773f26747ca282c291519626ece
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    technology:
+    - c

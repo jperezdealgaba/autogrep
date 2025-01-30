@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gpac-6c1e7ddf
+  pattern: 'assert(($VAR == 8) || ($VAR == 16));
+
+    '
+  pattern-not: "if (($VAR != 8) && ($VAR != 16)) {\n  ...\n  return NULL;\n}\n"
+  languages:
+  - c
+  message: 'The use of `assert` for input validation is dangerous because it can be
+    disabled at compile time, potentially leading to undefined behavior. Instead,
+    explicitly check the condition and handle the error case appropriately, such as
+    by logging a warning and returning an error value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/6c1e7ddfae2ad4daeda7f7e544da34cb765d36c9
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

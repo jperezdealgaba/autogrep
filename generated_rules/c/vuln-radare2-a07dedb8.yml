@@ -1,0 +1,23 @@
+rules:
+- id: vuln-radare2-a07dedb8
+  pattern: 'ut64 $PAGE_SIZE = $OBJ->chained_starts[$I]->page_size;
+
+    '
+  pattern-not: "int $PAGE_SIZE = $OBJ->chained_starts[$I]->page_size;\nif ($PAGE_SIZE\
+    \ < 1) {\n  $PAGE_SIZE = 4096;\n}\n"
+  languages:
+  - c
+  message: "Using `ut64` for page size without validation can lead to integer overflow\
+    \ or unexpected behavior. \nThis is dangerous because it may result in incorrect\
+    \ memory calculations or crashes. \nFix by using `int` for page size and adding\
+    \ a check to ensure it is at least 1, defaulting to 4096 if invalid.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/a07dedb804a82bc01c07072861942dd80c6b6d62
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

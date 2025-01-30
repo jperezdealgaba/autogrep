@@ -1,0 +1,32 @@
+rules:
+- id: vuln-tensorflow-698e0151
+  pattern: "const $TYPE* $VAR = reinterpret_cast<const $TYPE*>($EXPR.data());\nif\
+    \ ($EXPR.size() > $LENGTH) {\n  memcpy($DEST, $VAR, $LENGTH);\n} else {\n  memcpy($DEST,\
+    \ $VAR, $EXPR.size());\n}\n$DEST += $LENGTH;\n"
+  pattern-not: 'const auto $VAR = std::min($EXPR.size(), static_cast<size_t>($LENGTH));
+
+    memcpy($DEST, $EXPR.data(), $VAR);
+
+    $DEST += $WIDTH;
+
+    '
+  languages:
+  - cpp
+  message: 'Found unsafe use of memcpy without proper bounds checking. This can lead
+    to buffer overflows if the length of the source data exceeds the destination buffer
+    size. Always use std::min to ensure the copy length does not exceed the destination
+    buffer size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/698e01511f62a3c185754db78ebce0eee1f0184d
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A1: Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - cpp

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-symfony-1ee96a8b
+  pattern: "public function testHostValidity($host, $isValid)\n{\n    ...\n    $this->assertSame($host,\
+    \ $request->getHost());\n    ...\n}\n"
+  pattern-not: "public function testHostValidity($host, $isValid, $expectedHost =\
+    \ null, $expectedPort = null)\n{\n    ...\n    $this->assertSame($expectedHost\
+    \ ?: $host, $request->getHost());\n    if ($expectedPort) {\n        $this->assertSame($expectedPort,\
+    \ $request->getPort());\n    }\n    ...\n}\n"
+  languages:
+  - php
+  message: "Detected a potentially insecure host validation in Symfony's RequestTest.php.\
+    \ \nThe original test does not properly handle long hostnames or invalid host\
+    \ formats, \nwhich could lead to security vulnerabilities such as host header\
+    \ injection. \nUpdate the test to include proper validation for hostnames and\
+    \ ports.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/1ee96a8b1b0987ffe2a62dca7ad268bf9edfa9b8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

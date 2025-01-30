@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-dc9127dd
+  pattern: 'read_cap_file($CF, $SAVE_FILE, $OUT_FILE_TYPE, $OUT_FILE_NAME_RES, $COUNT,
+    $BYTE_COUNT)
+
+    '
+  pattern-not: 'process_cap_file($CF, $SAVE_FILE, $OUT_FILE_TYPE, $OUT_FILE_NAME_RES,
+    $COUNT, $BYTE_COUNT)
+
+    '
+  languages:
+  - c
+  message: "Detected use of deprecated `read_cap_file` function, which has been replaced\
+    \ by `process_cap_file`. \nThis change was made to improve security and consistency\
+    \ in file processing. \nReplace all instances of `read_cap_file` with `process_cap_file`\
+    \ to ensure proper file handling.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/dc9127ddff6081ab3a7e7480621405119ad38d95
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChCaptureFile.html
+    technology:
+    - c

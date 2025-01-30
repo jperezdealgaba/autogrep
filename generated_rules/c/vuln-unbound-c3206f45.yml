@@ -1,0 +1,24 @@
+rules:
+- id: vuln-unbound-c3206f45
+  pattern: 'infra_ip_create_ratedata($INFRA, $ADDR, $ADDRLEN, $TIMENOW);
+
+    '
+  pattern-not: 'infra_ip_create_ratedata($INFRA, $ADDR, $ADDRLEN, $TIMENOW, $MESH_WAIT);
+
+    '
+  languages:
+  - c
+  message: 'Missing mesh_wait parameter in infra_ip_create_ratedata call. This can
+    lead to incorrect rate limiting behavior and potential security issues. Always
+    include the mesh_wait parameter when calling this function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NLnetLabs/unbound/commit/c3206f4568f60c486be6d165b1f2b5b254fea3de
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp: 'A9: Security Misconfiguration'
+    technology:
+    - c

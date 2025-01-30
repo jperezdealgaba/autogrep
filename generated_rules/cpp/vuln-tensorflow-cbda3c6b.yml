@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tensorflow-cbda3c6b
+  pattern: 'const int $INPUT_SIZE = NumElements($INPUT) / SizeOfDimension($INPUT,
+    0);
+
+    '
+  pattern-not: 'const int $INPUT_SIZE = NumElements($INPUT) / $BATCH_SIZE;
+
+    '
+  languages:
+  - cpp
+  message: 'Division by SizeOfDimension(input, 0) without ensuring it is non-zero
+    can lead to division by zero vulnerabilities. This can cause crashes or undefined
+    behavior. Always ensure the divisor is non-zero before performing the division.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/cbda3c6b2dbbd3fbdc482ff8c0170a78ec2e97d0
+    category: security
+    cwe:
+    - CWE-369
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

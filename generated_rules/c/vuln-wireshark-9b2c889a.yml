@@ -1,0 +1,32 @@
+rules:
+- id: vuln-wireshark-9b2c889a
+  pattern: 'col_set_str($PIN->cinfo, COL_INFO, $STR);
+
+    '
+  pattern-not: 'col_add_str($PIN->cinfo, COL_INFO, $STR);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of col_set_str instead of col_add_str in Wireshark
+    dissector code.
+
+    Using col_set_str can overwrite existing column information, potentially leading
+    to
+
+    incorrect or misleading packet information in the UI. Replace with col_add_str
+    to
+
+    append the information instead of replacing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/9b2c889abe0219fc162659e106c5b95deb6268f3
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A07:2021-Identification and Authentication Failures
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wireshark-a6c62a2f
+  pattern: 'proto_item_append_text($AFCI, " (Should be 0 for NULL packets)");
+
+    '
+  pattern-not: 'proto_item_append_text($AFCI, "");
+
+    '
+  languages:
+  - c
+  message: 'Detected potentially misleading text append in Wireshark dissector. The
+    message "Should be 0 for NULL packets" might be incorrect or misleading in certain
+    contexts. This could lead to misinterpretation of packet data. Remove or correct
+    the appended text to ensure accurate packet analysis.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/a6c62a2f89039922f3462b18c77cfed95e0b021b
+    category: security
+    cwe:
+    - 'CWE-710: Improper Adherence to Coding Standards'
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - c

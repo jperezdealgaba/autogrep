@@ -1,0 +1,22 @@
+rules:
+- id: vuln-qemu-7cfcc79b
+  pattern: "if ($BS && !($BS & ~0xff00) && $BS != $S->qdev.blocksize) {\n  ...\n}\n"
+  pattern-not: "if ($BS && !($BS & ~0xfe00) && $BS != $S->qdev.blocksize) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code incorrectly allows a block size of 256, which is below BDRV_SECTOR_SIZE
+    and can lead to handling errors in SCSI commands. This can cause security vulnerabilities
+    or system crashes. The fix is to disallow block sizes of 256 by changing the bitmask
+    from ~0xff00 to ~0xfe00.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/7cfcc79b0ab800959716738aff9419f53fc68c9c
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

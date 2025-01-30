@@ -1,0 +1,29 @@
+rules:
+- id: vuln-jhead-b8d78e5e
+  pattern: 'memmove($SECTIONS + $A, $SECTIONS + $A + 1, sizeof($SECTION_T) * ($SECTIONS_READ
+    - $A))
+
+    '
+  pattern-not: 'memmove($SECTIONS + $A, $SECTIONS + $A + 1, sizeof($SECTION_T) * ($SECTIONS_READ
+    - $A - 1))
+
+    '
+  languages:
+  - c
+  message: 'The memmove operation is missing a -1 in the size calculation, which could
+    lead to an off-by-one error and potential memory corruption. This is dangerous
+    as it can cause undefined behavior, crashes, or security vulnerabilities. To fix
+    it, ensure the size calculation includes the -1 to correctly account for the elements
+    being moved.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/b8d78e5ec982e86cdd70ebfc1ebbb2273c982eea
+    category: security
+    cwe:
+    - CWE-193
+    owasp:
+    - 'A8: Software and Data Integrity Failures'
+    technology:
+    - c

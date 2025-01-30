@@ -1,0 +1,24 @@
+rules:
+- id: vuln-wireshark-95571f17
+  pattern: "if ($SPLIT[1] == NULL) {\n  ...\n}\n"
+  pattern-not: "if ($SPLIT == NULL || $SPLIT[0] == NULL || $SPLIT[1] == NULL) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential NULL pointer dereference vulnerability. The code
+    checks only the second element of the split array for NULL, but does not verify
+    the array itself or the first element. This can lead to a crash or undefined behavior
+    if either the array or the first element is NULL. To fix this, ensure you check
+    the array and all relevant elements for NULL before accessing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/95571f17d5e2de39735e62e5251583f930c06d51
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-symfony-cf802245
+  pattern: 'new ErrorHandler($LOGGER)
+
+    '
+  pattern-not: 'new ErrorHandler($LOGGER, $DEBUG)
+
+    '
+  languages:
+  - php
+  message: 'The ErrorHandler constructor is being called without the debug parameter,
+    which can lead to incorrect error rendering. This vulnerability can expose sensitive
+    information or fail to handle errors properly. Always pass the debug parameter
+    to ensure proper error handling and rendering.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/cf80224589ac05402d4f72f5ddf80900ec94d5ad
+    category: security
+    cwe:
+    - CWE-209
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://symfony.com/doc/current/components/error_handler.html
+    technology:
+    - php

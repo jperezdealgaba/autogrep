@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qemu-035e69b0
+  pattern: 'assert($VAR1 > $VAR2);
+
+    '
+  pattern-not: "if ($VAR2 >= $VAR1) {\n    return false;\n}\n"
+  languages:
+  - c
+  message: "The use of `assert` for input validation is dangerous as it can be disabled\
+    \ in production builds, leading to potential security vulnerabilities. \nIn this\
+    \ case, the assertion checks if `$VAR1` is greater than `$VAR2`, but if assertions\
+    \ are disabled, the program may continue with invalid data. \nReplace the `assert`\
+    \ with proper error handling, such as an `if` statement that returns an error\
+    \ or handles the invalid condition gracefully.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/035e69b063835a5fd23cacabd63690a3d84532a8
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/EXP33-C.+Do+not+use+assertions+for+input+validation
+    technology:
+    - c

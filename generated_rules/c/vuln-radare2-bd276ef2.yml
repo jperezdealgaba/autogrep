@@ -1,0 +1,30 @@
+rules:
+- id: vuln-radare2-bd276ef2
+  pattern: "for ($I = 0; $I < $COUNT && strlen($OP->txt) + $VAL < $BUFSIZE; $I++)\
+    \ {\n  $TXTLEN = strlen($OP->txt);\n  snprintf($OP->txt + $TXTLEN, $BUFSIZE -\
+    \ $TXTLEN, $FORMAT, $TABLE[$I]);\n}\n"
+  pattern-not: "for ($I = 0; $I < $COUNT && $TXTLEN + $VAL < $BUFSIZE; $I++) {\n \
+    \ snprintf($TXT, $TXTLEFT, $FORMAT, $TABLE[$I]);\n  $TXTLEN = strlen($TXT);\n\
+    \  $TXT += $TXTLEN;\n  $TXTLEFT -= $TXTLEN;\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability caused by incorrect
+    buffer size calculation in a loop. The issue arises from repeatedly using strlen()
+    on the buffer within the loop, which can lead to miscalculations of remaining
+    buffer space. This could result in buffer overflow and potential memory corruption.
+    To fix this, maintain a separate variable tracking the buffer length and remaining
+    space, and update it within the loop.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/bd276ef2fd8ac3401e65be7c126a43175ccfbcd7
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

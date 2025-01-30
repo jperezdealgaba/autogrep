@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wireshark-212b1882
+  pattern: 'g_snprintf($S, $ITEM_LABEL_LENGTH, "%d [Mired] (%d [K])", $VALUE, 1000000/$VALUE);
+
+    '
+  pattern-not: 'g_snprintf($S, $ITEM_LABEL_LENGTH, "%u [Mired]", $VALUE);
+
+    g_snprintf($S, $ITEM_LABEL_LENGTH, "%u [Mired] (%u [K])", $VALUE, 1000000/$VALUE);
+
+    '
+  languages:
+  - c
+  message: 'Potential division by zero vulnerability detected. The expression ''1000000/$VALUE''
+    can lead to a division by zero if $VALUE is 0. This can cause undefined behavior
+    or crashes. Add a check to ensure $VALUE is not zero before performing the division.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/212b18825d9b668cda23d334c48867dfa66b2b36
+    category: security
+    cwe:
+    - CWE-369
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

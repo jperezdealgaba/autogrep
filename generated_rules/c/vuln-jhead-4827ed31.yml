@@ -1,0 +1,29 @@
+rules:
+- id: vuln-jhead-4827ed31
+  pattern: 'if ($CH == ''\r'' && $DATA[$A+1] == ''\n'') $CONTINUE;
+
+    '
+  pattern-not: 'if ($CH == ''\r'' && $A < $LENGTH-1 && $DATA[$A+1] == ''\n'') $CONTINUE;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds array access vulnerability. The code
+    checks for a carriage return followed by a line feed without verifying if the
+    next index is within bounds. This could lead to undefined behavior or memory corruption.
+    To fix, ensure the index is within the valid range by adding a bounds check before
+    accessing the array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/4827ed31c226dc5ed93603bd649e0e387a1778da
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

@@ -1,0 +1,39 @@
+rules:
+- id: vuln-qemu-156a2e4d
+  pattern: 'uint32_t $I, $LEN, $PID, $DIR, $DEVADDR, $ENDP;
+
+    ...
+
+    return 0;
+
+    '
+  pattern-not: 'uint32_t $I, $LEN, $PID, $DIR, $DEVADDR, $ENDP, $XFERS = 0;
+
+    ...
+
+    $XFERS++;
+
+    return $XFERS ? 0 : -1;
+
+    '
+  languages:
+  - c
+  message: 'The function returns 0 unconditionally without tracking the number of
+    transfers, which can lead to incorrect handling of USB transactions. This could
+    result in data corruption or loss. The fix introduces a counter variable `xfers`
+    to track the number of transfers and returns -1 if no transfers occur, ensuring
+    proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/156a2e4dbffa85997636a7a39ef12da6f1b40254
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c

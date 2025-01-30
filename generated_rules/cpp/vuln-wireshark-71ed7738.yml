@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wireshark-71ed7738
+  pattern: 'extern void packet_range_init(packet_range_t *$RANGE);
+
+    '
+  pattern-not: 'extern void packet_range_init(packet_range_t *$RANGE, capture_file
+    *$CF);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `packet_range_init` is being called without the required
+    `capture_file` parameter. This can lead to undefined behavior or crashes since
+    the function now expects a second parameter to initialize the packet range correctly.
+    Always pass the `capture_file` parameter when calling `packet_range_init` to ensure
+    proper initialization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/71ed773862716ff3a4def1884fa1d7f427f1ea47
+    category: security
+    cwe:
+    - 'CWE-628: Function Call with Incorrectly Specified Arguments'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChDissectPackets.html
+    technology:
+    - cpp

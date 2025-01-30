@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qemu-a7b20a8e
+  pattern: "if ($WS->wioc->rawoutput.offset < $MAX_BUFFER) {\n  ...\n}\n"
+  pattern-not: "if ($WS->wioc->encoutput.offset < $MAX_BUFFER) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected use of rawoutput buffer offset check instead of encoutput buffer
+    offset check.
+
+    This vulnerability could lead to incorrect buffer size validation, potentially
+    causing
+
+    buffer overflow or other security issues. The fix involves checking encoutput.offset
+
+    instead of rawoutput.offset to ensure proper buffer size validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/a7b20a8efa28e5f22c26c06cd06c2f12bc863493
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

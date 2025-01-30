@@ -1,0 +1,24 @@
+rules:
+- id: vuln-qemu-ead315e4
+  pattern: "do {\n    ...\n} while (more_frags);\n"
+  pattern-not: "do {\n    ...\n} while (fragment_len && more_frags);\n"
+  languages:
+  - c
+  message: 'The loop condition checks only the `more_frags` flag without verifying
+    the `fragment_len`. This can lead to infinite loops or incorrect packet processing
+    if `fragment_len` is zero but `more_frags` is still true. Always include both
+    conditions in the loop to ensure proper packet handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/ead315e43ea0c2ca3491209c6c8db8ce3f2bbe05
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/835.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-qemu-80eecda8
+  pattern: 'return $DEV->dev.config->bConfigurationValue == $VALUE;
+
+    '
+  pattern-not: "return $DEV->dev.config ? \n        $DEV->dev.config->bConfigurationValue\
+    \ == $VALUE : 0;\n"
+  languages:
+  - c
+  message: "Detected a potential null pointer dereference in USB device configuration\
+    \ check. \nThis vulnerability occurs when accessing `bConfigurationValue` without\
+    \ checking if `config` is null, which could lead to a crash or undefined behavior.\
+    \ \nTo fix this, always check if `config` is null before accessing its members.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/qemu/qemu/commit/80eecda8e5d09c442c24307f340840a5b70ea3b9
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

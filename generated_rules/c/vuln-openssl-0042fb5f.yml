@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openssl-0042fb5f
+  pattern: "if (($VAR == NULL) || ($VAR->data == NULL)) {\n    $BUF[0]='\\0';\n  \
+    \  return(0);\n}\n"
+  pattern-not: "if ($BUF && $BUF_LEN > 0)\n    $BUF[0] = '\\0';\nif (($VAR == NULL)\
+    \ || ($VAR->data == NULL))\n    return(0);\n"
+  languages:
+  - c
+  message: 'The code does not ensure that the buffer is NUL-terminated in all cases,
+    which could lead to undefined behavior or security vulnerabilities. Ensure that
+    the buffer is always NUL-terminated, especially when handling NULL or invalid
+    data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/0042fb5fd1c9d257d713b15a1f45da05cf5c1c87
+    category: security
+    cwe:
+    - CWE-170
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

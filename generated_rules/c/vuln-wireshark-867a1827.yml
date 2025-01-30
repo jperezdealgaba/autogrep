@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wireshark-867a1827
+  pattern: "*length = tvb_captured_length_remaining($TVB, $START);\nif (*length <\
+    \ 0) {\n  ...\n  tvb_ensure_bytes_exist($TVB, $START, 0);\n}\nDISSECTOR_ASSERT(*length\
+    \ >= 0);\n"
+  pattern-not: '*length = tvb_ensure_captured_length_remaining($TVB, $START);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe length calculation in Wireshark''s protocol dissector.
+    The original code uses `tvb_captured_length_remaining` followed by a manual check
+    for negative values, which can lead to incorrect handling of buffer boundaries.
+    This could potentially cause security vulnerabilities by allowing improper buffer
+    access. Use `tvb_ensure_captured_length_remaining` instead, which properly validates
+    the length and throws an exception if the offset is past the buffer end.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/wireshark/wireshark/commit/867a1827e7dc88896ee27a107eb35c4b3973d270
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
