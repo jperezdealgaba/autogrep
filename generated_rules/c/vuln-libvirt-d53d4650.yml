@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libvirt-d53d4650
+  pattern: 'virBufferAsprintf($BUF, "password-secret=%s,", $ARG);
+
+    '
+  pattern-not: 'virBufferAsprintf($BUF, "file.password-secret=%s,", $ARG);
+
+    '
+  languages:
+  - c
+  message: 'The use of the legacy ''password-secret'' format in virBufferAsprintf
+    is vulnerable to security issues. The modern ''file.password-secret'' format should
+    be used instead to ensure proper security handling. This vulnerability could lead
+    to improper handling of sensitive credentials. Update the code to use the ''file.password-secret''
+    format to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/d53d465083edeb64cc7b78249c030734c0d91c6b
+    category: security
+    cwe:
+    - 'CWE-312: Cleartext Storage of Sensitive Information'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://libvirt.org/
+    technology:
+    - c

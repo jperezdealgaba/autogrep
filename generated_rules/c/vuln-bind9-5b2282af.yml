@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bind9-5b2282af
+  pattern: 'return (DST_R_VERIFYFAILURE);
+
+    '
+  pattern-not: 'DST_RET(DST_R_VERIFYFAILURE);
+
+    '
+  languages:
+  - c
+  message: 'Direct return of DST_R_VERIFYFAILURE without using DST_RET macro can lead
+    to inconsistent error handling. This issue was fixed by wrapping the return value
+    in the DST_RET macro to ensure proper error handling and resource cleanup. Always
+    use DST_RET for returning error codes in this context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/5b2282afff760b1ed3471f6666bdfe8e1d34e590
+    category: security
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp:
+    - A10:2021 - Security Misconfiguration
+    technology:
+    - c

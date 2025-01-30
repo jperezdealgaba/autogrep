@@ -1,0 +1,31 @@
+rules:
+- id: vuln-radare2-153bcdc2
+  pattern: "char *$NAME;\nif ($COND) {\n  ...\n  $NAME = __read_nonnull_str_at($BUF,\
+    \ $OFFSET);\n} else {\n  $NAME = r_str_newf($FORMAT, ...);\n}\n...\n$IMP->name\
+    \ = r_str_newf(\"%s.%s\", $NAME, __func_name_from_ord($NAME, $ORD));\n"
+  pattern-not: "char *$NAME = NULL;\nif ($COND) {\n  ...\n  $NAME = __read_nonnull_str_at($BUF,\
+    \ $OFFSET);\n} else if ($INDEX > 0) {\n  ...\n}\n...\nchar *$FNAME = __func_name_from_ord($NAME,\
+    \ $ORD);\n$IMP->name = r_str_newf(\"%s.%s\", $NAME, $FNAME);\nfree($FNAME);\n"
+  languages:
+  - c
+  message: 'Detected a potential memory leak and unsafe string handling vulnerability.
+    The original code
+
+    fails to free dynamically allocated memory and does not properly handle the case
+    where
+
+    the index is out of bounds. This could lead to memory leaks and undefined behavior.
+
+    The fix ensures proper memory management and adds a bounds check for the index.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/153bcdc29f11cd8c90e7d639a7405450f644ddb6
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

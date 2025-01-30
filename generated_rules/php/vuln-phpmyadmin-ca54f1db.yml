@@ -1,0 +1,34 @@
+rules:
+- id: vuln-phpmyadmin-ca54f1db
+  pattern: "if (strlen($GLOBALS['db'])) {\n    $cfgRelation = $this->relation->getRelationsParam();\n\
+    \    if (empty($cfgRelation['db'])) {\n        $this->relation->fixPmaTables($GLOBALS['db'],\
+    \ false);\n    }\n}\n$cfgRelation = $this->relation->getRelationsParam();\nif\
+    \ (empty($cfgRelation['db']) && isset($GLOBALS['dblist'])) {\n    if ($GLOBALS['dblist']->databases->exists('phpmyadmin'))\
+    \ {\n        $this->relation->fixPmaTables('phpmyadmin', false);\n    }\n}\n"
+  pattern-not: "$storageDbName = $GLOBALS['cfg']['Server']['pmadb'] ?? '';\n$storageDbName\
+    \ = $storageDbName !== null\n                    && is_string($storageDbName)\n\
+    \                    && $storageDbName !== '' ? $storageDbName : 'phpmyadmin';\n\
+    $this->relation->fixPmaTables($storageDbName, false);\n$storageDbName = $GLOBALS['cfg']['Server']['pmadb']\
+    \ ?? '';\nif (empty($storageDbName)) {\n    $this->relation->fixPmaTables($GLOBALS['db'],\
+    \ false);\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses `$GLOBALS[''db'']` without proper validation, which
+    can lead to security vulnerabilities such as SQL injection or unauthorized database
+    access. Always validate and sanitize input from global variables before using
+    them in database operations. The fix introduces proper validation and uses a default
+    database name when necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/ca54f1db050859eb8555875c6aa5d7796fdf4b32
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

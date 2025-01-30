@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glance-fc0ee762
+  pattern: "status = 'deleted'\nif $IMAGE['location']:\n    if $CONF.delayed_delete:\n\
+    \        status = 'pending_delete'\n        $STORE_API.schedule_delayed_delete_from_backend($IMAGE['location'],\
+    \ $ID)\n    else:\n        $STORE_API.safe_delete_from_backend($IMAGE['location'],\
+    \ $CONTEXT, $ID)\n"
+  pattern-not: "if $IMAGE['location'] and $CONF.delayed_delete:\n    status = 'pending_delete'\n\
+    else:\n    status = 'deleted'\n    if $IMAGE['location']:\n        if $CONF.delayed_delete:\n\
+    \            $STORE_API.schedule_delayed_delete_from_backend($IMAGE['location'],\
+    \ $ID)\n        else:\n            $STORE_API.safe_delete_from_backend($IMAGE['location'],\
+    \ $CONTEXT, $ID)\n"
+  languages:
+  - python
+  message: "Detected a vulnerability where the deletion status and deletion operations\
+    \ are not properly synchronized. \nThis could lead to inconsistent states where\
+    \ an image is marked as 'deleted' but its data is not actually removed from the\
+    \ backend. \nEnsure that the status and deletion operations are handled in a consistent\
+    \ manner.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/glance/commit/fc0ee7623ec59c87ac6fc671e95a9798d6f2e2c3
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

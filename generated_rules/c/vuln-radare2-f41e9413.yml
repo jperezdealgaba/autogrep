@@ -1,23 +1,25 @@
 rules:
 - id: vuln-radare2-f41e9413
-  pattern: 'sprintf($STR, $FORMAT, ...)
+  pattern: 'sprintf($BUF, $FMT, ...)
 
     '
-  pattern-not: 'snprintf($STR, sizeof($STR), $FORMAT, ...)
+  pattern-not: 'snprintf($BUF, sizeof($BUF), $FMT, ...)
 
     '
   languages:
   - c
-  message: "Detected unsafe use of `sprintf` which can lead to buffer overflows. \n\
-    Replace `sprintf` with `snprintf` and specify the buffer size to prevent potential\
-    \ security vulnerabilities.\n"
+  message: "Detected use of `sprintf` which is vulnerable to buffer overflow. \nThis\
+    \ can lead to memory corruption, crashes, or arbitrary code execution. \nReplace\
+    \ `sprintf` with `snprintf` and specify the buffer size to prevent overflow.\n"
   severity: ERROR
   metadata:
-    source-url: github.com/radare/radare2/commit/f41e941341e44aa86edd4483c4487ec09a074257
+    source-url: github.com/radareorg/radare2/commit/f41e941341e44aa86edd4483c4487ec09a074257
     category: security
     cwe:
     - CWE-120
     owasp:
-    - 'A1: Injection'
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
     technology:
     - c

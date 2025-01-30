@@ -1,0 +1,27 @@
+rules:
+- id: vuln-janus-gateway-5b15ded4
+  pattern: 'g_strlcat($BUFFER, $BUFFER_PART, JANUS_BUFSIZE)
+
+    '
+  pattern-not: 'g_strlcat($BUFFER, $BUFFER_PART, sizeof($BUFFER))
+
+    '
+  languages:
+  - c
+  message: 'The use of a fixed buffer size (JANUS_BUFSIZE) in g_strlcat can lead to
+    buffer overflows if the buffer size is smaller than JANUS_BUFSIZE. This is dangerous
+    because it can result in memory corruption, potentially leading to crashes or
+    arbitrary code execution. Replace JANUS_BUFSIZE with sizeof(buffer) to ensure
+    the correct buffer size is used.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/meetecho/janus-gateway/commit/5b15ded4c3542ccef097da5088d01d977652fe9d
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c

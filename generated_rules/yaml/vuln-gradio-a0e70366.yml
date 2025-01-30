@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gradio-a0e70366
+  pattern: "- name: $NAME\n  if: always()\n  run: echo \"${{ github.event.workflow_run.head_repository.full_name\
+    \ }}-${{ github.event.workflow_run.head_branch }}-${{ github.workflow_ref }}\"\
+    \n"
+  pattern-not: "- name: $NAME\n  if: $CONDITION\n  run: echo \"${{ github.event.workflow_run.head_repository.full_name\
+    \ }}-${{ github.event.workflow_run.head_branch }}-${{ github.workflow_ref }}\"\
+    \n"
+  languages:
+  - yaml
+  message: 'The use of `if: always()` in GitHub Actions workflows can lead to unintended
+    execution of steps, even when previous steps fail. This can expose sensitive information
+    or execute potentially dangerous commands. Instead, use specific conditions or
+    remove the `if: always()` clause to ensure steps only run when appropriate.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gradio-app/gradio/commit/a0e70366a8a406fdd80abb21e8c88a3c8e682a2b
+    category: security
+    cwe:
+    - CWE-668
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsif
+    technology:
+    - yaml

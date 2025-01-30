@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libvirt-87b9437f
+  pattern: '$RET = $BACKEND->uploadVol($CONN, $POOL, $VOL, $STREAM, $OFFSET, $LENGTH,
+    $FLAGS);
+
+    '
+  pattern-not: "if (($RET = $BACKEND->uploadVol($CONN, $POOL, $VOL, $STREAM, $OFFSET,\
+    \ $LENGTH, $FLAGS)) < 0)\n    goto $CLEANUP;\n"
+  languages:
+  - c
+  message: 'The function `uploadVol` is called without checking its return value,
+    which can lead to unhandled errors. This is dangerous because it may cause the
+    program to continue execution with an undefined state, potentially leading to
+    security vulnerabilities or crashes. To fix this, always check the return value
+    of `uploadVol` and handle errors appropriately, for example by using a `goto`
+    to a cleanup section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/87b9437f8951f9d24f9a85c6bbfff0e54df8c984
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

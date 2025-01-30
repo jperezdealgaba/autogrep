@@ -1,0 +1,27 @@
+rules:
+- id: vuln-pimcore-2fd46859
+  pattern: 'pimcore.helpers.deleteConfirm($TEXT, $DATA.data.key, $FUNC)
+
+    '
+  pattern-not: 'pimcore.helpers.deleteConfirm($TEXT, Ext.util.Format.htmlEncode($DATA.data.key),
+    $FUNC)
+
+    '
+  languages:
+  - javascript
+  message: 'Potential XSS vulnerability in deleteConfirm function. The key data is
+    used without proper HTML encoding, which could lead to cross-site scripting attacks.
+    Use Ext.util.Format.htmlEncode to properly encode the data before using it in
+    the function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/pimcore/commit/2fd46859c1def6b5ab79ae2b9cb88c309769443d
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

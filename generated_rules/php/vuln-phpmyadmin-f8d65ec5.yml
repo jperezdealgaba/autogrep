@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyadmin-f8d65ec5
+  pattern: 'usort($DATABASES, create_function(''$a, $b'', $SORT_FUNCTION));
+
+    '
+  pattern-not: 'usort($DATABASES, ''PMA_usort_comparison_callback'');
+
+    '
+  languages:
+  - php
+  message: "Detected the use of `create_function` with `usort`, which is vulnerable\
+    \ to code injection. \nThe `create_function` function dynamically evaluates code,\
+    \ making it susceptible to injection attacks. \nReplace it with a named callback\
+    \ function to avoid this security risk.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/f8d65ec564ada5c839be8f3f07f483cd82ce6a11
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

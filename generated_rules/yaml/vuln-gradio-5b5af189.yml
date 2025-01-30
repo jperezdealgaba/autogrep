@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gradio-5b5af189
+  pattern: "- name: $VARNAME\n  run: echo ${{ github.event.workflow_run.head_repository.full_name\
+    \ }}::${{ github.event.workflow_run.head_branch }}\n"
+  pattern-not: "- name: $VARNAME\n  run: echo ${{ github.event.workflow_run.head_repository.full_name\
+    \ }}::${{ github.event.workflow_run.head_branch }}\n"
+  languages:
+  - yaml
+  message: "The workflow contains a potentially dangerous echo command that exposes\
+    \ sensitive repository and branch information. \nThis can be exploited to gain\
+    \ unauthorized access or information about the repository. \nRemove or restrict\
+    \ the echo command to prevent information leakage.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gradio-app/gradio/commit/5b5af1899dd98d63e1f9b48a93601c2db1f56520
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+    technology:
+    - yaml

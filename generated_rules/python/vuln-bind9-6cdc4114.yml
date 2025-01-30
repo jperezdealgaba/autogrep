@@ -1,0 +1,24 @@
+rules:
+- id: vuln-bind9-6cdc4114
+  pattern: '$SOCKET = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    $SOCKET.bind(($IP, $PORT))
+
+    '
+  pattern-not: '$SOCKET = udp_listen($IP, $PORT)
+
+    '
+  languages:
+  - python
+  message: 'Detected direct socket creation and binding without proper error handling.
+    This can lead to resource leaks and unhandled exceptions. Use the `udp_listen`
+    function instead, which properly handles errors and closes the socket on failure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/6cdc4114cb205b44be4f1cfdf752368e64757a4a
+    category: security
+    cwe: CWE-400
+    owasp: A10:2021-Server-Side Request Forgery
+    technology: python

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libvirt-dfff16a7
+  pattern: 'STREQ($PATH, $TARGET.path)
+
+    '
+  pattern-not: 'STREQ_NULLABLE($PATH, $TARGET.path)
+
+    '
+  languages:
+  - c
+  message: 'Use of STREQ instead of STREQ_NULLABLE can lead to null pointer dereference
+    vulnerabilities.
+
+    This is dangerous because it can cause crashes or undefined behavior when null
+    pointers are passed.
+
+    To fix this, replace STREQ with STREQ_NULLABLE to safely handle null pointers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/dfff16a7c261f8d28e3abe60a47165f845fa952f
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

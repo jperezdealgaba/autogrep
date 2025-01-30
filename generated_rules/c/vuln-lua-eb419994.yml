@@ -1,0 +1,25 @@
+rules:
+- id: vuln-lua-eb419994
+  pattern: 'checkstackp($L, $SIZE, $FUNC);
+
+    '
+  pattern-not: 'checkstackGCp($L, $SIZE, $FUNC);
+
+    '
+  languages:
+  - c
+  message: "The use of `checkstackp` instead of `checkstackGCp` can lead to stack\
+    \ overflow vulnerabilities. \nThe `checkstackGCp` function ensures proper garbage\
+    \ collection during stack checks, \npreventing potential memory corruption or\
+    \ undefined behavior. \nReplace `checkstackp` with `checkstackGCp` to ensure safe\
+    \ stack operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/eb41999461b6f428186c55abd95f4ce1a76217d5
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

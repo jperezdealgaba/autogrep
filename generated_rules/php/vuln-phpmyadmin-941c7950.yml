@@ -1,0 +1,25 @@
+rules:
+- id: vuln-phpmyadmin-941c7950
+  pattern: 'define(''CACHE_DIR'', ROOT_PATH . ''cache'' . DIRECTORY_SEPARATOR);
+
+    '
+  pattern-not: 'define(''CACHE_DIR'', ROOT_PATH . ''app'' . DIRECTORY_SEPARATOR .
+    ''cache'' . DIRECTORY_SEPARATOR);
+
+    '
+  languages:
+  - php
+  message: 'The cache directory is being defined without the ''app'' subdirectory,
+    which could lead to improper file system access or security issues. Ensure the
+    cache directory is properly scoped within the ''app'' directory to maintain security
+    and organization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/941c79508503e984c5249b45bd2abfe36cf79b49
+    category: security
+    cwe: 'CWE-552: Files or Directories Accessible to External Parties'
+    owasp: 'A5: Security Misconfiguration'
+    technology:
+    - php

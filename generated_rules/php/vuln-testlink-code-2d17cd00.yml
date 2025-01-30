@@ -1,0 +1,31 @@
+rules:
+- id: vuln-testlink-code-2d17cd00
+  pattern: "$iParams = array(\"doAction\" => array(tlInputParameter::STRING_N,0,50),\n\
+    \                 \"export_filename\" => array(tlInputParameter::STRING_N,0,100),\n\
+    \                 \"goback_url\" => array(tlInputParameter::STRING_N,0,2048));\n"
+  pattern-not: "$iParams = \n  array(\"doAction\" \n           => array(tlInputParameter::STRING_N,0,50),\n\
+    \         \"export_filename\" \n            => array(tlInputParameter::STRING_N,0,100));\n"
+  languages:
+  - php
+  message: 'The code contains a vulnerable parameter initialization pattern where
+    ''goback_url'' is directly included in the input parameters array. This can lead
+    to potential security risks such as open redirects or injection attacks. The fix
+    removes this parameter from the array and sets it securely using a session variable.
+    To fix this, ensure that sensitive URLs or redirects are managed securely and
+    not directly exposed in input parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/2d17cd00f981f8e8c97de34a12e368ba2a55e3d0
+    category: security
+    cwe:
+    - CWE-601
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    - 'A3: Sensitive Data Exposure'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

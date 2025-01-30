@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-ac2f606a
+  pattern: "if (!isset($_REQUEST['token']) || $_SESSION[' PMA_token '] != $_REQUEST['token'])\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!isset($_REQUEST['token']) || empty($_SESSION[' PMA_token '])\
+    \ || $_SESSION[' PMA_token '] != $_REQUEST['token']) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a security vulnerability where token validation is insufficient
+    due to missing empty() check on the session token. This could allow attackers
+    to bypass CSRF protection by manipulating the token value. Always verify that
+    the session token is not empty before comparing it with the request token.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/ac2f606a21d474596a4b2cada961385439cbc8f0
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

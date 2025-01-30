@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bind9-69c1ee1c
+  pattern: "$RESULT = $FUNC(...);\nif ($RESULT != ISC_R_SUCCESS) {\n  goto error;\n\
+    }\n"
+  pattern-not: 'CHECK($FUNC(...));
+
+    '
+  languages:
+  - c
+  message: 'The code directly checks the return value of a function and uses ''goto
+    error'' for error handling. This pattern is error-prone and can lead to inconsistent
+    error handling. The patch introduces a CHECK macro that centralizes error handling,
+    making the code more robust and maintainable. Replace the direct error checks
+    with the CHECK macro to ensure consistent error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/69c1ee1ce9f801aaa082bb3abf5969b46699f70a
+    category: security
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-46a7aa7c
+  pattern: '$url_params = array(''db'' => $DB, ''table'' => $TABLE);
+
+    '
+  pattern-not: '$url_params = array(''db'' => $DB, ''table'' => $TABLE, ''where_clause''
+    => $WHERE_CLAUSE);
+
+    '
+  languages:
+  - php
+  message: 'The URL parameters array is missing the ''where_clause'' parameter, which
+    could lead to incomplete or insecure query generation. This vulnerability can
+    expose the application to SQL injection or other security risks. Always include
+    all necessary parameters, especially those that control query conditions.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/46a7aa7cd4ff2be0eeb23721fbf71567bebe69a5
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

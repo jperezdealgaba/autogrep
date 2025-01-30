@@ -1,0 +1,34 @@
+rules:
+- id: vuln-wordpress-db8f915e
+  pattern: "if (!$content_length) {\n  $content_length = 65535;\n}\n"
+  pattern-not: "if (false === $content_length) {\n  $content_length = array(\n   \
+    \ 'type'   => 'byte',\n    'length' => 65535,\n  );\n} elseif (!is_array($content_length))\
+    \ {\n  $length = (int)$content_length > 0 ? (int)$content_length : 65535;\n  $content_length\
+    \ = array(\n    'type'   => 'byte',\n    'length' => $length\n  );\n}\n"
+  languages:
+  - php
+  message: 'Detected unsafe handling of content length in database operations. The
+    original code directly assigns a numeric value to $content_length without proper
+    type checking, which can lead to incorrect length calculations and potential security
+    issues. The fixed version properly handles content length by using an array structure
+    with type and length information.
+
+    This vulnerability can lead to incorrect database operations and potential security
+    issues when handling large content.
+
+    To fix this, ensure content length is properly validated and stored using an array
+    structure with ''type'' and ''length'' fields.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/db8f915ee6c236ee2f39e76781bf42367e3f1490
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://github.com/WordPress/WordPress/commit/db8f915ee6c236ee2f39e76781bf42367e3f1490
+    technology:
+    - php

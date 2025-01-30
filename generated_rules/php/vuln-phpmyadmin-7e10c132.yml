@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-7e10c132
+  pattern: 'PMA_Message::$METHOD(sprintf(__(''$TEXT''), $GLOBALS[''db''], $GLOBALS[''table''],
+    ...))
+
+    '
+  pattern-not: 'PMA_Message::$METHOD(sprintf(__(''$TEXT''), htmlspecialchars($GLOBALS[''db'']),
+    htmlspecialchars($GLOBALS[''table'']), ...))
+
+    '
+  languages:
+  - php
+  message: 'Detected potential XSS vulnerability due to unescaped user input in `PMA_Message`
+    construction. The variables `$GLOBALS[''db'']` and `$GLOBALS[''table'']` are directly
+    used in a message without proper escaping, which could allow an attacker to inject
+    malicious scripts. To fix this, use `htmlspecialchars()` to escape these variables
+    before including them in the message.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/7e10c132a3887c8ebfd7a8eee356b28375f1e287
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

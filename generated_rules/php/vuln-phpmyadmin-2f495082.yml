@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-2f495082
+  pattern: '$RETVAL .= ''<meta name="referrer" content="none" />'';
+
+    '
+  pattern-not: '$RETVAL .= ''<meta name="referrer" content="no-referrer" />'';
+
+    '
+  languages:
+  - php
+  message: 'Using ''none'' as the referrer policy is deprecated and may not provide
+    the intended security benefits. The correct value should be ''no-referrer'' to
+    ensure that no referrer information is sent with requests, protecting user privacy
+    and preventing information leakage. Replace ''none'' with ''no-referrer'' in the
+    meta tag.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/2f4950828ec241e8cbdcf13090c2582a6fa620cb
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+    technology:
+    - php

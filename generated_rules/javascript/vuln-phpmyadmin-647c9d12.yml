@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-647c9d12
+  pattern: 'var $VAR = $.sprintf($MSG, $(this).closest(''td'').find(''div'').text());
+
+    '
+  pattern-not: 'var $VAR = $.sprintf($MSG, escapeHtml($(this).closest(''td'').find(''div'').text()));
+
+    '
+  languages:
+  - javascript
+  message: 'Potential XSS vulnerability detected. The code directly uses user input
+    in a sprintf call without proper HTML escaping, which could allow for cross-site
+    scripting attacks. Use escapeHtml() or a similar function to sanitize the input
+    before using it in the sprintf call.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/647c9d12e33a6b64e1c3ff7487f72696bdf2dccb
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - javascript

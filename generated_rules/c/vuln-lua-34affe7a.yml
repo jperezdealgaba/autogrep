@@ -1,0 +1,27 @@
+rules:
+- id: vuln-lua-34affe7a
+  pattern: "if (getCcalls($L) <= CSTACKERR) {\n  luaE_freeCI($L);\n}\n"
+  pattern-not: "if (getCcalls($L) <= CSTACKERR) {\n  luaE_exitCcall($L);\n  luaE_enterCcall($L);\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a vulnerable stack overflow handling pattern in Lua. The original
+    code only frees the call info structures when a stack overflow is detected, which
+    may not properly handle the overflow condition. This could lead to undefined behavior
+    or crashes. The fix involves properly checking and handling the stack overflow
+    by using `luaE_exitCcall` and `luaE_enterCcall`. Update the code to use these
+    functions to ensure proper stack overflow handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/34affe7a63fc5d842580a9f23616d057e17dfe27
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.lua.org/bugs.html
+    technology:
+    - c

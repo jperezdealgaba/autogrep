@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libvirt-15073504
+  pattern: 'g_strdup_printf("%s:c%d", $SENS, $CATMIN + $C1)
+
+    '
+  pattern-not: 'continue
+
+    '
+  languages:
+  - c
+  message: 'The code generates an MCS (Multi-Category Security) label without considering
+    the subset relationship between categories. This can lead to improper access control
+    as a process can access a file if the set of MCS categories for the file is equal
+    to or a subset of the set of MCS categories for the process. The fix is to discard
+    cases where the categories are equal, as they are subsets of other category pairs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/15073504dbb624d3f6c911e85557019d3620fdb2
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://selinuxproject.org/page/MCS
+    technology:
+    - c

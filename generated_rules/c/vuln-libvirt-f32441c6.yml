@@ -1,0 +1,31 @@
+rules:
+- id: vuln-libvirt-f32441c6
+  pattern: 'qemuMonitorSetPassword($MON, $TYPE, $AUTH->passwd ? $AUTH->passwd : $DEFAULTPASSWD,
+    $CONNECTED)
+
+    '
+  pattern-not: '$PASSWORD = $AUTH->passwd ? $AUTH->passwd : $DEFAULTPASSWD;
+
+    qemuMonitorSetPassword($MON, $TYPE, $PASSWORD, $CONNECTED)
+
+    '
+  languages:
+  - c
+  message: 'The use of a ternary operator directly in function calls can lead to potential
+    security vulnerabilities, such as password exposure or incorrect handling of default
+    values. Extract the password value into a separate variable before passing it
+    to the function to ensure consistent and secure handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/f32441c69bf450d6ac593c3acd621c37e120cdaf
+    category: security
+    cwe:
+    - 'CWE-312: Cleartext Storage of Sensitive Information'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://libvirt.org/
+    technology:
+    - c

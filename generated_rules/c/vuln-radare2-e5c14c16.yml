@@ -6,19 +6,19 @@ rules:
     \  ...\n}\n"
   languages:
   - c
-  message: 'Detected a potential off-by-one error in a loop condition where the string
-    index is incorrectly compared against the buffer size. This could lead to buffer
-    overflows or incorrect string processing. The issue arises from using the wrong
-    index variable in the loop condition. To fix this, ensure that the correct index
-    variable is used for string access.
+  message: 'The loop condition incorrectly uses the wrong index variable, potentially
+    leading to out-of-bounds access or incorrect string processing. This can cause
+    undefined behavior, crashes, or security vulnerabilities. Fix by ensuring the
+    correct index variable is used in the condition.
 
     '
   severity: ERROR
   metadata:
-    source-url: github.com/radare/radare2/commit/e5c14c167b0dcf0a53d76bd50bacbbcc0dfc1ae7
+    source-url: github.com/radareorg/radare2/commit/e5c14c167b0dcf0a53d76bd50bacbbcc0dfc1ae7
     category: security
     cwe:
-    - CWE-193
+    - CWE-125
+    - CWE-129
     owasp: 'A1: Injection'
     technology:
     - c

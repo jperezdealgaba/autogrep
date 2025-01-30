@@ -1,0 +1,23 @@
+rules:
+- id: vuln-wordpress-67d03a98
+  pattern: "if (empty($unfiltered)) {\n  unset($t['htm|html']);\n}\n"
+  pattern-not: "if (empty($unfiltered)) {\n  unset($t['htm|html'], $t['js']);\n}\n"
+  languages:
+  - php
+  message: 'This vulnerability occurs when unsafe HTML and JavaScript content is not
+    properly filtered, potentially leading to XSS attacks. The patch adds ''js'' to
+    the list of unset keys to ensure that JavaScript content is also filtered when
+    $unfiltered is empty. To fix this, make sure to unset both ''htm|html'' and ''js''
+    keys in the $t array when $unfiltered is empty.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/67d03a98c2cae5f41843c897f206adde299b0509
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-wordpress-54720a14
+  pattern: '$this->filename = $_GET[$VAR];
+
+    '
+  pattern-not: '$this->filename = sanitize_file_name($_GET[$VAR]);
+
+    '
+  languages:
+  - php
+  message: 'Directly assigning user input from $_GET to a filename without sanitization
+    can lead to path traversal or file inclusion vulnerabilities. This allows attackers
+    to manipulate the file path and potentially access or overwrite sensitive files.
+    Always sanitize user input using `sanitize_file_name()` or similar functions to
+    ensure the filename is safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/54720a14d85bc1197ded7cb09bd3ea790caa0b6e
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

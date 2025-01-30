@@ -1,0 +1,32 @@
+rules:
+- id: vuln-phpmyadmin-44eb12f1
+  pattern: '$VAR = $PARAMS[''$KEY''] ?? '''';
+
+    '
+  pattern-not: '$VAR = isset($PARAMS[''$KEY'']) && is_string($PARAMS[''$KEY'']) ?
+    $PARAMS[''$KEY''] : '''';
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe usage of null coalescing operator (??) without proper
+    type validation.
+
+    This can lead to type confusion vulnerabilities if the input is not explicitly
+    checked.
+
+    Always validate input types using functions like is_string(), is_numeric(), etc.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/44eb12f15a562718bbe54c9a16af91ceea335d59
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    - 'A5: Security Misconfiguration'
+    technology:
+    - php

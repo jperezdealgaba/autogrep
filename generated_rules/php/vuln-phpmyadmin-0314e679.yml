@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyadmin-0314e679
+  pattern: "if (isset($_SESSION['last_valid_captcha']) && $_SESSION['last_valid_captcha'])\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!isset($_SESSION['last_valid_captcha']) || !$_SESSION['last_valid_captcha'])\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code directly checks the session variable `$_SESSION[''last_valid_captcha'']`
+    without proper validation, which can lead to bypassing CAPTCHA verification. This
+    is dangerous because it allows attackers to potentially bypass security mechanisms.
+    Ensure proper validation and consider using secure session management practices.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0314e67900f01410bc8c81c58a40dc0515e3c91d
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

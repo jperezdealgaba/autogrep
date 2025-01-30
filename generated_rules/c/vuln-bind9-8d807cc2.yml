@@ -1,0 +1,28 @@
+rules:
+- id: vuln-bind9-8d807cc2
+  pattern: '$KEY->key_size = pk11_numbits($DATA, $LEN);
+
+    '
+  pattern-not: "$RET = pk11_numbits($DATA, $LEN, &$BITS);\nif ($RET != ISC_R_SUCCESS)\
+    \ {\n  ...\n}\n$KEY->key_size = $BITS;\n"
+  languages:
+  - c
+  message: 'Direct assignment of pk11_numbits result to key_size without error checking
+    can lead to incorrect key size values. This can cause security vulnerabilities
+    in cryptographic operations. Always check the return value of pk11_numbits and
+    handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/8d807cc21655eaa6e6a08afafeec3682c0f3f2ab
+    category: security
+    cwe:
+    - 'CWE-391: Unchecked Error Condition'
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/391.html
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - c

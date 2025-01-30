@@ -1,0 +1,24 @@
+rules:
+- id: vuln-irssi-fa850840
+  pattern: "if (!(dest->level & MSGLEVEL_PUBLIC))\n  return;\n...\nprint_netjoins(rec,\
+    \ dest->target);\n"
+  pattern-not: 'print_netjoins(rec, NULL);
+
+    '
+  languages:
+  - c
+  message: 'The code checks for a specific message level and uses the target directly,
+    which can lead to potential security vulnerabilities. The patch replaces the target
+    with NULL to avoid misuse. Ensure that the target parameter is handled safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/fa8508404f4c4a02749cae5148662e2322c2abf0
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

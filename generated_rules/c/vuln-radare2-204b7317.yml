@@ -1,0 +1,32 @@
+rules:
+- id: vuln-radare2-204b7317
+  pattern: "$CTR++;\nif ($CTR >= $TOKENS_SIZE) {\n    ...\n}\n"
+  pattern-not: "if ($CTR + 1 >= $TOKENS_SIZE) {\n    $CTR++;\n} else {\n    break;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds access vulnerability due to incorrect
+    counter increment logic.
+
+    The counter is incremented before checking the bounds, which could lead to accessing
+    memory beyond the allocated size.
+
+    To fix this, check the bounds before incrementing the counter and handle the condition
+    appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/204b7317beb1ede1ba352b13f7ebb09efff1c55d
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

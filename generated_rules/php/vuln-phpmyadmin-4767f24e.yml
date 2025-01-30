@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-4767f24e
+  pattern: "foreach ($_GET['scripts'] as $script) {\n  ...\n}\n"
+  pattern-not: "foreach (array_slice($_GET['scripts'], 0, 10) as $script) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Direct iteration over $_GET[''scripts''] without limiting the number of
+    elements can lead to resource exhaustion or denial of service attacks. An attacker
+    could send a large number of script requests, causing the server to process an
+    excessive amount of data. To fix this, use array_slice to limit the number of
+    processed elements, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/4767f24ea4c1e3822ce71a636c341e8ad8d07aa6
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html
+    technology:
+    - php

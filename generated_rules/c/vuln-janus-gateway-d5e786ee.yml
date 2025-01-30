@@ -1,0 +1,28 @@
+rules:
+- id: vuln-janus-gateway-d5e786ee
+  pattern: "janus_videocall_session *session = (janus_videocall_session *)handle->plugin_handle;\n\
+    if(!session)\n  return janus_plugin_result_new(JANUS_PLUGIN_ERROR, \"No session\
+    \ associated with this handle\", NULL);\n"
+  pattern-not: "janus_mutex_lock(&sessions_mutex);\njanus_videocall_session *session\
+    \ = janus_videocall_lookup_session(handle);\nif(!session) {\n  janus_mutex_unlock(&sessions_mutex);\n\
+    \  return janus_plugin_result_new(JANUS_PLUGIN_ERROR, \"No session associated\
+    \ with this handle\", NULL);\n}\njanus_mutex_unlock(&sessions_mutex);\n"
+  languages:
+  - c
+  message: 'Direct access to the session handle without proper synchronization can
+    lead to race conditions and undefined behavior. Use the janus_videocall_lookup_session
+    function with mutex locking to safely access the session.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/meetecho/janus-gateway/commit/d5e786eedf5bc5f200dfafa98177e793350e4e32
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-wordpress-4372cdf4
+  pattern: 'echo wp_basename($VAR);
+
+    '
+  pattern-not: 'echo esc_html(wp_basename($VAR));
+
+    '
+  message: 'Detected unescaped output of wp_basename(). This can lead to Cross-Site
+    Scripting (XSS) vulnerabilities if the output contains user-controlled data. Always
+    use esc_html() to sanitize the output before displaying it.
+
+    '
+  severity: ERROR
+  languages:
+  - php
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/4372cdf45d0f49c74bbd4d60db7281de83e32648
+    category: security
+    cwe:
+    - CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

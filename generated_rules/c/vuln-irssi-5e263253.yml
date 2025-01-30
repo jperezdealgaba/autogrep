@@ -1,0 +1,31 @@
+rules:
+- id: vuln-irssi-5e263253
+  pattern: "if ($LIST == $NICK || $LIST->next == NULL) {\n  g_hash_table_remove($CHANNEL->nicks,\
+    \ $NICK->nick);\n  if ($LIST->next != NULL) {\n    g_hash_table_insert($CHANNEL->nicks,\
+    \ $NICK->next->nick, $NICK->next);\n  }\n}\n"
+  pattern-not: "if ($LIST == $NICK) {\n  $NEWLIST = $NICK->next;\n  $NEWLIST = $LIST;\n\
+    \  g_hash_table_remove($CHANNEL->nicks, $NICK->nick);\n  if ($NEWLIST != NULL)\
+    \ {\n    g_hash_table_insert($CHANNEL->nicks, $NEWLIST->nick, $NEWLIST);\n  }\n\
+    }\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs due to improper handling of the linked list in
+    the nicklist removal logic. The original code fails to correctly update the hash
+    table when removing a nick, potentially leading to memory corruption or undefined
+    behavior. The fix introduces a new variable `newlist` to properly manage the list
+    updates. To fix this, ensure that the list is correctly updated and that the hash
+    table operations are performed safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/5e26325317c72a04c1610ad952974e206384d291
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

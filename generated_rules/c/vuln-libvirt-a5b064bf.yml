@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libvirt-a5b064bf
+  pattern: 'virDomainDiskSourceFormatNetworkCookies($CHILD_BUF, $SRC)
+
+    '
+  pattern-not: 'virDomainDiskSourceFormatNetworkCookies($CHILD_BUF, $SRC, $FLAGS)
+
+    '
+  languages:
+  - c
+  message: 'The function `virDomainDiskSourceFormatNetworkCookies` is being called
+    without the `flags` parameter, which can lead to insecure handling of network
+    cookies. This vulnerability could allow attackers to exploit insecure cookie handling
+    in network storage configurations. Always include the `flags` parameter and check
+    for `VIR_DOMAIN_DEF_FORMAT_SECURE` to ensure secure handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/a5b064bf4b17a9884d7d361733737fb614ad8979
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A05:2021 - Security Misconfiguration
+    technology:
+    - c

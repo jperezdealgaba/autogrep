@@ -1,0 +1,26 @@
+rules:
+- id: vuln-lua-597a53bb
+  pattern: '$G->gcstp = GCSTPGC;
+
+    '
+  pattern-not: '$G->gcstp |= GCSTPGC;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves the incorrect use of assignment instead of
+    bitwise OR operation for setting the GCSTPGC flag. This can lead to unintended
+    behavior in garbage collection, potentially causing memory leaks or crashes. Use
+    the bitwise OR operator (|=) to properly set the flag without overwriting other
+    bits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/597a53bbc681089d85b082b46c2e2428dec43b86
+    category: security
+    cwe:
+    - CWE-682
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

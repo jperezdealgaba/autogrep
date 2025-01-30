@@ -1,0 +1,28 @@
+rules:
+- id: vuln-lua-127e7a6c
+  pattern: 'markold($G, $G->survival, $G->reallyold)
+
+    '
+  pattern-not: 'markold($G, $G->allgc, $G->reallyold)
+
+    '
+  languages:
+  - c
+  message: 'The function `markold` incorrectly uses `g->survival` instead of `g->allgc`
+    for marking old objects. This can lead to incomplete garbage collection, potentially
+    causing memory leaks or undefined behavior. The fix is to use `g->allgc` to ensure
+    all objects are properly marked.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/127e7a6c8942b362aa3c6627f44d660a4fb75312
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://www.lua.org/manual/5.4/manual.html#2.5
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-lua-066e0f93
+  pattern: 'const char *kind = (isLua($CI)) ? funcnamefromcode($L, $CI, &$NAME) :
+    NULL;
+
+    '
+  pattern-not: 'const char *kind = funcnamefromcall($L, $CI, &$NAME);
+
+    '
+  languages:
+  - c
+  message: 'The function `funcnamefromcode` is being used to retrieve a function name,
+    which can lead to incorrect or incomplete information about the calling function.
+    This can cause issues in error handling and debugging, particularly in cases involving
+    finalizers or hooks. The fix replaces `funcnamefromcode` with `funcnamefromcall`,
+    which provides a more reliable way to determine the function name based on how
+    it was called. Ensure to use `funcnamefromcall` for accurate function name resolution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/066e0f93c4901e601d93e31fb700f8f66f95feb8
+    category: security
+    cwe:
+    - CWE-685
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-testlink-code-d99bd827
+  pattern: '$where_clause = " WHERE id = {$node_id}";
+
+    '
+  pattern-not: "$safe = intval($node_id);\nif ($safe <= 0) {\n  throw new Exception(\"\
+    BAD node_id\", 1);\n}\n$where_clause = \" WHERE id = $safe\";\n"
+  languages:
+  - php
+  message: 'Detected unsafe SQL query construction with unvalidated input. This can
+    lead to SQL injection vulnerabilities. Always validate and sanitize user inputs,
+    especially when used in SQL queries. Use prepared statements or parameterized
+    queries to prevent SQL injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/d99bd8277d384f3417e917ce20bef5d061110343
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

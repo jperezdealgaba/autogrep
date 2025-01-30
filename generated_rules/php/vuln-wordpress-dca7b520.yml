@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wordpress-dca7b520
+  pattern: '$wp_version = ''6.2-alpha-55027'';
+
+    '
+  pattern-not: '$wp_version = ''6.2-alpha-55028'';
+
+    '
+  languages:
+  - php
+  message: 'The WordPress version string is outdated and may indicate a security vulnerability.
+    Using an outdated version can expose the application to known exploits. Update
+    to the latest version to mitigate potential risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/dca7b5204b5fea54e6d1774689777b359a9222ab
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - php

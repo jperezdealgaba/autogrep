@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wordpress-419c8d97
+  pattern: '$embed = $wp_embed->autoembed("https://youtube.com/watch?v={$matches[2]}");
+
+    '
+  pattern-not: '$embed = $wp_embed->autoembed(sprintf("https://youtube.com/watch?v=%s",
+    urlencode($matches[2])));
+
+    '
+  languages:
+  - php
+  message: 'The URL parameter is not properly encoded, which could lead to URL injection
+    or manipulation. This vulnerability can be exploited to inject malicious content
+    or redirect users to unintended destinations. Always use `urlencode()` or similar
+    functions to safely encode dynamic URL parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/419c8d97ce8df7d5004ee0b566bc5e095f0a6ca8
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/URL_Injection
+    technology:
+    - php

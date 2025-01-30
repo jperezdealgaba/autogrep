@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wordpress-daf35898
+  pattern: '$prepared_args[''has_published_posts''] = true
+
+    '
+  pattern-not: '$prepared_args[''has_published_posts''] = get_post_types(array(''show_in_rest''
+    => true), ''names'')
+
+    '
+  languages:
+  - php
+  message: 'Hardcoding ''has_published_posts'' to true in REST API user queries can
+    lead to information disclosure by allowing unauthorized access to user data. This
+    should be restricted to post types that are explicitly allowed in the REST API
+    using get_post_types() with ''show_in_rest'' set to true.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/daf358983cc1ce0c77bf6d2de2ebbb43df2add60
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

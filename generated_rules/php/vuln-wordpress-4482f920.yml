@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wordpress-4482f920
+  pattern: the_excerpt()
+  pattern-not: echo esc_html(get_the_excerpt())
+  languages:
+  - php
+  message: 'Directly outputting `the_excerpt()` without proper escaping can lead to
+    XSS vulnerabilities.
+
+    Always use `esc_html()` or similar escaping functions when outputting dynamic
+    content.
+
+    The fix involves using `echo esc_html(get_the_excerpt())` to ensure safe output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/4482f9207027de8f36630737ae085110896ea849
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://developer.wordpress.org/reference/functions/the_excerpt/
+    technology:
+    - php

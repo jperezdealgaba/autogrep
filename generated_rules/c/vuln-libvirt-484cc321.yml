@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libvirt-484cc321
+  pattern: 'qemuDomainObjEnterMonitor($DRIVER, $VM);
+
+    '
+  pattern-not: "if (qemuDomainObjEnterMonitorAsync($DRIVER, $VM, $JOB) < 0)\n    return\
+    \ -1;\n"
+  languages:
+  - c
+  message: "Direct call to qemuDomainObjEnterMonitor without error handling can lead\
+    \ to unsafe state transitions. \nThis can cause race conditions or undefined behavior\
+    \ during migration operations. \nUse qemuDomainObjEnterMonitorAsync with proper\
+    \ error handling to ensure safe state transitions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/484cc3217b73b865f00bf42a9c12187b37200699
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - c

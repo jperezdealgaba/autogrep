@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ofbiz-framework-9b5aad63
+  pattern: '<field name="articleData" ...><textarea ... visual-editor-enable="true"/></field>
+
+    '
+  pattern-not: '<field name="articleData" ...><textarea ... visual-editor-enable="false"/></field>
+
+    '
+  languages:
+  - xml
+  message: 'The visual editor is enabled in a textarea field, which can lead to XSS
+    vulnerabilities. Disabling the visual editor (setting visual-editor-enable to
+    "false") is recommended to prevent potential injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ofbiz-framework/commit/9b5aad637c08a128f2503e32589e504d7d601ff5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - xml

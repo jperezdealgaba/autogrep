@@ -1,0 +1,37 @@
+rules:
+- id: vuln-radare2-a8806994
+  pattern: 'memcpy($DST, $SRC, R_MIN($BUFSIZE - 1, $LEN));
+
+    ...
+
+    r_hex_bin2str($SRC, R_MIN($ADDRBYTES * $LEN, (sizeof($HEXBUF) - 1) / 2), $HEXBUF);
+
+    '
+  pattern-not: "int $DSTLEN = R_MIN($BUFSIZE - 1, $LEN);\nint $CPYLEN = R_MIN($DSTLEN,\
+    \ $LEN);\nif ($CPYLEN > 0) {\n  memcpy($DST, $SRC, $CPYLEN);\n  ...\n  r_hex_bin2str($SRC,\
+    \ R_MIN($ADDRBYTES * $LEN, (sizeof($HEXBUF) - 1) / 2), $HEXBUF);\n}\n"
+  languages:
+  - c
+  message: 'This rule detects potential out-of-bounds write vulnerabilities caused
+    by unsafe usage of `memcpy` and `r_hex_bin2str` without proper length checks.
+    The original code could write beyond the allocated buffer size, leading to memory
+    corruption. The fix introduces proper length checks and ensures that the copy
+    operation is safe. Always validate buffer sizes before performing memory operations
+    to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/a88069940950999d5e2fd16cd7d16c7e956bf516
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    - 'A8: Software and Data Integrity Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

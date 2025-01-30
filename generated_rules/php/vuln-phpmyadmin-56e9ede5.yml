@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-56e9ede5
+  pattern: '$message->addMessage($VAR, '' - '');
+
+    $message->addMessage($VAR2);
+
+    '
+  pattern-not: '$message->addParam($VAR);
+
+    $message->addParam($VAR2);
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure message construction using `addMessage` with concatenation.
+    This can lead to improper message formatting and potential security issues. Use
+    `addParam` instead to ensure proper parameter handling and avoid vulnerabilities.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/56e9ede5223219cef2187ced385924ef2e0ae21d
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - php

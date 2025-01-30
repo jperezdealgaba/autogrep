@@ -1,27 +1,24 @@
 rules:
 - id: vuln-radare2-7ab66cca
   pattern: "if (!$OBJ || $OBJ->list.length != 2 || !$OBJ->list.objects[0] || $OBJ->list.objects[1]->list.length\
-    \ != 1) {\n    ...\n}\n"
+    \ != 1) {\n  ...\n}\n"
   pattern-not: "if (!$OBJ || $OBJ->list.length != 2 || !$OBJ->list.objects ||\n  \
     \  !$OBJ->list.objects[0] || !$OBJ->list.objects[1] ||\n    $OBJ->list.objects[1]->list.length\
-    \ != 1) {\n    ...\n}\n"
+    \ != 1) {\n  ...\n}\n"
   languages:
   - c
-  message: 'This rule detects missing NULL checks for array elements in a condition.
-
-    The vulnerability occurs when accessing elements of an array without ensuring
-    the array itself is not NULL, which can lead to NULL pointer dereference and potential
-    crashes or undefined behavior.
-
-    To fix this, ensure that the array pointer is checked before accessing its elements.
-
-    '
+  message: "Missing NULL check for `list.objects` array before accessing its elements.\
+    \ \nThis can lead to a NULL pointer dereference if `list.objects` is NULL, \n\
+    potentially causing a crash or undefined behavior. Always check if the \narray\
+    \ itself is not NULL before accessing its elements.\n"
   severity: ERROR
   metadata:
-    source-url: github.com/radare/radare2/commit/7ab66cca5bbdf6cb2d69339ef4f513d95e532dbf
+    source-url: github.com/radareorg/radare2/commit/7ab66cca5bbdf6cb2d69339ef4f513d95e532dbf
     category: security
     cwe:
     - CWE-476
-    owasp: 'A9: Using Components with Known Vulnerabilities'
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
     technology:
     - c

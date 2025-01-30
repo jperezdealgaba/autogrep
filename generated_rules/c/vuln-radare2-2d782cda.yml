@@ -1,0 +1,26 @@
+rules:
+- id: vuln-radare2-2d782cda
+  pattern: 'ut16 *$MODREF = malloc($BIN->ne_header->ModRefs * sizeof(ut16));
+
+    '
+  pattern-not: 'ut16 *$MODREF = calloc($BIN->ne_header->ModRefs, sizeof(ut16));
+
+    '
+  languages:
+  - c
+  message: 'The use of `malloc` without zero-initialization can lead to uninitialized
+    memory access vulnerabilities. This is dangerous because it can expose sensitive
+    data or lead to undefined behavior. Replace `malloc` with `calloc` to ensure the
+    memory is zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/2d782cdaa2112c10b8dd5e7a93c134b2ada9c1a6
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

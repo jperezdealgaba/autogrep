@@ -1,0 +1,34 @@
+rules:
+- id: vuln-contiki-ng-3216ebf5
+  pattern: 'uint8_t $I = $CID - $CONST;
+
+    ...
+
+    return &$ARRAY[$CID - $CONST];
+
+    '
+  pattern-not: 'int16_t $I = $CID - $CONST;
+
+    ...
+
+    return &$ARRAY[$I];
+
+    '
+  languages:
+  - c
+  message: 'The use of uint8_t for array indexing can lead to integer underflow when
+    the result of the subtraction is negative, causing out-of-bounds memory access.
+    This vulnerability can be exploited to read or write arbitrary memory locations.
+    Fix by using a signed integer type like int16_t for the index variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/3216ebf59e698b6dc71d0ba3e8052d5d5e09d2bd
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A1:2017-Injection
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wordpress-cea9e2dc
+  pattern: 'substr(md5(time() . rand() . $VAR), 0, 16)
+
+    '
+  pattern-not: 'substr(md5(time() . wp_rand() . $VAR), 0, 16)
+
+    '
+  languages:
+  - php
+  message: "Detected the use of insecure `rand()` function for generating cryptographic\
+    \ keys. \nThe `rand()` function is not cryptographically secure and can lead to\
+    \ predictable values, \nmaking the generated keys vulnerable to brute-force attacks.\
+    \ \nUse `wp_rand()` instead, which is designed to be cryptographically secure.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/WordPress/WordPress/commit/cea9e2dc62abf777e06b12ec4ad9d1aaa49b29f4
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://www.php.net/manual/en/function.rand.php
+    - https://developer.wordpress.org/reference/functions/wp_rand/
+    technology:
+    - php

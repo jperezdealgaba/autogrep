@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bind9-e4cccf96
+  pattern: "if ($MTYPE == dns_ssumatchtype_subdomain) {\n  ...\n}\n"
+  pattern-not: "if ($MTYPE == dns_ssumatchtype_subdomain &&\n    strcasecmp($STR,\
+    \ \"zonesub\") == 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code is missing a critical check for the string "zonesub" when the
+    match type is `dns_ssumatchtype_subdomain`. This vulnerability could lead to incorrect
+    handling of subdomain matches, potentially allowing unauthorized access or misconfiguration.
+    To fix this, ensure that the `strcasecmp` check for "zonesub" is included when
+    the match type is `dns_ssumatchtype_subdomain`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/e4cccf9668c7adee4724a7649ec64685f82c8677
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-microweber-a5925f74
+  pattern: '$u1 = $cleanParam->cleanArray($u1);
+
+    '
+  pattern-not: '$u1 = $cleanParam->clean($u1);
+
+    '
+  languages:
+  - php
+  message: 'Detected usage of `cleanArray` instead of `clean` on a single parameter.
+    This can lead to improper sanitization of input data, potentially enabling injection
+    attacks. Use the `clean` method for single parameters to ensure proper sanitization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/a5925f74d39775771d4c37c8d4c1acbb762fda0a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references: []
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-0191fc3c
+  pattern: '$conn_error = PMA_DBI_getError();
+
+    '
+  pattern-not: '$conn_error = PMA_sanitize(PMA_DBI_getError());
+
+    '
+  languages:
+  - php
+  message: 'Unsanitized error message handling detected. This can lead to Cross-Site
+    Scripting (XSS) vulnerabilities if the error message contains user-controlled
+    input. Always sanitize error messages before displaying them. Use `PMA_sanitize()`
+    to sanitize the error message.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0191fc3c33feb809cf668f018ad53dc35061fe4c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

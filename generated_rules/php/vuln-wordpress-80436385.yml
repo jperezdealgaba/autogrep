@@ -1,0 +1,31 @@
+rules:
+- id: vuln-wordpress-80436385
+  pattern: '$same_host = ( strtolower( $parsed_home[''host''] ) === strtolower( $parsed_url[''host'']
+    ) || ''localhost'' === strtolower( $parsed_url[''host''] ) );
+
+    '
+  pattern-not: '$same_host = strtolower( $parsed_home[''host''] ) === strtolower(
+    $parsed_url[''host''] );
+
+    '
+  languages:
+  - php
+  message: 'Security vulnerability detected: The code allows ''localhost'' as a valid
+    host without proper validation, which can lead to security issues such as SSRF
+    (Server-Side Request Forgery). Always validate hostnames strictly and avoid special
+    cases like ''localhost'' unless explicitly required and properly secured. Fix
+    by removing the ''localhost'' check and ensuring strict hostname comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/804363859602d4050d9a38a21f5a65d9aec18216
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

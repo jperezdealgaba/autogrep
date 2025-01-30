@@ -1,0 +1,33 @@
+rules:
+- id: vuln-libvirt-9d73efdb
+  pattern: 'qemuDomainObjEnterMonitorWithDriver($DRIVER, $VM);
+
+    $RET = qemuMonitorSetVNCPassword($PRIV->mon, $PASSWD ? $PASSWD : $DEFAULT_PASSWD);
+
+    qemuDomainObjExitMonitorWithDriver($DRIVER, $VM);
+
+    '
+  pattern-not: 'qemuDomainChangeGraphicsPasswords($DRIVER, $VM, $TYPE, $AUTH, $DEFAULT_PASSWD);
+
+    '
+  languages:
+  - c
+  message: 'Direct use of `qemuMonitorSetVNCPassword` without handling password expiration
+    or other graphics types (like SPICE) can lead to incomplete password management.
+    This vulnerability could result in insecure password handling, especially when
+    dealing with multiple graphics types or password expiration policies. The fix
+    involves using `qemuDomainChangeGraphicsPasswords` to handle both VNC and SPICE
+    graphics securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/9d73efdbe3ea61a13a11fdc24a2cb530eaa0b66f
+    category: security
+    cwe:
+    - CWE-287
+    - CWE-640
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

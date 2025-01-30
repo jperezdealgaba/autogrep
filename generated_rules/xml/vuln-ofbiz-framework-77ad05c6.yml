@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ofbiz-framework-77ad05c6
+  pattern: '<field name="story" use-when="custRequest==null" encode-output="false"><textarea
+    cols="60" rows="12" default-value="${communicationEvent.content}"/></field>
+
+    '
+  pattern-not: '<field name="story" use-when="custRequest==null"><textarea cols="60"
+    rows="12" default-value="${communicationEvent.content}"/></field>
+
+    '
+  languages:
+  - xml
+  message: 'The field element with name "story" has the attribute `encode-output="false"`,
+    which disables output encoding. This can lead to Cross-Site Scripting (XSS) vulnerabilities
+    if user-controlled input is rendered without proper escaping. Remove the `encode-output="false"`
+    attribute to ensure output is properly encoded and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ofbiz-framework/commit/77ad05c6274bc358383f57e91ca2164bbb86fa50
+    category: security
+    cwe: 'CWE-79: Improper Neutralization of Input During Web Page Generation (''Cross-site
+      Scripting'')'
+    owasp: A03:2021 - Injection
+    technology:
+    - xml

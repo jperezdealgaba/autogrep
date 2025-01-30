@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-7662d029
+  pattern: 'Core::checkPageValidity($_REQUEST[''target''])
+
+    '
+  pattern-not: 'Core::checkPageValidity($_REQUEST[''target''], [], true)
+
+    '
+  languages:
+  - php
+  message: 'Detected a call to `Core::checkPageValidity` without the `$include` parameter
+    set to `true`. This can lead to security vulnerabilities by allowing unauthorized
+    page inclusions. Always include the `$include` parameter set to `true` to ensure
+    proper security checks are enforced.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/7662d02939fb3cf6f0d9ec32ac664401dcfe7490
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - OWASP_A1
+    references:
+    - https://github.com/phpmyadmin/phpmyadmin/commit/7662d02939fb3cf6f0d9ec32ac664401dcfe7490
+    technology:
+    - php

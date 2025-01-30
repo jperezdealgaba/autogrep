@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wordpress-22d95abc
+  pattern: '$VAR == $EXPR
+
+    '
+  pattern-not: '$VAR === $EXPR
+
+    '
+  languages:
+  - php
+  message: 'Detected use of loose comparison (==) instead of strict comparison (===)
+    in PHP code. Loose comparison can lead to unexpected type coercion and security
+    vulnerabilities, especially when comparing user input or sensitive values. Always
+    use strict comparison (===) to ensure both value and type match.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/22d95abc55824e83904dc0fef290464b6bec7708
+    category: security
+    cwe: 'CWE-697: Incorrect Comparison'
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://www.php.net/manual/en/language.operators.comparison.php
+    technology:
+    - php

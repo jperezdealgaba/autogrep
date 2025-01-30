@@ -1,0 +1,25 @@
+rules:
+- id: vuln-irssi-5a4e7ab6
+  pattern: 'g_hash_table_insert($SERVER->cap_supported, $KEY, $VAL);
+
+    '
+  pattern-not: 'g_hash_table_replace($SERVER->cap_supported, $KEY, $VAL);
+
+    '
+  languages:
+  - c
+  message: 'The use of `g_hash_table_insert` can lead to memory leaks or unexpected
+    behavior if the key already exists in the hash table. Use `g_hash_table_replace`
+    instead, which ensures the old value is properly freed if the key exists.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/5a4e7ab659aba2855895c9f43e9a7a131f4e89b3
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

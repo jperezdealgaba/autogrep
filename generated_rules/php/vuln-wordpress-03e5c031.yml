@@ -1,0 +1,32 @@
+rules:
+- id: vuln-wordpress-03e5c031
+  pattern: '$this->_screen_settings = ''<p><a id="access-on" href="widgets.php?widgets-access=on">''
+    . __(''Enable accessibility mode'') . ''</a><a id="access-off" href="widgets.php?widgets-access=off">''
+    . __(''Disable accessibility mode'') . "</a></p>\n";
+
+    '
+  pattern-not: '$this->_screen_settings = ''<p><a id="access-on" href="widgets.php?widgets-access=on&_wpnonce=''
+    . urlencode( $nonce ) . ''">'' . __(''Enable accessibility mode'') . ''</a><a
+    id="access-off" href="widgets.php?widgets-access=off&_wpnonce='' . urlencode(
+    $nonce ) . ''">'' . __(''Disable accessibility mode'') . "</a></p>\n";
+
+    '
+  languages:
+  - php
+  message: 'Missing CSRF protection in URL links. This vulnerability allows attackers
+    to perform unauthorized actions by tricking users into clicking malicious links.
+    Add a nonce to the URL using `wp_create_nonce()` and verify it with `check_admin_referer()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/03e5c0314aeffe6b27f4b98fef842bf0fb00c733
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://developer.wordpress.org/apis/security/nonces/
+    technology:
+    - php

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-wordpress-8c82515a
+  pattern: "function $FUNC() {\n    ...\n    $plugin = urldecode($_POST['plugin']);\n\
+    \    ...\n}\n"
+  pattern-not: "function $FUNC() {\n    ...\n    $plugin = sanitize_text_field(wp_unslash($_POST['plugin']));\n\
+    \    ...\n}\n"
+  languages:
+  - php
+  message: 'Unsanitized plugin parameter directly from $_POST can lead to security
+    vulnerabilities.
+
+    The code uses urldecode() on user input without proper sanitization, which can
+    allow
+
+    malicious input to be processed. Always sanitize user input using functions like
+
+    sanitize_text_field() and wp_unslash() to prevent security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/8c82515ab62b88fb32d01c9778f0204b296f3568
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-24d0eb55
+  pattern: "try {\n    if (top != self) {\n        top.location.href = self.location.href;\n\
+    \    }\n} catch($E) {\n    alert(\"Redirecting... (error: \" + $E);\n    top.location.href\
+    \ = self.location.href;\n}\n"
+  pattern-not: "if(self == top) {\n    document.documentElement.style.display = 'block';\n\
+    } else {\n    top.location = self.location;\n}\n"
+  languages:
+  - javascript
+  message: 'Insecure cross-framing protection detected. The vulnerable code attempts
+    to redirect to the same URL when framed, but uses a try-catch block that can expose
+    error details. This can lead to information disclosure or other security issues.
+    Use a simple if-else check to handle framing protection securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/24d0eb55203b029f250c77d63f2900ffbe099e8b
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - javascript

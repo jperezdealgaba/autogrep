@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-9b355160
+  pattern: '"<i>$sql_query</i><br /><br />" . PMA_DBI_getError()
+
+    '
+  pattern-not: '"<i>" . htmlspecialchars($sql_query) . "</i><br /><br />" . PMA_DBI_getError()
+
+    '
+  languages:
+  - php
+  message: "Detected a potential XSS vulnerability due to unescaped SQL query output.\
+    \ \nThe variable $sql_query is directly embedded in HTML without proper escaping,\
+    \ \nwhich could allow an attacker to inject malicious scripts. \nUse htmlspecialchars()\
+    \ to properly escape the output before embedding it in HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/9b3551601ce714adb5e3f428476052f0ec6093bf
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

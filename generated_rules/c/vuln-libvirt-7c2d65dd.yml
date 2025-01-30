@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libvirt-7c2d65dd
+  pattern: 'fchmod($FD, $PERMS->mode)
+
+    '
+  pattern-not: 'fchmod($FD, ($PERMS->mode == (mode_t) -1 ? $DEFAULT_MODE : $PERMS->mode))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of file permissions without default fallback. This
+    can lead to insecure file permissions if the mode is not properly set. Always
+    use a safe default mode when the specified mode is invalid (e.g., (mode_t) -1).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/7c2d65dde2595c07d56aad1e043f7b1836592d89
+    category: security
+    cwe:
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - c

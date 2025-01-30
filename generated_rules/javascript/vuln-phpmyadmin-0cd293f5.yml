@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyadmin-0cd293f5
+  pattern: '''DROP VIEW '' + PMA_commonParams.get(''table'')
+
+    '
+  pattern-not: '''DROP VIEW '' + escapeHtml(PMA_commonParams.get(''table''))
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability due to unescaped user input in SQL query.\
+    \ \nThe table name is used directly in a DROP VIEW statement without proper escaping,\
+    \ \nwhich could allow an attacker to inject malicious SQL code. \nAlways sanitize\
+    \ user input using appropriate escaping functions like escapeHtml().\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0cd293f5e13aa245e4a57b8d373597cc0e421b6f
+    category: security
+    cwe: CWE-89
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - javascript

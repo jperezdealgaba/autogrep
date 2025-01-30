@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wordpress-3d10fef2
+  pattern: 'echo sprintf( __( ''You are customizing %s'' ), ''<strong class="panel-title
+    site-title">'' . get_bloginfo( ''name'' ) . ''</strong>'' );
+
+    '
+  pattern-not: 'echo sprintf( __( ''You are customizing %s'' ), ''<strong class="panel-title
+    site-title">'' . get_bloginfo( ''name'', ''display'' ) . ''</strong>'' );
+
+    '
+  languages:
+  - php
+  message: 'The function get_bloginfo(''name'') is used without specifying the ''display''
+    context, which can lead to potential XSS vulnerabilities. Always use the ''display''
+    context when outputting blog information to ensure that any potentially unsafe
+    data is properly escaped.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/3d10fef22d788f29aed745b0f5ff6f6baea69af3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

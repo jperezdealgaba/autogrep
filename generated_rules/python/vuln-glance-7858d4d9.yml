@@ -1,0 +1,33 @@
+rules:
+- id: vuln-glance-7858d4d9
+  pattern: "$NEW_IMAGE = $IMAGE_REPO.get($IMAGE_ID)\nif $NEW_IMAGE.status in ['saving']:\n\
+    \    $NEW_IMAGE.status = 'active'\n    $NEW_IMAGE.size = $ORIGINAL_IMAGE.size\n\
+    \    $NEW_IMAGE.virtual_size = $ORIGINAL_IMAGE.virtual_size\n    $NEW_IMAGE.checksum\
+    \ = $ORIGINAL_IMAGE.checksum\nelse:\n    $MSG = _($TEMPLATE) % {\"image_id\":\
+    \ $NEW_IMAGE.image_id, \"task_id\": $TASK_ID}\n    raise $EXCEPTION($MSG)\n$IMAGE_REPO.save($NEW_IMAGE)\n"
+  pattern-not: "try:\n    $NEW_IMAGE = $IMAGE_REPO.get($IMAGE_ID)\n    if $NEW_IMAGE.status\
+    \ == 'saving':\n        $NEW_IMAGE.status = 'active'\n        $NEW_IMAGE.size\
+    \ = $ORIGINAL_IMAGE.size\n        $NEW_IMAGE.virtual_size = $ORIGINAL_IMAGE.virtual_size\n\
+    \        $NEW_IMAGE.checksum = $ORIGINAL_IMAGE.checksum\n    else:\n        $MSG\
+    \ = _($TEMPLATE) % {\"image_id\": $NEW_IMAGE.image_id, \"task_id\": $TASK_ID}\n\
+    \        raise $EXCEPTION($MSG)\n    $IMAGE_REPO.save($NEW_IMAGE)\nexcept ($EXCEPTION,\
+    \ $ANOTHER_EXCEPTION):\n    with $EXCUTILS.save_and_reraise_exception():\n   \
+    \     if $ORIGINAL_IMAGE.locations:\n            for $LOCATION in $ORIGINAL_IMAGE.locations:\n\
+    \                $STORE_UTILS.delete_image_location_from_backend(\n          \
+    \          $ORIGINAL_IMAGE.context,\n                    $ORIGINAL_IMAGE.image_id,\n\
+    \                    $LOCATION)\n"
+  languages:
+  - python
+  message: "Detected unsafe image status handling without proper exception management.\
+    \ \nThis can lead to resource leaks if the image processing fails. \nWrap the\
+    \ image status handling in a try-except block and ensure proper cleanup.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/glance/commit/7858d4d95154c8596720365e465cca7858cfec5c
+    category: security
+    cwe:
+    - CWE-459
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

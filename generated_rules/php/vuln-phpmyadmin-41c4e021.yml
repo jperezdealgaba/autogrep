@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-41c4e021
+  pattern: '$properties = $this->getColumnProperties($_REQUEST[''it''], $VAR);
+
+    '
+  pattern-not: "$search_index = 0;\nif (PMA_isValid($_REQUEST['it'], 'integer')) {\n\
+    \    $search_index = $_REQUEST['it'];\n}\n$properties = $this->getColumnProperties($search_index,\
+    \ $VAR);\n"
+  languages:
+  - php
+  message: 'Direct use of $_REQUEST[''it''] without validation can lead to security
+    vulnerabilities such as SQL injection or unexpected behavior. Always validate
+    and sanitize user inputs before using them in critical operations. In this case,
+    use PMA_isValid to ensure the input is a valid integer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/41c4e0214c286f28830cca54423b5db57e7c0ce4
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

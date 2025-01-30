@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libvirt-47b9127e
+  pattern: "if (virBitmapIsSet($BITMAP, $BIT)) {\n  ignore_value(virBitmapClearBit($BITMAP,\
+    \ $BIT));\n  $RET--;\n}\n"
+  pattern-not: "if (virBitmapClearBit($BITMAP, $BIT) < 0)\n  goto error;\n"
+  languages:
+  - c
+  message: 'Detected unsafe bitmap manipulation where error handling is ignored.
+
+    This can lead to inconsistent state and potential security vulnerabilities.
+
+    Always check the return value of bitmap operations and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/47b9127e883677a0d60d767030a147450e919a25
+    category: security
+    cwe:
+    - CWE-252
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

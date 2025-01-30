@@ -1,0 +1,36 @@
+rules:
+- id: vuln-bind9-73df5c80
+  pattern: "if ($PRIV_KEY1 == NULL || $PRIV_KEY2 == NULL) {\n  return ($RETURN_VALUE);\n\
+    }\nif (BN_cmp($PRIV_KEY1, $PRIV_KEY2) != 0) {\n  return ($RETURN_VALUE);\n}\n"
+  pattern-not: "if ($PRIV_KEY1 == NULL || $PRIV_KEY2 == NULL ||\n    BN_cmp($PRIV_KEY1,\
+    \ $PRIV_KEY2) != 0) {\n  $DST_RET($RETURN_VALUE);\n}\n"
+  languages:
+  - c
+  message: 'The code contains multiple separate checks for NULL pointers and BN_cmp
+    comparisons,
+
+    which can lead to inconsistent error handling and resource leaks. The vulnerability
+
+    occurs because the function may return prematurely without proper cleanup. This
+    can
+
+    be dangerous as it may leave resources allocated or system state inconsistent.
+    The
+
+    fix combines these checks into a single conditional statement and uses a proper
+
+    error handling mechanism (DST_RET) to ensure consistent cleanup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/73df5c80538970ee1fbc4fe3348109bdc281e197
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/MEM12-C.+Consider+using+a+goto+chain+when+leaving+a+function+on+error+when+using+and+releasing+resources
+    technology:
+    - c

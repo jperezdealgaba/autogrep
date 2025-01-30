@@ -1,0 +1,32 @@
+rules:
+- id: vuln-lua-89aee84c
+  pattern: 'UpVal **$VAR1 = getupvalref($_, $_, $_, $VAR2);
+
+    UpVal **$VAR3 = getupvalref($_, $_, $_, NULL);
+
+    '
+  pattern-not: 'UpVal **$VAR1 = getupvalref($_, $_, $_);
+
+    UpVal **$VAR3 = getupvalref($_, $_, $_);
+
+    '
+  languages:
+  - c
+  message: 'The function `getupvalref` was called with an unnecessary `LClosure` pointer
+    parameter, which could lead to undefined behavior or security vulnerabilities.
+    This issue was fixed by removing the unused parameter. Ensure that `getupvalref`
+    is called without the `LClosure` pointer parameter to avoid potential risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/89aee84cbc9224f638f3b7951b306d2ee8ecb71e
+    category: security
+    cwe:
+    - CWE-457
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    technology:
+    - c

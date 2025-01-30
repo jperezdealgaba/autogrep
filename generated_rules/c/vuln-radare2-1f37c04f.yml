@@ -1,0 +1,26 @@
+rules:
+- id: vuln-radare2-1f37c04f
+  pattern: "for (i = 0; i < $SIZE; i += $STEP) {\n  ...\n}\n"
+  pattern-not: "for (i = 0; (i + $OFFSET) < $SIZE; i += $STEP) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow in loop iteration. The loop condition
+    does not account for the step size, which could lead to accessing memory beyond
+    the intended bounds. This can cause undefined behavior, crashes, or security vulnerabilities.
+    To fix, ensure the loop condition checks that the index plus the step size minus
+    one is less than the size limit.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/1f37c04f2a762500222dda2459e6a04646feeedf
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-linux-9e7f3056
+  pattern: 'xe_exec_queue_put($JOB->q);
+
+    '
+  pattern-not: '$Q = $JOB->q;
+
+    xe_exec_queue_put($Q);
+
+    '
+  languages:
+  - c
+  message: "Directly using `job->q` in `xe_exec_queue_put` can lead to potential use-after-free\
+    \ or double-free vulnerabilities. \nThe correct approach is to store `job->q`\
+    \ in a local variable before passing it to `xe_exec_queue_put` to ensure consistent\
+    \ reference handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/torvalds/linux/commit/9e7f30563677fbeff62d368d5d2a5ac7aaa9746a
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-672
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyadmin-364732e3
+  pattern: 'PMA_ajaxShowMessage($(''<div />'',{''class'':''error'',''html'':$MESSAGE+''
+    ( ''+$XHR.statusText+'' )''}))
+
+    '
+  pattern-not: 'PMA_ajaxShowMessage($(''<div />'',{''class'':''error'',''html'':$MESSAGE+''
+    ( ''+escapeHtml($XHR.statusText)+'' )''}))
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unescaped statusText in error message.
+    Always use escapeHtml() to sanitize dynamic content before rendering it in HTML.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/364732e309cccb3fb56c938ed8d8bc0e04a3ca98
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - javascript

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-wordpress-fb3c6ea0
+  pattern: '$uris = array(''xmlns'', ''profile'', ''href'', ''src'', ''cite'', ''classid'',
+    ''codebase'', ''data'', ''usemap'', ''longdesc'', ''action'');
+
+    '
+  pattern-not: '$uris = wp_kses_uri_attributes();
+
+    '
+  languages:
+  - php
+  message: 'Hardcoding URI attributes in an array can lead to incomplete validation
+    of URL attributes, potentially allowing malicious URLs to bypass security checks.
+    This vulnerability can be exploited to inject harmful links or scripts. Use the
+    `wp_kses_uri_attributes()` function instead, which provides a comprehensive and
+    filterable list of URI attributes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/fb3c6ea0618fcb9a51d4f2c1940e9efcd4a2d460
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes
+    technology:
+    - php

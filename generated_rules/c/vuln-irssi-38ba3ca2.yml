@@ -1,0 +1,33 @@
+rules:
+- id: vuln-irssi-38ba3ca2
+  pattern: "if (!IS_IRC_SERVER($SERVER))\n  return;\n\nif (!server_ischannel($SERVER,\
+    \ $TARGET))\n  return;\n\n$REC = IRC_SERVER($SERVER);\nif ($REC->$FIELD != NULL)\n\
+    \  $FUNC($REC, NULL);\n"
+  pattern-not: "for ($TMP = $LIST; $TMP != NULL; $TMP = $NEXT) {\n  $REC = $TMP->data;\n\
+    \  if (IS_IRC_SERVER($REC) && $REC->$FIELD != NULL)\n    $FUNC($REC, NULL);\n\
+    }\n"
+  languages:
+  - c
+  message: 'Missing proper iteration over server list and validation checks can lead
+    to null pointer dereference or incorrect server handling.
+
+    The vulnerability occurs when direct server access is used without proper iteration
+    and validation, which was fixed by adding a loop over the server list and proper
+    IS_IRC_SERVER checks within the loop.
+
+    To fix this, ensure you iterate over the server list and validate each server
+    using IS_IRC_SERVER before accessing its fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/38ba3ca2c40fc8ccccec8dc3f360c4087e7dd498
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021
+    references:
+    - https://irssi.org/security/
+    technology:
+    - c

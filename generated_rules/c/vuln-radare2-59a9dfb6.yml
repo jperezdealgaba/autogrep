@@ -1,34 +1,37 @@
 rules:
 - id: vuln-radare2-59a9dfb6
-  pattern: 'RRegItem *$R;
+  pattern: 'RRegItem *$VAR;
 
     ...
 
-    r_reg_set_value($REG, $R, $EXPR);
+    r_reg_set_value($REG, $VAR, $EXPR);
 
     '
-  pattern-not: 'RRegItem *$R = NULL;
+  pattern-not: 'RRegItem *$VAR = NULL;
 
     ...
 
-    r_reg_set_value($REG, $R, $EXPR);
+    ut64 $N = r_num_math($NUM, $ARG);
+
+    r_reg_set_value($REG, $VAR, $N);
 
     '
   languages:
   - c
-  message: 'Detected uninitialized RRegItem pointer usage in r_reg_set_value. This
-    can lead to undefined behavior or crashes if the pointer is not properly initialized.
-    Always initialize pointers to NULL or a valid address before using them.
+  message: 'The code directly uses the result of `r_num_math` in `r_reg_set_value`
+    without checking if the `RRegItem` pointer is valid. This can lead to undefined
+    behavior if the pointer is NULL. The fix involves initializing the `RRegItem`
+    pointer to NULL and using an intermediate variable to store the result of `r_num_math`
+    before passing it to `r_reg_set_value`.
 
     '
   severity: ERROR
   metadata:
-    source-url: github.com/radare/radare2/commit/59a9dfb60acf8b5c0312061cffd9693fc9526053
+    source-url: github.com/radareorg/radare2/commit/59a9dfb60acf8b5c0312061cffd9693fc9526053
     category: security
     cwe:
-    - CWE-457
-    owasp: A9:2017-Insufficient Attack Protection
-    references:
-    - https://cwe.mitre.org/data/definitions/457.html
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
     technology:
     - c

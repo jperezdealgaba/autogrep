@@ -1,0 +1,36 @@
+rules:
+- id: vuln-lua-0bfc572e
+  pattern: 'global_State *$G;
+
+    ...
+
+    $G = G($L);
+
+    ...
+
+    $G->gcrunning = $VALUE;
+
+    '
+  pattern-not: "global_State *$G = G($L);\n...\nif ($G->gcstp & GCSTPGC)\n  return\
+    \ -1;\n...\n$G->gcstp = $VALUE;\n"
+  languages:
+  - c
+  message: 'Detected unsafe modification of the garbage collector state without proper
+    checks.
+
+    This could lead to incorrect garbage collection behavior, potentially causing
+    memory leaks or crashes.
+
+    Ensure the garbage collector state is checked and updated safely using the new
+    ''gcstp'' mechanism.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/0bfc572e51d9035a615ef6e9523f736c9ffa8e57
+    category: security
+    cwe:
+    - CWE-665
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

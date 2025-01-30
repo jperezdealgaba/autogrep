@@ -1,0 +1,29 @@
+rules:
+- id: vuln-testlink-code-58f3cc03
+  pattern: '$tplanMgr->setTestUrgency($argsObj->tplan_id, $id, $urgency);
+
+    '
+  pattern-not: '$tplanMgr->setTestUrgency($argsObj->tplan_id, intval($id), intval($urgency));
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to SQL injection due to missing input validation.
+    The function `setTestUrgency` is called with raw `$id` and `$urgency` parameters,
+    which could be manipulated to inject malicious SQL. Always use `intval` or similar
+    functions to ensure these values are properly sanitized before being used in database
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/58f3cc03d5f81cd5cc2ad8c7ba645cc486cebc05
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

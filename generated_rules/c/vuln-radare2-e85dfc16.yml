@@ -1,0 +1,36 @@
+rules:
+- id: vuln-radare2-e85dfc16
+  pattern: 'char *$VAR = r_str_newf(...);
+
+    r_anal_str_to_fcn($ANAL, $F, $VAR);
+
+    '
+  pattern-not: "char *$VAR = r_str_newf(...), *$VAR_COPY = strdup($VAR);\nchar *$FCNNAME\
+    \ = strrchr(r_str_trim_tail(strtok($VAR_COPY, \"(\")), ' ');\nif ($FCNNAME) {\n\
+    \  $FCNNAME++;\n  if (strcmp($F->name, $FCNNAME)) {\n    setFunctionName($CORE,\
+    \ $ADDR, $FCNNAME, false);\n    $F = r_anal_get_fcn_in($ANAL, $ADDR, -1);\n  }\n\
+    \  r_anal_str_to_fcn($ANAL, $F, $VAR);\n}\nfree($VAR_COPY);\n"
+  languages:
+  - c
+  message: 'The code directly uses the string returned by `r_str_newf` without making
+    a copy, which can lead to memory corruption or undefined behavior if the string
+    is modified or freed unexpectedly. This is dangerous because it can cause crashes
+    or security vulnerabilities. To fix this, always create a copy of the string using
+    `strdup` and free it after use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/e85dfc16c06ff03e10af1863b4069ffb24a6d37a
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-wordpress-ce7fb293
+  pattern: "if (empty($VAR)) {\n  $VAR = $THIS->get_stylesheet();\n}\n"
+  pattern-not: "if (empty($VAR)) {\n  $VAR = esc_html($THIS->get_stylesheet());\n\
+    }\n"
+  languages:
+  - php
+  message: "Detected unescaped output from get_stylesheet() which could lead to XSS\
+    \ vulnerabilities. \nAlways sanitize or escape dynamic data before outputting\
+    \ it to prevent injection attacks.\nUse esc_html() or other appropriate escaping\
+    \ functions to secure the output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/ce7fb2934dd111e6353784852de8aea2a938b359
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

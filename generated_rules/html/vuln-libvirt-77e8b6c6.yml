@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libvirt-77e8b6c6
+  pattern: "<pre class=\"programlisting\"><a href=\"libvirt-libvirt.html#virDomainPtr\"\
+    >virDomainPtr</a>\t<a href=\"#virDomainCreateLinux\">virDomainCreateLinux</a>\t\
+    (<a href=\"libvirt-libvirt.html#virConnectPtr\">virConnectPtr</a> conn, <br />\t\
+    \t\t\t\t const char * kernel_path, <br />\t\t\t\t\t const char * initrd_path,\
+    \ <br />\t\t\t\t\t const char * cmdline, <br />\t\t\t\t\t unsigned long memory,\
+    \ <br />\t\t\t\t\t unsigned int flags)</pre>\n"
+  pattern-not: "<pre class=\"programlisting\"><a href=\"libvirt-libvirt.html#virDomainPtr\"\
+    >virDomainPtr</a>\t<a href=\"#virDomainCreateLinux\">virDomainCreateLinux</a>\t\
+    (<a href=\"libvirt-libvirt.html#virConnectPtr\">virConnectPtr</a> conn, <br />\t\
+    \t\t\t\t const char * xmlDesc, <br />\t\t\t\t\t unsigned int flags)</pre>\n"
+  languages:
+  - html
+  message: 'The function `virDomainCreateLinux` is using deprecated parameters (kernel_path,
+    initrd_path, cmdline, memory) which can lead to security vulnerabilities. Use
+    the updated version with `xmlDesc` parameter instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/77e8b6c62c48b6346bbdb2df3e0d925852c6bf3e
+    category: security
+    cwe: 'CWE-477: Use of Obsolete Function'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - html

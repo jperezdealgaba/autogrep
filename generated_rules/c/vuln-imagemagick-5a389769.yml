@@ -1,0 +1,36 @@
+rules:
+- id: vuln-imagemagick-5a389769
+  pattern: "if ((($OFFSET+$LENGTH) < 2) || (($OFFSET+$LENGTH) > GetStringInfoLength($PROFILE)))\n\
+    \  ThrowWriterException(CoderError,\"ImageDoesNotHaveAThumbnail\");\n"
+  pattern-not: "if (($Q+$LENGTH) > (GetStringInfoDatum($PROFILE)+GetStringInfoLength($PROFILE)))\n\
+    \  ThrowWriterException(CoderError,\"ImageDoesNotHaveAThumbnail\");\n"
+  languages:
+  - c
+  message: 'This rule detects an unsafe bounds check vulnerability in ImageMagick''s
+    thumbnail processing.
+
+    The original code checks if the sum of offset and length is within bounds but
+    does not account for potential integer overflow or incorrect pointer arithmetic.
+
+    This could lead to out-of-bounds memory access or incorrect image processing.
+
+    The fix properly validates the pointer arithmetic by comparing the end pointer
+    with the profile''s bounds.
+
+    To fix this, ensure proper bounds checking with pointer arithmetic and validate
+    against the actual buffer size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ImageMagick/ImageMagick/commit/5a3897693a8b4e97add649c0ca1d538bd90f59c9
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

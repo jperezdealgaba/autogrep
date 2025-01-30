@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glance-90bcdc5a
+  pattern: 'status = ''deleted''
+
+    ...
+
+    registry.update_image_metadata($CONTEXT, $ID, {''status'': $STATUS})
+
+    registry.delete_image_metadata($CONTEXT, $ID)
+
+    '
+  pattern-not: "if $IMAGE['location'] and $CONF.delayed_delete:\n    status = 'pending_delete'\n\
+    else:\n    status = 'deleted'\n    registry.update_image_metadata($CONTEXT, $ID,\
+    \ {'status': status})\n    registry.delete_image_metadata($CONTEXT, $ID)\n"
+  languages:
+  - python
+  message: Detected unsafe image deletion without proper status check. This can lead
+    to unauthorized deletion of images. Ensure that image deletion is conditional
+    on proper status checks and authorization.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/glance/commit/90bcdc5a89e350a358cf320a03f5afe99795f6f6
+    category: security
+    cwe: CWE-285
+    owasp: A5:2017-Broken Access Control
+    technology: python

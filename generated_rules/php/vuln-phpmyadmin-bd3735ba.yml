@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-bd3735ba
+  pattern: 'echo $_GET[''$VAR''];
+
+    '
+  pattern-not: 'echo htmlspecialchars($_GET[''$VAR'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of user-controlled input from $_GET. This can
+    lead to Cross-Site Scripting (XSS) vulnerabilities, allowing attackers to inject
+    malicious scripts into web pages. Always sanitize user inputs using functions
+    like htmlspecialchars() before outputting them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/bd3735ba584e7a49aee78813845245354b061f61
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

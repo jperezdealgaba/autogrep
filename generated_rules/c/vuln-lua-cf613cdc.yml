@@ -1,0 +1,31 @@
+rules:
+- id: vuln-lua-cf613cdc
+  pattern: 'checkstackGC($L, $SIZE);
+
+    '
+  pattern-not: 'checkstackGCp($L, $SIZE - $DELTA, $FUNC);
+
+    '
+  languages:
+  - c
+  message: 'The function `checkstackGC` is called without considering the delta value,
+    which can lead to stack overflow vulnerabilities. This vulnerability occurs because
+    the stack size calculation does not account for the delta, potentially causing
+    insufficient stack space to be allocated. The fix involves using `checkstackGCp`
+    with the correct delta calculation to ensure proper stack space management. Always
+    ensure that stack size calculations account for any necessary adjustments to prevent
+    overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/cf613cdc6fa367257fc61c256f63d917350858b5
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

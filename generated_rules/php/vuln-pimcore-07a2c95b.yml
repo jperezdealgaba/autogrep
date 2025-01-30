@@ -1,0 +1,28 @@
+rules:
+- id: vuln-pimcore-07a2c95b
+  pattern: '$VAR = SecurityHelper::getStringWithoutControlChars($REQUEST->get(''$NAME''));
+
+    '
+  pattern-not: '$VAR = SecurityHelper::convertHtmlSpecialChars($REQUEST->get(''$NAME''));
+
+    '
+  languages:
+  - php
+  message: 'The code uses `getStringWithoutControlChars` which is insufficient for
+    sanitizing user input. This can lead to XSS vulnerabilities as it does not properly
+    escape HTML special characters. Use `convertHtmlSpecialChars` instead to properly
+    escape HTML entities and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/pimcore/commit/07a2c95be524c7e20105cef58c5767d4ebb06091
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

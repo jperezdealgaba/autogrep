@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wordpress-70b21279
+  pattern: 'if (isset($VAR) && is_array($VAR))
+
+    '
+  pattern-not: 'if (is_array($VAR) && count($ARGS) == 1)
+
+    '
+  languages:
+  - php
+  message: 'The code checks if a variable is set and is an array, but does not verify
+    if it is the only argument. This can lead to unexpected behavior when multiple
+    arguments are passed. Ensure that the array is the only argument by adding a count
+    check.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/70b21279098fc973eae803693c0705a548128e48
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/WordPress/WordPress/commit/70b21279098fc973eae803693c0705a548128e48
+    technology:
+    - php

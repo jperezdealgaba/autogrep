@@ -1,0 +1,34 @@
+rules:
+- id: vuln-bind9-15996f0c
+  pattern: 'INSIST($RC != dns_rcode_noerror && $RC != dns_rcode_nxdomain);
+
+    '
+  pattern-not: 'INSIST($RC != dns_rcode_noerror && $RC != dns_rcode_nxdomain);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect assertion in DNS response code
+    handling.
+
+    The original code incorrectly asserts that the response code (rcode) should not
+    be dns_rcode_noerror or dns_rcode_nxdomain, which could lead to incorrect handling
+    of valid DNS responses. This could cause the server to reject legitimate queries,
+    leading to denial of service or incorrect DNS resolution.
+
+    The fix removes this incorrect assertion, allowing valid response codes to be
+    processed correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/15996f0cb15631b95a801e3e88928494a69ad6ee
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libarchive-65a23f5d
+  pattern: '*$BUFF = __archive_read_ahead($A, 1, &$BYTES_AVAIL);
+
+    '
+  pattern-not: '*$BUFF = __archive_read_ahead($A, $MINIMUM, &$BYTES_AVAIL);
+
+    '
+  languages:
+  - c
+  message: 'The use of a hardcoded value ''1'' in __archive_read_ahead can lead to
+    performance issues and potential security vulnerabilities. This forces the decompressor
+    to combine reads by copying data, which can be inefficient and may lead to buffer
+    overflows or other memory-related issues. Use a dynamic minimum value instead
+    to ensure proper handling of available bytes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libarchive/libarchive/commit/65a23f5dbee4497064e9bb467f81138a62b0dae1
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Insecure Design'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

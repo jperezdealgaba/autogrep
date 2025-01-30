@@ -1,0 +1,19 @@
+rules:
+- id: vuln-gradio-41bd3645
+  pattern: "with open(os.path.join($CWD, $PATH), $MODE) as $FILE:\n  ...\n"
+  pattern-not: "with open(safe_join($CWD, $PATH), $MODE) as $FILE:\n  ...\n"
+  languages:
+  - python
+  message: "Detected unsafe file path joining using os.path.join(). This can lead\
+    \ to path traversal attacks. \nUse safe_join() to securely join paths and prevent\
+    \ directory traversal vulnerabilities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gradio-app/gradio/commit/41bd3645bdb616e1248b2167ca83636a2653f781
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/os.path.html#os.path.join
+    technology:
+    - python

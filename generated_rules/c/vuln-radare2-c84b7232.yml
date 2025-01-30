@@ -1,0 +1,28 @@
+rules:
+- id: vuln-radare2-c84b7232
+  pattern: 'ut64 offset = va2pa($VAR, hdr->mappingCount, $MAPS, $BUF, 0, NULL, NULL);
+
+    '
+  pattern-not: 'ut64 offset = va2pa($VAR, R_MIN(hdr->mappingCount, $N_MAPS), $MAPS,
+    $BUF, 0, NULL, NULL);
+
+    '
+  languages:
+  - c
+  message: 'The function `va2pa` is called with `hdr->mappingCount` directly, which
+    can lead to out-of-bounds access if `hdr->mappingCount` exceeds the valid range.
+    This vulnerability can result in memory corruption or crashes. To fix this, ensure
+    `hdr->mappingCount` is bounded by `n_maps` using `R_MIN(hdr->mappingCount, n_maps)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/c84b7232626badd075caf3ae29661b609164bac6
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libvirt-f44bfb7f
+  pattern: "virErrorPtr $VERR;\nif ($CONN)\n    $VERR = virConnGetLastError($CONN);\n\
+    else\n    $VERR = virGetLastError();\n"
+  pattern-not: 'virErrorPtr $VERR = virGetLastError();
+
+    '
+  languages:
+  - c
+  message: 'The code incorrectly handles error retrieval by conditionally calling
+    `virConnGetLastError` or `virGetLastError`. This can lead to inconsistent error
+    handling and potential null pointer dereferences. Always directly use `virGetLastError()`
+    for consistent error retrieval.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/f44bfb7fb978c9313ce050a1c4149bf04aa0a670
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

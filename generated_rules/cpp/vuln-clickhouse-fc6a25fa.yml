@@ -1,0 +1,29 @@
+rules:
+- id: vuln-clickhouse-fc6a25fa
+  pattern: 'return 1 + $TAIL_SIZE1 + $TAIL_SIZE2;
+
+    '
+  pattern-not: 'return $EXPECTED_SIZE;
+
+    '
+  languages:
+  - cpp
+  message: 'The return statement directly adds constants and variables without considering
+    the expected size, which can lead to incorrect buffer size calculations. This
+    is dangerous as it may cause buffer overflows or underflows, leading to memory
+    corruption or crashes. The fix involves returning the expected size directly,
+    ensuring proper buffer allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/ClickHouse/ClickHouse/commit/fc6a25fad562ccfcec76e83aa040b3d3ba2b9039
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - cpp

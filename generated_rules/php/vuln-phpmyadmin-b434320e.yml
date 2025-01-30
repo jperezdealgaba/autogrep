@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-b434320e
+  pattern: '$include_file = $GLOBALS[''mime_map''][$META->name][''transformation''];
+
+    '
+  pattern-not: '$include_file = PMA_securePath($GLOBALS[''mime_map''][$META->name][''transformation'']);
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses a file path from a global array without proper
+    sanitization, which can lead to path traversal or file inclusion vulnerabilities.
+    This is dangerous because an attacker could manipulate the path to include malicious
+    files. To fix this, use PMA_securePath() to sanitize the file path.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b434320eff8ca9c2fc1b043c1804f868341af9a7
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

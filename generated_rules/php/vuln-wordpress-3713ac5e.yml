@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wordpress-3713ac5e
+  pattern: "if ( $lang = get_bloginfo( 'language' ) ) {\n  if ( get_option( 'html_type'\
+    \ ) == 'text/html' || $doctype == 'html' ) {\n    $attributes[] = \"lang=\\\"\
+    $lang\\\"\";\n  }\n  if ( get_option( 'html_type' ) != 'text/html' || $doctype\
+    \ == 'xhtml' ) {\n    $attributes[] = \"xml:lang=\\\"$lang\\\"\";\n  }\n}\n"
+  pattern-not: "if ( $lang = get_bloginfo( 'language' ) ) {\n  if ( get_option( 'html_type'\
+    \ ) == 'text/html' || $doctype == 'html' ) {\n    $attributes[] = 'lang=\"' .\
+    \ esc_attr( $lang ) . '\"';\n  }\n  if ( get_option( 'html_type' ) != 'text/html'\
+    \ || $doctype == 'xhtml' ) {\n    $attributes[] = 'xml:lang=\"' . esc_attr( $lang\
+    \ ) . '\"';\n  }\n}\n"
+  languages:
+  - php
+  message: 'Unescaped output of the language attribute can lead to XSS vulnerabilities.
+    Always use `esc_attr()` to sanitize dynamic attributes in HTML output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/3713ac5ebc90fb2011e98dfd691420f43da6c09a
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

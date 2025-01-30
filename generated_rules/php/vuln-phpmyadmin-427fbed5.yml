@@ -1,0 +1,34 @@
+rules:
+- id: vuln-phpmyadmin-427fbed5
+  pattern: "echo '<a href=\"' , Url::getCommon(array('page' => 'servers', 'mode' =>\
+    \ 'remove', 'id' => $id)), '\">'\n    , __('Delete') , '</a>';\n"
+  pattern-not: 'echo ''<a class="delete-server" href="'' . Url::getCommon(array(''page''
+    => ''servers'', ''mode'' => ''remove'', ''id'' => $id));
+
+    echo ''" data-post="'' . Url::getCommon(array(''token'' => $_SESSION['' PMA_token
+    '']), '''') . ''">'';
+
+    echo __(''Delete'') . ''</a>'';
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential Cross-Site Request Forgery (CSRF) vulnerability.
+    The code allows for the deletion of servers without proper CSRF protection. This
+    is dangerous because an attacker could trick a user into performing unintended
+    actions without their consent. To fix this, ensure that the request includes a
+    CSRF token and is only accepted via POST requests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/427fbed55d3154d96ecfc1c7784d49eaa3c04161
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

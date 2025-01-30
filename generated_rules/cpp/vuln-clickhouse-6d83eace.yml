@@ -1,0 +1,21 @@
+rules:
+- id: vuln-clickhouse-6d83eace
+  pattern: 'throw Exception("Cannot decomress", ErrorCodes::CANNOT_DECOMPRESS);
+
+    '
+  pattern-not: 'throw Exception("Cannot decompress", ErrorCodes::CANNOT_DECOMPRESS);
+
+    '
+  languages:
+  - cpp
+  message: 'Found a typo in the error message "Cannot decomress" which should be "Cannot
+    decompress". This typo could lead to confusion during debugging or error handling.
+    Correct the spelling to ensure clear and accurate error reporting.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/ClickHouse/ClickHouse/commit/6d83eacec42c7c403c99804a713a9d38caa4a45d
+    category: maintainability
+    technology:
+    - cpp

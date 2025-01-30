@@ -1,0 +1,35 @@
+rules:
+- id: vuln-bind9-8bd0c12d
+  pattern: 'INSIST((valoptions & DNS_VALIDATOR_DEFER) != 0);
+
+    '
+  pattern-not: 'valoptions |= DNS_VALIDATOR_DEFER;
+
+    else
+
+    valoptions &= ~DNS_VALIDATOR_DEFER;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves incorrect handling of DNS validator options,
+    specifically the DNS_VALIDATOR_DEFER flag. The original code uses an INSIST assertion
+    to check if the flag is set, but it does not properly handle the case where the
+    flag should be toggled. This can lead to improper validation handling and potential
+    manipulation of DNS messages. The fix involves correctly setting or clearing the
+    flag based on the context. Ensure that DNS validator options are properly managed
+    to prevent concurrent manipulation of DNS message structures.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/8bd0c12d53bea6f299e92d20ee0a23b16a7f65bc
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c

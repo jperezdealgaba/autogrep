@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-533bb88e
+  pattern: '$GLOBALS[''$VAR''] =& $THIS->$VAR2;
+
+    '
+  pattern-not: '$GLOBALS[''$VAR''] = $THIS->$VAR2;
+
+    '
+  languages:
+  - php
+  message: 'Detected use of reference assignment to `$GLOBALS` which can lead to unintended
+    modifications of global state. This can be dangerous as it allows for potential
+    security vulnerabilities by exposing sensitive data or allowing unauthorized modifications.
+    Replace the reference assignment with a direct assignment and ensure sensitive
+    data is unset when no longer needed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/533bb88e32aafc17e754e5ea5e26e9b02b306993
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://www.php.net/manual/en/language.references.php
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-radare2-72794dc3
+  pattern: 'struct reloc_struct_t *$GOT_TABLE = calloc(1, $N_GOT * sizeof(ut32));
+
+    '
+  pattern-not: 'struct reloc_struct_t *$GOT_TABLE = calloc(1, $N_GOT * sizeof(struct
+    reloc_struct_t));
+
+    '
+  languages:
+  - c
+  message: 'Incorrect allocation size in calloc can lead to buffer overflow vulnerabilities.
+    The size parameter should match the type of the allocated structure. This can
+    result in memory corruption and potential exploitation. Fix by ensuring the size
+    parameter matches the structure type being allocated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/72794dc3523bbd5bb370de3c5857cb736c387e18
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-testlink-code-bcf7b971
+  pattern: '$VAR->$FIELD = isset($_REQUEST[''$KEY'']) ? $_REQUEST[''$KEY''] : $DEFAULT;
+
+    '
+  pattern-not: '$VAR->$FIELD = isset($_REQUEST[''$KEY'']) ? intval($_REQUEST[''$KEY''])
+    : $DEFAULT;
+
+    '
+  languages:
+  - php
+  message: 'Detected potential type confusion vulnerability where user input is directly
+    assigned to a variable without proper type validation. This can lead to security
+    issues if the input is used in contexts expecting specific types. Always validate
+    and sanitize user input using appropriate functions like intval() for integers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/bcf7b971b5c88ea08d2dc47685f319be3b02cea8
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Type_Confusion
+    - https://cwe.mitre.org/data/definitions/843.html
+    technology:
+    - php

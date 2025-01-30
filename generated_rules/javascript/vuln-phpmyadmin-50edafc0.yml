@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-50edafc0
+  pattern: '$.getScript(''http://www.phpmyadmin.net/home_page/version.js'', $FUNC)
+
+    '
+  pattern-not: '$.getJSON(''http://www.phpmyadmin.net/home_page/version.json'', {},
+    $FUNC)
+
+    '
+  languages:
+  - javascript
+  message: 'Dangerous use of `$.getScript` detected. This can lead to remote code
+    execution by loading untrusted JavaScript. Use `$.getJSON` to safely fetch and
+    parse JSON data instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/50edafc0884aa15d0a1aa178089ac6a1ad2eb18a
+    category: security
+    cwe: CWE-829
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - javascript

@@ -1,0 +1,20 @@
+rules:
+- id: vuln-phpmyadmin-4d21b5c0
+  pattern: columnNames.push($(this).text())
+  pattern-not: columnNames.push(escapeHtml($(this).text()))
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to missing HTML escaping when pushing text
+    to columnNames. Use escapeHtml() to sanitize the input.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/4d21b5c077db50c2a54b7f569d20f463cc2651f5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

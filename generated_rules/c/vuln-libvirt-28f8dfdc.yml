@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libvirt-28f8dfdc
+  pattern: 'qemuDomainDefFormatXML($DRIVER, $DEF, $FLAGS, false)
+
+    '
+  pattern-not: 'qemuDomainDefFormatXML($DRIVER, $DEF, $FLAGS)
+
+    '
+  languages:
+  - c
+  message: 'The function `qemuDomainDefFormatXML` is being called without the `VIR_DOMAIN_XML_MIGRATABLE`
+    flag, which can lead to XML output that is not suitable for migrations. This can
+    cause issues during VM migrations, potentially leading to data loss or service
+    interruption. Ensure that the `VIR_DOMAIN_XML_MIGRATABLE` flag is included when
+    calling this function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/28f8dfdcccd4c0f69063ef741545b37d8a7f7935
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

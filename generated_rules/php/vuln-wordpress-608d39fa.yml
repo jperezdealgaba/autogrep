@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wordpress-608d39fa
+  pattern: '$ip = false;
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where the IP address is set
+    to false instead of returning false directly. This can lead to incorrect handling
+    of IP addresses and potential security issues. To fix this, ensure that the function
+    returns false directly when an invalid IP address is encountered.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/608d39faed63ea212b6c6cdf9fe2bef92e2120ea
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/WordPress/WordPress/commit/608d39faed63ea212b6c6cdf9fe2bef92e2120ea
+    technology:
+    - php

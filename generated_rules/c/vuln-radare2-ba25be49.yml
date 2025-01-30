@@ -1,0 +1,28 @@
+rules:
+- id: vuln-radare2-ba25be49
+  pattern: 'const char *$NAME, *$KEY = $FUNC($ADDR, $BUF, $BASE);
+
+    '
+  pattern-not: 'const char *$KEY = $FUNC($ADDR, $BUF, $BASE);
+
+    const char *$NAME;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe declaration pattern where multiple variables
+    are declared in a single statement. This can lead to confusion and bugs, especially
+    when initializing pointers. Split the declarations into separate statements for
+    clarity and safety.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/ba25be4934ecd65b71170f7381655325157bde09
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9-Using Components with Known Vulnerabilities
+    technology:
+    - c

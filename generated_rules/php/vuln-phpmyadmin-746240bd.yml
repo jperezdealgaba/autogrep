@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyadmin-746240bd
+  pattern: "if (isset($_REQUEST['normalizeTo'])) {\n  ...\n}\n"
+  pattern-not: "if (PMA_isValid($_REQUEST['normalizeTo'], array('1nf', '2nf', '3nf')))\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected unsafe validation of user input. The code directly uses `$_REQUEST[''normalizeTo'']`
+    without proper validation, which can lead to security vulnerabilities. Use `PMA_isValid`
+    or a similar validation function to ensure the input is within expected values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/746240bd13b62b5956fc34389cfbdc09e1e67775
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

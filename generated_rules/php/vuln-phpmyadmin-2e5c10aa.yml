@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-2e5c10aa
+  pattern: 'PMA_formatSql(PMA_SQP_parse($the_query), $the_query)
+
+    '
+  pattern-not: 'PMA_formatSql(PMA_SQP_parse(PMA_sanitize($the_query)), $the_query)
+
+    '
+  languages:
+  - php
+  message: 'Unsanitized SQL query passed to PMA_SQP_parse and PMA_formatSql functions.
+    This can lead to SQL injection vulnerabilities if the input is not properly sanitized.
+    Always sanitize user input before processing it with SQL-related functions. Use
+    PMA_sanitize to sanitize the input before passing it to PMA_SQP_parse.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/2e5c10aa2fc10fb1004aac7db78ebdaac21b9220
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

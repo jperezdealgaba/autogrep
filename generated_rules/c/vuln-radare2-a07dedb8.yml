@@ -7,17 +7,26 @@ rules:
     \ < 1) {\n  $PAGE_SIZE = 4096;\n}\n"
   languages:
   - c
-  message: "Using `ut64` for page size without validation can lead to integer overflow\
-    \ or unexpected behavior. \nThis is dangerous because it may result in incorrect\
-    \ memory calculations or crashes. \nFix by using `int` for page size and adding\
-    \ a check to ensure it is at least 1, defaulting to 4096 if invalid.\n"
+  message: 'Unsafe use of ut64 for page_size without validation can lead to integer
+    overflow or unexpected behavior.
+
+    This vulnerability occurs because the page_size variable is declared as ut64 (unsigned
+    64-bit integer) without checking for valid values.
+
+    An attacker could potentially exploit this by providing a maliciously crafted
+    binary with a page_size of 0 or a very large value.
+
+    The fix involves changing the type to int and adding a validation check to ensure
+    page_size is at least 1, defaulting to 4096 if invalid.
+
+    '
   severity: ERROR
   metadata:
-    source-url: github.com/radare/radare2/commit/a07dedb804a82bc01c07072861942dd80c6b6d62
+    source-url: github.com/radareorg/radare2/commit/a07dedb804a82bc01c07072861942dd80c6b6d62
     category: security
     cwe:
     - CWE-190
     owasp:
-    - 'A9: Using Components with Known Vulnerabilities'
+    - A9:2021-Security Logging and Monitoring Failures
     technology:
     - c

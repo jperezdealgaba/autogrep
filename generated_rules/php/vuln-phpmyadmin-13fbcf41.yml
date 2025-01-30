@@ -1,0 +1,40 @@
+rules:
+- id: vuln-phpmyadmin-13fbcf41
+  pattern: '$sql_query = ''CREATE DATABASE '' . PMA_backquote($db);
+
+    ...
+
+    $message = $strDatabase . '' '' . htmlspecialchars($db) . '' '' . $strHasBeenCreated;
+
+    '
+  pattern-not: '$sql_query = ''CREATE DATABASE '' . PMA_backquote($new_db);
+
+    ...
+
+    $message = $strDatabase . '' '' . htmlspecialchars($new_db) . '' '' . $strHasBeenCreated;
+
+    '
+  languages:
+  - php
+  message: 'The code uses a potentially unsafe variable `$db` for database creation
+    and message display, which could lead to security vulnerabilities such as SQL
+    injection or XSS. The variable should be replaced with `$new_db` to ensure proper
+    parameter handling and avoid direct use of user-controlled input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/13fbcf4107476dc2d53a8dde707667172f807641
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    - https://cwe.mitre.org/data/definitions/89.html
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

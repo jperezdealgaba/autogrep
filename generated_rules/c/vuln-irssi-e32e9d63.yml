@@ -1,0 +1,23 @@
+rules:
+- id: vuln-irssi-e32e9d63
+  pattern: "if (*$VAR == '\\\\') {\n  ...\n}\n"
+  pattern-not: "if (*$VAR == '\\\\' && $VAR[1] != '\\0') {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a potential out-of-bounds read vulnerability where a
+    backslash character is checked without ensuring the next character is not the
+    null terminator. This can lead to reading beyond the intended memory boundary,
+    causing undefined behavior or crashes. Always check for the null terminator before
+    accessing the next character.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/e32e9d63c67ab95ef0576154680a6c52334b97af
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

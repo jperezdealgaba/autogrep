@@ -1,0 +1,30 @@
+rules:
+- id: vuln-testlink-code-57d81ae3
+  pattern: '$args->dest = TL_TEMP_PATH . session_id() . "-importkeywords." . $args->importType;
+
+    '
+  pattern-not: '$args->dest = TL_TEMP_PATH . session_id() . "-importkeywords." . $args->importTypes[$args->importType];
+
+    '
+  languages:
+  - php
+  message: 'Detected unvalidated file extension in file path construction, which could
+    lead to arbitrary file upload vulnerabilities. The patch introduces a whitelist
+    validation for `$args->importType` to ensure only allowed file types are processed.
+    To fix this, validate the `importType` parameter against a whitelist of allowed
+    file extensions before using it in file path construction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/57d81ae350d569c5c95087997fe051c49e14516d
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    - https://cwe.mitre.org/data/definitions/434.html
+    technology:
+    - php

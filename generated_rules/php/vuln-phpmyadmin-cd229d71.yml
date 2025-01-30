@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-cd229d71
+  pattern: '$VAR == ''''
+
+    '
+  pattern-not: 'empty($VAR)
+
+    '
+  languages:
+  - php
+  message: 'Using loose equality checks (`== ''''`) for empty string validation can
+    lead to security issues when handling user input. This can cause unexpected behavior
+    if the input is not strictly an empty string. Use `empty()` or strict type checking
+    (`=== ''''`) to ensure proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/cd229d718e8cb4bc8ba32446beaa82d27727b6f0
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-radare2-0a557045
+  pattern: "ut16 $VAR = *($TYPE *)($PTR + $OFF);\nif ($SEGNUM > 0) {\n  ...\n}\n"
+  pattern-not: "if ($OFF > $PTR->ne_header->EntryTableLength) {\n  break;\n}\nut16\
+    \ $VAR = r_read_le16($PTR + $OFF);\nif ($SEGNUM > 0 && $SEGNUM < $PTR->ne_header->SegCount)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves unsafe pointer arithmetic and lack of bounds
+    checking when reading from a buffer. This can lead to out-of-bounds memory access,
+    potentially causing crashes or arbitrary code execution. The fix includes proper
+    bounds checking and using a safer function (r_read_le16) to read the value. Always
+    validate offsets and use safer memory access functions when dealing with binary
+    data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/0a557045476a2969c7079aec9eeb29d02f2809c6
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

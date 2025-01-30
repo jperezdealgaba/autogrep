@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-33b39f9f
+  pattern: "window.location = window.location.hash.substring(\n    window.location.hash.indexOf(':')\
+    \ + 1\n);\n"
+  pattern-not: "var $COLON_POSITION = window.location.hash.indexOf(':');\nvar $QUESTIONMARK_POSITION\
+    \ = window.location.hash.indexOf('?');\nif ($COLON_POSITION != -1 && $QUESTIONMARK_POSITION\
+    \ != -1 && $COLON_POSITION < $QUESTIONMARK_POSITION) {\n    var $HASH_URL = window.location.hash.substring($COLON_POSITION\
+    \ + 1, $QUESTIONMARK_POSITION);\n    if ($PMA_GOTO_WHITELIST.indexOf($HASH_URL)\
+    \ != -1) {\n        window.location = window.location.hash.substring(\n      \
+    \      $COLON_POSITION + 1\n        );\n    }\n}\n"
+  languages:
+  - javascript
+  message: 'Unsafe redirection using window.location.hash without proper validation.
+
+    This can lead to open redirect vulnerabilities, allowing attackers to redirect
+    users to malicious sites.
+
+    Always validate the URL against a whitelist before redirecting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/phpmyadmin/phpmyadmin/commit/33b39f9f1dd9a4d27856530e5ac004e23b30e8ac
+    category: security
+    cwe: CWE-601
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: javascript

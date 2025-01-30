@@ -1,0 +1,22 @@
+rules:
+- id: vuln-bind9-711e8339
+  pattern: "if ($FCTX->totalqueries > DEFAULT_MAX_QUERIES) {\n  ...\n}\n"
+  pattern-not: "if ($FCTX->totalqueries > $FCTX->res->maxqueries) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected use of a hardcoded DEFAULT_MAX_QUERIES limit instead of the configured
+    maxqueries value. This can lead to resource exhaustion attacks as the resolver
+    may allow more queries than intended. Use the configured maxqueries value from
+    the resolver context instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/711e833921d3dd67df7515438e152bbfdb2c1249
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

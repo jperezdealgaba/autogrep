@@ -1,0 +1,35 @@
+rules:
+- id: vuln-wordpress-246a70bd
+  pattern: "if ($real_mime && ($real_mime !== $type) && (0 === strpos($real_mime,\
+    \ 'application'))) {\n  $allowed = get_allowed_mime_types();\n  if (!in_array($real_mime,\
+    \ $allowed)) {\n    ...\n  }\n}\n"
+  pattern-not: "if (in_array($real_mime, $nonspecific_types, true)) {\n  if (!in_array(substr($type,\
+    \ 0, strcspn($type, '/')), array('application', 'video', 'audio'))) {\n    $type\
+    \ = $ext = false;\n  }\n} elseif (0 === strpos($real_mime, 'video/') || 0 ===\
+    \ strpos($real_mime, 'audio/')) {\n  if (substr($real_mime, 0, strcspn($real_mime,\
+    \ '/')) !== substr($type, 0, strcspn($type, '/'))) {\n    $type = $ext = false;\n\
+    \  }\n} else {\n  if ($type !== $real_mime) {\n    $type = $ext = false;\n  }\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected a vulnerability where application mime types are not properly
+    vetted, potentially allowing unsafe file uploads. The code previously only checked
+    if the mime type was allowed without additional validation for specific application
+    types. This could lead to the upload of malicious files. The fix introduces additional
+    vetting for non-specific binary types and ensures that the major type matches
+    for video and audio files. Update the code to include these additional checks
+    to prevent unsafe file uploads.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/246a70bdbfac3bd45ff71c7941deef1bb206b19a
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/WordPress/WordPress/commit/246a70bdbfac3bd45ff71c7941deef1bb206b19a
+    technology:
+    - php

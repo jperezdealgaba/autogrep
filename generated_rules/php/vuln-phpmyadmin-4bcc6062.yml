@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-4bcc6062
+  pattern: '"/" . $FIND . "/"
+
+    '
+  pattern-not: '$DELIMITER . $FIND . $DELIMITER
+
+    '
+  languages:
+  - php
+  message: 'The code directly concatenates user input with forward slashes to form
+    a regular expression, which can lead to regex injection if the input contains
+    unescaped special characters. This vulnerability can be exploited to alter the
+    behavior of the regex, potentially causing security issues. To fix this, validate
+    the input and use a safe delimiter that does not appear in the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/4bcc606225f15bac0b07780e74f667f6ac283da7
+    category: security
+    cwe:
+    - CWE-184
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-96e0aa35
+  pattern: '$RESULT = ''Wrong data or no validation for '' . $VARIABLE;
+
+    '
+  pattern-not: '$RESULT = sprintf(__(''Wrong data or no validation for %s''), implode('','',
+    $VARIABLE));
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure string concatenation in error message construction.
+    This pattern can lead to information disclosure or injection vulnerabilities.
+    Use `sprintf` with proper string formatting and translation functions to safely
+    construct error messages.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/96e0aa35653ec0c66084a7e9343465e16c1f769b
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - php

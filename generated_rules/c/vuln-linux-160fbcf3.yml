@@ -1,0 +1,29 @@
+rules:
+- id: vuln-linux-160fbcf3
+  pattern: '$SKB->len = $LEN;
+
+    '
+  pattern-not: 'skb_put($SKB, $LEN);
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment to skb->len is unsafe and can lead to incorrect packet
+    handling. Use skb_put() instead to properly manage the length of the socket buffer.
+
+    This vulnerability can cause memory corruption or incorrect packet processing,
+    leading to potential security issues or crashes.
+
+    Fix: Replace direct assignment with skb_put(skb, len).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/torvalds/linux/commit/160fbcf3bfb93c3c086427f9f4c8bc70f217e9be
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

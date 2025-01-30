@@ -1,0 +1,29 @@
+rules:
+- id: vuln-irssi-c03057f3
+  pattern: 'special_push_collector(NULL);
+
+    '
+  pattern-not: 'special_push_collector($VAR);
+
+    '
+  languages:
+  - c
+  message: 'The function `special_push_collector` is called with a NULL argument,
+    which can lead to undefined behavior or crashes. This is dangerous because it
+    can cause the application to terminate unexpectedly or behave in unpredictable
+    ways. To fix this, ensure that `special_push_collector` is called with a valid
+    argument.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/c03057f36a2abd37a1176da2890d89116bab5139
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

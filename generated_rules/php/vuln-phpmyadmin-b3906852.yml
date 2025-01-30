@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-b3906852
+  pattern: '$_SESSION[''PMA_token'']
+
+    '
+  pattern-not: '$_SESSION['' PMA_token '']
+
+    '
+  languages:
+  - php
+  message: 'Detected use of unspaced session token key ''PMA_token'' which can be
+    vulnerable to register_globals attacks. This allows attackers to potentially overwrite
+    session variables. Use a spaced key like '' PMA_token '' to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b3906852bbcb5c4e116cc20e214b7f6793ca97aa
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/security.globals.php
+    technology:
+    - php

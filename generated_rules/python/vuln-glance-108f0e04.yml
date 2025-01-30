@@ -1,0 +1,27 @@
+rules:
+- id: vuln-glance-108f0e04
+  pattern: 'LOG.warn(_(''Get image %(id)s data from %(loc)s failed: %(err)s.'') %
+    {''id'': $ID, ''loc'': $LOC, ''err'': $ERR})
+
+    '
+  pattern-not: 'LOG.warn(_(''Get image %(id)s data failed: %(err)s.'') % {''id'':
+    $ID, ''err'': $ERR})
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure logging of sensitive information. The patch removed
+    the ''loc'' parameter from the log message to prevent exposure of sensitive location
+    data. Avoid logging sensitive information to prevent security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/glance/commit/108f0e04ad2ed3dc287f1b71b987a7e9d66072ba
+    category: security
+    cwe: CWE-532
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/532.html
+    technology:
+    - python

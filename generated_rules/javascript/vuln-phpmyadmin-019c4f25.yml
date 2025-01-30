@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-019c4f25
+  pattern: '"<h3>" + PMA_sprintf(PMA_messages.strFinishMsg, PMA_commonParams.get(''table''))
+    + "</h3>"
+
+    '
+  pattern-not: '"<h3>" + PMA_sprintf(PMA_messages.strFinishMsg, escapeHtml(PMA_commonParams.get(''table'')))
+    + "</h3>"
+
+    '
+  languages:
+  - javascript
+  message: 'Potential XSS vulnerability detected. The table parameter is not properly
+    sanitized before being included in HTML output. Use escapeHtml() to sanitize user
+    input and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/019c4f25d500ec5db9ba3b84cc961a7e4e850738
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

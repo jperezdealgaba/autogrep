@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-a8acd7a4
+  pattern: '$row_info_query = ''SELECT * FROM `'' . $_POST[''db''] . ''`.`'' . $_POST[''table'']
+    . ''` WHERE '' .  $_POST[''where_clause''];
+
+    '
+  pattern-not: '$row_info_query = ''SELECT * FROM '' . Util::backquote($_POST[''db''])
+    . ''.'' . Util::backquote($_POST[''table'']) . '' WHERE '' .  $_POST[''where_clause''];
+
+    '
+  languages:
+  - php
+  message: 'Detected a SQL injection vulnerability due to direct concatenation of
+    user input (from $_POST) into a SQL query. This can allow attackers to manipulate
+    the query, potentially leading to unauthorized data access or modification. To
+    fix this, use proper escaping or parameterized queries, such as Util::backquote()
+    for database and table names.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/a8acd7a42cf743186528b0453f90aaa32bfefabe
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

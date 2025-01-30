@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyadmin-0e707906
+  pattern: 'return empty($host) ? ''localhost'' : $host;
+
+    '
+  pattern-not: 'return empty($host) ? ''localhost'' : htmlspecialchars($host);
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped output of the $host\
+    \ variable. \nThis can allow attackers to inject malicious scripts into the application.\
+    \ \nAlways use htmlspecialchars() to escape user-controlled data before outputting\
+    \ it to prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0e707906e69ce90c4852a0fce2a0fac7db86a3cd
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

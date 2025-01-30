@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-f20970d3
+  pattern: '$_SESSION['' PMA_token ''] = md5(uniqid(rand(), true))
+
+    '
+  pattern-not: '$_SESSION['' PMA_token ''] = bin2hex(phpseclib\Crypt\Random::string(16))
+
+    '
+  languages:
+  - php
+  message: 'Detected use of insecure random number generation for session tokens.
+    Using `md5(uniqid(rand(), true))` is cryptographically weak and can lead to predictable
+    session tokens, making the application vulnerable to session hijacking. Replace
+    with a cryptographically secure random number generator like `phpseclib\Crypt\Random::string()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/f20970d32c3dfdf82aef7b6c244da1f769043813
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpmyadmin-72f109a9
+  pattern: '$_REQUEST[''sql_query'']
+
+    '
+  pattern-not: '$_POST[''sql_query'']
+
+    '
+  languages:
+  - php
+  message: 'The use of $_REQUEST[''sql_query''] is insecure because $_REQUEST combines
+    data from $_GET, $_POST, and $_COOKIE, which can lead to unexpected or malicious
+    input. This can result in SQL injection or other security vulnerabilities. Always
+    use $_POST[''sql_query''] to ensure the data comes from a POST request, which
+    is typically more secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/72f109a99c82b14c07dcb19946ba9b76efc32a1b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/Injection_Flaws
+    - https://www.php.net/manual/en/reserved.variables.request.php
+    technology:
+    - php

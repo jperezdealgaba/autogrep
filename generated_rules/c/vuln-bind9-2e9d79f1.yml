@@ -1,0 +1,20 @@
+rules:
+- id: vuln-bind9-2e9d79f1
+  pattern: "if (!deletekey) {\n  ...\n}\n"
+  pattern-not: "if (secure && !deletekey) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "A security check for the 'secure' flag is missing before processing a\
+    \ key. \nThis could allow insecure keys to be processed, potentially leading to\
+    \ security vulnerabilities. \nEnsure the 'secure' flag is checked before proceeding\
+    \ with key operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/2e9d79f169663c9aff5f0dcdc626a2cd2dbb5892
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - c

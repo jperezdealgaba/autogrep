@@ -1,0 +1,36 @@
+rules:
+- id: vuln-wordpress-e88a48a0
+  pattern: "$defaults = array( 'post_status' => 'draft', 'post_type' => 'post', 'post_author'\
+    \ => 0,\n  'post_password' => '', 'post_excerpt' => '', 'post_content' => '',\
+    \ 'post_title' => '' );\n$post_data = wp_parse_args($content_struct, $defaults);\n"
+  pattern-not: "$defaults = array(\n  'post_status'    => 'draft',\n  'post_type'\
+    \      => 'post',\n  'post_author'    => null,\n  'post_password'  => null,\n\
+    \  'post_excerpt'   => null,\n  'post_content'   => null,\n  'post_title'    \
+    \ => null,\n  'post_date'      => null,\n  'post_date_gmt'  => null,\n  'post_format'\
+    \    => null,\n  'post_name'      => null,\n  'post_thumbnail' => null,\n  'post_parent'\
+    \    => null,\n  'ping_status'    => null,\n  'comment_status' => null,\n  'custom_fields'\
+    \  => null,\n  'terms_names'    => null,\n  'terms'          => null,\n  'sticky'\
+    \         => null,\n  'enclosure'      => null,\n  'ID'             => null,\n\
+    );\n$post_data = wp_parse_args(array_intersect_key($content_struct, $defaults),\
+    \ $defaults);\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to unauthorized data manipulation due to the direct
+    use of `wp_parse_args` without filtering the input data. This can allow attackers
+    to inject unexpected data into the `$post_data` array. The fix involves using
+    `array_intersect_key` to ensure only valid keys from `$defaults` are included
+    in the `$post_data` array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/WordPress/WordPress/commit/e88a48a066ab2200ce3091b131d43e2fab2460a4
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Injection_Flaws
+    technology:
+    - php

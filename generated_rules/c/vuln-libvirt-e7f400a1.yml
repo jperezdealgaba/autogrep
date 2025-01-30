@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libvirt-e7f400a1
+  pattern: 'struct _virDomainMemoryStat *stats;
+
+    '
+  pattern-not: 'struct _virDomainMemoryStat *stats = NULL;
+
+    '
+  languages:
+  - c
+  message: 'Uninitialized pointer in struct declaration can lead to undefined behavior.
+
+    This is dangerous because using an uninitialized pointer can cause crashes or
+    security vulnerabilities.
+
+    Always initialize pointers to NULL or a valid memory address to avoid undefined
+    behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/e7f400a110e2e3673b96518170bfea0855dd82c0
+    category: security
+    cwe:
+    - CWE-457
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    technology:
+    - c

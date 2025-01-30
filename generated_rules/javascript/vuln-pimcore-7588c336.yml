@@ -1,0 +1,28 @@
+rules:
+- id: vuln-pimcore-7588c336
+  pattern: 'pimcore.helpers.deleteConfirm($TITLE, $DATA.data.name, $CALLBACK)
+
+    '
+  pattern-not: 'pimcore.helpers.deleteConfirm($TITLE, Ext.util.Format.htmlEncode($DATA.data.name),
+    $CALLBACK)
+
+    '
+  languages:
+  - javascript
+  message: 'Potential XSS vulnerability due to unencoded user input in delete confirmation
+    dialog.
+
+    The data.name parameter is directly used without proper HTML encoding, which could
+    lead to XSS attacks.
+
+    Use Ext.util.Format.htmlEncode or similar encoding functions to sanitize user
+    input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/pimcore/commit/7588c336edb24050656111b89d69e69cc9feb5f5
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology: javascript

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-radare2-2e2f2a9b
+  pattern: 'const int $VAR = IMMS($INS, $VAL);
+
+    const int $VAR2 = IMMU($INS, $VAL2);
+
+    '
+  pattern-not: 'const unsigned int $VAR = IMMS($INS, $VAL);
+
+    const unsigned int $VAR2 = IMMU($INS, $VAL2);
+
+    '
+  languages:
+  - cpp
+  message: 'The use of signed integers for IMMS and IMMU operations can lead to incorrect
+    value interpretations and potential security vulnerabilities. This is dangerous
+    because it may cause unexpected behavior or security flaws in the code. To fix
+    this, use unsigned integers to ensure proper value handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/2e2f2a9b1800d09be09461e7536ac03a301f97f2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

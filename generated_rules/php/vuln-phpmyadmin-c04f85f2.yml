@@ -1,0 +1,31 @@
+rules:
+- id: vuln-phpmyadmin-c04f85f2
+  pattern: "if (($route === '/' || $route === '') && isset($_GET['db']) && mb_strlen($_GET['db'])\
+    \ !== 0) {\n    $route = '/database/structure';\n    if (isset($_GET['table'])\
+    \ && mb_strlen($_GET['table']) !== 0) {\n        $route = '/sql';\n    }\n}\n"
+  pattern-not: "if (! is_string($route) || $route === '') {\n    $route = '/';\n}\n\
+    $db = isset($_GET['db']) && is_string($_GET['db']) ? $_GET['db'] : '';\nif ($route\
+    \ === '/' && $db !== '') {\n    $table = isset($_GET['table']) && is_string($_GET['table'])\
+    \ ? $_GET['table'] : '';\n    $route = $table === '' ? '/database/structure' :\
+    \ '/sql';\n}\n"
+  languages:
+  - php
+  message: 'The code does not properly validate the type of `$_GET[''db'']` and `$_GET[''table'']`
+    before using them, which can lead to type juggling vulnerabilities. This can be
+    exploited if non-string values are passed, potentially causing unexpected behavior
+    or security issues. Always validate that GET parameters are strings before using
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/c04f85f2bb96c442086d9ad057953567cc794486
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

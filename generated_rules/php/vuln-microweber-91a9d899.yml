@@ -1,0 +1,28 @@
+rules:
+- id: vuln-microweber-91a9d899
+  pattern: '$siteUrl = site_url();
+
+    '
+  pattern-not: '$siteUrl = ''http://127.0.0.1:8000/'';
+
+    '
+  languages:
+  - php
+  message: 'Using dynamic site URLs can lead to security vulnerabilities such as Server-Side
+    Request Forgery (SSRF) or incorrect redirections. Always use a hardcoded or validated
+    URL to prevent such issues. In this case, the URL should be explicitly set to
+    ''http://127.0.0.1:8000/'' to avoid potential risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/91a9d899741557c75050614ff7adb8c0e3feb005
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    technology:
+    - php

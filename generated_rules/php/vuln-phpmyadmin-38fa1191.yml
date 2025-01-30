@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-38fa1191
+  pattern: '$pma_absolute_uri .= $url[''host''];
+
+    '
+  pattern-not: '$pma_absolute_uri .= urlencode($url[''host'']);
+
+    '
+  languages:
+  - php
+  message: 'The host value in the URL is not being properly encoded, which can lead
+    to URL injection vulnerabilities. This is dangerous because it can be exploited
+    to manipulate the URL and potentially redirect users to malicious sites. To fix
+    this, always use `urlencode()` when appending user-controlled or dynamic data
+    to URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/38fa1191049ac0c626a6684eea52068dfbbb5078
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

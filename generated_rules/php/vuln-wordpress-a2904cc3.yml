@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wordpress-a2904cc3
+  pattern: 'if ( ! current_user_can( ''read_post'', $VAR->ID ) )
+
+    '
+  pattern-not: 'if ( ! current_user_can( ''edit_post'', $VAR->ID ) )
+
+    '
+  languages:
+  - php
+  message: 'Detected use of ''read_post'' capability check instead of ''edit_post''.
+    This can lead to unauthorized access to post editing functionality. Always use
+    ''edit_post'' capability check to ensure proper authorization for post modifications.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/a2904cc3092c391ac7027bc87f7806953d1a25a1
+    category: security
+    cwe: 'CWE-285: Improper Authorization'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://developer.wordpress.org/reference/functions/current_user_can/
+    technology:
+    - php

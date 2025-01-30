@@ -1,0 +1,33 @@
+rules:
+- id: vuln-bind9-603a0e26
+  pattern: 'dns_resolver_createfetch2($RESOLVER, $NAME, $TYPE, $DOMAIN, $NAMESERVERS,
+    $FORWARDERS, $CLIENT, $ID, $OPTIONS, $TASK, $ACTION, $ARG, $RDATASET, $SIGRDATASET,
+    $FETCHP)
+
+    '
+  pattern-not: 'dns_resolver_createfetch3($RESOLVER, $NAME, $TYPE, $DOMAIN, $NAMESERVERS,
+    $FORWARDERS, $CLIENT, $ID, $OPTIONS, $DEPTH, $TASK, $ACTION, $ARG, $RDATASET,
+    $SIGRDATASET, $FETCHP)
+
+    '
+  languages:
+  - c
+  message: 'The function `dns_resolver_createfetch2` is vulnerable to recursive DNS
+    queries without depth limiting, which could lead to DNS amplification attacks
+    or resource exhaustion. This was fixed by introducing `dns_resolver_createfetch3`
+    which includes a depth parameter to limit recursion. Update to use `dns_resolver_createfetch3`
+    with an appropriate depth limit.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/603a0e2637b35a2da820bc807f69bcf09c682dce
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://kb.isc.org/docs/cve-2012-1033
+    technology:
+    - c

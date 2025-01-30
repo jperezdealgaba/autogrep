@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-5f3b086e
+  pattern: $GLOBALS['import_blacklist']
+  pattern-not: $GLOBALS['_import_blacklist']
+  languages:
+  - php
+  message: 'Detected use of the deprecated and potentially insecure `$GLOBALS[''import_blacklist'']`
+    variable.
+
+    This variable was renamed to `$GLOBALS[''_import_blacklist'']` to prevent security
+    issues related to variable importation.
+
+    Always use the updated variable name to ensure proper security checks are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/5f3b086ed22b8ca49472d27a014df3908b0388ac
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/phpmyadmin/phpmyadmin/commit/5f3b086ed22b8ca49472d27a014df3908b0388ac
+    technology:
+    - php

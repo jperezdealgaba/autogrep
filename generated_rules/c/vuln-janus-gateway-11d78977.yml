@@ -1,0 +1,27 @@
+rules:
+- id: vuln-janus-gateway-11d78977
+  pattern: "void $FUNC(janus_dtls_srtp *$DTLS, char *$LABEL, char *$BUF, int $LEN)\
+    \ {\n  ...\n  janus_sctp_send_data($DTLS->sctp, $LABEL, $BUF, $LEN);\n  ...\n\
+    }\n"
+  pattern-not: "void $FUNC(janus_dtls_srtp *$DTLS, char *$LABEL, gboolean $TEXTDATA,\
+    \ char *$BUF, int $LEN) {\n  ...\n  janus_sctp_send_data($DTLS->sctp, $LABEL,\
+    \ $TEXTDATA, $BUF, $LEN);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function does not distinguish between text and binary data, which
+    can lead to incorrect handling of data packets. This vulnerability was fixed by
+    adding a `gboolean textdata` parameter to explicitly specify the data type. To
+    fix this, update the function signature and all call sites to include the `textdata`
+    parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/meetecho/janus-gateway/commit/11d78977f333bcadf3c34d27f1e30225f19befbf
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - c

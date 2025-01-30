@@ -1,0 +1,31 @@
+rules:
+- id: vuln-microweber-f3b86d59
+  pattern: '$html_to_save = $content = $this->app->parser->make_tags($html_to_save);
+
+    '
+  pattern-not: '$html_to_save = $this->app->parser->make_tags($html_to_save);
+
+    $antixss = new AntiXSS();
+
+    $html_to_save = $content = $antixss->xss_clean($html_to_save);
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to missing input sanitization.\
+    \ \nThe code directly assigns user-controlled HTML content without proper XSS\
+    \ protection, \nwhich could allow attackers to inject malicious scripts. \nTo\
+    \ fix this, use a library like AntiXSS to sanitize the input before processing\
+    \ or storing it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/f3b86d59ab674dbf514f9f9948ddfa091739ab75
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2021-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-f63e1bb4
+  pattern: '$include_file = $TRANSFORMATION[''transformation''];
+
+    '
+  pattern-not: '$include_file = PMA_securePath($TRANSFORMATION[''transformation'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe file inclusion without path sanitization. This vulnerability
+    allows for potential path traversal attacks, which can lead to unauthorized access
+    to sensitive files on the server. To fix this, use the PMA_securePath function
+    to sanitize the file path before inclusion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/f63e1bb42a37401b2fdfcd2e66cce92b7ea2025c
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

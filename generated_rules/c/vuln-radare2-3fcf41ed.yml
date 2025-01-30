@@ -1,33 +1,25 @@
 rules:
 - id: vuln-radare2-3fcf41ed
-  pattern: 'r_buf_read_at($BF, $FROM, $BUF, $TO - $FROM);
-
-    '
-  pattern-not: 'int $LEN = $TO - $FROM;
-
-    r_buf_read_at($BF, $FROM, $BUF, $LEN);
-
-    '
+  pattern: "ut8 *$BUF = calloc($EXPR1 - $EXPR2, 1);\n...\nr_buf_read_at($BF_BUF, $FROM,\
+    \ $BUF, $EXPR1 - $EXPR2);\n...\nif (($EXPR1 - $NEEDLE) > $CONST) {\n  ...\n}\n"
+  pattern-not: "int $LEN = $EXPR1 - $EXPR2;\nut8 *$BUF = calloc($LEN, 1);\n...\nr_buf_read_at($BF_BUF,\
+    \ $FROM, $BUF, $LEN);\n...\nif (($EXPR1 - $NEEDLE) > $CONST + $RC) {\n  ...\n\
+    }\n"
   languages:
   - c
-  message: 'The vulnerability arises from directly using arithmetic expressions in
-    function calls, which can lead to incorrect calculations and potential buffer
-    overflows. This is dangerous because it can cause memory corruption, leading to
-    crashes or arbitrary code execution. The fix involves calculating the length separately
-    and then using the calculated value in the function call.
-
-    '
+  message: "Detected a potential integer overflow vulnerability due to repeated calculation\
+    \ of buffer length. \nThe original code calculates `to - from` multiple times,\
+    \ which can lead to inconsistencies if the values change or if there's an overflow.\
+    \ \nThe fix introduces a variable `len` to store the result of `to - from` and\
+    \ uses it consistently, preventing potential issues.\nTo fix, store the result\
+    \ of length calculations in a variable and reuse it consistently.\n"
   severity: ERROR
   metadata:
-    source-url: github.com/radare/radare2/commit/3fcf41ed96ffa25b38029449520c8d0a198745f3
+    source-url: github.com/radareorg/radare2/commit/3fcf41ed96ffa25b38029449520c8d0a198745f3
     category: security
     cwe:
-    - CWE-120
-    - CWE-131
+    - CWE-190
     owasp:
-    - 'A1: Injection'
-    references:
-    - https://cwe.mitre.org/data/definitions/120.html
-    - https://cwe.mitre.org/data/definitions/131.html
+    - 'A9: Using Components with Known Vulnerabilities'
     technology:
     - c

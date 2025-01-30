@@ -1,0 +1,32 @@
+rules:
+- id: vuln-libvirt-a4947e8f
+  pattern: 'return virNWFilterObjListNumOfNWFilters($DRIVER, $CONN, $ACL);
+
+    '
+  pattern-not: 'nwfilterDriverLock();
+
+    $RET = virNWFilterObjListNumOfNWFilters($DRIVER, $CONN, $ACL);
+
+    nwfilterDriverUnlock();
+
+    return $RET;
+
+    '
+  languages:
+  - c
+  message: 'Direct return of virNWFilterObjListNumOfNWFilters without proper locking
+    can lead to race conditions. This is dangerous as it can cause inconsistent state
+    or data corruption in multi-threaded environments. To fix this, ensure the function
+    is called between nwfilterDriverLock() and nwfilterDriverUnlock() calls.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/a4947e8f63c3e6b7b067b444f3d6cf674c0d7f36
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-linux-3c85cc43
+  pattern: "if (!vma_is_shmem($VMA) && !is_file_hugepages($FILE)) {\n  ...\n}\n"
+  pattern-not: "if ($VMA->vm_file && !is_file_hugepages($VMA->vm_file)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where the code incorrectly checks for
+    file types without verifying the `vm_file` pointer. This can lead to null pointer
+    dereferences or incorrect behavior when handling memory mappings. Always check
+    the `vm_file` pointer before accessing its properties to ensure the memory area
+    is backed by a valid file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/torvalds/linux/commit/3c85cc43c8e7855d202da184baf00c7b8eeacf71
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

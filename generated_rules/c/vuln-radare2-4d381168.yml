@@ -12,19 +12,16 @@ rules:
     '
   languages:
   - c
-  message: 'The function `r_anal_get_fcn_in` is called with an invalid type argument
-    (-1), which can lead to undefined behavior or incorrect function analysis. This
-    vulnerability can cause incorrect analysis results or crashes. Use `R_ANAL_FCN_TYPE_ANY`
-    instead of -1 to ensure proper function type resolution.
-
-    '
+  message: "Detected unsafe usage of `r_anal_get_fcn_in` with a hardcoded `-1` as\
+    \ the function type. \nThis can lead to incorrect function resolution or unexpected\
+    \ behavior. \nUse `R_ANAL_FCN_TYPE_ANY` or a specific function type instead to\
+    \ ensure proper function resolution.\n"
   severity: ERROR
   metadata:
-    source-url: github.com/radare/radare2/commit/4d3811681a80f92a53e795f6a64c4b0fc2c8dd22
+    source-url: github.com/radareorg/radare2/commit/4d3811681a80f92a53e795f6a64c4b0fc2c8dd22
     category: security
     cwe:
-    - 'CWE-628: Function Call with Incorrectly Specified Arguments'
-    owasp:
-    - 'A9: Using Components with Known Vulnerabilities'
+    - CWE-477
+    owasp: 'A9: Using Components with Known Vulnerabilities'
     technology:
     - c

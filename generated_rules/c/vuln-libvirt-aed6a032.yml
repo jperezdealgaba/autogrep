@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libvirt-aed6a032
+  pattern: "if (($CONN->flags & VIR_CONNECT_RO) &&\n    ($FLAGS & VIR_DOMAIN_SAVE_IMAGE_XML_SECURE))\
+    \ {\n    virReportError(VIR_ERR_OPERATION_DENIED, \"%s\",\n                  \
+    \ _(\"virDomainSaveImageGetXMLDesc with secure flag\"));\n    goto error;\n}\n"
+  pattern-not: 'virCheckReadOnlyGoto($CONN->flags, error);
+
+    '
+  languages:
+  - c
+  message: 'The code fails to properly check for read-only connections when using
+    the VIR_DOMAIN_SAVE_IMAGE_XML_SECURE flag, potentially allowing unauthorized access
+    to sensitive information. This vulnerability can be exploited by attackers to
+    bypass security checks. The issue was fixed by using the `virCheckReadOnlyGoto`
+    function to properly validate read-only connections.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/aed6a032cead4386472afb24b16196579e239580
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - c

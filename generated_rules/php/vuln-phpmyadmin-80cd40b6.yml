@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-80cd40b6
+  pattern: "if (! file_exists('./libraries/gis/GIS_' . ucfirst($TYPE) . '.class.php'))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (! PMA_isValid($TYPE, PMA_Util::getGISDatatypes())\n    || ! file_exists('./libraries/gis/GIS_'\
+    \ . ucfirst($TYPE) . '.class.php')\n) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses user input to construct a file path without proper
+    validation, which can lead to path traversal or arbitrary file inclusion vulnerabilities.
+    This is dangerous because an attacker could manipulate the input to load unintended
+    files, potentially leading to remote code execution. To fix this, validate the
+    input against a whitelist of allowed values before using it in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/80cd40b6687a6717860d345d6eb55bef2908e961
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

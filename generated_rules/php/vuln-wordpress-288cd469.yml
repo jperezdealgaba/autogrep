@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wordpress-288cd469
+  pattern: '$location = trim($VAR);
+
+    '
+  pattern-not: '$location = trim($VAR, " \t\n\r\0\x08\x0B");
+
+    '
+  languages:
+  - php
+  message: 'The use of `trim()` without specifying the characters to trim can lead
+    to incomplete sanitization of input, potentially allowing malicious characters
+    to bypass security checks. This vulnerability can be exploited to inject harmful
+    content or manipulate application behavior. Always specify the characters to trim
+    to ensure proper sanitization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/288cd469396cfe7055972b457eb589cea51ce40e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

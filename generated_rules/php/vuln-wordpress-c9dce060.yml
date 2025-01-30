@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wordpress-c9dce060
+  pattern: '@ unlink(path_join($VAR, $FILE));
+
+    '
+  pattern-not: 'wp_delete_file_from_directory($FILE, $DIR);
+
+    '
+  languages:
+  - php
+  message: 'Direct use of `unlink()` without proper directory validation can lead
+    to file deletion vulnerabilities. This can be exploited to delete arbitrary files
+    outside the intended directory. Use `wp_delete_file_from_directory()` to ensure
+    the file is within the specified directory before deletion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/c9dce0606b0d7e6f494d4abe7b193ac046a322cd
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-59
+    owasp: 'A1: Injection'
+    technology:
+    - php

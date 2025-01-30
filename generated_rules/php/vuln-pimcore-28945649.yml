@@ -1,0 +1,33 @@
+rules:
+- id: vuln-pimcore-28945649
+  pattern: "$tmpFile = $request->get('importFile');\n...\nif (!empty($tmpFile)) {\n\
+    \    $tmpFile = PIMCORE_SYSTEM_TEMP_DIRECTORY . '/' . $tmpFile;\n} else {\n  \
+    \  $tmpFile = $_FILES['Filedata']['tmp_name'];\n}\n"
+  pattern-not: "$session = Session::get('pimcore_importconfig');\n$tmpFile = $session->get('translation_import_file');\n\
+    ...\nSession::useSession(function (AttributeBagInterface $session) use ($importFile)\
+    \ {\n    $session->set('translation_import_file', $importFile);\n}, 'pimcore_importconfig');\n"
+  languages:
+  - php
+  message: 'Detected insecure file handling in PHP code. The code directly uses user-controlled
+    input to determine file paths, which can lead to path traversal or unauthorized
+    file access vulnerabilities. The vulnerability was fixed by storing the file path
+    in a secure session instead of directly using user input. To fix, ensure file
+    paths are validated and stored securely, avoiding direct use of user-controlled
+    input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/pimcore/commit/28945649a6234ccaa8c94c6cd83d1954603baf3e
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

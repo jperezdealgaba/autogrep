@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wordpress-eaf1cfdc
+  pattern: '$newuser_key = substr(md5($VAR), 0, $LENGTH);
+
+    '
+  pattern-not: '$newuser_key = wp_generate_password($LENGTH, false);
+
+    '
+  languages:
+  - php
+  message: 'Detected use of insecure password generation using `md5` with `substr`.
+    This method creates short, predictable keys that are vulnerable to brute-force
+    attacks. Use `wp_generate_password` instead to generate secure, random keys of
+    sufficient length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/eaf1cfdc1fe0bdffabd8d879c591b864d833326c
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php

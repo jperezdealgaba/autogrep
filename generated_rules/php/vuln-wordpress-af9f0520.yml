@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wordpress-af9f0520
+  pattern: 'preg_match(''#^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$#'', $VAR)
+
+    '
+  pattern-not: 'preg_match(''#^(([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)\.){3}([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)$#'',
+    $VAR)
+
+    '
+  languages:
+  - php
+  message: 'The IP address validation regex is too permissive, allowing invalid IP
+    addresses. This can lead to security issues such as bypassing IP-based restrictions.
+    Use a more precise regex pattern to validate IP addresses correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/WordPress/WordPress/commit/af9f0520875eda686fd13a427fd3914d7aded049
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

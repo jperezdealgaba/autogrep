@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libvirt-29fe5d74
+  pattern: 'virSecurityDACGetIds($DEF, $PRIV, $USER, $GROUP)
+
+    '
+  pattern-not: 'virSecurityDACGetIds($DEF, $PRIV, $USER, $GROUP, $GROUPS, $NGROUPS)
+
+    '
+  languages:
+  - c
+  message: 'The function `virSecurityDACGetIds` is called without the `groups` and
+    `ngroups` parameters, which can lead to improper handling of group permissions.
+    This vulnerability could allow unauthorized access or privilege escalation. Always
+    pass the `groups` and `ngroups` parameters to ensure proper group permission handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/29fe5d745fbe207ec2415441d4807ae76be05974
+    category: security
+    cwe:
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp:
+    - A04:2021 - Insecure Design
+    technology:
+    - c
