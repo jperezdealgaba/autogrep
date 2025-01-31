@@ -1,0 +1,35 @@
+rules:
+- id: vuln-coreruleset-dc807309
+  pattern: 'encoded_request: "R0VUIC8gSFRUUC8xLjENCkhvc3Q6IGxvY2FsaG9zdA0KVXNlci1BZ2VudDogVEVTVCBDUlMNCkFjY2VwdDogKi8qDQpDb250ZW50LVR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24veG1sDQoNCg=="
+
+    '
+  pattern-not: 'encoded_request: "R0VUIC9nZXQgSFRUUC8xLjENCkhvc3Q6IGxvY2FsaG9zdA0KVXNlci1BZ2VudDogT1dBU1AgQ1JTIHRlc3QgYWdlbnQNCkFjY2VwdDogdGV4dC94bWwsYXBwbGljYXRpb24veG1sLGFwcGxpY2F0aW9uL3hodG1sK3htbCx0ZXh0L2h0bWw7cT0wLjksdGV4dC9wbGFpbjtxPTAuOCxpbWFnZS9wbmcsKi8qO3E9MC41DQpDb250ZW50LVR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24veG1sDQoNCg=="
+
+    '
+  languages:
+  - yaml
+  message: 'The encoded request contains a potentially dangerous HTTP request with
+    insufficient content type validation.
+
+    This could allow attackers to bypass security controls by injecting malicious
+    payloads.
+
+    Ensure the request includes proper content type validation and user agent identification
+    to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/coreruleset/coreruleset/commit/dc807309116edcf1a6a830803a4323a2f7c6fb42
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-434
+    owasp:
+    - A1: Injection
+    - A7: Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - yaml

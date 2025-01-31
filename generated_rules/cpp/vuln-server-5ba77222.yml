@@ -1,0 +1,26 @@
+rules:
+- id: vuln-server-5ba77222
+  pattern: '$VAR->vcol_info = 0;
+
+    '
+  pattern-not: '$VAR->vcol_info = $VAR->default_value = $VAR->check_constraint = 0;
+
+    '
+  languages:
+  - cpp
+  message: 'Uninitialized pointer assignment detected. Only `vcol_info` is set to
+    0, leaving `default_value` and `check_constraint` uninitialized. This can lead
+    to undefined behavior and potential security vulnerabilities. Ensure all relevant
+    pointers are properly initialized to 0.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MariaDB/server/commit/5ba77222e9fe7af8ff403816b5338b18b342053c
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

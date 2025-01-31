@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ffmpeg-e01d306c
+  pattern: 'return get_audio_frame_duration($CTX->codec_id, $CTX->sample_rate, ...);
+
+    '
+  pattern-not: 'int $DURATION = get_audio_frame_duration($CTX->codec_id, $CTX->sample_rate,
+    ...);
+
+    return FFMAX(0, $DURATION);
+
+    '
+  languages:
+  - c
+  message: 'Directly returning the result of `get_audio_frame_duration` without checking
+    for negative values can lead to undefined behavior or security vulnerabilities.
+    The patch ensures that the returned duration is non-negative by using `FFMAX(0,
+    duration)`. Always validate function return values to prevent potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/e01d306c647b5827102260b885faa223b646d2d1
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

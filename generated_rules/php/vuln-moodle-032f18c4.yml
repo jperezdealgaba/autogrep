@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-032f18c4
+  pattern: 'if (!can_access_course($VAR))
+
+    '
+  pattern-not: 'if (!can_access_course($VAR, null, '''', true))
+
+    '
+  languages:
+  - php
+  message: "Detected insecure usage of `can_access_course` without proper parameters.\
+    \ \nThis can lead to improper access control checks, potentially allowing unauthorized\
+    \ access to course resources. \nAlways include the full parameter list (`$course,\
+    \ $userid, $capability, $doanything`) to ensure proper access validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/032f18c4a50d472cddd2cb52a627d19b75921f16
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/Access_API
+    technology:
+    - php

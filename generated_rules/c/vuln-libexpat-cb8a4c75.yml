@@ -1,0 +1,41 @@
+rules:
+- id: vuln-libexpat-cb8a4c75
+  pattern: '$STRUCT.scaffold[$INDEX].name = $EL->name;
+
+    $STRUCT.contentStringLen += $NXT - $S + 1;
+
+    '
+  pattern-not: '$NAME = $EL->name;
+
+    $STRUCT.scaffold[$INDEX].name = $NAME;
+
+    $NAMELEN = 0;
+
+    for (; $NAME[$NAMELEN++]; );
+
+    $STRUCT.contentStringLen += $NAMELEN;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability arises from directly using the length calculated from
+    pointer arithmetic (`$NXT - $S + 1`) without properly validating the string length.
+    This can lead to incorrect length calculations and potential buffer overflows.
+    The fix involves explicitly calculating the length of the string by iterating
+    through it. Always validate and calculate string lengths explicitly to avoid such
+    issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libexpat/libexpat/commit/cb8a4c756d057b948c1b41e7185dd69ef3ade3fb
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

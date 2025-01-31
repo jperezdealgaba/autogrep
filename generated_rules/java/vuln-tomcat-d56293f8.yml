@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tomcat-d56293f8
+  pattern: 'String $RET = $STRINGBUILDER.toString();
+
+    $STRINGBUILDER.setLength(0);
+
+    return $RET;
+
+    '
+  pattern-not: 'return $STRINGBUILDER.toString();
+
+    '
+  languages:
+  - java
+  message: "Detected potential resource reuse vulnerability in StringBuilder usage.\
+    \ \nThe code clears the StringBuilder after converting it to a string, which could\
+    \ lead to unintended behavior or data corruption. \nInstead, create a new StringBuilder\
+    \ instance with the appropriate length or avoid clearing it unnecessarily.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/d56293f816d6dc9e2b47107f208fa9e95db58c65
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: java

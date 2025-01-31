@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libdwarf-code-da724a0b
+  pattern: "$LIST = _dwarf_get_abbrev_for_code($CONTEXT, $CODE);\nif ($LIST == NULL)\
+    \ {\n  ...\n}\n"
+  pattern-not: "$RES = _dwarf_get_abbrev_for_code($CONTEXT, $CODE, &$LIST, $ERROR);\n\
+    if ($RES == DW_DLV_ERROR) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Direct assignment and NULL check of _dwarf_get_abbrev_for_code() result
+    is unsafe.
+
+    The function may fail in ways that are not captured by a simple NULL check.
+
+    Use the updated function signature that returns an error code and properly handles
+    error conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/da724a0bc5eec8e9ec0b0cb0c238a80e34466459
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    technology:
+    - c

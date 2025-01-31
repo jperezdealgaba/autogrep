@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wavm-2173c468
+  pattern: 'while(!isRecoveryPointChar(*$NEXTCHAR)) { ++$NEXTCHAR; }
+
+    '
+  pattern-not: "const char* $STRINGEND = $STRING + $STRINGLENGTH;\nwhile($NEXTCHAR\
+    \ < $STRINGEND\n      && !isRecoveryPointChar(*$NEXTCHAR))\n{\n    ++$NEXTCHAR;\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'A loop advancing a pointer without checking the string bounds can lead
+    to out-of-bounds memory access. This is dangerous as it can cause crashes, memory
+    corruption, or security vulnerabilities. Always ensure the pointer does not exceed
+    the string bounds by comparing it with the string end.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/AndrewScheidecker/WAVM/commit/2173c468a0f2f7227e6683b7a005cbec4cb5532b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A8:2017-Insecure Deserialization
+    technology:
+    - cpp

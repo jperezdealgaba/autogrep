@@ -1,0 +1,37 @@
+rules:
+- id: vuln-misp-6eba658d
+  pattern: "public function convertQuotes($string) {\n  ...\n  $string = preg_replace('%\\\
+    [event\\]\\s*(\\d*)\\s*\\[/event\\]%isU', '<a href=\"' . h(Configure::read('MISP.baseurl')).\
+    \ '/events/view/$1> Event $1</a>', $string);\n  $string = preg_replace('%\\[thread\\\
+    ]\\s*(\\d*)\\s*\\[/thread\\]%isU', '<a href=\"' . h(Configure::read('MISP.baseurl')).\
+    \ '/threads/view/$1> Thread $1</a>', $string);\n  $string = preg_replace('%\\\
+    [link\\]\\s*(http|https|ftp|git|ftps)(.*)\\s*\\[/link\\]%isU', '<a href=\"$1$2\"\
+    >$1$2</a>', $string);\n  ...\n}\n"
+  pattern-not: "public function convertQuotes($string) {\n  $this->__buildReplacements();\n\
+    \  foreach ($this->__replacement as $trigger => $replacement) {\n    $result =\
+    \ $this->__handleLinks($string, $trigger);\n    if (!$result) return 'Malformed\
+    \ syntax.';\n  }\n}\n"
+  languages:
+  - php
+  message: 'The original code directly uses `preg_replace` to transform user input
+    into HTML links without proper URL validation. This can lead to XSS or open redirect
+    vulnerabilities if the input is not properly sanitized. The patch introduces a
+    more secure approach by validating URLs and handling replacements in a controlled
+    manner. Always validate and sanitize user input before using it in HTML output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/6eba658d4a648b41b357025d864c19a67412b8aa
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    - 'A3: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://owasp.org/www-community/attacks/Open_redirect
+    technology:
+    - php

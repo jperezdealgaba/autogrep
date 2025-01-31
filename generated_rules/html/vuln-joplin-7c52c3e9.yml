@@ -1,0 +1,28 @@
+rules:
+- id: vuln-joplin-7c52c3e9
+  pattern: '<map name="test" class="jop-noMdConv"><area coords="0,0,1000,1000" href="#"
+    class="jop-noMdConv"/></map><img usemap="#test" src="https://github.com/Ry0taK.png"
+    class="jop-noMdConv"/>
+
+    '
+  pattern-not: '<img usemap="#test" src="https://github.com/Ry0taK.png" class="jop-noMdConv"/>
+
+    '
+  languages:
+  - html
+  message: 'Detected an unsafe use of `<map>` and `<area>` elements with an `<img>`
+    tag. This can lead to potential security vulnerabilities such as clickjacking
+    or unintended user interactions. Remove the `<map>` and `<area>` elements to mitigate
+    this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/7c52c3e9a81a52ef1b42a951f9deb9d378d59b0f
+    category: security
+    cwe:
+    - CWE-1021
+    owasp:
+    - 'A5: Security Misconfiguration'
+    technology:
+    - html

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-jasper-f94e7499
+  pattern: 'jas_image_setcmpttype($IMAGE, dec->chantocmptlut[$I], ...)
+
+    '
+  pattern-not: "unsigned $COMPNO = dec->chantocmptlut[$I];\nif ($COMPNO >= jas_image_numcmpts($IMAGE))\
+    \ {\n  ...\n}\njas_image_setcmpttype($IMAGE, $COMPNO, ...)\n"
+  languages:
+  - c
+  message: 'The code directly uses `dec->chantocmptlut[i]` as an index without checking
+    if it is within bounds. This can lead to out-of-bounds access, potentially causing
+    memory corruption or crashes. Always validate array indices before using them
+    to ensure they are within the valid range of the array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/f94e7499a8b1471a4905c4f9c9e12e60fe88264b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    - 'A8: Insecure Deserialization'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

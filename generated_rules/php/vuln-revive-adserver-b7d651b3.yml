@@ -1,0 +1,30 @@
+rules:
+- id: vuln-revive-adserver-b7d651b3
+  pattern: '_adRenderBuildClickUrl($aBanner, $zoneId, $source, $ct0, $logClick)
+
+    '
+  pattern-not: '_adRenderBuildClickUrl($aBanner, $zoneId, $source, $ct0, $logClick,
+    $overrideDest)
+
+    '
+  languages:
+  - php
+  message: 'The function `_adRenderBuildClickUrl` is missing the `$overrideDest` parameter,
+    which could lead to incorrect URL handling and potential security vulnerabilities.
+    This parameter is crucial for determining whether the URL from the banner should
+    override a passed-in destination. Always include the `$overrideDest` parameter
+    to ensure proper URL handling and prevent potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/b7d651b3230d8ef0cab38cd7894c8d470a50dece
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

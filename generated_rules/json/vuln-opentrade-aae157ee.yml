@@ -1,0 +1,22 @@
+rules:
+- id: vuln-opentrade-aae157ee
+  pattern: "{\n  ...,\n  \"version\": \"0.2.0\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"0.2.1\",\n  ...\n}\n"
+  languages:
+  - json
+  message: 'The version "0.2.0" in package.json may contain security vulnerabilities.
+    It is important to update to the latest version to ensure all known vulnerabilities
+    are patched. The fixed version is "0.2.1". Update the version field to the latest
+    secure version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/3s3s/opentrade/commit/aae157eef58dadb9531e55af30a1e6b086e70519
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - json

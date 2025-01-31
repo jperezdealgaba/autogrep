@@ -1,0 +1,32 @@
+rules:
+- id: vuln-mysql-server-d982e717
+  pattern: 'fix_identifier_with_newline($VAR)
+
+    '
+  pattern-not: 'fix_identifier_with_newline($VAR, &$FREEMEM)
+
+    '
+  languages:
+  - c
+  message: 'The function `fix_identifier_with_newline` is used without a `freemem`
+    parameter,
+
+    which can lead to memory management issues. This function was modified to include
+
+    a `freemem` parameter to properly handle dynamic memory allocation and deallocation.
+
+    Using the old version without this parameter can cause memory leaks or undefined
+
+    behavior. Always use the updated version that includes the `freemem` parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/d982e717aba67227ec40761a21a4211db91aa0e2
+    category: security
+    cwe:
+    - 'CWE-401: Improper Release of Memory Before Removing Last Reference'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

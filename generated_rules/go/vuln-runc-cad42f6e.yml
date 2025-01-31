@@ -1,0 +1,29 @@
+rules:
+- id: vuln-runc-cad42f6e
+  pattern: "$FD_LIST, $ERR := ioutil.ReadDir(\"/proc/self/fd\")\n...\nfor _, $FI :=\
+    \ range $FD_LIST {\n  $FD, $ERR := strconv.Atoi($FI.Name())\n  ...\n}\n"
+  pattern-not: "$FD_DIR, $ERR := os.Open(\"/proc/self/fd\")\n...\nif err := EnsureProcHandle($FD_DIR);\
+    \ err != nil {\n  return err\n}\n...\n$FD_LIST, $ERR := $FD_DIR.Readdirnames(-1)\n\
+    ...\nfor _, $FD_STR := range $FD_LIST {\n  $FD, $ERR := strconv.Atoi($FD_STR)\n\
+    \  ...\n}\n"
+  languages:
+  - go
+  message: 'The code directly reads from /proc/self/fd without verifying that the
+    file handle is on procfs, which could lead to security vulnerabilities if the
+    file system is not properly checked. This can be exploited if an attacker can
+    manipulate the file system. To fix this, use os.Open to get a file handle and
+    verify it''s on procfs using EnsureProcHandle before reading the directory contents.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/cad42f6e0932db0ce08c3a3d9e89e6063ec283e4
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/59.html
+    technology:
+    - go

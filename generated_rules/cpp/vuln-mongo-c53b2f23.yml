@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mongo-c53b2f23
+  pattern: 'JS_SetPrivate($PROTO, $SCOPE->trackedNew<Status>(Status::OK()));
+
+    '
+  pattern-not: 'JS_SetPrivate($PROTO, $SCOPE->trackedNew<Status>(Status(ErrorCodes::UnknownError,
+    "Mongo Status Prototype")));
+
+    '
+  languages:
+  - cpp
+  message: "Detected the use of `Status::OK()` in `JS_SetPrivate`, which can lead\
+    \ to incorrect status handling. \nThis is dangerous because it may cause the system\
+    \ to ignore errors or treat invalid states as valid. \nInstead, use a specific\
+    \ error status like `Status(ErrorCodes::UnknownError, \"description\")` to ensure\
+    \ proper error handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mongodb/mongo/commit/c53b2f233687487ef70398153af3d8d34bbc21d1
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - cpp

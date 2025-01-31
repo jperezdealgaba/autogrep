@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyfaq-5f43786f
+  pattern: "if (!Token::getInstance()->verifyToken('user', $POSTDATA->csrfToken))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!Token::getInstance()->verifyToken('activate-user', $POSTDATA->csrfToken))\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potentially insecure CSRF token verification. The token should
+    be verified with a specific action context (e.g., ''activate-user'') rather than
+    a generic one (''user''). This could allow CSRF attacks if the token verification
+    is not context-specific. Always verify CSRF tokens with the specific action they
+    are intended for.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpmyfaq/commit/5f43786f52c3d517e7665abd25d534e180e08dc5
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - OWASP Top 10 2021:A01 - Broken Access Control
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+    technology:
+    - php

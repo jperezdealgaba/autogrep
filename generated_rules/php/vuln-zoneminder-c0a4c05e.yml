@@ -1,0 +1,27 @@
+rules:
+- id: vuln-zoneminder-c0a4c05e
+  pattern: "if (isset($_REQUEST['action'])) {\n  $action = detaintPath($_REQUEST['action']);\n\
+    }\n"
+  pattern-not: "if (isset($_POST['action'])) {\n  $action = detaintPath($_POST['action']);\n\
+    } else if (isset($_REQUEST['action'])) {\n  ZM\\Error('actions can no longer be\
+    \ performed without POST.');\n}\n"
+  languages:
+  - php
+  message: 'The code allows actions to be performed via GET requests, which can lead
+    to CSRF vulnerabilities. Actions should only be performed via POST requests to
+    ensure proper CSRF protection. Update the code to use $_POST[''action''] and handle
+    GET requests appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/c0a4c05e84eea0f6ccf7169c014efe5422c9ba0d
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

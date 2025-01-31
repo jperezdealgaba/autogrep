@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jasper-1abc2e5a
+  pattern: 'jpc_tsfb_band_t $BANDS[64];
+
+    '
+  pattern-not: 'jpc_tsfb_band_t $BANDS[JPC_MAXBANDS];
+
+    '
+  languages:
+  - c
+  message: 'The use of a hardcoded array size (64) for `jpc_tsfb_band_t` can lead
+    to buffer overflow vulnerabilities. This is dangerous because it may allow an
+    attacker to execute arbitrary code or cause a denial of service. Replace the hardcoded
+    size with a defined constant (e.g., JPC_MAXBANDS) to ensure the array size is
+    properly managed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/1abc2e5a401a4bf1d5ca4df91358ce5df111f495
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

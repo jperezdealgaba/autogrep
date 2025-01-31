@@ -1,0 +1,21 @@
+rules:
+- id: vuln-pillow-844ed441
+  pattern: "if $FILE.endswith($FORMAT):\n  ...\n"
+  pattern-not: "if not $FILE.endswith($FORMAT):\n  ...\n"
+  languages:
+  - python
+  message: "Detected a potential logic error where file format validation is incorrectly\
+    \ implemented. \nThe condition checks if a file ends with a specific format, which\
+    \ might lead to incorrect file handling. \nThis could result in processing files\
+    \ with unintended formats, potentially leading to security vulnerabilities. \n\
+    Use `if not file.endswith(format)` to properly validate file formats.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/844ed441deb6b75d3048fa111977188ed47f0b76
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - python

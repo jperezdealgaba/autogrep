@@ -1,0 +1,29 @@
+rules:
+- id: vuln-discourse-27bad28c
+  pattern: '$QUERY.distinct(false).pluck(:id)
+
+    '
+  pattern-not: '$QUERY.pluck(:id)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `distinct(false)` in SQL queries can lead to performance issues
+    and incorrect results by disabling the DISTINCT clause. This can cause duplicate
+    records to be returned, which may lead to data inconsistencies or unexpected behavior.
+    Remove the `distinct(false)` call to ensure proper query behavior.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/discourse/discourse/commit/27bad28c530c89acab35a56b945b6a3924280f4b
+    category: performance
+    cwe:
+    - CWE-1047
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://guides.rubyonrails.org/active_record_querying.html#distinct
+    technology:
+    - ruby
+    - rails

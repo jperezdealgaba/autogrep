@@ -1,0 +1,23 @@
+rules:
+- id: vuln-keystone-d9600434
+  pattern: "$USER_REF = self.update_user($CONTEXT, $USER_ID, $USER)\ntry:\n    for\
+    \ $TOKEN_ID in self.token_api.list_tokens($CONTEXT, $USER_ID):\n        self.token_api.delete_token($CONTEXT,\
+    \ $TOKEN_ID)\nexcept exception.NotImplemented:\n    LOG.warning('Password changed\
+    \ for %s, but existing tokens remain valid' % $USER_ID)\nreturn $USER_REF\n"
+  pattern-not: "if $USER.get('password') or $USER.get('enabled', True) == False:\n\
+    \    try:\n        for $TOKEN_ID in self.token_api.list_tokens($CONTEXT, $USER_ID):\n\
+    \            self.token_api.delete_token($CONTEXT, $TOKEN_ID)\n    except exception.NotImplemented:\n\
+    \        LOG.warning('User %s status has changed, but existing tokens remain valid'\
+    \ % $USER_ID)\nreturn self.update_user($CONTEXT, $USER_ID, $USER)\n"
+  languages:
+  - python
+  message: Detected a security issue where user tokens are not invalidated when a
+    user is disabled or their password is changed. This can allow continued access
+    with revoked credentials. Ensure tokens are cleared when user status changes.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/d9600434da14976463a0bd03abd8e0309f0db454
+    category: security
+    cwe: CWE-613
+    owasp: A2:2017-Broken Authentication
+    technology: python

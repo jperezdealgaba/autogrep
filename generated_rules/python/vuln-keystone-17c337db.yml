@@ -1,0 +1,30 @@
+rules:
+- id: vuln-keystone-17c337db
+  pattern: "if (not $CONTEXT.system_scope and $CONF.oslo_policy.enforce_scope):\n\
+    \    $FILTERED_REFS = []\n    for $REF in $REFS:\n        if $REF['user_id'] ==\
+    \ $TARGET['credential']['user_id']:\n            $FILTERED_REFS.append($REF)\n\
+    \    $REFS = $FILTERED_REFS\n"
+  pattern-not: "$FILTERED_REFS = []\nfor $REF in $REFS:\n    try:\n        $CRED =\
+    \ $PROVIDERS.credential_api.get_credential($REF['id'])\n        $ENFORCER.enforce_call(\n\
+    \            action='identity:get_credential',\n            target_attr={'credential':\
+    \ $CRED}\n        )\n        $FILTERED_REFS.append($REF)\n    except exception.Forbidden:\n\
+    \        pass\n$REFS = $FILTERED_REFS\n"
+  languages:
+  - python
+  message: "Detected insecure credential access control. The code only checks if the\
+    \ user_id matches, which could allow unauthorized access to credentials. \nThe\
+    \ fix adds proper policy enforcement to ensure users can only access credentials\
+    \ they are authorized to view. \nAlways enforce proper access control policies\
+    \ when dealing with sensitive resources like credentials.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/17c337dbdbfb9d548ad531c2ad0483c9bce5b98f
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/284.html
+    technology:
+    - python

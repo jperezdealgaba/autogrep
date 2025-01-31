@@ -1,0 +1,30 @@
+rules:
+- id: vuln-sqlite-396afe6f
+  pattern: "if( $SUBSRC->nSrc > $X || $ISAGG || IsVirtual($SUBSRC->a[0].pTab) ) {\n\
+    \  ...\n}\n"
+  pattern-not: "if( $SUBSRC->nSrc > $X                   /* (3a) */\n || $ISAGG  \
+    \                           /* (3b) */\n || IsVirtual($SUBSRC->a[0].pTab)    \
+    \ /* (3c) */\n || ($P->selFlags & SF_Distinct) != 0    /* (3d) */\n) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The condition in the SQLite query is missing a check for the SF_Distinct
+    flag, which could lead to incorrect query results or security vulnerabilities.
+    This patch adds a check to ensure that the outer query is not DISTINCT, preventing
+    potential issues with query execution. To fix this, ensure that all necessary
+    conditions are included in the if statement, particularly the check for the SF_Distinct
+    flag.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sqlite/sqlite/commit/396afe6f6aa90a31303c183e11b2b2d4b7956b35
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://www.sqlite.org/src/info/396afe6f6aa90a31303c183e11b2b2d4b7956b35
+    technology:
+    - c

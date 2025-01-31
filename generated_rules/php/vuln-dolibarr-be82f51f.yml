@@ -1,0 +1,26 @@
+rules:
+- id: vuln-dolibarr-be82f51f
+  pattern: 'httponly_accessforbidden($MSG)
+
+    '
+  pattern-not: 'accessforbidden('''', 0, 0, 1)
+
+    '
+  languages:
+  - php
+  message: 'The use of `httponly_accessforbidden` without proper HTTP headers can
+    lead to security issues. This function does not set the necessary headers to prevent
+    certain types of attacks. Replace it with `accessforbidden('''', 0, 0, 1)` to
+    ensure proper security headers are set.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/be82f51f68d738cce205f4ce5b469ef42ed82d9e
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - php

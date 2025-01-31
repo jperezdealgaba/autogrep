@@ -1,0 +1,25 @@
+rules:
+- id: vuln-moodle-1964d68f
+  pattern: "html_writer::link(new moodle_url('/course/user.php', [\n    'mode' =>\
+    \ 'grade',\n    'id' => $course->id,\n    'user' => $this->user->id,\n]), $coursename)\n"
+  pattern-not: "html_writer::link(new moodle_url('/course/user.php', [\n    'mode'\
+    \ => 'grade',\n    'id' => $course->id,\n    'user' => $this->user->id,\n]), $coursename)\
+    \ |> has_capability('gradereport/' . $CFG->grade_profilereport .':view', $coursecontext)\n"
+  languages:
+  - php
+  message: 'Missing capability check before generating a link to the grade report.
+    This can lead to unauthorized access to sensitive grade information. Always verify
+    the user has the required capability using `has_capability()` before generating
+    such links.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/1964d68f8500ea3c7b776fa8a2af6266ed109f84
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

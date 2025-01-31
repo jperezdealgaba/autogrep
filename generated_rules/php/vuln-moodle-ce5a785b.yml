@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-ce5a785b
+  pattern: 'new moodle_url(''http://mystatus.skype.com/smallicon/''.$USER->skype)
+
+    '
+  pattern-not: 'new moodle_url(''http://mystatus.skype.com/smallicon/''.urlencode($USER->skype))
+
+    '
+  languages:
+  - php
+  message: 'The Skype URL is constructed without proper URL encoding, which can lead
+    to URL injection vulnerabilities. This could allow an attacker to manipulate the
+    URL and potentially redirect users to malicious sites or inject harmful content.
+    Always use urlencode() to safely include user input in URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/ce5a785b0962c3c94c7a7b0d36176482d21db95d
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/URL_Injection
+    technology:
+    - php

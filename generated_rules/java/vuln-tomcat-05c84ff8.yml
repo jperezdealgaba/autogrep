@@ -1,0 +1,24 @@
+rules:
+- id: vuln-tomcat-05c84ff8
+  pattern: 'DigesterFactory.newDigester($VALIDATION, $NAMESPACE_AWARE, $RULESET)
+
+    '
+  pattern-not: 'DigesterFactory.newDigester($VALIDATION, $NAMESPACE_AWARE, $RULESET,
+    $BLOCK_EXTERNAL)
+
+    '
+  languages:
+  - java
+  message: Potential XML External Entity (XXE) vulnerability detected. The DigesterFactory
+    is being initialized without blocking external entities, which could lead to XXE
+    attacks. Use the version of newDigester that includes the blockExternal parameter
+    to prevent this vulnerability.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/05c84ff8304a69a30b251f207a7b93c2c882564d
+    category: security
+    cwe: CWE-611
+    owasp: 'A4: XML External Entities (XXE)'
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology: java

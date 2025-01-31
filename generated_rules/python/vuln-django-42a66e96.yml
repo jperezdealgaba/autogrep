@@ -1,0 +1,30 @@
+rules:
+- id: vuln-django-42a66e96
+  pattern: 're.compile(r''<.*?>|((?:\w[-\w]*|&.*?;)+)'', re.U | re.S)
+
+    '
+  pattern-not: 're.compile(r''<[^>]+?>|([^<>\s]+)'', re.S)
+
+    '
+  languages:
+  - python
+  message: 'Detected a potentially vulnerable regular expression pattern that can
+    lead to catastrophic backtracking.
+
+    This can cause performance issues or denial of service when processing certain
+    inputs.
+
+    Update the regex pattern to avoid catastrophic backtracking by using more specific
+    patterns.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/42a66e969023c00536256469f0e8b8a099ef109d
+    category: security
+    cwe: CWE-400
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - python

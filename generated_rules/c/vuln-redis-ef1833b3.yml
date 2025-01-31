@@ -1,0 +1,28 @@
+rules:
+- id: vuln-redis-ef1833b3
+  pattern: "if (($RUNLEN + $IDX) > HLL_REGISTERS) {\n    $ACTION;\n    return C_ERR;\n\
+    }\n"
+  pattern-not: 'if (($RUNLEN + $IDX) > HLL_REGISTERS) break;
+
+    '
+  languages:
+  - c
+  message: 'A potential buffer overflow vulnerability exists in the code. The check
+    for overflow returns an error but does not break the loop, which could lead to
+    undefined behavior or memory corruption. Instead of returning an error, the loop
+    should be terminated using a ''break'' statement to prevent further execution
+    that could cause overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/ef1833b3f9d02261617b757fd6ebe0ec3f1be507
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

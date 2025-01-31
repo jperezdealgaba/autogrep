@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mantisbt-e7e2b550
+  pattern: 'preg_match(''@(?:[^:]*)?://@'', $t_url) > 0
+
+    '
+  pattern-not: 'preg_match(''@(?:[^:]*)?:/*@'', $t_url) > 0
+
+    '
+  languages:
+  - php
+  message: 'The regular expression used to validate URLs is vulnerable to bypass attacks
+    due to improper handling of URL schemes. The pattern ''@(?:[^:]*)?://@'' can be
+    exploited by attackers to inject malicious URLs. This can lead to security issues
+    such as open redirects or SSRF. To fix this, use the updated pattern ''@(?:[^:]*)?:/*@''
+    which correctly handles URL schemes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/e7e2b5503580e42db9d91e0d599d61d3ff03c27e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'OWASP: A1: Injection'
+    technology:
+    - php

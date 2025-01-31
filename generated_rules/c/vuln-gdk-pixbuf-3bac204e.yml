@@ -1,0 +1,23 @@
+rules:
+- id: vuln-gdk-pixbuf-3bac204e
+  pattern: "if ($MODULE && $MODULE->stop_load) {\n  ...\n}\n"
+  pattern-not: "if ($MODULE && $MODULE->stop_load && $CONTEXT) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing context validation in image module stop_load function.
+
+    This can lead to null pointer dereference if context is not initialized.
+
+    Always validate context pointer before using it in stop_load function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdk-pixbuf/commit/3bac204e0d0241a0d68586ece7099e6acf0e9bea
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

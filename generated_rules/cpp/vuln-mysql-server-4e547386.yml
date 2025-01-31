@@ -1,0 +1,34 @@
+rules:
+- id: vuln-mysql-server-4e547386
+  pattern: 'mi_sort_index($PARAM, $INFO, $NAME);
+
+    '
+  pattern-not: 'mi_sort_index($PARAM, $INFO, $NAME, $NO_COPY_STAT);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a missing ''no_copy_stat'' parameter in mi_sort_index function
+    call.
+
+    This vulnerability could lead to incorrect file stats being copied during index
+    sorting,
+
+    potentially causing security or data integrity issues.
+
+    The fix involves adding the ''no_copy_stat'' parameter to prevent unnecessary
+    stat copying
+
+    when the new file is created with the correct stats.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/4e5473862e6852b0f3802b0cd0c6fa10b5253291
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

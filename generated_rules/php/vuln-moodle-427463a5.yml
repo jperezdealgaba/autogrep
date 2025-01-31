@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-427463a5
+  pattern: "foreach ($_POST as $key => $value) {\n    $parameters[$key] = OAuthUtil::urldecode_rfc3986($value);\n\
+    }\n"
+  pattern-not: '$parameters = array_merge($parameters, $_POST);
+
+    '
+  languages:
+  - php
+  message: 'The code directly processes $_POST data without proper validation or sanitization,
+    which can lead to security vulnerabilities such as parameter pollution or injection
+    attacks. The fix merges $_POST data directly into the $parameters array, which
+    is safer as it avoids potential issues with URL decoding. To fix this, use array_merge
+    to combine the parameters instead of manually iterating through $_POST.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/427463a52574e4b3bcbe1c65c49066438770641e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

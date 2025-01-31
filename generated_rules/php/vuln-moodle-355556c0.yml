@@ -1,0 +1,23 @@
+rules:
+- id: vuln-moodle-355556c0
+  pattern: "if ($action == 'resetalltemplates') {\n    $manager->reset_all_templates();\n\
+    \    ...\n}\n"
+  pattern-not: "if ($action == 'resetalltemplates') {\n    require_sesskey();\n  \
+    \  $manager->reset_all_templates();\n    ...\n}\n"
+  languages:
+  - php
+  message: "Detected a missing session key (sesskey) validation in a critical action.\
+    \ \nThis vulnerability could allow CSRF (Cross-Site Request Forgery) attacks,\
+    \ \nenabling unauthorized users to perform actions without proper authentication.\
+    \ \nAlways validate sesskey using require_sesskey() before performing critical\
+    \ operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/355556c05f4a6d9e223164eff820cd34eb70cc35
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php

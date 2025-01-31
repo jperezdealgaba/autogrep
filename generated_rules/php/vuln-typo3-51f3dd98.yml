@@ -1,0 +1,31 @@
+rules:
+- id: vuln-typo3-51f3dd98
+  pattern: "public static function quoteJSvalue($value, $inScriptTags = false) {\n\
+    \    $value = addcslashes($value, '\\''.'\"'.chr(10).chr(13));\n    if (!$inScriptTags)\
+    \ {\n        $value = htmlspecialchars($value);\n    }\n    return '\\''.$value.'\\\
+    '';\n}\n"
+  pattern-not: "public static function quoteJSvalue($value, $withinCData = false)\
+    \ {\n    $escapedValue = addcslashes(\n        $value, '\\'' . '\"' . '\\\\' .\
+    \ chr(9) . chr(10) . chr(13)\n    );\n    if (!$withinCData) {\n        $escapedValue\
+    \ = htmlspecialchars($escapedValue);\n    }\n    return '\\'' . $escapedValue\
+    \ . '\\'';\n}\n"
+  languages:
+  - php
+  message: "The function `quoteJSvalue` is vulnerable due to insufficient escaping\
+    \ of special characters. \nThe original implementation does not escape backslashes\
+    \ and tabs, which can lead to JavaScript injection vulnerabilities. \nThe fix\
+    \ adds proper escaping for these characters. Ensure all special characters are\
+    \ properly escaped when generating JavaScript values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/51f3dd9804cae04575323b92a9136e5a511fe810
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

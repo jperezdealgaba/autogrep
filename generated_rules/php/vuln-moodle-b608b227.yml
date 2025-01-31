@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-b608b227
+  pattern: "if (!empty($attributes['https'])) {\n    $this->_https = $attributes['https'];\n\
+    }\n"
+  pattern-not: "if (!empty($attributes['https']) or strpos($CFG->httpswwwroot, 'https:')\
+    \ === 0) {\n    $this->_https = true;\n} else {\n    $this->_https = false;\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code incorrectly sets the HTTPS status based solely on the `https`
+    attribute, without considering the actual protocol of the root URL. This can lead
+    to incorrect security assumptions and potential vulnerabilities in handling secure
+    connections. The fix should include checking the protocol of the root URL (`$CFG->httpswwwroot`)
+    to ensure proper HTTPS handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/b608b227bac4efba76da43dabe9bc2e32fb8fa32
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

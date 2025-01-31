@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gstreamer-4cb1bcf1
+  pattern: '$DEC->imagedata = g_malloc($WIDTH * $HEIGHT);
+
+    '
+  pattern-not: '$DEC->imagedata = g_malloc0($WIDTH * $HEIGHT);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe memory allocation without initialization. Using `g_malloc`
+    instead of `g_malloc0` can lead to uninitialized memory access vulnerabilities.
+    Replace `g_malloc` with `g_malloc0` to ensure memory is zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GStreamer/gstreamer/commit/4cb1bcf1422bbcd79c0f683edb7ee85e3f7a31fe
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://developer.gnome.org/glib/stable/glib-Memory-Allocation.html
+    technology:
+    - c

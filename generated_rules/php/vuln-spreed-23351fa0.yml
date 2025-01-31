@@ -1,0 +1,36 @@
+rules:
+- id: vuln-spreed-23351fa0
+  pattern: "/**\n * @NoCSRFRequired\n *\n * @return DataResponse\n */\npublic function\
+    \ $FUNC(): DataResponse {\n    ...\n    $query = $this->db->getQueryBuilder();\n\
+    \    $query->select('id')\n        ->from('jobs')\n        ->where(\n        \
+    \    $query->expr()->eq('class', $query->createNamedParameter($CLASS))\n     \
+    \   );\n    $result = $query->executeQuery();\n    $job = $result->fetchOne();\n\
+    \    if ($job) {\n        return new DataResponse(['id' => (int) $job]);\n   \
+    \ }\n    return new DataResponse([], Http::STATUS_NOT_FOUND);\n}\n"
+  pattern-not: "/**\n * @return DataResponse\n */\npublic function $FUNC(): DataResponse\
+    \ {\n    ...\n    $query = $this->db->getQueryBuilder();\n    $query->select('id')\n\
+    \        ->from('jobs')\n        ->where(\n            $query->expr()->eq('class',\
+    \ $query->createNamedParameter($CLASS))\n        );\n    $result = $query->executeQuery();\n\
+    \    $job = $result->fetchOne();\n    if ($job) {\n        return new DataResponse(['id'\
+    \ => (int) $job]);\n    }\n    return new DataResponse([], Http::STATUS_NOT_FOUND);\n\
+    }\n"
+  languages:
+  - php
+  message: 'The method `$FUNC` is vulnerable to CSRF attacks due to the `@NoCSRFRequired`
+    annotation. This allows attackers to perform unauthorized actions by tricking
+    users into making unintended requests. Remove the `@NoCSRFRequired` annotation
+    to enforce CSRF protection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/spreed/commit/23351fa0966353c5b47ca7b2cc917555b804ee8d
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

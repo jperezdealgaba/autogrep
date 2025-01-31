@@ -1,0 +1,28 @@
+rules:
+- id: vuln-xen-f8592183
+  pattern: 'int access_node(struct connection *conn, struct node *node, enum node_access_type
+    type, TDB_DATA *key);
+
+    '
+  pattern-not: 'int __must_check access_node(struct connection *conn, struct node
+    *node, enum node_access_type type, TDB_DATA *key);
+
+    '
+  languages:
+  - cpp
+  message: 'The function ''access_node'' is missing the ''__must_check'' attribute,
+    which can lead to ignored return values and potential security vulnerabilities.
+    Always check the return value of critical functions to ensure proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/f859218309f09ec6d425e02b583e4494924304ad
+    category: security
+    cwe:
+    - CWE-252
+    owasp: A10:2021 - Security Misconfiguration
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/EXP12-C.+Do+not+ignore+values+returned+by+functions
+    technology:
+    - cpp

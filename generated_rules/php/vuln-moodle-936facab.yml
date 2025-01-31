@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-936facab
+  pattern: '$PLUGIN->unenrol_user($INSTANCE, $UE->userid, null, 0, 0, $UE->status)
+
+    '
+  pattern-not: '$PLUGIN->unenrol_user($INSTANCE, $USERID)
+
+    '
+  languages:
+  - php
+  message: 'The unenrol_user function is called with unnecessary arguments, which
+    can lead to incorrect user unenrollment. This is dangerous because it might cause
+    unintended side effects or security issues by passing invalid or unexpected parameters.
+    The fix is to remove the unnecessary arguments and only pass the required ones.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/936facab28d8d8bd03f38da42cb80fafba1a06db
+    category: security
+    cwe:
+    - CWE-628
+    owasp:
+    - OWASP-A1
+    technology:
+    - php

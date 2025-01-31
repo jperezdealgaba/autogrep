@@ -1,0 +1,39 @@
+rules:
+- id: vuln-misp-b3550b48
+  pattern: "if (!$this->request->is('post')) {\n    throw new MethodNotAllowedException(__('This\
+    \ endpoint only aaccepts POST requests.'));\n}\nif (empty($this->request->data['path']))\
+    \ {\n    $this->request->data = array('path' => $this->request->data);\n}\nif\
+    \ (empty($this->request->data['path'])) {\n    throw new InvalidArgumentException(__('No\
+    \ path POSTed.'));\n}\n"
+  pattern-not: "if ($this->request->is('post')) {\n    if (isset($this->request->data['UserSetting']))\
+    \ {\n        $this->request->data = $this->request->data['UserSetting'];\n   \
+    \ }\n    if (!isset($this->request->data['path'])) {\n        $this->request->data\
+    \ = array('path' => $this->request->data);\n    }\n    if (empty($this->request->data['path']))\
+    \ {\n        throw new InvalidArgumentException(__('No path POSTed.'));\n    }\n\
+    \    $setting = array(\n        'UserSetting' => array(\n            'user_id'\
+    \ => $this->Auth->user('id'),\n            'setting' => 'homepage',\n        \
+    \    'value' => json_encode(array('path' => $this->request->data['path']))\n \
+    \       )\n    );\n    $result = $this->UserSetting->setSetting($this->Auth->user(),\
+    \ $setting);\n    return $this->RestResponse->saveSuccessResponse('UserSettings',\
+    \ 'setHomePage', false, $this->response->type(), 'Homepage set to ' . $this->request->data['path']);\n\
+    } else {\n    $this->layout = false;\n}\n"
+  languages:
+  - php
+  message: 'The code does not properly validate and handle the incoming POST request
+    data, which can lead to security vulnerabilities. Ensure that the request method
+    is checked and data is validated before processing. The fixed version correctly
+    checks for POST requests and validates the data structure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/b3550b48f30ad9fef86c5b5c664487aaf6f52787
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - php

@@ -1,0 +1,37 @@
+rules:
+- id: vuln-gdm-6060db70
+  pattern: "$DISPLAY = gdm_display_store_lookup($STORE, $ID);\nif ($DISPLAY != NULL)\
+    \ {\n  ...\n  g_signal_handlers_disconnect_by_func($DISPLAY, G_CALLBACK($CALLBACK),\
+    \ $CONTEXT);\n  g_object_weak_unref(G_OBJECT($DISPLAY), (GWeakNotify)$NOTIFY,\
+    \ $CONTEXT);\n  ...\n}\n"
+  pattern-not: 'g_signal_handlers_disconnect_by_func($DISPLAY, G_CALLBACK($CALLBACK),
+    $CONTEXT);
+
+    g_object_weak_unref(G_OBJECT($DISPLAY), (GWeakNotify)$NOTIFY, $CONTEXT);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential vulnerability in the handling of display objects
+    where the display lookup and subsequent operations are not atomic. This can lead
+    to race conditions or use-after-free issues if the display object is accessed
+    or modified concurrently. The fix involves directly passing the display object
+    instead of looking it up by ID, ensuring safer and more consistent behavior. Always
+    ensure that operations on shared resources are performed atomically or with proper
+    synchronization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdm/commit/6060db704a19b0db68f2e9e6a2d020c0c78b6bba
+    category: security
+    cwe:
+    - CWE-362
+    - CWE-416
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c

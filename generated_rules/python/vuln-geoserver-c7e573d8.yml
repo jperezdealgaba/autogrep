@@ -1,0 +1,22 @@
+rules:
+- id: vuln-geoserver-c7e573d8
+  pattern: 'release = ''2.23-SNAPSHOT''
+
+    '
+  pattern-not: 'release = ''2.23.2''
+
+    '
+  languages:
+  - python
+  message: Using a SNAPSHOT version in production is dangerous as it may contain unstable
+    or untested code. Update to a stable release version.
+  severity: ERROR
+  metadata:
+    source-url: github.com/geoserver/geoserver/commit/c7e573d83a6f5982e08da4c9fc32a765bcc24a0c
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://semver.org/
+    technology:
+    - python

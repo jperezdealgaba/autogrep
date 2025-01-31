@@ -1,0 +1,32 @@
+rules:
+- id: vuln-jasper-c4144a6f
+  pattern: 'jas_image_setcmpttype($IMAGE, $DEC->chantocmptlut[$DEC->cdef->data.cdef.ents[$I].channo],
+    ...);
+
+    '
+  pattern-not: "unsigned $COMPNO = $DEC->chantocmptlut[$CHANNO];\nif ($COMPNO >= jas_image_numcmpts($IMAGE))\
+    \ {\n  ...\n}\njas_image_setcmpttype($IMAGE, $COMPNO, ...);\n"
+  languages:
+  - c
+  message: 'Detected a potential invalid component reference in CDEF box. The code
+    directly uses a channel number
+
+    to index into the component lookup table without verifying if the resulting component
+    number is valid.
+
+    This could lead to out-of-bounds access and undefined behavior. The fix involves
+    adding a bounds check
+
+    before using the component number.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/c4144a6fdb2660794136d1daaa80682ee40b138b
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

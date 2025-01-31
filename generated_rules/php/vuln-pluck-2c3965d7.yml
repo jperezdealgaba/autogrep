@@ -1,0 +1,32 @@
+rules:
+- id: vuln-pluck-2c3965d7
+  pattern: 'redirect(''?action=options'', 2);
+
+    '
+  pattern-not: 'unset($_SESSION[$token]);
+
+    unset($token);
+
+    redirect(''login.php'', 2);
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential security issue where session tokens are not properly
+    destroyed before redirecting. This can lead to session fixation attacks where
+    an attacker can hijack a user''s session. Ensure that session tokens are unset
+    before redirecting to a new page.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/2c3965d74d0ebced42610ea157c05390d19d7e0a
+    category: security
+    cwe:
+    - CWE-384
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

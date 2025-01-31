@@ -1,0 +1,30 @@
+rules:
+- id: vuln-misp-415d8510
+  pattern: '$attributes = unserialize($this->request->data[''Template''][''attributes'']);
+
+    '
+  pattern-not: '$attributes = json_decode($this->request->data[''Template''][''attributes''],
+    true);
+
+    '
+  languages:
+  - php
+  message: 'The use of `unserialize` on user-controlled input can lead to arbitrary
+    object injection, which is a serious security vulnerability. An attacker can craft
+    malicious serialized data to execute arbitrary code or manipulate the application''s
+    behavior. Use `json_decode` instead to safely parse JSON data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/415d85102d5aa5f96f4f11a17c86b59bb9cc0d56
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - 'A8: Insecure Deserialization'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/PHP_Object_Injection
+    - https://cwe.mitre.org/data/definitions/502.html
+    technology:
+    - php

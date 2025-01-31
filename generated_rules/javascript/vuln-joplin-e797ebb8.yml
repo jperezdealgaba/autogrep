@@ -1,0 +1,24 @@
+rules:
+- id: vuln-joplin-e797ebb8
+  pattern: "function surroundKeywords($KEYWORDS, $TEXT, $PREFIX, $SUFFIX) {\n  ...\n\
+    \  return stringUtilsCommon.replaceRegexDiacritics($EXPR);\n  ...\n}\n"
+  pattern-not: "function surroundKeywords($KEYWORDS, $TEXT, $PREFIX, $SUFFIX, $OPTIONS\
+    \ = null) {\n  ...\n  return escapeHtml(stringUtilsCommon.replaceRegexDiacritics($EXPR));\n\
+    \  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Potential HTML injection vulnerability detected. The function ''surroundKeywords''
+    returns unescaped HTML content, which can lead to XSS attacks. Use the ''escapeHtml''
+    function to sanitize the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/e797ebb864fbf429a49b6d20e5779d0c9aa6c4d5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - javascript

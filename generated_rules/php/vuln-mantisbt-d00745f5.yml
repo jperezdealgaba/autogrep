@@ -1,0 +1,32 @@
+rules:
+- id: vuln-mantisbt-d00745f5
+  pattern: '$t_path = str_replace(basename($_SERVER[''PHP_SELF'']), '''', $_SERVER[''PHP_SELF'']);
+
+    '
+  pattern-not: "$t_self = $_SERVER['SCRIPT_NAME'];\n$t_self = filter_var($t_self,\
+    \ FILTER_SANITIZE_STRING);\n$t_path = str_replace(basename($t_self), '', $t_self);\n\
+    if (strpos($t_path, '&#')) {\n  echo 'Can not safely determine $g_path. Please\
+    \ set $g_path manually in config_inc.php';\n  die;\n}\n"
+  languages:
+  - php
+  message: 'The vulnerability involves using `$_SERVER[''PHP_SELF'']` directly without
+    proper sanitization, which can lead to security issues such as XSS (Cross-Site
+    Scripting). This is dangerous because it allows attackers to inject malicious
+    scripts into the application. To fix this, use `$_SERVER[''SCRIPT_NAME'']` instead
+    and sanitize the input using `filter_var()` with `FILTER_SANITIZE_STRING`. Additionally,
+    ensure that the path does not contain potentially harmful sequences by checking
+    for ''&#''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/d00745f5e267eba4ca34286d125de685bc3a8034
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

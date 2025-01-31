@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libvncserver-495ffa3f
+  pattern: "if($CL != NULL) {\n    rfbCloseClient($CL);\n    CloseUndoneFileDownload($CL,\
+    \ $RTCP);\n}\n"
+  pattern-not: "if($CL != NULL) {\n    rfbCloseClient($CL);\n    CloseUndoneFileDownload($CL,\
+    \ $RTCP);\n}\nelse {\n    // Additional handling or logging\n}\n"
+  languages:
+  - c
+  message: 'The code fails to handle the case where `cl` is NULL, which can lead to
+    a NULL pointer dereference. This vulnerability can cause the application to crash
+    or be exploited for denial of service. Ensure that all pointer checks are properly
+    handled and consider adding additional error handling or logging for NULL cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/495ffa3f3a213ab058eee1d7da48fa5ef71914d8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

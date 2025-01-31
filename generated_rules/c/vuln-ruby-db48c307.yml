@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ruby-db48c307
+  pattern: "$HEAD = xcalloc((size_t)RARRAY_LEN($TAGS), sizeof($TYPE));\n...\nfor($I\
+    \ = 0; $I < RARRAY_LEN($TAGS); $I++) {\n  ...\n}\n"
+  pattern-not: "$LEN = RARRAY_LEN($TAGS);\n$HEAD = xcalloc((size_t)$LEN, sizeof($TYPE));\n\
+    ...\nfor($I = 0; $I < $LEN && $I < RARRAY_LEN($TAGS); $I++) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where the loop condition relies on
+    RARRAY_LEN($TAGS) which might change during iteration. This can lead to memory
+    corruption or out-of-bounds access. Store RARRAY_LEN($TAGS) in a variable before
+    the loop to ensure consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/db48c307944a9a18877236bdf9e9b778875f38ed
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-125
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ruby-8794dec6
+  pattern: SafeStringValue($PATH);
+  pattern-not: FilePathValue($PATH);
+  languages:
+  - c
+  message: "The use of `SafeStringValue` for file paths is dangerous because it does\
+    \ not properly handle path validation, potentially leading to security vulnerabilities\
+    \ such as path traversal attacks. \nReplace `SafeStringValue` with `FilePathValue`\
+    \ to ensure proper path validation and mitigate security risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/8794dec6a5f11adc5cdd19a5ee91ea6b0816763f
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/73.html
+    technology:
+    - c

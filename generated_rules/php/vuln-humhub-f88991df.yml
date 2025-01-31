@@ -1,0 +1,26 @@
+rules:
+- id: vuln-humhub-f88991df
+  pattern: '''<strong>'' . $VAR->getDisplayName() . ''</strong>''
+
+    '
+  pattern-not: '''<strong>'' . Html::encode($VAR->getDisplayName()) . ''</strong>''
+
+    '
+  languages:
+  - php
+  message: 'Detected unencoded user input being directly embedded in HTML, which can
+    lead to Cross-Site Scripting (XSS) vulnerabilities. This occurs when user-controlled
+    data is not properly sanitized before being included in HTML output. To fix this,
+    use Html::encode() or an equivalent method to properly escape the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/humhub/humhub/commit/f88991dfe56a05870df165ac89a2755dd4c1ffa1
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

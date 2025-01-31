@@ -1,0 +1,25 @@
+rules:
+- id: vuln-zoneminder-2024df43
+  pattern: '$PROBE = unserialize(base64_decode($_REQUEST[''probe'']));
+
+    '
+  pattern-not: '$PROBE = json_decode(base64_decode($_REQUEST[''probe'']));
+
+    '
+  languages:
+  - php
+  message: 'Using unserialize on user-controlled input can lead to object injection
+    vulnerabilities, which can be exploited to execute arbitrary code. Replace unserialize
+    with json_decode to safely decode user-provided data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/2024df43931754b5b2088f91074f98ac26b5c933
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wasmtime-087d9d7b
+  pattern: "pub extern \"C\" fn wasmtime_trap_code($RAW: &wasm_trap_t, $CODE: &mut\
+    \ i32) -> bool {\n    ...\n}\n"
+  pattern-not: "pub extern \"C\" fn wasmtime_trap_code($RAW: &wasm_trap_t, $CODE:\
+    \ &mut u8) -> bool {\n    ...\n}\n"
+  languages:
+  - rust
+  message: 'The function `wasmtime_trap_code` uses an `i32` type for the trap code,
+    which can lead to incorrect behavior or security issues when handling trap codes.
+    Trap codes should be represented as `u8` to ensure they are within the valid range
+    (0-255). This can prevent potential integer overflow or incorrect trap code interpretation.
+    Fix this by changing the type of the `code` parameter from `i32` to `u8`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bytecodealliance/wasmtime/commit/087d9d7becf7422b3f872a3bcd5d97bb7ce7ff36
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - rust

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-freetype-e6fda039
+  pattern: '*$VAR += $DELTA;
+
+    '
+  pattern-not: '*$VAR = ADD_INT(*$VAR, $DELTA);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe integer addition that may lead to overflow. Use the ADD_INT
+    macro to perform safe addition.
+
+    This vulnerability is dangerous because it can result in undefined behavior or
+    security issues due to integer overflow.
+
+    To fix this, replace the unsafe addition with the ADD_INT macro.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/e6fda039ad638866b7a6a5d046f03278ba1b7611
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Misconfiguration
+    technology:
+    - c

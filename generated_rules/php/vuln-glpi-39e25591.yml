@@ -1,0 +1,30 @@
+rules:
+- id: vuln-glpi-39e25591
+  pattern: '$search_where = [''OR'' => $ors];
+
+    '
+  pattern-not: '$search_where = $criteria[''WHERE''];
+
+    $search_where[] = [''OR'' => $ors];
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of an array with ''OR'' condition to `$search_where`
+    without considering visibility restrictions can lead to security vulnerabilities.
+    This can expose sensitive data by bypassing access controls. To fix this, ensure
+    that visibility criteria are applied before adding the ''OR'' condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/39e25591efddc560e3679ab07e443ee6198705e2
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

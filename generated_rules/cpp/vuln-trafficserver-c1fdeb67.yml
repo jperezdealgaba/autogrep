@@ -1,0 +1,26 @@
+rules:
+- id: vuln-trafficserver-c1fdeb67
+  pattern: '$POLICY->stats_enabled
+
+    '
+  pattern-not: '$POLICY->_stats_enabled
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of unprotected member variable ''stats_enabled'' instead
+    of the protected ''_stats_enabled''. This could lead to unauthorized access or
+    modification of sensitive policy statistics. Always use the protected version
+    of member variables to ensure encapsulation and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/c1fdeb677b2cf2bf16f50a935d90c0432891b63d
+    category: security
+    cwe:
+    - CWE-766
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - cpp

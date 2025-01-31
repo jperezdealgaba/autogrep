@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openemr-c5d99452
+  pattern: 'strlen($this->$PROP)
+
+    '
+  pattern-not: 'strlen($this->$PROP ?? '''')
+
+    '
+  languages:
+  - php
+  message: 'Using `strlen` directly on dynamic properties without null coalescing
+    can lead to undefined behavior or errors if the property is null. Always use null
+    coalescing (`?? ''''`) to ensure safe string length checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/c5d99452c173ef21a8e2241e2bbf4b66e2d7fe11
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - php

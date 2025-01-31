@@ -1,0 +1,34 @@
+rules:
+- id: vuln-open-build-service-f57b660f
+  pattern: '$SOURCE_PACKAGE = Package.get_by_project_and_name($PROJECT, $NAME)
+
+    return if !$SOURCE_PACKAGE || User.current.can_modify?($SOURCE_PACKAGE)
+
+    '
+  pattern-not: '$SOURCE_PACKAGE = Package.get_by_project_and_name!($PROJECT, $NAME,
+    { follow_project_links: false })
+
+    return if User.current.can_modify?($SOURCE_PACKAGE)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected insecure package retrieval without proper link following control.
+
+    The original code retrieves a package without disabling project link following,
+
+    which could lead to unintended access control bypass. The fix adds the
+
+    `follow_project_links: false` option to prevent this. Always explicitly
+
+    control link following behavior when retrieving packages.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openSUSE/open-build-service/commit/f57b660f49f830006766a8d4abc3b4af6e178063
+    category: security
+    cwe: 'CWE-284: Improper Access Control'
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - ruby

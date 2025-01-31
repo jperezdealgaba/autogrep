@@ -1,0 +1,47 @@
+rules:
+- id: vuln-gdk-pixbuf-4e7b5345
+  pattern: '$FRAME = g_new (GdkPixbufFrame, 1);
+
+    ...
+
+    $FRAME->composited = NULL;
+
+    $FRAME->revert = NULL;
+
+    ...
+
+    $FRAME->pixbuf = gdk_pixbuf_new (...);
+
+    ...
+
+    g_list_append ($ANIMATION->frames, $FRAME);
+
+    '
+  pattern-not: '$FRAME = g_new0 (GdkPixbufFrame, 1);
+
+    ...
+
+    $FRAME->lzw_data = g_byte_array_new ();
+
+    ...
+
+    g_list_append ($ANIMATION->frames, $FRAME);
+
+    '
+  languages:
+  - c
+  message: "Missing initialization of critical frame data in GIF animation handling.\
+    \ \nThis vulnerability could lead to memory corruption or crashes when processing\
+    \ \nmalformed GIF files. The issue was fixed by properly initializing frame data\
+    \ \nstructures with g_new0() and adding LZW decoder support.\nTo fix this, ensure\
+    \ all frame data is properly initialized and use secure \nmemory allocation patterns.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdk-pixbuf/commit/4e7b5345d2fc8f0d1dee93d8ba9ab805bc95d42f
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

@@ -1,0 +1,35 @@
+rules:
+- id: vuln-glpi-0a6b28be
+  pattern: "if (!is_string($_POST['itemtype']) || getItemForItemtype($_POST['itemtype'])\
+    \ === false) {\n    echo json_encode(['success' => false]);\n    exit();\n}\n\
+    $all_pinned = importArrayFromDB($_SESSION['glpisavedsearches_pinned']);\n$already_pinned\
+    \ = $all_pinned[$_POST['itemtype']] ?? 0;\n$all_pinned[$_POST['itemtype']] = $already_pinned\
+    \ ? 0 : 1;\n$_SESSION['glpisavedsearches_pinned'] = exportArrayToDB($all_pinned);\n"
+  pattern-not: "if (\n    array_key_exists('itemtype', $_POST)\n    && is_string($_POST['itemtype'])\n\
+    \    && $user->getFromDB(Session::getLoginUserID())\n    && $user->toggleSavedSearchPin($_POST['itemtype'])\n\
+    ) {\n    $success = true;\n}\n"
+  languages:
+  - php
+  message: 'The code directly manipulates session data without proper validation and
+    sanitization, which could lead to security vulnerabilities such as session data
+    tampering or injection attacks. The patch introduces a method `toggleSavedSearchPin`
+    that properly validates and sanitizes the input before updating the session data.
+    Always validate and sanitize user inputs before using them to modify session data
+    or perform critical operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/0a6b28be4c0f848106c60b554c703ec2e178d6c7
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-384
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - php

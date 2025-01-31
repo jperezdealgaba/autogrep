@@ -1,0 +1,23 @@
+rules:
+- id: vuln-cxf-378afe1a
+  pattern: "if ($STYLESHEET_REFERENCE != null && $PATH.endsWith(\".xsl\") || $DOC_LOCATION_MAP.containsKey($PATH))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($DOC_LOCATION_MAP.containsKey($PATH)) {\n} else if ($STYLESHEET_REFERENCE\
+    \ != null) {\n  String $THE_STYLESHEET_REFERENCE = $STYLESHEET_REFERENCE;\n  if\
+    \ ($THE_STYLESHEET_REFERENCE.startsWith(\"/\")) {\n    $THE_STYLESHEET_REFERENCE\
+    \ = $THE_STYLESHEET_REFERENCE.substring(1);\n  }\n  if ($PATH.endsWith($THE_STYLESHEET_REFERENCE))\
+    \ {\n    $CONTEXT.abortWith($GET_EXISTING_RESOURCE($M, $UI, $STYLESHEET_REFERENCE));\n\
+    \  }\n}\n"
+  languages:
+  - java
+  message: Insecure path validation detected. The original code could allow unintended
+    resource access due to improper path validation. The fix ensures proper validation
+    of stylesheet references and prevents potential security issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/378afe1acb7503315bc63555c8743db0f55d8312
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references: https://cwe.mitre.org/data/definitions/22.html
+    technology: java

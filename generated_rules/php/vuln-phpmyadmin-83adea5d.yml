@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-83adea5d
+  pattern: '$return .= $VAR . '' ('' . $DB[''num_tables''] . '')'';
+
+    '
+  pattern-not: '$return .= htmlspecialchars($DB[''disp_name_cut'']) . '' ('' . $DB[''num_tables'']
+    . '')'';
+
+    $return .= htmlspecialchars($DB[''disp_name'']) . '' ('' . $DB[''num_tables'']
+    . '')'';
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped user input in string\
+    \ concatenation. \nThis is dangerous because it allows attackers to inject malicious\
+    \ scripts into the output. \nAlways use `htmlspecialchars` to escape user input\
+    \ before including it in HTML output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/83adea5d6f79640648d3d5384c910820f1d085c3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

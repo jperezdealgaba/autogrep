@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cxf-40503a53
+  pattern: 'WebClient.create($REQUEST_URI).get($TYPE)
+
+    '
+  pattern-not: 'WebClient.create($REQUEST_URI).accept($CONTENT_TYPE).get($TYPE)
+
+    '
+  languages:
+  - java
+  message: 'Detected a potential security vulnerability where a WebClient request
+    does not specify the content type when making a request. This can lead to improper
+    handling of the response and potential security issues. Always specify the expected
+    content type using the `accept` method to ensure proper response handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/40503a53914758759894f704bbf139ae89ace286
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://tools.ietf.org/html/draft-ietf-oauth-jwsreq-30#section-10.4
+    technology:
+    - java

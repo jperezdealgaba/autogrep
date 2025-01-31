@@ -1,0 +1,34 @@
+rules:
+- id: vuln-openemr-f8c75ecb
+  pattern: '$query = "INSERT INTO `list_options` (`list_id`, `option_id`, `title`,`notes`,`activity`,`seq`)
+    VALUES ".$add_fields;
+
+    sqlStatement($query);
+
+    '
+  pattern-not: '$query = "INSERT INTO `list_options` (`list_id`, `option_id`, `title`,`notes`,`activity`,`seq`)
+    VALUES ".$parameters;
+
+    sqlStatement($query, $add_fields);
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential SQL injection vulnerability due to direct concatenation
+    of user input into SQL queries. This is dangerous as it allows attackers to manipulate
+    the query, potentially leading to data theft or corruption. Use parameterized
+    queries to safely bind user input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/f8c75ecbb0e9a5ba115d324f2fc63538219f493b
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

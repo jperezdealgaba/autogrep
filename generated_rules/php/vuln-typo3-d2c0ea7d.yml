@@ -1,0 +1,29 @@
+rules:
+- id: vuln-typo3-d2c0ea7d
+  pattern: '$content .= ''<h1>'' . $GLOBALS[''TYPO3_CONF_VARS''][''SYS''][''sitename'']
+    . ''</h1>'';
+
+    '
+  pattern-not: '$content .= ''<h1>'' . htmlspecialchars($GLOBALS[''TYPO3_CONF_VARS''][''SYS''][''sitename''])
+    . ''</h1>'';
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped output of `$GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename']`.\
+    \ \nThis is dangerous as it allows for the injection of malicious scripts if the\
+    \ sitename contains user-controlled input. \nTo fix this, use `htmlspecialchars()`\
+    \ to escape the output before including it in HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/d2c0ea7db3b31a796a82f9d39f77f9983beb7c35
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://www.php.net/manual/en/function.htmlspecialchars.php
+    technology:
+    - php

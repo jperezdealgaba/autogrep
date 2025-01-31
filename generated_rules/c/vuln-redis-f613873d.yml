@@ -1,0 +1,27 @@
+rules:
+- id: vuln-redis-f613873d
+  pattern: '($D->ht[1].size / $D->ht[0].size < $RATIO)
+
+    '
+  pattern-not: '(($S1 > $S0 && $S1 / $S0 < $RATIO) || ($S1 < $S0 && $S0 / $S1 < $RATIO))
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves a division operation that could lead to incorrect
+    behavior when the size of the first hash table is smaller than the second. This
+    could cause incorrect resizing decisions in the dictionary, potentially leading
+    to performance issues or unexpected behavior. The fix ensures that the ratio is
+    checked in both directions, preventing incorrect resizing decisions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/f613873de02340f70abcc606b5fa59caebb076f3
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

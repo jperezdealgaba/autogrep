@@ -1,0 +1,24 @@
+rules:
+- id: vuln-exiv2-ccde30af
+  pattern: '$RESULT = atoi(strchr($BUFFER, '' ''));
+
+    '
+  pattern-not: "$FIRSTSPACE = strchr($BUFFER, ' ');\nif ($FIRSTSPACE) {\n    $RESULT\
+    \ = atoi($FIRSTSPACE);\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly calls `atoi` on the result of `strchr` without checking
+    if the pointer is null. This can lead to undefined behavior if `strchr` returns
+    null. Always check the result of `strchr` before using it in `atoi`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/ccde30afa8ca787a3fe17388a15977f107a53b72
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

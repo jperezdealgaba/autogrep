@@ -1,0 +1,26 @@
+rules:
+- id: vuln-redis-fad0b0d2
+  pattern: 'updateStatsOnUnblock($CLIENT, $BLOCKED_US, $REPLY_US);
+
+    '
+  pattern-not: 'updateStatsOnUnblock($CLIENT, $BLOCKED_US, $REPLY_US, $HAD_ERRORS);
+
+    '
+  languages:
+  - c
+  message: 'The function `updateStatsOnUnblock` is being called without the `had_errors`
+    parameter, which is necessary to track failed calls accurately. This can lead
+    to incorrect statistics and potentially mask error conditions. Always include
+    the `had_errors` parameter when calling this function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/fad0b0d2a680498fce1cd7e153f8ad7396a79edf
+    category: security
+    cwe:
+    - 'CWE-391: Unchecked Error Condition'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

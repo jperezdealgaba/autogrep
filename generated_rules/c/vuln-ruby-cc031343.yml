@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ruby-cc031343
+  pattern: '$TAIL->handle = (yaml_char_t *)StringValuePtr($NAME);
+
+    $TAIL->prefix = (yaml_char_t *)StringValuePtr($VALUE);
+
+    '
+  pattern-not: '$TAIL->handle = (yaml_char_t *)RSTRING_PTR($NAME);
+
+    $TAIL->prefix = (yaml_char_t *)RSTRING_PTR($VALUE);
+
+    '
+  languages:
+  - c
+  message: 'The use of `StringValuePtr` to directly access string data is dangerous
+    because it bypasses Ruby''s internal string validation. This can lead to undefined
+    behavior or security vulnerabilities if the string is not properly validated.
+    Use `RSTRING_PTR` instead, which ensures proper string handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/cc0313436160b735a3d41361cb5e3eeb10fcbdad
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

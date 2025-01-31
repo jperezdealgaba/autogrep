@@ -1,0 +1,26 @@
+rules:
+- id: vuln-xen-7615e248
+  pattern: '$IOMU->domid_map[$DOMID] = 0;
+
+    '
+  pattern-not: '$IOMU->domid_map[$DOMID] = DOMID_INVALID;
+
+    '
+  languages:
+  - c
+  message: 'Directly setting domid_map to 0 can lead to a race condition with context_set_domain_id(),
+    potentially causing incorrect domain ID handling. This can be exploited to bypass
+    security checks or cause undefined behavior. Update domid_map[] to DOMID_INVALID
+    before updating domid_bitmap[] to avoid this race condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/7615e24837074daab396dc2a9718a0a2191dc136
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - c

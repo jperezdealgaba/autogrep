@@ -1,0 +1,25 @@
+rules:
+- id: vuln-redis-6ac3c0b7
+  pattern: "sds *$FUNC(int *$ARGC) {\n    ...\n    $P = strstr($P,\"\\r\\n\");\n \
+    \   if (!$P) goto $LABEL;\n    ...\n}\n"
+  pattern-not: "sds *$FUNC(int *$ARGC, char** $ERR) {\n    ...\n    $P = strstr($P,\"\
+    \\r\\n\");\n    if (!$P) goto $LABEL;\n    ...\n}\n"
+  languages:
+  - c
+  message: "The function `ldbReplParseCommand` is vulnerable to a protocol error due\
+    \ to insufficient error handling. \nThe original version did not properly handle\
+    \ cases where the input buffer was incomplete, leading to potential protocol errors.\n\
+    This could be exploited by an attacker to cause undefined behavior or crashes.\
+    \ \nThe fix introduces proper error handling by using an additional `err` parameter\
+    \ to manage protocol errors and ensures the function handles incomplete buffers\
+    \ correctly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/6ac3c0b7abd35f37201ed2d6298ecef4ea1ae1dd
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

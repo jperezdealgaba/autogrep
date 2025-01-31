@@ -1,0 +1,33 @@
+rules:
+- id: vuln-trafficserver-2a112d0e
+  pattern: "if (BIO_eof(SSL_get_rbio($SSL))) {\n  $HANDSHAKEREADER->consume($HANDSHAKEBIOSTORED);\n\
+    \  $HANDSHAKEBIOSTORED = 0;\n  if ($HANDSHAKEREADER->is_read_avail_more_than(0))\
+    \ {\n    char *$START = $HANDSHAKEREADER->start();\n    char *$END = $HANDSHAKEREADER->end();\n\
+    \    $HANDSHAKEBIOSTORED = $END - $START;\n    BIO *$RBIO = BIO_new_mem_buf($START,\
+    \ $HANDSHAKEBIOSTORED);\n    BIO_set_mem_eof_return($RBIO, -1);\n    SSL_set0_rbio($SSL,\
+    \ $RBIO);\n  }\n}\n"
+  pattern-not: 'update_rbio(false);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential SSL/TLS handshake buffer management issue. The code
+    directly manipulates the SSL read BIO without proper encapsulation, which can
+    lead to inconsistent state management and potential security vulnerabilities.
+    The issue was fixed by encapsulating the BIO management logic in the `update_rbio`
+    function. To fix this, refactor the BIO management code into a dedicated function
+    like `update_rbio` to ensure consistent handling of the SSL read buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/2a112d0eda562c705c2621d1b6fbc5bf3218fc75
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://www.openssl.org/docs/man1.1.1/man3/BIO_new_mem_buf.html
+    technology:
+    - cpp

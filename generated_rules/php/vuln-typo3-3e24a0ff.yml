@@ -1,0 +1,26 @@
+rules:
+- id: vuln-typo3-3e24a0ff
+  pattern: '$this->mailer = ''TYPO3 ''.$VAR;
+
+    '
+  pattern-not: '$this->mailer = ''TYPO3'';
+
+    '
+  languages:
+  - php
+  message: 'The email header ''mailer'' field is exposing the TYPO3 version number,
+    which can be used by attackers to target known vulnerabilities. This information
+    disclosure should be removed to prevent potential security risks. Replace the
+    version-specific string with a generic identifier.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/3e24a0fff04897826a12e5cac16b5b0a3848cf2d
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - php

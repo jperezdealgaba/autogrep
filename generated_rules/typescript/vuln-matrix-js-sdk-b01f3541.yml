@@ -1,0 +1,26 @@
+rules:
+- id: vuln-matrix-js-sdk-b01f3541
+  pattern: "if ($CONTENT[\"m.terminated\"]) {\n  ...\n}\n"
+  pattern-not: "if ($CONTENT[\"m.terminated\"] || $CALL_EVENT.isRedacted()) {\n  ...\n\
+    }\n"
+  languages:
+  - typescript
+  message: 'The code fails to check if a call event is redacted, which can lead to
+    incorrect handling of terminated calls. This vulnerability could allow redacted
+    calls to be processed as if they were valid, potentially leading to security issues.
+    To fix this, ensure that the `isRedacted()` method is called alongside checking
+    for terminated content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/matrix-org/matrix-js-sdk/commit/b01f3541ea92ad06938babe7a677ceffb04f22c1
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - typescript

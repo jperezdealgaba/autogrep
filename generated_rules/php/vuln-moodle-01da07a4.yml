@@ -1,0 +1,38 @@
+rules:
+- id: vuln-moodle-01da07a4
+  pattern: '$newtext = preg_replace_callback($re = ''~<a\s[^>]*href="([^"]*(?:'' .
+    $this->embedmarkers . '')[^"]*)"[^>]*>([^>]*)</a>~is'', array($this, ''callback''),
+    $text);
+
+    '
+  pattern-not: "$newtext = '';\n$validtag = '';\n$sizeofmatches = count($matches);\n\
+    foreach ($matches as $idx => $tag) {\n  if (preg_match('|</a>|', $tag) && !empty($validtag))\
+    \ {\n    $validtag .= $tag;\n    if (strlen($validtag) < 4096) {\n      $processed\
+    \ = preg_replace_callback($re, array($this, 'callback'), $validtag);\n    }\n\
+    \    $newtext .= !empty($processed) ? $processed : $validtag;\n    $validtag =\
+    \ '';\n    $processed = '';\n  } else if (preg_match('/<a\\s[^>]*/', $tag) &&\
+    \ $sizeofmatches > 1) {\n    $validtag = $tag;\n  } else {\n    if (!empty($validtag))\
+    \ {\n      $validtag .= $tag;\n    } else {\n      $newtext .= $tag;\n    }\n\
+    \  }\n}\n"
+  languages:
+  - php
+  message: 'The original code uses `preg_replace_callback` directly on potentially
+    large strings without size checks, which can lead to ReDoS (Regular Expression
+    Denial of Service) attacks. This vulnerability occurs when processing large `<a>`
+    tags with embedded content. The fix introduces a size check (4096 characters)
+    before processing the tag. To fix this, ensure that any potentially large input
+    is validated for size before applying regular expressions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/01da07a42be0f69de9f316be6ee8cb25ecd60c19
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - php

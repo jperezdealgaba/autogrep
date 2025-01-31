@@ -1,0 +1,29 @@
+rules:
+- id: vuln-dolibarr-22ca5e06
+  pattern: 'if (GETPOST($VAR1, ''alphanohtml'')) print $VAR2;
+
+    if (GETPOST($VAR3, ''alphanohtml'')) print $VAR4;
+
+    '
+  pattern-not: 'if (GETPOST($VAR1, ''alphanohtml'')) print dol_escape_htmltag($VAR2);
+
+    elseif (GETPOST($VAR3, ''alphanohtml'')) print dol_escape_htmltag($VAR4);
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped output from GETPOST function, which can lead to Cross-Site\
+    \ Scripting (XSS) vulnerabilities. \nThe output should be properly escaped using\
+    \ `dol_escape_htmltag` to prevent injection of malicious scripts.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/22ca5e067189bffe8066df26df923a386f044c08
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

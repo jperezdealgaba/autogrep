@@ -1,0 +1,23 @@
+rules:
+- id: vuln-util-linux-166e8736
+  pattern: "int mnt_fs_is_deleted(struct libmnt_fs *fs)\n{\n    return mnt_fs_get_flags(fs)\
+    \ & MNT_FS_DELETED;\n}\n"
+  pattern-not: "int mnt_fs_is_deleted(struct libmnt_fs *fs)\n{\n    return (mnt_fs_get_flags(fs)\
+    \ & MNT_FS_DELETED) != 0;\n}\n"
+  languages:
+  - c
+  message: 'The function `mnt_fs_is_deleted` returns a bitmask value directly without
+    checking if the DELETED flag is set. This can lead to incorrect boolean interpretations.
+    Ensure the function explicitly checks if the DELETED flag is set by comparing
+    the result to 0.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/166e87368ae88bf31112a30e078cceae637f4cdb
+    category: security
+    cwe:
+    - CWE-697
+    owasp: A03:2021 - Injection
+    technology:
+    - c

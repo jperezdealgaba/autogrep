@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ffmpeg-0b3bd001
+  pattern: "int $FUNC(Layer *$LAYER, AVIOContext *$CTX, int $SIZE)\n{\n  ...\n}\n"
+  pattern-not: "int $FUNC(Layer *$LAYER, AVIOContext *$CTX, int $SIZE, int $OPERANDS_NUM)\n\
+    {\n  ...\n  if ($LAYER->input_operand_indexes[0] >= $OPERANDS_NUM || $LAYER->output_operand_index\
+    \ >= $OPERANDS_NUM) {\n    return 0;\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function does not validate the operand indexes against the total number
+    of operands, which can lead to out-of-bounds access. This vulnerability can cause
+    memory corruption or crashes. To fix this, ensure that the function validates
+    the operand indexes by adding a check against the total number of operands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/0b3bd001ac1745d9d008a2d195817df57d7d1d14
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

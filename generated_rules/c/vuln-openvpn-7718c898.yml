@@ -1,0 +1,43 @@
+rules:
+- id: vuln-openvpn-7718c898
+  pattern: 'char $BUF[128];
+
+    ...
+
+    char *$PTR = $BUF + $BUF[$INDEX];
+
+    '
+  pattern-not: "unsigned char $BUF[128];\n...\nint $POS = $BUF[$INDEX];\nif ($POS\
+    \ + $LEN > sizeof($BUF)) {\n  return $NULL;\n}\nchar *$PTR = $BUF + $POS;\n"
+  languages:
+  - c
+  message: 'This rule detects potential buffer overflows in code that directly uses
+    an array index
+
+    without bounds checking. The vulnerability occurs when a pointer is calculated
+    using
+
+    an index from a buffer without verifying that the resulting pointer is within
+    bounds.
+
+    This can lead to memory corruption and potential exploitation. To fix this, always
+
+    validate the index and ensure the resulting pointer is within the bounds of the
+    buffer
+
+    before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenVPN/openvpn/commit/7718c8984f04b507c1885f363970e2124e3c6c77
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

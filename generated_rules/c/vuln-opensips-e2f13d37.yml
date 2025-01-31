@@ -1,0 +1,26 @@
+rules:
+- id: vuln-opensips-e2f13d37
+  pattern: 'LM_ERR("IP val is not IP <%.*s>\n", $VAL.rs.len, $VAL.rs.s);
+
+    '
+  pattern-not: 'LM_ERR("IP val is not IP <%.*s>\n", $_IP->len, $_IP->s);
+
+    '
+  languages:
+  - c
+  message: 'The code uses incorrect variables in the error logging statement, which
+    can lead to incorrect or misleading error messages. This can make debugging difficult
+    and potentially hide security issues. Ensure that the correct variables are used
+    in error messages to maintain accurate logging.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSIPS/opensips/commit/e2f13d3747577937152346b031b86639b37bc2b5
+    category: security
+    cwe:
+    - 'CWE-117: Improper Output Neutralization for Logs'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

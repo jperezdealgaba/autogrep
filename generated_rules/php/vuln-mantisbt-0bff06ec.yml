@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mantisbt-0bff06ec
+  pattern: '$t_matches .= "<li>$t_entry</li>";
+
+    '
+  pattern-not: '$t_matches .= ''<li>'' . string_attribute($t_entry) . ''</li>'';
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of a variable in HTML context, which can lead
+    to Cross-Site Scripting (XSS) vulnerabilities. The variable `$t_entry` is directly
+    concatenated into HTML without proper escaping, allowing an attacker to inject
+    malicious scripts. Use `string_attribute()` or similar escaping functions to sanitize
+    the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/0bff06ec
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A3:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

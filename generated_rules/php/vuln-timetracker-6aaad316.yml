@@ -1,0 +1,24 @@
+rules:
+- id: vuln-timetracker-6aaad316
+  pattern: '$user_part .= '', ''.$this->group_name;
+
+    '
+  pattern-not: '$user_part .= '', ''.htmlspecialchars($this->group_name);
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped output. \nThe group\
+    \ name is being concatenated directly into a string without proper escaping, which\
+    \ could allow an attacker to inject malicious scripts. \nUse htmlspecialchars()\
+    \ to escape the output and prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/anuko/timetracker/commit/6aaad31630500d13b6c8459daa9f406fd5eb4330
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A07:2021-Identification and Authentication Failures
+    technology:
+    - php

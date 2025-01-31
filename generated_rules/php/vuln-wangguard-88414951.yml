@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wangguard-88414951
+  pattern: '$arrayUrl = array (''userID'' => $user_id, ''userIP'' => $row_data->user_ip,
+    ...);
+
+    '
+  pattern-not: '$arrayUrl = array (''userID'' => $user_id, ...);
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure passing of user IP address in URL parameters. This can
+    lead to IP address exposure and potential security risks. Instead, retrieve the
+    IP address securely from the database using a prepared query.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/joseconti/WangGuard/commit/88414951e30773c8d2ec13b99642688284bf3189
+    category: security
+    cwe:
+    - 200
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Information_Leakage
+    technology:
+    - php

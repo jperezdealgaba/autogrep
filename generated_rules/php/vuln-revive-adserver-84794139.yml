@@ -1,0 +1,28 @@
+rules:
+- id: vuln-revive-adserver-84794139
+  pattern: 'sleep(3);
+
+    '
+  pattern-not: 'usleep($WAITMS * 4000);
+
+    usleep($WAITMS * 1000);
+
+    '
+  languages:
+  - php
+  message: "The use of a fixed sleep delay in authentication logic can make the system\
+    \ vulnerable to timing-based brute force attacks. \nAn attacker can exploit this\
+    \ by launching parallel login attempts, bypassing the delay. \nTo mitigate this,\
+    \ introduce a random delay and use advisory locks to handle concurrent login attempts.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/847941390f5b3310d51b07c92ec91cc1f4cc82c9
+    category: security
+    cwe:
+    - CWE-307
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://www.owasp.org/index.php/Blocking_Brute_Force_Attacks
+    technology:
+    - php

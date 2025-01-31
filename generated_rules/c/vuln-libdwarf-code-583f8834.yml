@@ -1,0 +1,18 @@
+rules:
+- id: vuln-libdwarf-code-583f8834
+  pattern: "for (Dwarf_Signed $I = 0; $I < $ATCOUNT; ++$I) {\n  ...\n}\n"
+  pattern-not: "Dwarf_Signed $I = 0;\nfor ($I = 0; $I < $ATCOUNT; ++$I) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: "The variable 'i' is declared inside the for loop, which can lead to scope\
+    \ issues and potential bugs. \nDeclare the variable outside the loop to ensure\
+    \ proper scope and avoid potential vulnerabilities.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/583f8834083b5ef834c497f5b47797e16101a9a6
+    category: best-practice
+    cwe:
+    - CWE-483
+    technology:
+    - c

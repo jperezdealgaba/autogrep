@@ -1,0 +1,22 @@
+rules:
+- id: vuln-ghost-795e4d5d
+  pattern: "{\n  ...,\n  \"workbench.colorCustomizations\": {\n    ...\n  }\n}\n"
+  pattern-not: "{\n  ...\n}\n"
+  languages:
+  - json
+  message: The 'workbench.colorCustomizations' section in .vscode/settings.json has
+    been removed. This section may contain sensitive or unnecessary configurations
+    that could lead to security issues or misconfigurations. Ensure that any sensitive
+    or unnecessary configurations are removed or properly secured.
+  severity: WARNING
+  metadata:
+    source-url: github.com/TryGhost/Ghost/commit/795e4d5d3937aee5da8819d8270754e0c2386ee4
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - json

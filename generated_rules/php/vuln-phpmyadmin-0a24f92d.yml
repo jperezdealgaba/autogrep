@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-0a24f92d
+  pattern: 'header(''Content-type: application/json'');
+
+    '
+  pattern-not: 'PMA_headerJSON();
+
+    '
+  languages:
+  - php
+  message: 'Detected direct usage of ''header'' for setting JSON content type without
+    proper cache control headers. This can lead to caching of sensitive JSON responses,
+    potentially exposing sensitive information. Use the `PMA_headerJSON()` function
+    instead, which sets appropriate headers including no-cache and content type options.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0a24f92d081033576bfdd9d4bdec1a54501734c1
+    category: security
+    cwe:
+    - CWE-525
+    owasp:
+    - A06:2021 - Vulnerable and Outdated Components
+    technology:
+    - php

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-cyrus-imapd-5edadcfb
+  pattern: "const char *$BASE;\nif (strchr($PART, '/')) {\n    $BASE = $PART;\n} else\
+    \ {\n    $BASE = $ISARCHIVE ? config_archivepartitiondir($PART) : config_partitiondir($PART);\n\
+    }\n"
+  pattern-not: 'const char *$BASE = $ISARCHIVE ? config_archivepartitiondir($PART)
+    : config_partitiondir($PART);
+
+    '
+  languages:
+  - c
+  message: 'The code allows for a path to be directly used as a base directory if
+    it contains a ''/'', which can lead to directory traversal or unauthorized access.
+    This is dangerous because it bypasses the configured partition directories, potentially
+    allowing access to restricted areas. To fix this, ensure that only configured
+    partition names are used by directly calling config_archivepartitiondir or config_partitiondir
+    without the path check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cyrusimap/cyrus-imapd/commit/5edadcfb83bf27107578830801817f9e6d0ad941
+    category: security
+    cwe:
+    - 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - c

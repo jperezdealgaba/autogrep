@@ -1,0 +1,25 @@
+rules:
+- id: vuln-glpi-3b6bc1b4
+  pattern: 'new $_REQUEST[''$VAR'']()
+
+    '
+  pattern-not: 'getItemForItemtype($_REQUEST[''$VAR''])
+
+    '
+  languages:
+  - php
+  message: "Direct instantiation of classes using user-controlled input can lead to\
+    \ arbitrary object instantiation, \nwhich is a security risk. Use the `getItemForItemtype`\
+    \ function instead to safely instantiate objects.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/3b6bc1b4aa1f3693b20ada3425d2de5108522484
+    category: security
+    cwe:
+    - CWE-913
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

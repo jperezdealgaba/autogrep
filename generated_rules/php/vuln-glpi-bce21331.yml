@@ -1,0 +1,27 @@
+rules:
+- id: vuln-glpi-bce21331
+  pattern: '$this->array($ldap->fields)->hasSize(25);
+
+    '
+  pattern-not: '$this->array($ldap->fields)->hasSize(28);
+
+    '
+  languages:
+  - php
+  message: "The LDAP configuration fields array size is incorrect, potentially leading\
+    \ to security issues. \nThe size of the fields array should be 28 to include the\
+    \ newly added fields (can_support_pagesize, pagesize, ldap_maxlimit). \nThis vulnerability\
+    \ can cause incomplete LDAP configurations, leading to potential security risks.\
+    \ \nUpdate the array size check to 28 to include all necessary fields.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/bce21331d50a020cd0928178a68fe4aac2cc50b4
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Security_Misconfiguration
+    technology:
+    - php

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-docassemble-97f77dc4
+  pattern: "if '../' in $FILENAME:\n  ...\n"
+  pattern-not: "if '../' in $FILENAME or $FILENAME.startswith('/'):\n  ...\n"
+  languages:
+  - python
+  message: 'Detected a potential path traversal vulnerability. The code only checks
+    for ''../'' in the filename but does not prevent absolute paths, which could allow
+    unauthorized access to files. Add a check for absolute paths using `filename.startswith(''/'')`
+    to fully mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jhpyle/docassemble/commit/97f77dc486a26a22ba804765bfd7058aabd600c9
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

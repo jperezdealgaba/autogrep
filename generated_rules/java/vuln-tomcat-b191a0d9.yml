@@ -1,0 +1,22 @@
+rules:
+- id: vuln-tomcat-b191a0d9
+  pattern: "TokenList.parseTokenList($HEADERS.values(\"transfer-encoding\"), $ENCODING_NAMES);\n\
+    for ($STRING $ENCODING_NAME : $ENCODING_NAMES) {\n    addInputFilter($INPUT_FILTERS,\
+    \ $ENCODING_NAME);\n}\n"
+  pattern-not: "if (TokenList.parseTokenList($HEADERS.values(\"transfer-encoding\"\
+    ), $ENCODING_NAMES)) {\n    for ($STRING $ENCODING_NAME : $ENCODING_NAMES) {\n\
+    \        addInputFilter($INPUT_FILTERS, $ENCODING_NAME);\n    }\n} else {\n  \
+    \  badRequest(\"http11processor.request.invalidTransferEncoding\");\n}\n"
+  languages:
+  - java
+  message: Potential security vulnerability due to missing validation of transfer-encoding
+    headers. Failing to validate these headers can lead to request smuggling or other
+    HTTP protocol violations. Ensure to check the return value of TokenList.parseTokenList
+    and handle invalid transfer encodings appropriately.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/b191a0d9cf06f4e04257c221bfe41d2b108a9cc8
+    category: security
+    cwe: CWE-444
+    owasp: A01:2021-Broken Access Control
+    technology: java

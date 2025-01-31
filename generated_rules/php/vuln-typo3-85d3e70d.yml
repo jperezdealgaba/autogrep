@@ -1,0 +1,32 @@
+rules:
+- id: vuln-typo3-85d3e70d
+  pattern: 'GeneralUtility::hmac(serialize($VAR))
+
+    '
+  pattern-not: 'GeneralUtility::hmac(serialize($VAR), $KEY)
+
+    '
+  languages:
+  - php
+  message: 'Detected use of `GeneralUtility::hmac` without a specified key. This can
+    lead to insecure hash generation as the default key might be predictable or reused.
+    Always specify a unique and secure key when using HMAC functions to ensure the
+    integrity of the hash.
+
+    This vulnerability was fixed in TYPO3 by adding a specific key ''backend-link-browser''
+    to the HMAC function calls. To fix this issue, always provide a secure, unique
+    key when using HMAC functions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/85d3e70dff35a99ef53f4b561114acfa9e5c47e1
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
+    technology:
+    - php

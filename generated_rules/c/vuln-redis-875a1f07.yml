@@ -1,0 +1,24 @@
+rules:
+- id: vuln-redis-875a1f07
+  pattern: 'preventCommandLogging($C);
+
+    '
+  pattern-not: 'redactClientCommandArgument($C, $ARG);
+
+    '
+  languages:
+  - c
+  message: "The use of `preventCommandLogging` can lead to sensitive information leakage.\
+    \ \nInstead, use `redactClientCommandArgument` to selectively redact sensitive\
+    \ arguments. \nThis ensures that only the necessary parts of the command are hidden\
+    \ from logs.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/875a1f07d821dc5abe737b064018a27bbc7175d2
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-redis-dcbfcb91
+  pattern: "int stringmatchlen(const char *pattern, int patternLen,\n    const char\
+    \ *string, int stringLen, int nocase) {\n  ...\n  if (stringmatchlen(pattern+1,\
+    \ patternLen-1,\n                    string, stringLen, nocase))\n  ...\n}\n"
+  pattern-not: "int stringmatchlen(const char *pattern, int patternLen,\n    const\
+    \ char *string, int stringLen, int nocase) {\n  int skipLongerMatches = 0;\n \
+    \ return stringmatchlen_impl(pattern, patternLen, string, stringLen, nocase, &skipLongerMatches);\n\
+    }\n"
+  languages:
+  - c
+  message: "The function `stringmatchlen` is vulnerable to inefficient pattern matching\
+    \ due to missing early termination logic. \nThis can lead to performance degradation\
+    \ or denial of service when processing certain patterns. \nThe fix introduces\
+    \ a `skipLongerMatches` flag to terminate the search early when no further matches\
+    \ are possible.\nUpdate the function to use `stringmatchlen_impl` with the `skipLongerMatches`\
+    \ flag to improve efficiency.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/redis/redis/commit/dcbfcb916ca1a269b3feef86ee86835294758f84
+    category: performance
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

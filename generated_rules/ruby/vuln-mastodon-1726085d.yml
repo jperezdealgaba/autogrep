@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mastodon-1726085d
+  pattern: 'ActivityPub::FetchRemoteKeyService.new.call($URI, id: $ID)
+
+    '
+  pattern-not: 'ActivityPub::FetchRemoteKeyService.new.call($URI)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of the `id` parameter in `FetchRemoteKeyService` is deprecated
+    and can lead to security vulnerabilities. The `id` parameter should be removed
+    to ensure proper URI validation and prevent potential issues with mismatched identifiers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/1726085db5cd73dd30953da858f9887bcc90b958
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - ruby

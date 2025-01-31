@@ -1,0 +1,27 @@
+rules:
+- id: vuln-neomutt-6f163e07
+  pattern: 'mutt_b64_decode($OUT, $IN)
+
+    '
+  pattern-not: 'mutt_b64_decode($OUT, $IN, $OLEN)
+
+    '
+  languages:
+  - c
+  message: 'The function `mutt_b64_decode` is being called without specifying the
+    output buffer size, which can lead to buffer overflows. This is dangerous because
+    it can result in memory corruption, potentially allowing an attacker to execute
+    arbitrary code or crash the application. Always pass the size of the output buffer
+    as the third argument to `mutt_b64_decode` to prevent buffer overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neomutt/neomutt/commit/6f163e07ae68654d7ac5268cbb7565f6df79ad85
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

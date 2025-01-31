@@ -1,0 +1,20 @@
+rules:
+- id: vuln-caldera-fde715c9
+  pattern: "with mocker.patch('datetime.datetime') as $VAR:\n  ...\n"
+  pattern-not: "with mocker.patch('app.objects.secondclass.c_fact.datetime') as $VAR:\n\
+    \  ...\n"
+  languages:
+  - python
+  message: Directly patching 'datetime.datetime' can lead to inconsistent behavior
+    and security issues. Instead, patch the specific module's datetime instance to
+    ensure proper isolation in tests.
+  severity: ERROR
+  metadata:
+    source-url: github.com/mitre/caldera/commit/fde715c963b1430e656a93c29568f33f0b596805
+    category: security
+    cwe: CWE-665
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/unittest.mock.html#unittest.mock.patch
+    technology:
+    - python

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-moodle-f2807dee
+  pattern: confirm_sesskey();
+  pattern-not: require_sesskey();
+  languages:
+  - php
+  message: "The use of `confirm_sesskey()` is insecure as it does not enforce session\
+    \ validation. \nThis can lead to CSRF (Cross-Site Request Forgery) attacks. \n\
+    Use `require_sesskey()` instead, which enforces session validation and prevents\
+    \ CSRF.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/f2807dee5bc777d9c58b7a70cba6e4c21ee02ea1
+    category: security
+    cwe:
+    - 352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://docs.moodle.org/dev/Session_key
+    technology:
+    - php

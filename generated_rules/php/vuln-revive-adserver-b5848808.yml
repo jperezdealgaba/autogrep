@@ -1,0 +1,24 @@
+rules:
+- id: vuln-revive-adserver-b5848808
+  pattern: '$this->_logError(''Filename mismatch: name/file''. $VAR1.'' / ''.$VAR2);
+
+    '
+  pattern-not: '$this->_logError(''Filename mismatch: name / file ''. $VAR1.'' / ''.$VAR2);
+
+    '
+  languages:
+  - php
+  message: "Insecure string concatenation in log message can lead to log injection\
+    \ or misinterpretation of log data. \nThe log message format should be clear and\
+    \ unambiguous to prevent security issues. \nFix by ensuring proper spacing and\
+    \ formatting in log messages.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/b58488082c5ed3a68c5542a80b2681d525964be2
+    category: security
+    cwe:
+    - CWE-117
+    owasp:
+    - A9:2017-Insufficient Logging & Monitoring
+    technology:
+    - php

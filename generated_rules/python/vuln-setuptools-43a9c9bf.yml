@@ -1,0 +1,30 @@
+rules:
+- id: vuln-setuptools-43a9c9bf
+  pattern: 're.compile(r"""<([^>]*\srel\s*=\s*[''"]?([^''">]+)[^>]*)>""", re.I)
+
+    '
+  pattern-not: 're.compile(r"""<([^>]*\srel\s{0,10}=\s{0,10}[''"]?([^''" >]+)[^>]*)>""",
+    re.I)
+
+    '
+  languages:
+  - python
+  message: 'The regular expression pattern for matching HTML rel attributes is too
+    permissive,
+
+    potentially allowing malicious input to bypass security checks. The pattern should
+
+    include stricter whitespace constraints to prevent exploitation. Update the regex
+
+    to limit the number of whitespace characters around the ''rel'' attribute.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pypa/setuptools/commit/43a9c9bfa6aa626ec2a22540bea28d2ca77964be
+    category: security
+    cwe: CWE-185
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology: python

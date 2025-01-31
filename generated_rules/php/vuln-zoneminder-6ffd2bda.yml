@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zoneminder-6ffd2bda
+  pattern: "if ( $action and $view and !$request ) {\n  if ( file_exists('includes/actions/'.$view.'.php')\
+    \ ) {\n    require_once('includes/actions/'.$view.'.php');\n  } else {\n    ZM\\\
+    Warning(\"No includes/actions/$view.php for action $action\");\n  }\n}\n"
+  pattern-not: "if ( $action and $view and !$request ) {\n  if ( file_exists('includes/actions/'.$view.'.php')\
+    \ ) {\n    require_once('includes/actions/'.$view.'.php');\n  } else {\n    ZM\\\
+    Debug(\"No includes/actions/$view.php for action $action\");\n  }\n}\n"
+  languages:
+  - php
+  message: 'The use of `ZM\Warning` for logging security-related events can lead to
+    insufficient logging of critical security events. This can make it difficult to
+    detect and respond to potential security incidents. Replace `ZM\Warning` with
+    `ZM\Debug` or a more appropriate logging level to ensure proper logging of security
+    events.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/6ffd2bda1c04ced6ce38bfe829de6e2bf23b7348
+    category: security
+    cwe:
+    - 'CWE-778: Insufficient Logging'
+    owasp:
+    - A09:2021 - Security Logging and Monitoring Failures
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A10_2017-Insufficient_Logging%2526Monitoring
+    technology:
+    - php

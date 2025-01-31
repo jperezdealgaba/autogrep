@@ -1,0 +1,29 @@
+rules:
+- id: vuln-runc-331692ba
+  pattern: "if err := checkMountDestination($ROOTFS, $DEST); err != nil {\n    ...\n\
+    }\n"
+  pattern-not: "if err := checkProcMount($ROOTFS, $DEST, $SOURCE); err != nil {\n\
+    \    ...\n}\n"
+  languages:
+  - go
+  message: 'The use of `checkMountDestination` is unsafe for checking mount destinations,
+    particularly when dealing with `/proc`. This can lead to security vulnerabilities
+    where malicious mounts could bypass safety checks. Replace `checkMountDestination`
+    with `checkProcMount` to ensure proper validation of mount points, especially
+    when dealing with `/proc`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/331692baa7afdf6c186f8667cb0e6362ea0802b3
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-285
+    owasp:
+    - A1:2017-Injection
+    - A5:2017-Broken Access Control
+    references:
+    - https://github.com/opencontainers/runc/commit/331692baa7afdf6c186f8667cb0e6362ea0802b3
+    technology:
+    - go

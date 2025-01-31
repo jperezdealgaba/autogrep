@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-98456628
+  pattern: '$password = ''$PASSWORD'';
+
+    '
+  pattern-not: '$password = get_site_identifier();
+
+    '
+  languages:
+  - php
+  message: 'Hardcoded passwords in the codebase pose a significant security risk as
+    they can be easily discovered and exploited. Always use dynamically generated
+    or securely stored credentials instead of hardcoding them. Replace hardcoded passwords
+    with secure methods like `get_site_identifier()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/98456628a24bba25d336860d38a45b5a4e3895da
+    category: security
+    cwe:
+    - CWE-798
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - php

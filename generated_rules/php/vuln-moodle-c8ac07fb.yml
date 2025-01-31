@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-c8ac07fb
+  pattern: 'enrol_course_delete($COURSE)
+
+    '
+  pattern-not: 'enrol_course_delete($COURSE, $USERID)
+
+    '
+  languages:
+  - php
+  message: 'The function `enrol_course_delete` is called without specifying a user
+    ID, which can lead to unauthorized removal of enrolments. This vulnerability allows
+    any user with restore permissions to delete all enrolments in a course, regardless
+    of their specific permissions. To fix this, ensure that the `enrol_course_delete`
+    function is called with a valid user ID parameter to restrict the deletion to
+    only those enrolments the user has permission to remove.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/c8ac07fb50fa92eee1d574823fbda09e1b309a63
+    category: security
+    cwe: 'CWE-285: Improper Authorization'
+    owasp: A1:2017-Injection
+    references: https://docs.moodle.org/dev/Enrol_API
+    technology: php

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-zoneminder-fa6716a6
+  pattern: 'echo ''<td class="colSource">''. makePopupLink( ''?view=monitor&amp;mid=''.$monitor[''Id''],
+    ''zmMonitor''.$monitor[''Id''], ''monitor'', ''<span class="''.$source_class.''">''.$Monitor->Source().''</span>'',
+    canEdit(''Monitors'') ).''</td>'';
+
+    '
+  pattern-not: 'echo ''<td class="colSource">''. makePopupLink( ''?view=monitor&amp;mid=''.$monitor[''Id''],
+    ''zmMonitor''.$monitor[''Id''], ''monitor'', ''<span class="''.$source_class.''">''.validHtmlStr($Monitor->Source()).''</span>'',
+    canEdit(''Monitors'') ).''</td>'';
+
+    '
+  languages:
+  - php
+  message: 'The code directly outputs the result of `$Monitor->Source()` without proper
+    HTML escaping, which can lead to Cross-Site Scripting (XSS) vulnerabilities. Always
+    use `validHtmlStr()` or equivalent functions to sanitize user-controlled or dynamic
+    content before outputting it to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/fa6716a64b7481677b0d8d73d460200e60429410
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

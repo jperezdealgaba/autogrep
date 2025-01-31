@@ -1,0 +1,21 @@
+rules:
+- id: vuln-thrift-264a3f31
+  pattern: "if len($A) == 0 || $A[$I] != $B[$I] {\n  ...\n}\n"
+  pattern-not: "if len($A) < ($I+1) || $A[$I] != $B[$I] {\n  ...\n}\n"
+  languages:
+  - go
+  message: "This code contains a potential out-of-bounds array access vulnerability.\
+    \ \nThe condition `len($A) == 0` does not prevent accessing `$A[$I]` when `$I`\
+    \ is greater than or equal to `len($A)`. \nThis can lead to a panic or undefined\
+    \ behavior. \nThe fix is to check if the length of `$A` is less than `($I+1)`\
+    \ before accessing the array.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/thrift/commit/264a3f318ed3e9e51573f67f963c8509786bcec2
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - go

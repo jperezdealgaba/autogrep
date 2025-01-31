@@ -1,0 +1,26 @@
+rules:
+- id: vuln-red-discordbot-0b0b23b9
+  pattern: 'return _can_manage_channel_deco($PRIVILEGE_LEVEL, $ALLOW_THREAD_OWNER)
+
+    '
+  pattern-not: 'return _can_manage_channel_deco(privilege_level=$PRIVILEGE_LEVEL,
+    allow_thread_owner=$ALLOW_THREAD_OWNER)
+
+    '
+  languages:
+  - python
+  message: 'Detected use of positional arguments in _can_manage_channel_deco calls.
+    This can lead to incorrect privilege level assignments and security vulnerabilities.
+    Always use keyword arguments for clarity and safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cog-Creators/Red-DiscordBot/commit/0b0b23b9717b40ed4f8715720b199417c8e89750
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/glossary.html#term-argument
+    technology:
+    - python

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cacti-cf73ae1a
+  pattern: '$graph_opts = read_config_option(''path_html_export'') . ''/'' . $graph_data_array[''export_filename'']
+    . $RRN_NL;
+
+    '
+  pattern-not: '$graph_opts = $graph_data_array[''export_filename''] . $RRN_NL;
+
+    '
+  languages:
+  - php
+  message: 'The code concatenates user-controlled input with a file path, which can
+    lead to path traversal vulnerabilities. This allows an attacker to manipulate
+    the file path and potentially access unauthorized files. To fix this, avoid concatenating
+    user input with file paths directly and validate the input properly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/cf73ae1a9f65b5a27d7f9d10c8e14835c3a76326
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

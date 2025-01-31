@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libdwarf-code-0b28b923
+  pattern: 'Dwarf_Sword $SHIFT = 0;
+
+    '
+  pattern-not: 'unsigned $SHIFT = 0;
+
+    '
+  languages:
+  - c
+  message: "Using `Dwarf_Sword` for the shift variable can lead to potential integer\
+    \ overflow issues. \nThis is dangerous because it can cause undefined behavior\
+    \ or security vulnerabilities in the code. \nThe fix is to use `unsigned` instead\
+    \ of `Dwarf_Sword` to ensure proper handling of the shift operation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/0b28b923c3bd9827d1d904feed2abadde4fa5de2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

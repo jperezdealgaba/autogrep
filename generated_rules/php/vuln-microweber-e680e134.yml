@@ -1,0 +1,25 @@
+rules:
+- id: vuln-microweber-e680e134
+  pattern: "api_expose('users/search_authors', function ($params = false) {\n    ...\n\
+    });\n"
+  pattern-not: "api_expose_admin('users/search_authors', function ($params = false)\
+    \ {\n    ...\n});\n"
+  languages:
+  - php
+  message: 'The function `api_expose` is used to expose a public API endpoint without
+    proper access control, allowing unauthorized access to sensitive user data. This
+    can lead to information disclosure and unauthorized actions. Replace `api_expose`
+    with `api_expose_admin` to ensure that only authorized administrators can access
+    this endpoint.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/e680e134a4215c979bfd2eaf58336be34c8fc6e6
+    category: security
+    cwe:
+    - 'CWE-284: Improper Access Control'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

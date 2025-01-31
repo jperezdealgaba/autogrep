@@ -1,0 +1,32 @@
+rules:
+- id: vuln-xen-30a293fb
+  pattern: '$RET = do_tdb_delete($CONN, $KEY, NULL);
+
+    '
+  pattern-not: '$RET = ($VAR == NO_GENERATION) ? 0 : do_tdb_delete($CONN, $KEY, NULL);
+
+    '
+  languages:
+  - c
+  message: 'The code directly calls `do_tdb_delete` without checking the generation
+    information,
+
+    which can lead to incorrect deletion of nodes in XenStore transactions. This is
+    dangerous
+
+    because it can cause data inconsistency and potential security issues. To fix
+    this, ensure
+
+    that the deletion is only performed if the node''s generation information is valid.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/30a293fba36b438d90b802132d70020e76086058
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    technology:
+    - c

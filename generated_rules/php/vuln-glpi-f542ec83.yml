@@ -1,0 +1,35 @@
+rules:
+- id: vuln-glpi-f542ec83
+  pattern: "if (\n    isset($_POST['action'])\n    && isset($_POST['id'])\n) {\n \
+    \   if (method_exists($plugin, $_POST['action'])) {\n        call_user_func([$plugin,\
+    \ $_POST['action']], $_POST['id']);\n    } else {\n        echo \"Action \" .\
+    \ $_POST['action'] . \" undefined\";\n    }\n    Html::back();\n}\n"
+  pattern-not: "$id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int)$_POST['id']\
+    \ : null;\n$action = $id > 0 && isset($_POST['action']) ? $_POST['action'] : null;\n\
+    switch ($action) {\n    case 'install':\n        $plugin->install($id);\n    \
+    \    break;\n    case 'activate':\n        $plugin->activate($id);\n        break;\n\
+    \    case 'unactivate':\n        $plugin->unactivate($id);\n        break;\n \
+    \   case 'uninstall':\n        $plugin->uninstall($id);\n        break;\n    case\
+    \ 'clean':\n        $plugin->clean($id);\n        break;\n    default:\n     \
+    \   Html::displayErrorAndDie('Lost');\n        break;\n}\nHtml::back();\n"
+  languages:
+  - php
+  message: 'The code directly uses user-controlled input (`$_POST[''action'']`) to
+    call a method on an object, which can lead to Remote Code Execution (RCE) if an
+    attacker can control the `action` parameter. This is dangerous because it allows
+    attackers to call arbitrary methods on the `$plugin` object. The fix is to validate
+    the `action` parameter and use a whitelist of allowed actions in a switch statement.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/f542ec8378afbd8038aeca5975b15eca3f0574c8
+    category: security
+    cwe:
+    - CWE-95
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Code_Injection
+    technology:
+    - php

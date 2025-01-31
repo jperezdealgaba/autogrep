@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ffmpeg-fa19fbcf
+  pattern: "if ($TRACK->timescale > UINT16_MAX) {\n    ...\n}\n"
+  pattern-not: "if ($TRACK->timescale > UINT16_MAX || !$TRACK->par->channels) {\n\
+    \    ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to check if `track->par->channels` is valid before using
+    it, which could lead to a null pointer dereference or invalid memory access. This
+    can cause crashes or undefined behavior. The fix adds a check for `track->par->channels`
+    to ensure it is not null before proceeding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/fa19fbcf712a6a6cc5a5cfdc3254a97b9bce6582
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

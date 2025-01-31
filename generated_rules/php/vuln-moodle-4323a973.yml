@@ -1,0 +1,32 @@
+rules:
+- id: vuln-moodle-4323a973
+  pattern: '$coursecontext = context_course::instance($params[''courseid'']);
+
+    $categorycontext = $coursecontext->get_parent_context();
+
+    self::validate_context($categorycontext);
+
+    '
+  pattern-not: "require_login(null, false, null, false, true);\n$course = $DB->get_record('course',\
+    \ array('id' => $params['courseid']), '*', MUST_EXIST);\n$context = context_course::instance($course->id);\n\
+    if (!$course->visible and !has_capability('moodle/course:viewhiddencourses', $context))\
+    \ {\n    throw new moodle_exception('coursehidden');\n}\n"
+  languages:
+  - php
+  message: 'Detected insecure context validation in Moodle. The code validates the
+    parent context of a course without checking if the course is hidden and if the
+    user has the capability to view hidden courses. This can lead to unauthorized
+    access to hidden course information. The fix includes using `require_login` and
+    explicitly checking course visibility and user capabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/4323a973d57a41e19e039a850ad71ebcabae73c1
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

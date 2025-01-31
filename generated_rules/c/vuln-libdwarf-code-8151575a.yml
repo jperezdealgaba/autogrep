@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libdwarf-code-8151575a
+  pattern: 'pubnames_like_ptr = pubnames_like_ptr + strlen((char *) pubnames_like_ptr)
+    + 1;
+
+    '
+  pattern-not: '$NSTRLEN = strlen((char *)pubnames_like_ptr);
+
+    pubnames_like_ptr += $NSTRLEN + 1;
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects unsafe pointer arithmetic in string operations. The
+    original code directly adds the result of `strlen` to the pointer, which can lead
+    to miscalculations and potential memory corruption. The fixed version first stores
+    the length in a variable and then performs the pointer arithmetic, making the
+    operation safer and more predictable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/8151575a6ace77d005ca5bb5d71c1bfdba3f7069
+    category: security
+    cwe:
+    - CWE-467
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

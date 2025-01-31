@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cms-a270b928
+  pattern: '$baseConfig = Json::decodeIfJson($this->request->getBodyParam(''config''));
+
+    '
+  pattern-not: '$baseConfig = Component::cleanseConfig(Json::decodeIfJson($this->request->getBodyParam(''config'')));
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe deserialization of JSON data without proper validation
+    or sanitization.
+
+    This can lead to security vulnerabilities such as object injection attacks.
+
+    Always sanitize or validate the deserialized data before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/craftcms/cms/commit/a270b928f3d34ad3bd953b81c304424edd57355e
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A08:2021 - Software and Data Integrity Failures
+    technology:
+    - php

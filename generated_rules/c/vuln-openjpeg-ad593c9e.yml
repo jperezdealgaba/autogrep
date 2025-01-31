@@ -1,0 +1,32 @@
+rules:
+- id: vuln-openjpeg-ad593c9e
+  pattern: "if ($IMAGE->numcomps < 3) {\n  return;\n}\n"
+  pattern-not: "if (\n    ($IMAGE->numcomps < 3)\n || ($IMAGE->comps[0].dx != $IMAGE->comps[1].dx)\
+    \ || ($IMAGE->comps[0].dx != $IMAGE->comps[2].dx)\n || ($IMAGE->comps[0].dy !=\
+    \ $IMAGE->comps[1].dy) || ($IMAGE->comps[0].dy != $IMAGE->comps[2].dy)\n) {\n\
+    \  fprintf(stderr,\"%s:%d:color_esycc_to_rgb\\n\\tCAN NOT CONVERT\\n\", __FILE__,__LINE__);\n\
+    \  return;\n}\n"
+  languages:
+  - c
+  message: 'The code checks only the number of components in the image but does not
+    validate the dimensions of the components. This can lead to out-of-bounds access
+    or incorrect image processing. The fix adds checks for consistent component dimensions
+    (dx and dy) across all components. To fix this vulnerability, ensure that all
+    components have consistent dimensions before proceeding with image processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/ad593c9e0622e0d8d87228e67e4dbd36243ffd22
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

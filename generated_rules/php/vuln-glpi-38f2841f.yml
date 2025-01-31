@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glpi-38f2841f
+  pattern: "if (isset($_POST)) {\n  $values = Html::cleanPostForTextArea($_POST);\n\
+    }\n"
+  pattern-not: "if (isset($_POST)) {\n  $options = Html::cleanPostForTextArea($_POST);\n\
+    }\n"
+  languages:
+  - php
+  message: 'Direct usage of $_POST without proper validation or sanitization can lead
+    to security vulnerabilities such as XSS or SQL injection. The code should use
+    a safer variable name and ensure proper input validation and sanitization. Replace
+    `$values` with `$options` and ensure all input is properly validated and sanitized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/38f2841f407f7b39ba5ec7e3ec082345cbaf62e2
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

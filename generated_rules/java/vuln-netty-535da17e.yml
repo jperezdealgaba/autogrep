@@ -1,0 +1,20 @@
+rules:
+- id: vuln-netty-535da17e
+  pattern: "public $CLASS($TYPE1 $VAR1, long $VAR2) {\n    super($VAR2);\n    ...\n\
+    }\n"
+  pattern-not: "public $CLASS($TYPE1 $VAR1, int $VAR2, long $VAR3) {\n    super($VAR2,\
+    \ $VAR3);\n    ...\n}\n"
+  languages:
+  - java
+  message: Missing maxClientHelloLength parameter in SSL/TLS handler constructor.
+    This can lead to denial of service attacks via oversized ClientHello messages.
+    Always specify a maximum length for ClientHello messages to prevent resource exhaustion.
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/535da17e45201ae4278c0479e6162bb4127d4c32
+    category: security
+    cwe: CWE-400
+    owasp: A05:2021 - Security Misconfiguration
+    references: https://www.rfc-editor.org/rfc/rfc5246#section-6.2.1
+    technology:
+    - java

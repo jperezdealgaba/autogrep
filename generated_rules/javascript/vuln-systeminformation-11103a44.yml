@@ -1,0 +1,19 @@
+rules:
+- id: vuln-systeminformation-11103a44
+  pattern: "for ($I = 0; $I <= 2000; $I++) {\n  ...\n}\n"
+  pattern-not: "for (let $I = 0; $I <= 2000; $I++) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: Potential security issue due to use of undeclared variable in loop. Using
+    undeclared variables can lead to unintended behavior or security vulnerabilities.
+    Always declare loop variables with 'let' or 'const' to ensure proper scoping.
+  severity: ERROR
+  metadata:
+    source-url: github.com/sebhildebrandt/systeminformation/commit/11103a447ab9550c25f1fbec7e6d903720b3fea8
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - javascript

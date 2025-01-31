@@ -1,0 +1,31 @@
+rules:
+- id: vuln-dosfstools-e8eff147
+  pattern: 'printf("%10d bytes per FAT (= %u sectors)\n", $FS->fat_size, $FS->fat_size
+    / $LSS);
+
+    '
+  pattern-not: 'printf("%10lld bytes per FAT (= %llu sectors)\n", (long long)$FS->fat_size,
+    (long long)$FS->fat_size / $LSS);
+
+    '
+  languages:
+  - c
+  message: 'The format specifiers in the printf statement do not match the type of
+    the variables being printed, which can lead to incorrect output or undefined behavior.
+    This is dangerous because it can cause misinterpretation of the FAT size and sector
+    count, potentially leading to filesystem corruption or incorrect diagnostics.
+    To fix this, ensure that the format specifiers match the variable types, using
+    %lld for long long and %llu for unsigned long long.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/dosfstools/dosfstools/commit/e8eff147e9da1185f9afd5b25948153a3b97cf52
+    category: security
+    cwe:
+    - CWE-686
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/686.html
+    technology:
+    - c

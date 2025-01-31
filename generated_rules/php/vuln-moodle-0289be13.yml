@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-0289be13
+  pattern: 'return $_GET[''file''];
+
+    '
+  pattern-not: 'return min_clean_param($_GET[''file''], ''SAFEPATH'');
+
+    '
+  languages:
+  - php
+  message: 'Directly returning user input from $_GET[''file''] without proper sanitization
+    can lead to path traversal or other security vulnerabilities. This can allow attackers
+    to access unauthorized files or execute malicious code. Always sanitize user input
+    using functions like `min_clean_param` with appropriate parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/0289be1321babfa588fb5b18ebb08a296eed9eee
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

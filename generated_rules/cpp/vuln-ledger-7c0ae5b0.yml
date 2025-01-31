@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ledger-7c0ae5b0
+  pattern: 'VERIFY(std::strlen($STR) < $LIMIT);
+
+    '
+  pattern-not: "if (std::strlen($STR) > $LIMIT) {\n    throw_(...);\n}\n"
+  languages:
+  - cpp
+  message: 'The use of VERIFY to check string length without proper error handling
+    can lead to undefined behavior if the condition fails. This is dangerous because
+    it may cause the program to continue execution in an invalid state, potentially
+    leading to crashes or security vulnerabilities. Replace VERIFY with a proper conditional
+    check that throws an exception or handles the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/ledger/ledger/commit/7c0ae5b02571e21f97d45f5d091cb78af9885713
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - cpp

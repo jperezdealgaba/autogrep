@@ -1,0 +1,35 @@
+rules:
+- id: vuln-moodle-52555c36
+  pattern: '$response->toolname = htmlspecialchars($tool->name);
+
+    $response->tooldomain = htmlspecialchars($tool->tooldomain);
+
+    '
+  pattern-not: '$response->toolname = s($tool->name);
+
+    $response->tooldomain = s($tool->tooldomain);
+
+    '
+  languages:
+  - php
+  message: 'The use of `htmlspecialchars` instead of `s` for output encoding can lead
+    to XSS vulnerabilities.
+
+    The `s` function is specifically designed to safely escape strings in Moodle,
+    while `htmlspecialchars` may not handle all edge cases.
+
+    Always use `s` for escaping strings in Moodle to prevent XSS vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/52555c36989b6704550ed0b3c6e832f5e7e150b7
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://docs.moodle.org/dev/Security#Output_safety
+    technology:
+    - php

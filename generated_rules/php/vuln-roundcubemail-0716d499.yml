@@ -1,0 +1,27 @@
+rules:
+- id: vuln-roundcubemail-0716d499
+  pattern: 'preg_replace_callback(''/\\\([0-9a-f]{2,4})\s*/i'', $callback, $out)
+
+    '
+  pattern-not: 'preg_replace_callback(''/\\\([0-9a-f]{2,6})\s*/i'', $callback, $out)
+
+    '
+  languages:
+  - php
+  message: 'The regular expression used in `preg_replace_callback` is too restrictive
+    and does not handle all possible hexadecimal escape sequences, which could lead
+    to incomplete sanitization of CSS styles and potential XSS vulnerabilities. The
+    pattern should be updated to allow for longer hexadecimal sequences (2-6 characters)
+    and to handle non-hexadecimal escape characters properly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/0716d499bc591f43a7eabc19da672bbbee41b976
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7: Cross-Site Scripting (XSS)
+    technology:
+    - php

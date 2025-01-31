@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ffmpeg-3e5959b3
+  pattern: "for ($Y = 0; $Y < $STRUCT->ymin; $Y++) {\n  ...\n}\n"
+  pattern-not: "for ($Y = 0; $Y < FFMIN($STRUCT->ymin, $STRUCT->h); $Y++) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The loop condition does not properly check the bounds of the `ymin` value
+    against the height `h` of the structure, which could lead to out-of-bounds access.
+    This can cause memory corruption or crashes. Always use FFMIN to ensure the loop
+    does not exceed valid bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/3e5959b3457f7f1856d997261e6ac672bba49e8b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

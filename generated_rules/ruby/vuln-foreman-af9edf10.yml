@@ -1,0 +1,28 @@
+rules:
+- id: vuln-foreman-af9edf10
+  pattern: 'User.only_admin.except_hidden.$METHOD($ARGS)
+
+    '
+  pattern-not: 'User.unscoped.only_admin.except_hidden.$METHOD($ARGS)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a potential security issue where admin users are queried without
+    unscoping, which may lead to incorrect data access or privilege escalation. Always
+    use `unscoped` when querying admin users to ensure proper scoping and prevent
+    unintended data exposure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/af9edf1098bf8e643e1607f9375595e375e7ade6
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://guides.rubyonrails.org/active_record_querying.html#unscoped
+    technology:
+    - ruby

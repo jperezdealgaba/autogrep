@@ -1,0 +1,30 @@
+rules:
+- id: vuln-dolibarr-c4cba43b
+  pattern: '$object->entity = (!GETPOST(''entity'', ''int'') ? 0 : GETPOST(''entity'',
+    ''int''));
+
+    '
+  pattern-not: '$object->entity = (GETPOSTISSET(''entity'') ? GETPOSTINT(''entity'')
+    : $object->entity);
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of user entity without proper validation can lead to
+    unauthorized entity changes. This vulnerability allows users to modify their entity
+    without proper superadmin checks, potentially leading to privilege escalation.
+    Ensure that entity changes are validated and only allowed by superadmins.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/c4cba43bade736ab89e31013a6ccee59a6e077ee
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control/
+    technology:
+    - php

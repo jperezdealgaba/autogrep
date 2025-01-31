@@ -1,0 +1,28 @@
+rules:
+- id: vuln-feh-23421a86
+  pattern: 'execlp("wget", "wget", "--cache=off", "-O", $TMPNAME, $URL, $QUIET, NULL);
+
+    '
+  pattern-not: 'execlp("wget", "wget", "--no-clobber", "--cache=off", "-O", $TMPNAME,
+    $URL, $QUIET, NULL);
+
+    '
+  languages:
+  - c
+  message: 'The use of `execlp` with `wget` without the `--no-clobber` option can
+    lead to file clobbering vulnerabilities, where existing files can be overwritten
+    unintentionally. This can be exploited to overwrite critical files or execute
+    arbitrary code. To fix this, always include the `--no-clobber` option when using
+    `wget` with `execlp`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/derf/feh/commit/23421a86cc826dd30f3dc4f62057fafb04b3ac40
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

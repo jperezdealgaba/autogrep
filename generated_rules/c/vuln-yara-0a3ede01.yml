@@ -1,0 +1,23 @@
+rules:
+- id: vuln-yara-0a3ede01
+  pattern: '_yr_arena_page_for_address($ARENA, $ADDRESS)
+
+    '
+  pattern-not: 'yr_arena_page_for_address($ARENA, $ADDRESS)
+
+    '
+  languages:
+  - c
+  message: 'The function `_yr_arena_page_for_address` was renamed to `yr_arena_page_for_address`
+    to address a vulnerability. Ensure to use the updated function name to avoid potential
+    issues.
+
+    '
+  severity: ERROR
+  metadata:
+    cwe: 'CWE-477: Use of Obsolete Function'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    source-url: github.com/VirusTotal/yara/commit/0a3ede0125c8b88a020fa4c98df78f6eea7eb9ab
+    category: security
+    technology:
+    - c

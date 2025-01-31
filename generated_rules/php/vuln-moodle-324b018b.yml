@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-324b018b
+  pattern: 'require_login();
+
+    '
+  pattern-not: "require_login(0, false);\nif (isguestuser()) {\n    throw new require_login_exception('Guests\
+    \ are not allowed here.');\n}\n"
+  languages:
+  - php
+  message: 'The code uses `require_login()` without proper guest user validation,
+    allowing unauthorized access. This is dangerous because guest users could perform
+    actions they shouldn''t be allowed to. To fix this, use `require_login(0, false)`
+    and explicitly check for guest users with `isguestuser()`, throwing an exception
+    if detected.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/324b018bbce2f56198fe8808968bad6c8798710a
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/require_login
+    technology:
+    - php

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-spacewalk-b6491eba
+  pattern: 'String[] $PARAMS = { $VAR.getName() };
+
+    '
+  pattern-not: 'String[] $PARAMS = { StringEscapeUtils.escapeHtml($VAR.getName())
+    };
+
+    '
+  languages:
+  - java
+  message: 'Potential Cross-Site Scripting (XSS) vulnerability detected. The server
+    group name is being used directly without proper HTML escaping. This could allow
+    an attacker to inject malicious scripts. Use StringEscapeUtils.escapeHtml() to
+    sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/spacewalkproject/spacewalk/commit/b6491eba7f942d424f6267045a417c747e2f1996
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - java

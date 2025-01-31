@@ -1,0 +1,31 @@
+rules:
+- id: vuln-pillow-6696b780
+  pattern: 'self.assert_($CONDITION)
+
+    '
+  pattern-not: 'self.assertTrue($CONDITION)
+
+    self.assertLess($CONDITION)
+
+    self.assertIn($CONDITION)
+
+    '
+  languages:
+  - python
+  message: Deprecated assert_() method used. Replace with more specific assertion
+    methods like assertTrue, assertLess, or assertIn to improve code clarity and prevent
+    potential issues.
+  severity: WARNING
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/6696b780e3b38672106c12be12e82f195c93b71a
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertTrue
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertLess
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertIn
+    technology:
+    - python

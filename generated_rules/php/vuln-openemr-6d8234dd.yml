@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openemr-6d8234dd
+  pattern: '$options_objects[$value] = $name;
+
+    '
+  pattern-not: '$options_objects[attr($value)] = attr($name);
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped assignment in array, which can lead to XSS vulnerabilities.
+
+    The values assigned to the array are not properly escaped, allowing potential
+    injection of malicious scripts.
+
+    To fix this, use the `attr()` function to escape the values before assignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/6d8234dd0e81c484e094b97ca3cfad5b3cf3930f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

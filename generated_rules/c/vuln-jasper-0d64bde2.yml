@@ -1,0 +1,36 @@
+rules:
+- id: vuln-jasper-0d64bde2
+  pattern: '#if !defined(HAVE_VLA)
+
+    #else
+
+    jpc_fix_t $VAR[bufsize * $VAR2];
+
+    #endif
+
+    '
+  pattern-not: '#if !defined(HAVE_VLA)
+
+    #endif
+
+    '
+  languages:
+  - c
+  message: "The use of variable-length arrays (VLAs) in this code can lead to stack\
+    \ overflow vulnerabilities. \nVLAs are dangerous because they allocate memory\
+    \ on the stack without bounds checking, which can be exploited to cause a denial\
+    \ of service or arbitrary code execution. \nThe patch removes the use of VLAs\
+    \ to mitigate this risk. \nConsider using fixed-size arrays or dynamic memory\
+    \ allocation with proper bounds checking instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/0d64bde2b3ba7e1450710d540136a8ce4199ef30
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

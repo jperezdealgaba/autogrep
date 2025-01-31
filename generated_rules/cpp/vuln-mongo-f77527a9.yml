@@ -1,0 +1,41 @@
+rules:
+- id: vuln-mongo-f77527a9
+  pattern: "void tagForSort(MatchExpression* $TREE) {\n    if (!Indexability::nodeCanUseIndexOnOwnField($TREE))\
+    \ {\n        size_t $MYTAGVALUE = IndexTag::kNoIndex;\n        for (size_t $I\
+    \ = 0; $I < $TREE->numChildren(); ++$I) {\n            MatchExpression* $CHILD\
+    \ = $TREE->getChild($I);\n            tagForSort($CHILD);\n            IndexTag*\
+    \ $CHILDTAG = static_cast<IndexTag*>($CHILD->getTag());\n            if (NULL\
+    \ != $CHILDTAG) {\n                $MYTAGVALUE = std::min($MYTAGVALUE, $CHILDTAG->index);\n\
+    \            }\n        }\n        if ($MYTAGVALUE != IndexTag::kNoIndex) {\n\
+    \            $TREE->setTag(new IndexTag($MYTAGVALUE));\n        }\n    }\n}\n"
+  pattern-not: "void prepareForAccessPlanning(MatchExpression* $TREE) {\n    resolveOrPushdowns($TREE);\n\
+    \    sortUsingTags($TREE);\n}\n"
+  languages:
+  - cpp
+  message: 'The function `tagForSort` is vulnerable because it assumes all tags are
+    of type `IndexTag` and does not handle other tag types properly. This can lead
+    to incorrect index tagging and potential query planning issues. The fix introduces
+    a new `prepareForAccessPlanning` function that properly handles different tag
+    types using the `resolveOrPushdowns` method.
+
+    This vulnerability is dangerous because it can cause MongoDB to generate incorrect
+    query plans, potentially leading to performance degradation or incorrect query
+    results.
+
+    To fix this, use the new `prepareForAccessPlanning` function which properly handles
+    different tag types and ensures correct index tagging.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/mongodb/mongo/commit/f77527a942347313e2848e050e89480bc3cadb95
+    category: security
+    cwe:
+    - 'CWE-843: Access of Resource Using Incompatible Type (''Type Confusion'')'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://jira.mongodb.org/browse/SERVER-27904
+    technology:
+    - cpp
+    - mongodb

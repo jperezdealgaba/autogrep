@@ -1,0 +1,22 @@
+rules:
+- id: vuln-bigbluebutton-813bb075
+  pattern: 'CloseableHttpAsyncClient $HTTPCLIENT = HttpAsyncClients.createDefault();
+
+    '
+  pattern-not: "CloseableHttpAsyncClient $HTTPCLIENT = HttpAsyncClients.custom()\n\
+    \    .setDefaultRequestConfig($CONFIG)\n    .build();\n"
+  languages:
+  - java
+  message: 'Insecure HTTP client configuration detected. The default HTTP client follows
+    redirects automatically, which can lead to security vulnerabilities such as SSRF.
+    To fix this, disable automatic redirects by using a custom HTTP client with `setRedirectsEnabled(false)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bigbluebutton/bigbluebutton/commit/813bb0759056967c9f1a448284abedc275f929be
+    category: security
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+    references: https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    technology: java

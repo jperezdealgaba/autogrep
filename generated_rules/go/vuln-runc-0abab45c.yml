@@ -1,0 +1,29 @@
+rules:
+- id: vuln-runc-0abab45c
+  pattern: "$DEST, $ERR := securejoin.SecureJoin($ROOTFS, $DESTINATION)\nif $ERR !=\
+    \ nil {\n    return $ERR\n}\n...\nif $FI.Mode()&os.ModeDir == 0 {\n    ...\n}\n"
+  pattern-not: "$DEST := filepath.Clean($DESTINATION)\nif !strings.HasPrefix($DEST,\
+    \ $ROOTFS) {\n    $DEST = filepath.Join($ROOTFS, $DEST)\n}\n...\nif !$FI.IsDir()\
+    \ {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'Detected insecure handling of mount paths that could allow symlink attacks.
+    The code uses securejoin.SecureJoin but does not properly validate the destination
+    path before mounting, potentially allowing attackers to mount through symlinks.
+    This can lead to privilege escalation or unauthorized access to files. To fix,
+    ensure the destination path is cleaned and validated using filepath.Clean and
+    strings.HasPrefix before mounting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/0abab45c9b97c113ff2cdc16f3a7388444c3fbec
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://github.com/opencontainers/runc/commit/0abab45c9b97c113ff2cdc16f3a7388444c3fbec
+    technology:
+    - go

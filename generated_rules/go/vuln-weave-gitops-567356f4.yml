@@ -1,0 +1,29 @@
+rules:
+- id: vuln-weave-gitops-567356f4
+  pattern: '$LOG.Error($ERR, "failed to create clients for", "clusters", $CLUSTERS.Get())
+
+    '
+  pattern-not: '$LOG.Error($ERR, "failed to create client")
+
+    '
+  languages:
+  - go
+  message: 'The log message includes sensitive information about clusters, which could
+    expose internal details in logs. This can be dangerous as it may leak sensitive
+    data to unauthorized users. To fix this, remove the sensitive cluster information
+    from the log message.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weaveworks/weave-gitops/commit/567356f471353fb5c676c77f5abc2a04631d50ca
+    category: security
+    cwe:
+    - 'CWE-532: Information Exposure Through Log Files'
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/532.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - go

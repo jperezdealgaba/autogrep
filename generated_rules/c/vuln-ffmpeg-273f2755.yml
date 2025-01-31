@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ffmpeg-273f2755
+  pattern: '$LEN = 0;
+
+    $AN += sscanf($IN, "{\\an%*1u}%n", &$LEN) >= 0 && $LEN > 0;
+
+    '
+  pattern-not: '$AN += scanbraces($IN);
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe use of sscanf for parsing input, which can lead to parsing\
+    \ errors or vulnerabilities. \nThe function sscanf is often unsafe for parsing\
+    \ input because it does not handle buffer overflows or unexpected input formats\
+    \ properly. \nReplace with a safer custom parsing function like `scanbraces`,\
+    \ which explicitly checks input format and length.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/273f2755ce8635d42da3cde0eeba15b2e7842774
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

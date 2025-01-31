@@ -1,0 +1,24 @@
+rules:
+- id: vuln-kubernetes-plugin-f2613014
+  pattern: "public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item,\
+    \ @QueryParameter String serverUrl) {\n  ...\n}\n"
+  pattern-not: "public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item\
+    \ item, @QueryParameter String serverUrl, @QueryParameter String credentialsId)\
+    \ {\n  if (item == null\n      ? !Jenkins.get().hasPermission(Jenkins.ADMINISTER)\n\
+    \      : !item.hasPermission(Item.EXTENDED_READ)) {\n    return new StandardListBoxModel().includeCurrentValue(credentialsId);\n\
+    \  }\n  ...\n}\n"
+  languages:
+  - java
+  message: Missing permission check in doFillCredentialsIdItems method. This could
+    allow unauthorized access to credentials. Add proper permission checks using Jenkins.get().hasPermission()
+    or item.hasPermission().
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/kubernetes-plugin/commit/f26130149c487b1ef8ece9b7b881739c2f8c6736
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - java

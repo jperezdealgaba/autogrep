@@ -1,0 +1,28 @@
+rules:
+- id: vuln-voicemail-ffce4882
+  pattern: 'voicemail_update_settings($ACTION, $CONTEXT, $EXTENSION, $_REQUEST)
+
+    '
+  pattern-not: 'voicemail_update_settings($ACTION, $CONTEXT, $EXTENSION, freepbxGetSanitizedRequest(FILTER_UNSAFE_RAW))
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses `$_REQUEST` without sanitization, which can lead
+    to security vulnerabilities such as SQL injection or XSS. Always sanitize user
+    inputs before using them in sensitive operations. Use `freepbxGetSanitizedRequest(FILTER_UNSAFE_RAW)`
+    to properly sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FreePBX/voicemail/commit/ffce4882016076acd16fe0f676246905aa3cb2f3
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

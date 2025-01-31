@@ -1,0 +1,29 @@
+rules:
+- id: vuln-typo3-05c95fed
+  pattern: '$this->frame = $this->request->getQueryParams()[''frame''] ?? null;
+
+    '
+  pattern-not: "if (GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('security.frontend.allowInsecureFrameOptionInShowImageController'))\
+    \ {\n    $frameValue = $this->request->getQueryParams()['frame'] ?? null;\n  \
+    \  if ($frameValue !== null && MathUtility::canBeInterpretedAsInteger($frameValue))\
+    \ {\n        $this->frame = (int)$frameValue;\n    }\n}\n"
+  languages:
+  - php
+  message: 'Direct assignment of frame parameter from query params without validation
+    can lead to security vulnerabilities. This allows potential injection of malicious
+    values. Always validate and sanitize input parameters before use. Consider using
+    the `Features` class to enable secure handling of such parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/05c95fed869a1a6dcca06c7077b83b6ea866ff14
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

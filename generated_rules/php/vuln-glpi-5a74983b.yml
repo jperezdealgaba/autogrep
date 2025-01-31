@@ -1,0 +1,29 @@
+rules:
+- id: vuln-glpi-5a74983b
+  pattern: 'Html::redirect($CFG_GLPI["root_doc"].$decoded_where)
+
+    '
+  pattern-not: 'Html::redirect($CFG_GLPI["url_base"].$decoded_where)
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential URL redirection vulnerability. Using `root_doc` instead
+    of `url_base` for redirection can lead to open redirects or exploitation by crafting
+    malicious URLs. This can allow attackers to redirect users to malicious sites.
+    To fix this, always use `url_base` to ensure the redirection is based on the GLPI
+    URL, preventing exploits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/5a74983b5f26932e8b8b736dafa7d6d963a25e0d
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

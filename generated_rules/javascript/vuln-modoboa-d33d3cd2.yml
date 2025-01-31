@@ -1,0 +1,24 @@
+rules:
+- id: vuln-modoboa-d33d3cd2
+  pattern: 'var $form = $("form").first();
+
+    '
+  pattern-not: 'var $form = $(e.target).closest("form");
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure form selection detected. Using `$("form").first()` can lead to
+    incorrect form selection and potential security issues. Always use a specific
+    selector like `$(e.target).closest("form")` to ensure the correct form is targeted.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/modoboa/modoboa/commit/d33d3cd2d11dbfebd8162c46e2c2a9873919a967
+    category: security
+    cwe: CWE-20
+    owasp: OWASP-2017-A6
+    references: https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - javascript

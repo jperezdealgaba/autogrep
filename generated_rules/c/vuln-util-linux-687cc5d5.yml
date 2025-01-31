@@ -1,0 +1,37 @@
+rules:
+- id: vuln-util-linux-687cc5d5
+  pattern: "bool $PERMITTED;\n...\nif (getuid() == 0)\n    $PERMITTED = TRUE;\nelse\
+    \ {\n    if (($SET || $SYSTOHC || $ADJUST) && !$TESTING) {\n        warnx(_(\"\
+    Sorry, only the superuser can change the Hardware Clock.\"));\n        $PERMITTED\
+    \ = FALSE;\n    } else if (($SYSTZ || $HCTOSYS) && !$TESTING) {\n        warnx(_(\"\
+    Sorry, only the superuser can change the System Clock.\"));\n        $PERMITTED\
+    \ = FALSE;\n    } else if ($SETEPOCH && !$TESTING) {\n        warnx(_(\"Sorry,\
+    \ only the superuser can change the Hardware Clock epoch in the kernel.\"));\n\
+    \        $PERMITTED = FALSE;\n    } else\n        $PERMITTED = TRUE;\n}\n...\n\
+    if (!$PERMITTED)\n    $EXIT(EX_NOPERM);\n"
+  pattern-not: "if (getuid() != 0) {\n    warnx(_(\"Sorry, only the superuser can\
+    \ use the Hardware Clock.\"));\n    $EXIT(EX_NOPERM);\n}\n"
+  languages:
+  - c
+  message: 'The code uses a complex permission check that can be bypassed by setting
+    the testing flag.
+
+    This vulnerability allows non-superusers to perform privileged operations by manipulating
+    the testing flag.
+
+    To fix this, ensure that all privileged operations explicitly check for superuser
+    status at the point of use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/687cc5d58942b24a9f4013c68876d8cbea907ab1
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - 'A01: Broken Access Control'
+    references:
+    - https://cwe.mitre.org/data/definitions/862.html
+    technology:
+    - c

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-podman-5e65f0ba
+  pattern: "func exposePorts($PM rkport.Manager, $PORTMAPPINGS []ocicni.PortMapping)\
+    \ error {\n  ...\n}\n"
+  pattern-not: "func exposePorts($PM rkport.Manager, $PORTMAPPINGS []ocicni.PortMapping,\
+    \ $CHILDIP string) error {\n  ...\n}\n"
+  languages:
+  - go
+  message: "The function `exposePorts` is missing the `childIP` parameter, which is\
+    \ required for proper IP address handling in rootless port mappings. This can\
+    \ lead to incorrect network configuration or security issues. \nTo fix this, ensure\
+    \ the `exposePorts` function includes the `childIP` parameter and uses it in the\
+    \ port mapping configuration.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/containers/podman/commit/5e65f0ba30f3fca73f8c207825632afef08378c1
+    category: security
+    cwe:
+    - CWE-284
+    owasp: 'A5: Security Misconfiguration'
+    technology:
+    - go

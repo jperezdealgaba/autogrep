@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mail-4d7c52dc
+  pattern: '$this->messageMapper->findByIds($VAR1, $VAR2)
+
+    '
+  pattern-not: '$this->messageMapper->findByMailboxAndIds($VAR1, $VAR2, $VAR3)
+
+    '
+  languages:
+  - php
+  message: 'Detected use of `findByIds` method which may lead to SQL injection or
+    excessive memory usage due to unbounded input. The method does not properly chunk
+    large arrays of IDs, which can cause performance issues or database query failures.
+    Use `findByMailboxAndIds` instead, which safely processes IDs in chunks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/mail/commit/4d7c52dc7069f7b940da31166cdfbede836a3fca
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    - 'A3: Sensitive Data Exposure'
+    technology:
+    - php

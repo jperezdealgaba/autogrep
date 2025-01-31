@@ -1,0 +1,24 @@
+rules:
+- id: vuln-util-linux-0377ef91
+  pattern: "{\n  const char *$FSTYPE;\n  $FSTYPE = fsprobe_get_fstype_by_devname($OPTARG);\n\
+    \  printf(\"%s\\n\", $FSTYPE ? $FSTYPE : \"unknown\");\n  exit($FSTYPE ? 0 : $EX_FAIL);\n\
+    }\n"
+  pattern-inside: "case $CASE_NUM:\n  ...\n  {\n    ...\n    $PATTERN\n    ...\n \
+    \ }\n"
+  languages:
+  - c
+  message: "The use of `fsprobe_get_fstype_by_devname` for filesystem type guessing\
+    \ is unreliable and has been removed. \nThis function can lead to incorrect assumptions\
+    \ about the filesystem type, potentially causing security issues or data corruption.\
+    \ \nAvoid using unreliable filesystem type guessing functions. Instead, explicitly\
+    \ specify the filesystem type or use more reliable methods.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/0377ef91270d06592a0d4dd009c29e7b1ff9c9b8
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

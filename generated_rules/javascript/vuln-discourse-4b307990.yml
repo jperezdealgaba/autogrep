@@ -1,0 +1,30 @@
+rules:
+- id: vuln-discourse-4b307990
+  pattern: "if (\n  $CURRENT_USER &&\n  $CTX.id.toString().toLowerCase() === $CURRENT_USER.get(\"\
+    username_lower\") &&\n  $TYPE === \"private_messages\"\n) {\n  $QUERY += \" in:personal\"\
+    ;\n}\n"
+  pattern-not: "if ($TYPE === \"private_messages\") {\n  if (\n    $CURRENT_USER &&\n\
+    \    $CTX.id.toString().toLowerCase() === $CURRENT_USER.get(\"username_lower\"\
+    )\n  ) {\n    $QUERY += \" in:personal\";\n  } else {\n    $QUERY += encodeURIComponent(\n\
+    \      ` personal_messages:${$CTX.id.toString().toLowerCase()}`\n    );\n  }\n\
+    }\n"
+  languages:
+  - javascript
+  message: 'Insecure handling of private message search queries detected. The original
+    code did not properly encode user input in the query string, which could lead
+    to injection vulnerabilities. The fixed version properly encodes the user input
+    using encodeURIComponent. Always encode user-controlled data when constructing
+    query strings to prevent injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/4b3079905498e3d09517ee2766c8ff33c11e7ada
+    category: security
+    cwe: CWE-116
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    - https://cwe.mitre.org/data/definitions/116.html
+    technology:
+    - javascript

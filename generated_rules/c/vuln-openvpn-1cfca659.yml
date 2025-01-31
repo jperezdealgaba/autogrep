@@ -1,0 +1,31 @@
+rules:
+- id: vuln-openvpn-1cfca659
+  pattern: '$C->c2.frame_fragment = $C->c2.frame;
+
+    $C->c2.frame_fragment_initial = $C->c2.frame_fragment;
+
+    '
+  pattern-not: '$C->c2.frame_fragment = $C->c2.frame;
+
+    '
+  languages:
+  - c
+  message: 'The code initializes `frame_fragment` and `frame_fragment_initial` with
+    the same value, which can lead to incorrect frame handling. This vulnerability
+    can cause issues in the fragmentation code, potentially leading to security vulnerabilities
+    or crashes. To fix this, ensure that `frame_fragment_initial` is not redundantly
+    set to `frame_fragment`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/OpenVPN/openvpn/commit/1cfca659244e362f372d9843351257f456392a2f
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - c

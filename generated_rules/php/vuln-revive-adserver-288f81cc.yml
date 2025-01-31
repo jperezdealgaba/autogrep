@@ -1,0 +1,30 @@
+rules:
+- id: vuln-revive-adserver-288f81cc
+  pattern: '$this->addElement(''hidden'', ''token'', phpAds_SessionGetToken());
+
+    $this->addRule(''token'', ''Invalid request token'', ''callback'', ''phpAds_SessionValidateToken'');
+
+    '
+  pattern-not: "if (!defined('phpAds_installing')) {\n    $this->addElement('hidden',\
+    \ 'token', phpAds_SessionGetToken());\n    $this->addRule('token', 'Missing request\
+    \ token', 'required');\n    $this->addRule('token', 'Invalid request token', 'callback',\
+    \ 'phpAds_SessionValidateToken');\n}\n"
+  languages:
+  - php
+  message: 'The code is missing a check to ensure that the request token is validated
+    only when not in installation mode. This can lead to security vulnerabilities
+    where the token validation is bypassed during installation. Always ensure that
+    token validation is performed in the appropriate context to prevent unauthorized
+    access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/288f81cc
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

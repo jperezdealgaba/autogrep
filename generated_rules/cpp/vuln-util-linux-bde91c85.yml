@@ -1,0 +1,30 @@
+rules:
+- id: vuln-util-linux-bde91c85
+  pattern: "extern int xmkstemp(char **$TMPNAME, char *$DIR);\nstatic inline FILE\
+    \ *xfmkstemp(char **$TMPNAME, char *$DIR) {\n    ...\n    $FD = xmkstemp($TMPNAME,\
+    \ $DIR);\n    ...\n}\n"
+  pattern-not: "extern int xmkstemp(char **$TMPNAME, const char *$DIR, const char\
+    \ *$PREFIX);\nstatic inline FILE *xfmkstemp(char **$TMPNAME, const char *$DIR,\
+    \ const char *$PREFIX) {\n    ...\n    $FD = xmkstemp($TMPNAME, $DIR, $PREFIX);\n\
+    \    ...\n}\n"
+  languages:
+  - cpp
+  message: 'The function `xmkstemp` and its inline wrapper `xfmkstemp` are vulnerable
+    due to the use of non-const `char *` parameters for directory and prefix strings.
+    This can lead to potential buffer overflows or other memory issues if the strings
+    are modified. The fix introduces `const char *` parameters to prevent modification
+    of these strings.
+
+    To fix this, ensure that all string parameters that should not be modified are
+    declared as `const char *`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/bde91c85bdc77975155058276f99d2e0f5eab5a9
+    category: security
+    cwe:
+    - CWE-119
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

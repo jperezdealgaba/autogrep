@@ -1,0 +1,30 @@
+rules:
+- id: vuln-exiv2-a58e52ed
+  pattern: 'uint32_t $OFFSET = $EXPR + $VALUE;
+
+    enforce($OFFSET + $VALUE2 < $SIZE, $ERROR);
+
+    '
+  pattern-not: 'uint32_t $OFFSET = Safe::add($EXPR, $VALUE);
+
+    enforce(Safe::add($OFFSET, $VALUE2) < $SIZE, $ERROR);
+
+    '
+  languages:
+  - cpp
+  message: "Detected unsafe arithmetic operation that could lead to integer overflow.\
+    \ \nThe vulnerability occurs when adding values without proper bounds checking,\
+    \ \nwhich could result in corrupted metadata or memory corruption. \nUse Safe::add\
+    \ to ensure arithmetic operations are performed safely.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/a58e52ed702d3bc7b8bab7ec1d70a4849eebece3
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

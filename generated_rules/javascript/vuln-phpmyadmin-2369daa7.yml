@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-2369daa7
+  pattern: 'var pwchars = "abcdefhjmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWYXZ";
+
+    '
+  pattern-not: 'var pwchars = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZ";
+
+    '
+  languages:
+  - javascript
+  message: 'The password character set is incomplete, potentially reducing the security
+    of generated passwords.
+
+    The original set excluded certain characters and numbers, making it easier to
+    guess passwords.
+
+    Use the complete character set to ensure stronger password generation.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/2369daa7f5f550797f560e6b46a021e4558c2d72
+    category: security
+    cwe: CWE-521
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - javascript

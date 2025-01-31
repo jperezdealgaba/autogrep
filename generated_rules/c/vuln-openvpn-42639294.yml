@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openvpn-42639294
+  pattern: 'return "ERROR: embedded null value";
+
+    '
+  pattern-not: 'return string_alloc("ERROR: embedded null value", $GC);
+
+    '
+  languages:
+  - c
+  message: 'Returning a string literal directly can lead to memory management issues
+    and potential vulnerabilities. This pattern detects cases where string literals
+    are returned directly instead of using a safe allocation function. The fix involves
+    using a function like `string_alloc` to properly manage the string''s memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenVPN/openvpn/commit/426392940c7060300a10077c389f5156c790c2f6
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/908.html
+    technology:
+    - c

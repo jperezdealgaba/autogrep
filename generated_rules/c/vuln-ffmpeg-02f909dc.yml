@@ -1,0 +1,22 @@
+rules:
+- id: vuln-ffmpeg-02f909dc
+  pattern: "if ((ret = av_image_check_size($WIDTH, $HEIGHT, 0, $AVCTX)) < 0) {\n \
+    \ ...\n}\n"
+  pattern-not: "if ((ret = ff_set_dimensions($AVCTX, $WIDTH, $HEIGHT)) < 0) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The use of `av_image_check_size` without proper dimension setting can
+    lead to incorrect image processing or security vulnerabilities. This function
+    checks the dimensions but does not set them, which can cause issues in subsequent
+    operations. Replace it with `ff_set_dimensions` to ensure proper dimension handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/02f909dc24b1f05cfbba75077c7707b905e63cd2
+    category: security
+    cwe:
+    - CWE-682
+    technology:
+    - c

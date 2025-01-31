@@ -1,0 +1,31 @@
+rules:
+- id: vuln-libvncserver-33441d90
+  pattern: 'uint8_t $VAR = $CRED->x509Credential.x509CrlVerifyMode;
+
+    '
+  pattern-not: 'uint8_t $VAR;
+
+    $VAR = $CRED->x509Credential.x509CrlVerifyMode;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves the direct assignment of a value from a credential
+    structure in a single statement, which can lead to unsafe memory access or undefined
+    behavior. This should be split into a declaration followed by an assignment to
+    ensure safe initialization. Always separate declaration and assignment to avoid
+    potential issues with memory access or uninitialized variables.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/33441d90a506d5f3ae9388f2752901227e430553
+    category: security
+    cwe:
+    - CWE-457
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    technology:
+    - c

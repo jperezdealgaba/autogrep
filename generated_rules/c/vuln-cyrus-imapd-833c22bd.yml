@@ -1,0 +1,29 @@
+rules:
+- id: vuln-cyrus-imapd-833c22bd
+  pattern: "do {\n  $TABLE->seed = rand();\n} while ($TABLE->seed == 0);\n"
+  pattern-not: '$TABLE->seed = rand();
+
+    '
+  languages:
+  - c
+  message: 'Detected a loop that unnecessarily checks if a seed value is zero. This
+    can lead to unnecessary CPU cycles and potential denial of service if the random
+    number generator frequently returns zero. The seed value being zero is not inherently
+    dangerous and should be accepted as a valid value.
+
+    To fix this, remove the loop and directly assign the result of rand() to the seed
+    variable.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/cyrusimap/cyrus-imapd/commit/833c22bd7de5bbb591c2cb3705c9983b6d2b1fee
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - c

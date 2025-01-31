@@ -1,0 +1,21 @@
+rules:
+- id: vuln-plantuml-fbe7fa3b
+  pattern: 'if ($OPTION_FLAGS.ALLOW_INCLUDE == false)
+
+    '
+  pattern-not: 'if ($FILE == null || $FILE.getUnderlyingFile().isFileOk() == false)
+
+    '
+  languages:
+  - java
+  message: Insecure file inclusion check detected. The code relies on a deprecated
+    ALLOW_INCLUDE flag for security checks. Replace with proper file validation using
+    isFileOk() or similar methods.
+  severity: ERROR
+  metadata:
+    source-url: github.com/plantuml/plantuml/commit/fbe7fa3b25b4c887d83927cffb1009ec6cb8ab1e
+    category: security
+    cwe: CWE-829
+    owasp: 'A1: Injection'
+    technology:
+    - java

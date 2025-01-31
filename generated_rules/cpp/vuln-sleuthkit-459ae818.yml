@@ -1,0 +1,26 @@
+rules:
+- id: vuln-sleuthkit-459ae818
+  pattern: 'char $VAR[32];
+
+    '
+  pattern-not: 'char $VAR[128];
+
+    '
+  languages:
+  - cpp
+  message: 'The buffer size for ''timeBuf'' is too small (32 bytes), which could lead
+    to buffer overflow vulnerabilities when handling large time strings. This is dangerous
+    as it can result in memory corruption, potentially allowing arbitrary code execution.
+    Increase the buffer size to at least 128 bytes to safely accommodate the time
+    string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sleuthkit/sleuthkit/commit/459ae818fc8dae717549810150de4d191ce158f1
+    category: security
+    cwe:
+    - CWE-120
+    owasp: A9:2017-Insufficient Attack Protection
+    technology:
+    - cpp

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-atutor-9292360c
+  pattern: '$_GET[''url''] = $addslashes($_GET[''url'']);
+
+    '
+  pattern-not: '$_GET[''url''] = htmlspecialchars(strip_tags($_GET[''url'']), ENT_QUOTES);
+
+    '
+  languages:
+  - php
+  message: "The use of `addslashes` on user input is insufficient for preventing XSS\
+    \ attacks. \nThis function only escapes certain characters and does not sanitize\
+    \ HTML or JavaScript. \nTo fix this, use `htmlspecialchars` combined with `strip_tags`\
+    \ to properly sanitize the input and prevent XSS vulnerabilities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/atutor/ATutor/commit/9292360c8b3898d0990983269f110cef21729090
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

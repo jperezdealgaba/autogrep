@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jackrabbit-0c00609a
+  pattern: "public boolean isValidRequest(HttpServletRequest $REQUEST) {\n  ...\n\
+    \  if ($DISABLED || DavMethods.DAV_POST != $METHOD || !$CONTENT_TYPES.contains($REQUEST.getContentType()))\
+    \ {\n    ...\n  }\n  ...\n}\n"
+  pattern-not: "public boolean isValidRequest(HttpServletRequest $REQUEST) {\n  ...\n\
+    \  if ($DISABLED) {\n    return true;\n  } else if (!\"POST\".equals($REQUEST.getMethod()))\
+    \ {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - java
+  message: Insecure CSRF validation detected. The original validation does not properly
+    handle POST requests with multiple Content-Type headers or malformed Referer headers.
+    Use the updated version that explicitly checks for POST method and validates Content-Type
+    headers correctly.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/jackrabbit/commit/0c00609a172b3af3b86a01abbf5ed473214702ba
+    category: security
+    cwe: CWE-352
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - java

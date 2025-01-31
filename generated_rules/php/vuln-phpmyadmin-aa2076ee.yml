@@ -1,0 +1,22 @@
+rules:
+- id: vuln-phpmyadmin-aa2076ee
+  pattern: "if (!isset($coming_from_common)) {\n    exit;\n}\n"
+  pattern-not: "if (! defined('PHPMYADMIN')) {\n    exit;\n}\n"
+  languages:
+  - php
+  message: 'The code uses an insecure check for the variable `$coming_from_common`,
+    which can be manipulated due to register_globals being enabled. This could allow
+    unauthorized access to the script. Replace this check with a proper constant check
+    like `if (! defined(''PHPMYADMIN'')) { exit; }` to ensure secure access control.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/aa2076eedc7e3664b09681d6fe9dd019eca98647
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-glpi-6dc5cb68
+  pattern: '$before = "<a title=\"".$VAR."\" href=''".User::getFormURLWithID($ID)."''>";
+
+    '
+  pattern-not: '$before = "<a title=\"".Toolbox::addslashes_deep($VAR)."\" href=''".User::getFormURLWithID($ID)."''>";
+
+    '
+  languages:
+  - php
+  message: 'The title attribute in the anchor tag is vulnerable to XSS (Cross-Site
+    Scripting) as it directly includes user input without proper escaping. This can
+    allow an attacker to inject malicious scripts into the page, potentially compromising
+    user data or session information.
+
+    To fix this vulnerability, ensure that user input is properly escaped using functions
+    like `Toolbox::addslashes_deep()` before including it in HTML attributes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/6dc5cb685616f6f1ae3b484cebc818fbb9cc6ccd
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

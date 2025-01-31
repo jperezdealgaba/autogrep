@@ -1,0 +1,33 @@
+rules:
+- id: vuln-budgie-extras-e75c94af
+  pattern: '$VAR = os.environ["USER"]
+
+    $PATH = "/tmp/" + $VAR + $SUFFIX
+
+    '
+  pattern-not: '$VAR = os.getenv($ENV_VAR) if $ENV_VAR in os.environ else os.getenv($FALLBACK)
+
+    $PATH = os.path.join($VAR, $SUFFIX)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure use of /tmp directory with user-controlled filenames.
+    This can lead to path traversal or symlink attacks.
+
+    Instead, use secure temporary directories like XDG_RUNTIME_DIR or HOME with controlled
+    filenames.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/UbuntuBudgie/budgie-extras/commit/e75c94af249191bdbd33eebf7a62d4234a0d8be5
+    category: security
+    cwe:
+    - CWE-377
+    - CWE-73
+    owasp: A5:2017-Broken Access Control
+    references:
+    - https://wiki.archlinux.org/title/XDG_Base_Directory
+    technology:
+    - python

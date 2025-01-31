@@ -1,0 +1,31 @@
+rules:
+- id: vuln-camel-b61d5b6b
+  pattern: "$DESTDIR = System.getProperty(\"java.io.tmpdir\");\nif ($DESTDIR != null\
+    \ && !$DESTDIR.endsWith(File.separator)) {\n    $DESTDIR += File.separator;\n\
+    }\n$FILE = new File($DESTDIR, $FILENAME);\nif (!$FILE.getCanonicalPath().startsWith($DESTDIR))\
+    \ {\n    throw new IOException(\"File is not jailed to the destination directory\"\
+    );\n}\nFiles.write($FILE.toPath(), $BOS, StandardOpenOption.CREATE);\n$FILE.deleteOnExit();\n"
+  pattern-not: '$PATH = Files.createTempFile($FILENAME, null, null);
+
+    Files.write($PATH, $BOS, StandardOpenOption.CREATE);
+
+    $PATH.toFile().deleteOnExit();
+
+    '
+  languages:
+  - java
+  message: Potential path traversal vulnerability due to improper file path validation.
+    Use `Files.createTempFile` instead of manually constructing file paths to ensure
+    secure temporary file creation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/camel/commit/b61d5b6be4f98b673dc977ad1bc6f004642644ab
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java

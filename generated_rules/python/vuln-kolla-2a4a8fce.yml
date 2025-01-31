@@ -1,0 +1,21 @@
+rules:
+- id: vuln-kolla-2a4a8fce
+  pattern: "def load_from_env():\n    config_raw = os.environ.get(\"KOLLA_CONFIG\"\
+    )\n    if config_raw is None:\n        return None\n    try:\n        return json.loads(config_raw)\n\
+    \    except ValueError:\n        raise InvalidConfig('Invalid json for Kolla config')\n"
+  pattern-not: "def load_from_env():\n    config_file = '/var/lib/kolla/config_files/config.json'\n"
+  languages:
+  - python
+  message: Detected unsafe configuration loading from environment variables. This
+    can lead to security vulnerabilities if untrusted input is deserialized. Use a
+    secure configuration file instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/kolla/commit/2a4a8fce31c12114e8f472c24dd96864b5bd2bd2
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - python

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-glpi-42ba2b03
+  pattern: "if (\n    !empty($VAR)\n    && file_exists($VAR)\n    && !@ldap_set_option(null,\
+    \ LDAP_OPT_X_TLS_CERTFILE, $VAR)\n) {\n    trigger_error(\"Unable to set LDAP\
+    \ option `LDAP_OPT_X_TLS_CERTFILE`\", E_USER_WARNING);\n}\n"
+  pattern-not: "if (!empty($VAR)) {\n    if (!Filesystem::isFilepathSafe($VAR)) {\n\
+    \        trigger_error(\"TLS certificate path is not safe.\", E_USER_WARNING);\n\
+    \    } elseif (!file_exists($VAR)) {\n        trigger_error(\"TLS certificate\
+    \ path is not valid.\", E_USER_WARNING);\n    } elseif (!@ldap_set_option(null,\
+    \ LDAP_OPT_X_TLS_CERTFILE, $VAR)) {\n        trigger_error(\"Unable to set LDAP\
+    \ option `LDAP_OPT_X_TLS_CERTFILE`\", E_USER_WARNING);\n    }\n}\n"
+  languages:
+  - php
+  message: "Detected unsafe file path handling in LDAP TLS certificate configuration.\
+    \ \nThe code does not validate the safety of the file path, which could allow\
+    \ path traversal or malicious file access. \nUse `Filesystem::isFilepathSafe()`\
+    \ to validate the file path before using it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/42ba2b031bec0b3889317db25f3adf9080fc11b2
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-23
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

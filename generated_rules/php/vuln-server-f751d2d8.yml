@@ -1,0 +1,33 @@
+rules:
+- id: vuln-server-f751d2d8
+  pattern: "$throttler->sleepDelay($request->getRemoteAddress(), 'login');\n...\n\
+    $this->logger->warning(...);\n...\n$throttler->registerAttempt('login', $request->getRemoteAddress(),\
+    \ ...);\n...\n$this->dispatcher->dispatchTyped(...);\n...\nif ($currentDelay ===\
+    \ 0) {\n  $throttler->sleepDelay($request->getRemoteAddress(), 'login');\n}\n"
+  pattern-not: '$remoteAddress = $request->getRemoteAddress();
+
+    ...
+
+    $this->handleLoginFailed($throttler, $currentDelay, $remoteAddress, $user, $password);
+
+    '
+  languages:
+  - php
+  message: 'The original code directly calls `getRemoteAddress()` multiple times,
+    which can lead to inconsistent IP address handling and potential security issues.
+    The fix consolidates the IP address retrieval into a single variable and uses
+    it consistently throughout the login failure handling. This ensures consistent
+    IP address handling and prevents potential race conditions. To fix this, store
+    the result of `getRemoteAddress()` in a variable and use that variable consistently.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/f751d2d891f269b639025a295d2ac66365afb9c6
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - php

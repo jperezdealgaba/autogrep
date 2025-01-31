@@ -1,0 +1,24 @@
+rules:
+- id: vuln-trafficserver-33a47714
+  pattern: "if ($_CUR == 1) {\n  ...\n}\n"
+  pattern-not: "if (($_CUR == 1) && (HTTP_WKSIDX_CONNECT != $_S->hdr_info.client_request.method_get_wksidx()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The code checks if `_cur` is equal to 1 but does not validate the HTTP
+    method, which could lead to incorrect handling of CONNECT requests. This vulnerability
+    could allow unauthorized or unsafe processing of requests. To fix this, ensure
+    that the HTTP method is also checked to prevent improper handling of CONNECT requests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/33a47714538289570521b66e04c6d6c099b13280
+    category: security
+    cwe:
+    - CWE-838
+    owasp: A05:2021 - Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/838.html
+    technology:
+    - cpp

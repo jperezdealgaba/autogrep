@@ -1,0 +1,22 @@
+rules:
+- id: vuln-typo3-6863f738
+  pattern: "class $CLASS {\n  protected $escapeChildren = false;\n  ...\n}\n"
+  pattern-not: "class $CLASS {\n  protected $escapeChildren = true;\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The `escapeChildren` property is set to false, which can lead to XSS vulnerabilities
+    when rendering untrusted content. This is dangerous because it allows malicious
+    input to be interpreted as CSS, potentially leading to style injection attacks.
+    To fix this, set `escapeChildren` to true to ensure proper escaping of content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/6863f73818c36b0b88c677ba533765c8074907b4
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

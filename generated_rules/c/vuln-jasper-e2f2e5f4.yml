@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jasper-e2f2e5f4
+  pattern: 'jas_seq2d_bindsub($MATRIX1, $MATRIX2, $XSTART, $YSTART, $XEND, $YEND);
+
+    '
+  pattern-not: "if (jas_seq2d_bindsub($MATRIX1, $MATRIX2, $XSTART, $YSTART, $XEND,\
+    \ $YEND)) {\n  $HANDLE_ERROR;\n}\n"
+  languages:
+  - c
+  message: "The function `jas_seq2d_bindsub` now returns an error code that must be\
+    \ checked to prevent out-of-bounds access. \nFailing to check the return value\
+    \ can lead to memory corruption or undefined behavior. \nAlways check the return\
+    \ value and handle the error appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/e2f2e5f4022baef2386eec25c57b63debfe4cb20
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp: A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cyrus-imapd-f6369560
+  pattern: 'unsigned $VAL = strhash($KEY) % $SIZE;
+
+    '
+  pattern-not: 'unsigned $VAL = strhash_seeded($SEED, $KEY) % $SIZE;
+
+    '
+  languages:
+  - c
+  message: 'The code uses an unseeded hash function, which can lead to predictable
+    hash values and potential hash collision attacks. This vulnerability can be exploited
+    to cause denial of service or other security issues. To fix this, use a seeded
+    hash function like `strhash_seeded` with a properly initialized seed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cyrusimap/cyrus-imapd/commit/f63695609c88a3f76129499bb49fb82e8155fb32
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/327.html
+    technology:
+    - c

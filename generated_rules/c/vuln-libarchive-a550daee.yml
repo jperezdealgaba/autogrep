@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libarchive-a550daee
+  pattern: "$NUMBERS[$ARGC++] = $EXPR;\nif ($ARGC > $MAX_PACK_ARGS) {\n  ...\n}\n"
+  pattern-not: "if ($ARGC >= $MAX_PACK_ARGS) {\n  $NUMBERS[$ARGC++] = $EXPR;\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code increments the array index before checking the bounds, which
+    can lead to an out-of-bounds write. This is dangerous because it can result in
+    memory corruption, potentially leading to crashes, data corruption, or even remote
+    code execution. To fix this, ensure the bounds check is performed before incrementing
+    the array index.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libarchive/libarchive/commit/a550daeecf6bc689ade371349892ea17b5b97c77
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

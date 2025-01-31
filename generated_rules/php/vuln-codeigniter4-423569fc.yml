@@ -1,0 +1,27 @@
+rules:
+- id: vuln-codeigniter4-423569fc
+  pattern: "str_ireplace(\n  ['off', 'none', 'no', 'false', 'null'],\n  '',\n  ini_get('display_errors')\n\
+    ) !== ''\n"
+  pattern-not: "in_array(\n  strtolower(ini_get('display_errors')),\n  ['1', 'true',\
+    \ 'on', 'yes'],\n  true\n)\n"
+  languages:
+  - php
+  message: 'Detected insecure handling of `display_errors` configuration. The code
+    checks for the absence of error-disabling values but fails to properly validate
+    error-enabling values, which could lead to unintended exposure of sensitive error
+    information. Replace the `str_ireplace` check with a secure `in_array` validation
+    that explicitly checks for error-enabling values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/codeigniter4/CodeIgniter4/commit/423569fc31e29f51635a2e59c89770333f0e7563
+    category: security
+    cwe:
+    - CWE-209
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - php

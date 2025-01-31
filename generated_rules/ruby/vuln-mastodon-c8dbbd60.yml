@@ -1,0 +1,23 @@
+rules:
+- id: vuln-mastodon-c8dbbd60
+  pattern: 'find_by_sql([$SQL, $LIMIT, $OFFSET])
+
+    '
+  pattern-not: 'find_by_sql([$SQL, $PARAMS])
+
+    '
+  languages:
+  - ruby
+  message: "Directly passing limit and offset parameters to find_by_sql can lead to\
+    \ SQL injection vulnerabilities. \nUse named parameters instead to safely bind\
+    \ values in SQL queries.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/c8dbbd60eb072a5f433b1a6aefd0be5ca2bfdb80
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - ruby

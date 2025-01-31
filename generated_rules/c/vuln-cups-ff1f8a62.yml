@@ -1,0 +1,34 @@
+rules:
+- id: vuln-cups-ff1f8a62
+  pattern: 'unlink($ADDR->un.sun_path);
+
+    ...
+
+    bind($FD, (struct sockaddr *)$ADDR, (socklen_t)$LENGTH);
+
+    '
+  pattern-not: "if ((status = unlink($ADDR->un.sun_path)) < 0)\n{\n  if (errno ==\
+    \ ENOENT)\n    status = 0;\n}\nif (!status)\n{\n  if ((status = bind($FD, (struct\
+    \ sockaddr *)$ADDR, (socklen_t)$LENGTH)) < 0)\n  {\n    DEBUG_printf(...);\n \
+    \ }\n}\n"
+  languages:
+  - c
+  message: 'The code directly calls `unlink` without checking its return value, which
+    can lead to race conditions or undefined behavior if the unlink fails. This can
+    be exploited to bypass security checks or cause crashes. Always check the return
+    value of `unlink` and handle errors appropriately, especially when dealing with
+    file system operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenPrinting/cups/commit/ff1f8a623e090dee8a8aadf12a6a4b25efac143d
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - 'OWASP Top 10 2021: A04 - Insecure Design'
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c

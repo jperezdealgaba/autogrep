@@ -1,0 +1,21 @@
+rules:
+- id: vuln-keystone-c4447f16
+  pattern: "for attribute_name in ['user_domain_id', 'project_domain_id']:\n    ...\n"
+  pattern-not: "for attribute_name in ['identity_domain_id', 'assignment_domain_id']:\n\
+    \    ...\n"
+  languages:
+  - python
+  message: Incorrect domain attribute names used in token revocation. This can lead
+    to incomplete or incorrect token revocation, potentially allowing unauthorized
+    access. Use 'identity_domain_id' and 'assignment_domain_id' instead of 'user_domain_id'
+    and 'project_domain_id'.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/c4447f16da036fe878382ce4e1b05b84bdcc4d4e
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://docs.openstack.org/keystone/latest/admin/identity-tokens.html
+    technology:
+    - python

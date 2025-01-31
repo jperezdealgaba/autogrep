@@ -1,0 +1,32 @@
+rules:
+- id: vuln-dolibarr-2681d581
+  pattern: '$forbiddenphpcommands = array("exec", "passthru", "system", "shell_exec",
+    "proc_open", "eval", "dol_eval");
+
+    '
+  pattern-not: "$forbiddenphpcommands = array();\nif (empty($conf->global->WEBSITE_PHP_ALLOW_EXEC))\
+    \ {\n    $forbiddenphpcommands = array(\"exec\", \"passthru\", \"shell_exec\"\
+    , \"system\", \"proc_open\", \"popen\", \"eval\", \"dol_eval\", \"executeCLI\"\
+    );\n}\n"
+  languages:
+  - php
+  message: 'The code contains a hardcoded list of forbidden PHP commands without proper
+    conditional checks. This can lead to Remote Code Execution (RCE) vulnerabilities
+    if the list is not properly enforced based on configuration settings. Ensure that
+    the list of forbidden commands is dynamically set based on configuration options,
+    and consider adding checks for dangerous characters like backticks (`) to prevent
+    command injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/2681d581075c69544b67cb1bd491b848896f46ea
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Code_Injection
+    technology:
+    - php

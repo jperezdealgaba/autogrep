@@ -1,0 +1,22 @@
+rules:
+- id: vuln-libdwarf-code-4f19e105
+  pattern: "if (($SHIFT < sizeof(Dwarf_Signed) * BITSINBYTE) && $SIGN) {\n    $NUMBER\
+    \ |= -(Dwarf_Signed)((Dwarf_Unsigned) 1 << $SHIFT);\n}\n"
+  pattern-not: "if ($SIGN) {\n    unsigned shiftlim = sizeof(Dwarf_Signed) * BITSINBYTE\
+    \ -1;\n    if ($SHIFT < shiftlim) {\n        $NUMBER |= -(Dwarf_Signed)(((Dwarf_Unsigned)1)\
+    \ << $SHIFT);\n    } else if ($SHIFT == shiftlim) {\n        $NUMBER |= (((Dwarf_Unsigned)1)\
+    \ << $SHIFT);\n    }\n}\n"
+  languages:
+  - c
+  message: "The original code may cause undefined behavior due to shifting a signed\
+    \ integer beyond its bit width. \nThis can lead to unexpected results or crashes.\
+    \ The fix introduces a shift limit to avoid undefined behavior.\nAlways ensure\
+    \ shifts are within the bounds of the integer type being used.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/4f19e1050cd8e9ddf2cb6caa061ff2fec4c9b5f9
+    category: security
+    cwe:
+    - CWE-190
+    technology:
+    - c

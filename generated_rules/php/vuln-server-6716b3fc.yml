@@ -1,0 +1,26 @@
+rules:
+- id: vuln-server-6716b3fc
+  pattern: "foreach ($FORWARDED_FOR_HEADERS as $HEADER) {\n  ...\n  foreach (explode(',',\
+    \ $SERVER[$HEADER]) as $IP) {\n    ...\n  }\n}\n"
+  pattern-not: "foreach (array_reverse($FORWARDED_FOR_HEADERS) as $HEADER) {\n  ...\n\
+    \  foreach (array_reverse(explode(',', $SERVER[$HEADER])) as $IP) {\n    if ($THIS->isTrustedProxy($TRUSTED_PROXIES,\
+    \ $IP)) {\n      continue;\n    }\n    ...\n  }\n}\n"
+  languages:
+  - php
+  message: "The X-Forwarded-For header is being processed in the wrong order, which\
+    \ can lead to IP spoofing vulnerabilities. \nAttackers can manipulate the order\
+    \ of IP addresses in the header to bypass security checks. \nTo fix this, reverse\
+    \ the order of the headers and IP addresses, and ensure trusted proxies are properly\
+    \ validated.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/6716b3fc0005282862666fbc4d288909e981dfa5
+    category: security
+    cwe:
+    - CWE-350
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For#selecting_an_ip_address
+    technology:
+    - php

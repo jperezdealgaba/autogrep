@@ -1,0 +1,23 @@
+rules:
+- id: vuln-sqlite-78d1d225
+  pattern: "if( sqlite3ExprIsVtabRef($EXPR) ){\n  ...\n}\n"
+  pattern-not: "if( ExprIsVtab($EXPR) ){\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `sqlite3ExprIsVtabRef` is used to check if an expression
+    references a virtual table, but it does not handle cases where `y.pTab` is null,
+    which can lead to undefined behavior. This vulnerability was fixed by replacing
+    `sqlite3ExprIsVtabRef` with `ExprIsVtab` and adding null checks. To fix this,
+    ensure that all virtual table reference checks include proper null handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sqlite/sqlite/commit/78d1d225d87af40f5bdca57fa72f00b6ffaffa21
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

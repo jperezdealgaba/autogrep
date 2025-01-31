@@ -1,0 +1,24 @@
+rules:
+- id: vuln-moodle-2924ba1c
+  pattern: "if (!message_current_user_is_involved($USER1, $USER2) && !has_capability('moodle/site:readallmessages',\
+    \ $SYSTEMCONTEXT)) {\n  ...\n}\n"
+  pattern-not: "if ($CURRENTUSER === false && !has_capability('moodle/site:readallmessages',\
+    \ $SYSTEMCONTEXT)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "The code checks if a user is involved in a conversation and if they have\
+    \ the capability to read all messages. \nHowever, the original check using `message_current_user_is_involved`\
+    \ can be bypassed, potentially allowing unauthorized access to messages. \nThe\
+    \ fix replaces this check with a more secure condition that verifies if the current\
+    \ user is false.\nTo fix this vulnerability, ensure that the condition properly\
+    \ verifies the user's permissions and involvement in the conversation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/2924ba1c73f9ed3d525987807f9d289b3eb38154
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - 'A01: Broken Access Control'
+    technology:
+    - php

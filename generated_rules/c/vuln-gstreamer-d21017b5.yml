@@ -1,0 +1,22 @@
+rules:
+- id: vuln-gstreamer-d21017b5
+  pattern: '$TYPE $VAR = GST_READ_UINT32_LE($VALUE);
+
+    '
+  pattern-not: "$TYPE $VAR;\nif ($VALUE_LEN < 4)\n  break;\n$VAR = GST_READ_UINT32_LE($VALUE);\n"
+  languages:
+  - c
+  message: "Detected unsafe reading of a 32-bit value without checking the buffer\
+    \ length. \nThis can lead to buffer overflow vulnerabilities when the input buffer\
+    \ is smaller than expected. \nAlways check the buffer length before reading to\
+    \ prevent potential memory corruption.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GStreamer/gstreamer/commit/d21017b52a585f145e8d62781bcc1c5fefc7ee37
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

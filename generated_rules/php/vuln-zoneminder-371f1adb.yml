@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zoneminder-371f1adb
+  pattern: '$sid = $_REQUEST[''id''];
+
+    '
+  pattern-not: '$sid = validInt($_REQUEST[''id'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected direct usage of $_REQUEST[''id''] without validation. This can
+    lead to security vulnerabilities such as SQL injection or other injection attacks.
+    Always validate and sanitize user inputs before using them. Use the `validInt`
+    function or similar validation methods to ensure the input is safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/371f1adbe7c1b8c888c39161a8742bda8771d41e
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

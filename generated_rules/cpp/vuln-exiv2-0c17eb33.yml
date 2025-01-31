@@ -1,0 +1,30 @@
+rules:
+- id: vuln-exiv2-0c17eb33
+  pattern: 'assert($S <= $SIZE);
+
+    if ($LEN < $S) $LEN = $S;
+
+    $I->copy($BUF + $I->tag() * 2, $BYTEORDER);
+
+    '
+  pattern-not: "if ($S <= $SIZE) {\n  if ($LEN < $S) $LEN = $S;\n  $I->copy($BUF +\
+    \ $I->tag() * 2, $BYTEORDER);\n}\n"
+  languages:
+  - cpp
+  message: 'The code uses an assertion to validate a size condition, which can be
+    disabled in production builds, leading to potential buffer overflows. This is
+    dangerous because it can result in memory corruption, crashes, or even arbitrary
+    code execution. To fix this, replace the assertion with a proper conditional check
+    to ensure the size validation is always enforced.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/0c17eb33c0a7fad1796ce23b8bbc32067f511aed
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp: A8:2017-Insecure Deserialization
+    technology:
+    - cpp

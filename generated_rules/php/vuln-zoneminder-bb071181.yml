@@ -1,0 +1,33 @@
+rules:
+- id: vuln-zoneminder-bb071181
+  pattern: '$mid = $_REQUEST[''mid''];
+
+    '
+  pattern-not: '$mid = validCardinal($_REQUEST[''mid'']);
+
+    '
+  languages:
+  - php
+  message: 'The code directly assigns a value from `$_REQUEST[''mid'']` to `$mid`
+    without any validation.
+
+    This is dangerous as it can lead to security vulnerabilities such as SQL injection
+    or XSS if the input is not properly sanitized.
+
+    Always validate and sanitize user inputs before using them. In this case, the
+    `validCardinal` function should be used to ensure the input is a valid integer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/bb07118118e23b5670c2c18be8be2cc6b8529397
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

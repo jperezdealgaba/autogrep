@@ -1,0 +1,27 @@
+rules:
+- id: vuln-lldpd-a8d3c90f
+  pattern: "if ($TLV_TYPE == $LLDP_TLV_PORT_DESCR)\n  ...\nelse if ($TLV_TYPE == $LLDP_TLV_SYSTEM_NAME)\n\
+    \  ...\nelse\n  $CHASSIS->$C_DESCR = $B;\n"
+  pattern-not: "if ($TLV_TYPE == $LLDP_TLV_PORT_DESCR) {\n  free($PORT->$P_DESCR);\n\
+    \  ...\n} else if ($TLV_TYPE == $LLDP_TLV_SYSTEM_NAME) {\n  free($CHASSIS->$C_NAME);\n\
+    \  ...\n} else {\n  free($CHASSIS->$C_DESCR);\n  $CHASSIS->$C_DESCR = $B;\n}\n"
+  languages:
+  - c
+  message: 'Missing free() calls before reassigning pointers can lead to memory leaks.
+
+    This vulnerability occurs when a pointer is reassigned without freeing the previously
+    allocated memory, potentially causing memory leaks and resource exhaustion.
+
+    To fix this, ensure that free() is called on the pointer before reassigning it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/lldpd/lldpd/commit/a8d3c90feca548fc0656d95b5d278713db86ff61
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

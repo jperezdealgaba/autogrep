@@ -1,0 +1,32 @@
+rules:
+- id: vuln-libde265-d065715f
+  pattern: 'version: #{build}
+
+    '
+  pattern-not: 'version: 1.0.{build}
+
+    '
+  languages:
+  - yaml
+  message: 'The version format in the YAML file is insecure as it uses a dynamic build
+    number without a fixed prefix.
+
+    This can lead to inconsistent versioning and potential security issues due to
+    unpredictable build identifiers.
+
+    Ensure the version format includes a fixed prefix followed by the build number,
+    e.g., ''1.0.{build}''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/d065715fb8792f1559787bdd79c3a5b5a5f9e9a9
+    category: security
+    cwe:
+    - CWE-177
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://cwe.mitre.org/data/definitions/177.html
+    technology:
+    - yaml

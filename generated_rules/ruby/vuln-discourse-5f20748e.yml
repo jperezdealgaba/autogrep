@@ -1,0 +1,31 @@
+rules:
+- id: vuln-discourse-5f20748e
+  pattern: '$URI.read
+
+    '
+  pattern-not: 'FinalDestination::HTTP.get($URI)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unsafe direct URI reading which can lead to SSRF vulnerabilities.
+
+    Using `URI.read` directly can allow attackers to make requests to internal
+
+    services or disallowed IP addresses. Use `FinalDestination::HTTP.get` instead
+
+    to properly validate and restrict requests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/5f20748e402223b265e6fee381472c14e2604da6
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+    technology:
+    - ruby

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-pluck-be59bf6b
+  pattern: 'list($filename, $extension) = explode(''.'', $var1);
+
+    $filename = $filename.''_copy'';
+
+    '
+  pattern-not: '$filename = ''copyof_''.$var1;
+
+    '
+  languages:
+  - php
+  message: 'The code uses `explode` to split a filename and appends ''_copy'' to the
+    base name, which can lead to incorrect file handling and potential security issues.
+    This approach is unsafe because it assumes the filename contains a single dot,
+    which may not be true. Instead, directly prepend ''copyof_'' to the entire filename
+    to avoid ambiguity and ensure consistent behavior.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/be59bf6ba83bf41e9e91167e55330f56fcbf33c3
+    category: security
+    cwe:
+    - CWE-706
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/706.html
+    technology:
+    - php

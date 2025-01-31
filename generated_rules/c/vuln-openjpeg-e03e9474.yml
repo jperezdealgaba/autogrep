@@ -1,0 +1,22 @@
+rules:
+- id: vuln-openjpeg-e03e9474
+  pattern: "if ($VAR->prec > 32) {\n  ...\n}\n"
+  pattern-not: "if ($VAR->prec > 31) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds issue where the precision value (`prec`)
+    is checked against 32 instead of 31. This could lead to invalid memory access
+    or undefined behavior. According to the JPEG2000 norm, OpenJpeg only supports
+    precision values up to 31. Fix the condition to check `if ($VAR->prec > 31)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/e03e9474667e5117341351699f0b1dbb06f93346
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

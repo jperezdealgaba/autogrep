@@ -1,0 +1,22 @@
+rules:
+- id: vuln-ansible-modules-core-1182d1f0
+  pattern: '$KEY_ID, $FINGERPRINT, $SHORT_KEY_ID = parse_key_id($KEY_ID)
+
+    '
+  pattern-not: '$SHORT_KEY_ID, $FINGERPRINT, $KEY_ID = parse_key_id($KEY_ID)
+
+    '
+  languages:
+  - python
+  message: Detected incorrect variable assignment order in parse_key_id function call.
+    This can lead to incorrect key handling and potential security vulnerabilities.
+  severity: ERROR
+  metadata:
+    source-url: github.com/ansible/ansible-modules-core/commit/1182d1f0b76d56f3667e27987a10b9ec8f03357d
+    category: security
+    cwe: CWE-665
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - python

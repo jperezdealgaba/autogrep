@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-32e2e06a
+  pattern: 'optional_param(''returnurl'', null, PARAM_RAW)
+
+    '
+  pattern-not: 'optional_param(''returnurl'', null, PARAM_LOCALURL)
+
+    '
+  languages:
+  - php
+  message: 'Detected use of PARAM_RAW for ''returnurl'' parameter, which can lead
+    to security vulnerabilities such as open redirects or XSS. Use PARAM_LOCALURL
+    instead to ensure the URL is safe and local to the application.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/32e2e06a8737afb07ee83abb3eacd39f8b181216
+    category: security
+    cwe:
+    - CWE-601
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A3: Cross-Site Scripting (XSS)'
+    references:
+    - https://docs.moodle.org/dev/Data_validation
+    technology:
+    - php

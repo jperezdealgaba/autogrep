@@ -1,0 +1,22 @@
+rules:
+- id: vuln-glpi-69e0dee8
+  pattern: '$TEXT.replace(''>'', `&gt;`).replace(''<'', `&lt;`)
+
+    '
+  pattern-not: '$TEXT = escapeMarkupText($TEXT)
+
+    '
+  languages:
+  - javascript
+  message: Incomplete HTML escaping detected. Using replace() for escaping is insufficient
+    and can lead to XSS vulnerabilities. Use a dedicated escaping function like escapeMarkupText().
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/69e0dee8de0c0df139b42dbfa1a8997888c2af95
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - javascript

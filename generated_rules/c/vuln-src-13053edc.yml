@@ -1,0 +1,28 @@
+rules:
+- id: vuln-src-13053edc
+  pattern: "if (!$CLASS && $PWD && $PWD->pw_class && $PWD->pw_class[0] != '\\0')\n\
+    \  $CLASS = strdup($PWD->pw_class);\nif (($LC = login_getclass($CLASS)) == NULL)\n\
+    \  $LOGIN_DEFCLASS;\n"
+  pattern-not: "if ($PW_CLASS == NULL && $PWD != NULL)\n  $PW_CLASS = $PWD->pw_class;\n\
+    if (($LC = login_getclass($PW_CLASS)) == NULL)\n  $LOGIN_DEFCLASS;\n"
+  languages:
+  - c
+  message: 'The code directly uses `strdup` on a potentially uninitialized or NULL
+    pointer `pw_class`, which can lead to undefined behavior or crashes. Instead,
+    a temporary variable should be used to safely handle the `pw_class` value. This
+    vulnerability can be fixed by using a separate variable to store the `pw_class`
+    value and checking for NULL before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openbsd/src/commit/13053edc2f30540fa66763e29d0a8eec43f1aa53
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

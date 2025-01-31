@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jasper-33cc2cfa
+  pattern: 'assert($DEC->numcomps >= 3);
+
+    '
+  pattern-not: "if ($DEC->numcomps < 3) {\n  jas_eprintf($MSG);\n  return -1;\n}\n"
+  languages:
+  - c
+  message: 'The use of assert for input validation is dangerous because it can be
+    disabled at compile time, leading to potential security vulnerabilities. In this
+    case, the code fails to properly handle cases where the number of components is
+    less than 3, which could lead to undefined behavior or crashes. Replace the assert
+    with proper error handling that includes a meaningful error message and a return
+    value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/33cc2cfa51a8d0fc3116d16cc1d8fc581b3f9e8d
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

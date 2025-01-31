@@ -1,0 +1,24 @@
+rules:
+- id: vuln-mongo-a2d97db8
+  pattern: "long long $VAR = 1;\nfor (int $I = 0; $I < $EXP; $I++) {\n  $VAR *= $BASE;\n\
+    }\n"
+  pattern-not: "long long $VAR = 1;\nwhile ($EXP > 1) {\n  if ($EXP % 2 == 1) {\n\
+    \    $VAR *= $BASE;\n    $EXP--;\n  }\n  $BASE *= $BASE;\n  $EXP /= 2;\n}\nif\
+    \ ($EXP) {\n  $VAR *= $BASE;\n}\n"
+  languages:
+  - cpp
+  message: "Detected a potential integer overflow vulnerability in power calculation\
+    \ using repeated multiplication. \nThis can lead to incorrect results or undefined\
+    \ behavior when dealing with large exponents. \nConsider using a more efficient\
+    \ and safe algorithm like exponentiation by squaring, which is less prone to overflow\
+    \ and performs better for large exponents.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mongodb/mongo/commit/a2d97db8fe449d15eb8e275bbf318491781472bf
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mantisbt-083c34f0
+  pattern: '$f_category_id = gpc_get_string(''id'');
+
+    '
+  pattern-not: '$f_category_id = gpc_get_int(''id'');
+
+    '
+  languages:
+  - php
+  message: 'Detected use of gpc_get_string for retrieving category ID, which can lead
+    to security vulnerabilities due to improper type handling. This can allow injection
+    attacks or unexpected behavior. Use gpc_get_int instead to ensure the input is
+    properly sanitized as an integer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/083c34f06ca927b16e781bae3ae324f450c35ea4
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

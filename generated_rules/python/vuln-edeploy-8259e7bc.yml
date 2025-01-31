@@ -1,0 +1,24 @@
+rules:
+- id: vuln-edeploy-8259e7bc
+  pattern: 'eval($FILE.read(-1), {"__builtins__": None}, {})
+
+    '
+  pattern-not: 'json.loads($FILE.read(-1))
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe use of `eval()` for deserialization. This can lead to\
+    \ arbitrary code execution. \nReplace `eval()` with `json.loads()` for safe JSON\
+    \ deserialization.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redhat-cip/edeploy/commit/8259e7bc31edbf702ee0131cf9bd0b0ab09e93fb
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://docs.python.org/3/library/functions.html#eval
+    - https://docs.python.org/3/library/json.html#json.loads
+    technology:
+    - python

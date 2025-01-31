@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libdwarf-code-98a3da1e
+  pattern: "void\nprint_error(Dwarf_Debug dbg,\n    const char * msg,\n    int dwarf_code,\n\
+    \    Dwarf_Error lerr)\n{\n    print_error_and_continue(dbg,msg,dwarf_code,lerr);\n\
+    \    if (dbg) {\n        Dwarf_Error ignored_err = 0;\n        dwarf_finish(dbg,\
+    \ &ignored_err);\n    }\n    exit(FAILED);\n}\n"
+  pattern-not: "void\nprint_error(Dwarf_Debug dbg,\n    const char * msg,\n    int\
+    \ dwarf_code,\n    Dwarf_Error lerr)\n{\n    print_error_maybe_continue(dbg,msg,dwarf_code,lerr,FALSE);\n\
+    \    if (dbg) {\n        Dwarf_Error ignored_err = 0;\n        dwarf_finish(dbg,\
+    \ &ignored_err);\n    }\n    exit(FAILED);\n}\n"
+  languages:
+  - c
+  message: 'The print_error function directly calls print_error_and_continue without
+    checking if the dbg pointer is valid, which can lead to undefined behavior if
+    dbg is NULL. The function should use print_error_maybe_continue with a FALSE parameter
+    to properly handle the error condition and avoid potential crashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/98a3da1e8237fe0d45b67ef77f3fa5ed9ff0215f
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/davea42/libdwarf-code/commit/98a3da1e8237fe0d45b67ef77f3fa5ed9ff0215f
+    technology:
+    - c

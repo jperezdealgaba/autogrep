@@ -1,0 +1,26 @@
+rules:
+- id: vuln-espruino-0a9f07a0
+  pattern: "int timeout = 1000;\nwhile (timeout-- && !(spiFlashStatus()&2)) {\n  $BUF[0]\
+    \ = 6; // write enable\n  spiFlashWriteCS($BUF,1);\n}\n$BUF[0] = 1; // write status\
+    \ register\n$BUF[1] = 0;\nspiFlashWriteCS($BUF,2);\n"
+  pattern-not: "int tries = 3;\ndo {\n  int timeout = 1000;\n  while (timeout-- &&\
+    \ !(spiFlashStatus()&2)) {\n    $BUF[0] = 6; // write enable\n    spiFlashWriteCS($BUF,1);\n\
+    \    jshDelayMicroseconds(10);\n  }\n  jshDelayMicroseconds(10);\n  $BUF[0] =\
+    \ 1; // write status register, disable BP0/1/2\n  $BUF[1] = 0;\n  spiFlashWriteCS($BUF,2);\n\
+    \  jshDelayMicroseconds(10);\n} while (tries-- && (spiFlashStatus()&28));\n"
+  languages:
+  - c
+  message: 'The SPI flash write operation lacks proper retry logic and timing delays,
+    which can lead to unreliable flash operations. This can result in failed writes
+    or corrupted data. The fix includes adding retry logic with a limited number of
+    attempts and proper delays between operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/0a9f07a0fc21d1f989adaa8f35f74b29349307d6
+    category: reliability
+    cwe:
+    - CWE-665
+    technology:
+    - c

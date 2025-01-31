@@ -1,0 +1,33 @@
+rules:
+- id: vuln-w3m-d43527cf
+  pattern: '$NEWLEN = $X->length * 6 / 5;
+
+    if ($NEWLEN == $X->length) { ... }
+
+    '
+  pattern-not: '$NEWLEN = $X->area_size * 6 / 5;
+
+    if ($NEWLEN == $X->area_size) { ... }
+
+    '
+  languages:
+  - c
+  message: 'The code incorrectly uses `length` instead of `area_size` for buffer size
+    calculation.
+
+    This can lead to incorrect buffer sizing, potentially causing buffer overflows
+    or underflows.
+
+    Use `area_size` instead of `length` for accurate buffer size calculations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tats/w3m/commit/d43527cfa0dbb3ccefec4a6f7b32c1434739aa29
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cfrpki-eb9cc4db
+  pattern: 'strings.ReplaceAll($PATH, "../", "")
+
+    '
+  pattern-not: "if strings.Contains($PATH, \"../\") || strings.Contains($PATH, \"\
+    ..\\\\\") {\n  return fmt.Errorf(\"Path %q contains illegal path element\", $PATH)\n\
+    }\n"
+  languages:
+  - go
+  message: "Detected use of `strings.ReplaceAll` to sanitize file paths, which is\
+    \ insufficient to prevent directory traversal attacks. \nAttackers can bypass\
+    \ this by using alternative path separators or sequences. \nReplace with a check\
+    \ that explicitly rejects paths containing `../` or `..\\\\` and returns an error.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudflare/cfrpki/commit/eb9cc4db7b7b79e44f56dfaa959fccdfb2af8284
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - go

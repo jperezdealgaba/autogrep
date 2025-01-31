@@ -1,0 +1,29 @@
+rules:
+- id: vuln-sleuthkit-0c7d5e73
+  pattern: "if (tsk_getu16($FS->endian, $MFT->upd_off) + sizeof(ntfs_upd) > $NTFS->mft_rsize_b)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (tsk_getu16($FS->endian, $MFT->upd_off) + \n        sizeof(ntfs_upd)\
+    \ + \n        2*(tsk_getu16($FS->endian, $MFT->upd_cnt) - 1) > $NTFS->mft_rsize_b)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to insufficient
+    boundary checking.
+
+    The original code does not account for the size of the update array entries, which
+    could lead to memory corruption.
+
+    The fix includes additional size calculations for the update array entries. Ensure
+    all relevant size calculations are included in boundary checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sleuthkit/sleuthkit/commit/0c7d5e7333aeb61dace51750b56fcaad55a6359b
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

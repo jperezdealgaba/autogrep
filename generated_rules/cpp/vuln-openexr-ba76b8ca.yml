@@ -1,0 +1,25 @@
+rules:
+- id: vuln-openexr-ba76b8ca
+  pattern: 'getChunkOffsetTableSize($HEADER, $IGNORE_ATTRIBUTE)
+
+    '
+  pattern-not: 'getChunkOffsetTableSize($HEADER)
+
+    '
+  languages:
+  - cpp
+  message: 'The function `getChunkOffsetTableSize` is being called with an obsolete
+    `ignore_attribute` parameter, which has been deprecated and removed in the latest
+    version. This could lead to incorrect behavior or exceptions when processing certain
+    file types. Remove the `ignore_attribute` parameter and use the updated function
+    signature `getChunkOffsetTableSize(const Header& header)`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/openexr/openexr/commit/ba76b8ca62c2f1d4ccabd2887dc8d09c69102c2f
+    category: deprecated-api
+    cwe:
+    - CWE-477
+    technology:
+    - cpp

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openemr-a2adac73
+  pattern: "function javascriptStringRemove($text) {\n    return str_ireplace('javascript',\
+    \ '', $text ?? '');\n}\n"
+  pattern-not: "function javascriptStringRemove(?string $text): string {\n    $returnText\
+    \ = str_ireplace('javascript', '', $text ?? '');\n    if (javascriptStringCheck($returnText))\
+    \ {\n        $returnText = javascriptStringRemove($returnText);\n    }\n    return\
+    \ $returnText;\n}\n"
+  languages:
+  - php
+  message: 'The function `javascriptStringRemove` is vulnerable to incomplete removal
+    of ''javascript'' strings, which can lead to XSS attacks. The function only removes
+    the ''javascript'' string once, allowing malicious input to bypass the check if
+    it contains multiple instances. To fix this, ensure the function recursively removes
+    all instances of ''javascript'' strings and adds a check function to verify the
+    removal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/a2adac7320dfc631b1da688c3b04f54b8240fc7b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

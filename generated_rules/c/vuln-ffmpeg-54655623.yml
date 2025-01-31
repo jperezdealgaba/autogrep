@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ffmpeg-54655623
+  pattern: "if ($S->ref) {\n    av_log($S->avctx, AV_LOG_ERROR, \"Two slices reporting\
+    \ being the first in the same frame.\\n\");\n    goto fail;\n}\n"
+  pattern-not: "if ($S->ref && $SH->first_slice_in_pic_flag) {\n    av_log($S->avctx,\
+    \ AV_LOG_ERROR, \"Two slices reporting being the first in the same frame.\\n\"\
+    );\n    return 1;\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly check for the first slice in a frame, which
+    can lead to state corruption. This vulnerability occurs when two slices incorrectly
+    report being the first in the same frame, causing the decoder to enter an inconsistent
+    state. The fix adds an additional check for `first_slice_in_pic_flag` and returns
+    an error code instead of jumping to a fail label, preventing state corruption.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/54655623a82632e7624714d7b2a3e039dc5faa7e
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/369.html
+    technology:
+    - c

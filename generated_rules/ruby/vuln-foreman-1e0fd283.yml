@@ -1,0 +1,42 @@
+rules:
+- id: vuln-foreman-1e0fd283
+  pattern: '$IP, $NAME = params.delete(''spoof''), params.delete(''hostname'')
+
+    ...
+
+    Host.find_by_ip($IP) || Host.find_by_name($NAME)
+
+    '
+  pattern-not: '$HOST = Host.find_by_ip(params.delete(''spoof'')) if params[''spoof''].present?
+
+    $HOST ||= Host.find_by_name(params.delete(''hostname'')) if params[''hostname''].present?
+
+    $SPOOF = $HOST.present?
+
+    $HOST
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a potential security vulnerability where host lookup is performed
+    without proper parameter validation.
+
+    This can lead to unexpected behavior or security issues if ''spoof'' or ''hostname''
+    parameters are missing or blank.
+
+    Fix by checking if parameters are present before performing the lookup and ensuring
+    proper handling of null values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/1e0fd283180dc6bda30c880898cdea69cb579194
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - ruby

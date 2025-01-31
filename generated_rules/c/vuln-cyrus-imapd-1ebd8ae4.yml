@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cyrus-imapd-1ebd8ae4
+  pattern: "unsigned $RET_VAL = 0;\nint $I;\nwhile (*$STRING) {\n  $I = (int) *$STRING;\n\
+    \  $RET_VAL ^= $I;\n  $RET_VAL <<= 1;\n  $STRING++;\n}\nreturn $RET_VAL;\n"
+  pattern-not: "const unsigned char *$USTR = (const unsigned char *) $STRING;\nunsigned\
+    \ $HASH = 5381;\nint $C;\nif ($SEED) {\n  unsigned $I;\n  for ($I = 0; $I < sizeof\
+    \ $SEED; $I++) {\n    $C = $SEED & 0xff;\n    $HASH = (($HASH << 5) + $HASH) ^\
+    \ $C;\n    $SEED >>= 8;\n  }\n}\nwhile (($C = *$USTR++))\n  $HASH = (($HASH <<\
+    \ 5) + $HASH) ^ $C;\nreturn $HASH;\n"
+  languages:
+  - c
+  message: 'The original strhash function uses a weak hashing algorithm that is vulnerable
+    to collisions and predictability. This can lead to security issues such as hash-based
+    denial of service attacks. The patch introduces a more robust hashing algorithm
+    (djb2) with an optional seed to improve security. Replace the vulnerable hashing
+    implementation with a stronger algorithm like djb2.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/cyrusimap/cyrus-imapd/commit/1ebd8ae4d537c7397a81797c9f050cfa9d1066b8
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

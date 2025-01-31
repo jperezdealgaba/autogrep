@@ -1,0 +1,28 @@
+rules:
+- id: vuln-omniauth-71866c52
+  pattern: 'session[''omniauth.params''] = request.params
+
+    '
+  pattern-not: 'session[''omniauth.params''] = request.GET
+
+    '
+  languages:
+  - ruby
+  message: 'The code sets `omniauth.params` using `request.params`, which includes
+    both GET and POST parameters. This can lead to security vulnerabilities by exposing
+    sensitive POST data in the session. Use `request.GET` instead to only include
+    query parameters and avoid exposing POST data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/omniauth/omniauth/commit/71866c5264122e196847a3980c43051446a03e9b
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://github.com/omniauth/omniauth/issues/960
+    technology:
+    - ruby

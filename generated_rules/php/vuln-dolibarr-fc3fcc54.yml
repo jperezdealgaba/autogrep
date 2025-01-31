@@ -1,0 +1,33 @@
+rules:
+- id: vuln-dolibarr-fc3fcc54
+  pattern: 'if (GETPOST(''transphrase'')) print GETPOST(''transphrase'');
+
+    if (GETPOST(''transkey'')) print $langs->trans(GETPOST(''transkey''));
+
+    '
+  pattern-not: 'if (GETPOST(''transphrase'',''alphanohtml'')) print GETPOST(''transphrase'',''alphanohtml'');
+
+    if (GETPOST(''transkey'',''alphanohtml'')) print $langs->trans(GETPOST(''transkey'',''alphanohtml''));
+
+    '
+  languages:
+  - php
+  message: 'Detected potential XSS vulnerability due to missing input sanitization
+    in GETPOST calls.
+
+    Directly printing user input without proper sanitization can lead to Cross-Site
+    Scripting (XSS) attacks.
+
+    Always use the ''alphanohtml'' parameter in GETPOST to sanitize user input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/fc3fcc5455d9a610b85723e89e8be43a41ad1378
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

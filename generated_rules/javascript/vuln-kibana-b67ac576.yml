@@ -1,0 +1,22 @@
+rules:
+- id: vuln-kibana-b67ac576
+  pattern: 'if (!$COLOR) return _.asPrettyString($VAL);
+
+    '
+  pattern-not: 'if (!$COLOR) return _.escape(_.asPrettyString($VAL));
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unescaped string output. Always escape
+    user-controlled data before rendering to prevent XSS attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/elastic/kibana/commit/b67ac57661fc94df6ee476d0af6b3734211df61c
+    category: security
+    cwe: CWE-79
+    owasp: 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

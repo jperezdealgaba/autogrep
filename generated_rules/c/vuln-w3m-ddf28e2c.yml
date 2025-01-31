@@ -1,0 +1,26 @@
+rules:
+- id: vuln-w3m-ddf28e2c
+  pattern: "if ($A->start.line != $A->end.line || $SPOS > $EPOS)\n  $EPOS = $SPOS;\n"
+  pattern-not: "if ($A->start.line != $A->end.line || $SPOS > $EPOS || $EPOS >= $L->len)\n\
+    \  break;\n"
+  languages:
+  - c
+  message: 'This code is vulnerable to an out-of-bounds write due to insufficient
+    boundary checks.
+
+    The condition does not verify if `epos` is within the bounds of `l->len`, which
+    could lead to memory corruption.
+
+    To fix this, ensure that `epos` is checked against `l->len` before assignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tats/w3m/commit/ddf28e2cf9e16a559a08ee10ea60d1683b894a16
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

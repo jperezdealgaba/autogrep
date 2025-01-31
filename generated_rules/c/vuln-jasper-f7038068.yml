@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jasper-f7038068
+  pattern: "if (!$SIZ->width || !$SIZ->height || !$SIZ->tilewidth || !$SIZ->tileheight\
+    \ || !$SIZ->numcomps || $SIZ->numcomps > 16384) {\n  return -1;\n}\n"
+  pattern-not: "if (!$SIZ->width || !$SIZ->height) {\n  jas_eprintf(\"reference grid\
+    \ cannot have zero area\\n\");\n  goto error;\n}\nif (!$SIZ->tilewidth || !$SIZ->tileheight)\
+    \ {\n  jas_eprintf(\"tile cannot have zero area\\n\");\n  goto error;\n}\nif (!$SIZ->numcomps\
+    \ || $SIZ->numcomps > 16384) {\n  jas_eprintf(\"number of components not in permissible\
+    \ range\\n\");\n  goto error;\n}\n"
+  languages:
+  - c
+  message: "The code directly returns -1 without properly cleaning up resources, leading\
+    \ to potential memory leaks. \nThis vulnerability occurs when invalid parameters\
+    \ are detected in the SIZ structure, but the code fails to free allocated memory\
+    \ before returning.\nTo fix this, ensure that all allocated resources are properly\
+    \ freed using a goto error pattern to handle cleanup.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/f7038068550fba0e41e1d0c355787f1dcd5bf330
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-browser-laptop-192f11dc
+  pattern: "let $LOCATION = $PROPS.urlbar.get('location')\n...\nif ($CONDITION) {\n\
+    \  $LOCATION = $UTIL.getLocationIfPDF($LOCATION)\n}\n...\nreturn ['about:blank',\
+    \ 'about:newtab'].includes($PROPS.urlbar.get('location')) ? '' : $LOCATION\n"
+  pattern-not: 'const $LOCATION = $PROPS.urlbar.get(''location'')
+
+    return $UTIL.getDisplayLocation($LOCATION, $CONDITION)
+
+    '
+  languages:
+  - javascript
+  message: 'Potential URL handling vulnerability detected. The original code manually
+    handles URL conditions and transformations, which can lead to inconsistencies
+    or security issues. Use a centralized URL handling utility like `getDisplayLocation`
+    to ensure consistent and secure URL processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/brave/browser-laptop/commit/192f11dc34d62e194177727b5ddf180a88f98a40
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - javascript

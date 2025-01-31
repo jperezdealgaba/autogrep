@@ -1,0 +1,33 @@
+rules:
+- id: vuln-openemr-2973592b
+  pattern: '$haveAccess = AclMain::aclCheckCore(''patients'', ''trans'');
+
+    $onlyRead = ( $haveAccess ) ? 0 : 1;
+
+    '
+  pattern-not: '$editAccess = AclMain::aclCheckCore(''patients'', ''amendment'', '''',
+    ''write'');
+
+    $addAccess = ($editAccess || AclMain::aclCheckCore(''patients'', ''amendment'',
+    '''', ''addonly''));
+
+    $onlyRead = ( $editAccess || ($addAccess && empty($amendment_id)) ) ? 0 : 1;
+
+    '
+  languages:
+  - php
+  message: 'The code lacks proper access control checks for patient amendments. This
+    could allow unauthorized users to access or modify patient data. Ensure proper
+    ACL checks are implemented for both ''write'' and ''addonly'' permissions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/2973592bc7b1f4996738a6fd27d1e277e33676b6
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

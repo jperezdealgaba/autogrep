@@ -1,0 +1,41 @@
+rules:
+- id: vuln-xen-136ac884
+  pattern: '$V->evtchn_fifo->control_block = $EXPR;
+
+    ...
+
+    $V->evtchn_fifo->queue[$I].head = &$V->evtchn_fifo->control_block->head[$I];
+
+    '
+  pattern-not: '$CONTROL_BLOCK = $EXPR;
+
+    ...
+
+    $V->evtchn_fifo->queue[$I].head = &$CONTROL_BLOCK->head[$I];
+
+    smp_wmb();
+
+    $V->evtchn_fifo->control_block = $CONTROL_BLOCK;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential race condition due to incorrect ordering of memory
+    operations.
+
+    The control block is assigned before all queue heads are set, which can lead to
+    inconsistent states.
+
+    The fix requires setting all queue heads first, followed by a memory barrier (smp_wmb()),
+    and then assigning the control block.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/136ac884e621a74b6b6168f474ae751a0ec690ab
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    technology:
+    - c

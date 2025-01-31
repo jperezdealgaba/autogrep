@@ -1,0 +1,56 @@
+rules:
+- id: vuln-phpmyadmin-69bfbf11
+  pattern: '$filename = isset($_REQUEST[''file_path'']) ? $_REQUEST[''file_path'']
+    : NULL;
+
+    $c_type = isset($_REQUEST[''c_type'']) ? $_REQUEST[''c_type''] : NULL;
+
+    ...
+
+    $hdrs = get_headers($filename, 1);
+
+    ...
+
+    $fHnd = fopen($filename, "rb");
+
+    '
+  pattern-not: '$reference = $_REQUEST[''reference''];
+
+    $c_type = preg_replace(''/[^A-Za-z0-9/_-]/'', ''_'', $_REQUEST[''c_type'']);
+
+    $filename = ''http://'' . $bs_server . ''/'' . $reference;
+
+    ...
+
+    $hdrs = get_headers($filename, 1);
+
+    ...
+
+    $fHnd = fopen($filename, "rb");
+
+    '
+  languages:
+  - php
+  message: 'Detected unvalidated file path and MIME type from user input, which can
+    lead to security vulnerabilities such as Server-Side Request Forgery (SSRF) or
+    arbitrary file access. The code directly uses user-controlled input (`$_REQUEST[''file_path'']`
+    and `$_REQUEST[''c_type'']`) without proper validation or sanitization, making
+    it susceptible to malicious input. Always validate and sanitize user input, and
+    use whitelisting for acceptable MIME types and file paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/69bfbf11c7e9487dfa96293aaa797ff14bb513f0
+    category: security
+    cwe:
+    - CWE-918
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    - 'A10: SSRF'
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    - https://cwe.mitre.org/data/definitions/918.html
+    technology:
+    - php

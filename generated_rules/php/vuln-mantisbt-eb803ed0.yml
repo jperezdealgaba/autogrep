@@ -1,0 +1,31 @@
+rules:
+- id: vuln-mantisbt-eb803ed0
+  pattern: '$p_access_level = max( $p_access_level, config_get( ''private_bug_threshold''
+    ) );
+
+    '
+  pattern-not: "$t_access_level = access_get_project_level( $t_project_id, $p_user_id\
+    \ );\nreturn access_compare_level( $t_access_level, config_get( 'private_bug_threshold'\
+    \ ) )\n    && access_compare_level( $t_access_level, $p_access_level );\n"
+  languages:
+  - php
+  message: 'The vulnerability arises from using `max` to determine access levels without
+    proper validation.
+
+    This can lead to incorrect access control decisions, potentially allowing unauthorized
+    users to access private bugs.
+
+    The fix involves using `access_compare_level` to properly validate the user''s
+    access level against the required thresholds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/eb803ed02105fc919cf5f789e939f2b824162927
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

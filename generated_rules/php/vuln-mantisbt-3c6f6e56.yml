@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mantisbt-3c6f6e56
+  pattern: "if(    $VAR != META_FILTER_NONE\n    && !is_blank( $VAR )\n    && @config_get_global(\
+    \ $VAR ) === null\n) {\n    $VAR = META_FILTER_NONE;\n}\n"
+  pattern-not: '$VAR = check_config_value( $VAR );
+
+    '
+  languages:
+  - php
+  message: 'The code directly checks and modifies configuration values without using
+    the `check_config_value` function, which can lead to inconsistent or insecure
+    handling of configuration data. This vulnerability can be exploited to bypass
+    validation checks. Always use the `check_config_value` function to ensure proper
+    validation of configuration values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/3c6f6e5605d9b3a6db6c0934da4771ff8a54f617
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - php

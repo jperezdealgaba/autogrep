@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cacti-0730ce38
+  pattern: '$_SESSION[''custom_error''] = __(''The search term "%s" is not valid.
+    Error is %s'', get_nfilter_request_var($VAR), $VAR2)
+
+    '
+  pattern-not: '$_SESSION[''custom_error''] = __(''The search term "%s" is not valid.
+    Error is %s'', html_escape(get_nfilter_request_var($VAR)), html_escape($VAR2))
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses `get_nfilter_request_var` without escaping the
+    output, which can lead to XSS vulnerabilities. Always use `html_escape` to sanitize
+    user input before displaying it in HTML context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/0730ce38735d146de098fc450c4420c1a3fbdf95
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

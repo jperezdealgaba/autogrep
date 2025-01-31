@@ -1,0 +1,34 @@
+rules:
+- id: vuln-redis-f6a40570
+  pattern: 'size_t $MAXELELEN = 0;
+
+    ...
+
+    zsetConvertToZiplistIfNeeded($ZOBJ, $MAXELELEN);
+
+    '
+  pattern-not: 'size_t $MAXELELEN = 0, $TOTELELEN = 0;
+
+    ...
+
+    zsetConvertToZiplistIfNeeded($ZOBJ, $MAXELELEN, $TOTELELEN);
+
+    '
+  languages:
+  - c
+  message: 'The code is vulnerable to integer overflow when converting a zset to a
+    ziplist because it only checks the maximum element length but not the total length
+    of all elements. This can lead to memory corruption or crashes when the total
+    size exceeds safe limits. To fix this, ensure the total length of all elements
+    is checked using `ziplistSafeToAdd()` before conversion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/f6a40570fa63d5afdd596c78083d754081d80ae3
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

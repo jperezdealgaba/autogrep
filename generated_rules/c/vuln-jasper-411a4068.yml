@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jasper-411a4068
+  pattern: '$VAR = jas_matrix_create(...);
+
+    assert($VAR);
+
+    '
+  pattern-not: "if (!($VAR = jas_matrix_create(...))) {\n  goto error;\n}\n"
+  languages:
+  - c
+  message: 'The code directly asserts the result of `jas_matrix_create` without proper
+    error handling, which can lead to undefined behavior if the allocation fails.
+    Instead, check the return value and handle the error appropriately by using a
+    goto statement to clean up resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/411a4068f8c464e883358bf403a3e25158863823
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c

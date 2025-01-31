@@ -1,0 +1,55 @@
+rules:
+- id: vuln-node-2b433af0
+  pattern: "if ($HOST.length() >= 4 && $HOST.front() == '[' && $HOST.back() == ']')\
+    \ {\n  return true;\n}\nif ($HOST.front() == '0') return false;\nuint_fast16_t\
+    \ $ACCUM = 0;\nuint_fast8_t $QUADS = 0;\nbool $EMPTY = true;\nauto $ENDOCTET =\
+    \ [&$ACCUM, &$QUADS, &$EMPTY](bool $FINAL = false) {\n  return !$EMPTY && $ACCUM\
+    \ <= 0xff && ++$QUADS <= 4 && $FINAL == ($QUADS == 4) &&\n         ($EMPTY = true)\
+    \ && !($ACCUM = 0);\n};\nfor (char $C : $HOST) {\n  if (isdigit($C)) {\n    if\
+    \ (($ACCUM = ($ACCUM * 10) + ($C - '0')) > 0xff) return false;\n    $EMPTY = false;\n\
+    \  } else if ($C != '.' || !$ENDOCTET()) {\n    return false;\n  }\n}\nreturn\
+    \ $ENDOCTET(true);\n"
+  pattern-not: "if ($HOST.find('\\0') != std::string::npos) return false;\nif ($HOST.length()\
+    \ >= 4 && $HOST.front() == '[' && $HOST.back() == ']') {\n  if ($HOST.length()\
+    \ - 2 >= INET6_ADDRSTRLEN) return false;\n  if ($HOST.find('%') != std::string::npos)\
+    \ return false;\n  char $IPV6_STR[INET6_ADDRSTRLEN];\n  std::copy($HOST.begin()\
+    \ + 1, $HOST.end() - 1, $IPV6_STR);\n  $IPV6_STR[$HOST.length()] = '\\0';\n  unsigned\
+    \ char $IPV6[sizeof(struct in6_addr)];\n  if (uv_inet_pton(AF_INET6, $IPV6_STR,\
+    \ $IPV6) != 0) return false;\n  if (std::all_of($IPV6, $IPV6 + sizeof($IPV6),\
+    \ [](auto $B) { return $B == 0; })) {\n    return false;\n  }\n  return true;\n\
+    }\nunsigned char $IPV4[sizeof(struct in_addr)];\nif (uv_inet_pton(AF_INET, $HOST.c_str(),\
+    \ $IPV4) != 0) return false;\nif ($IPV4[0] == 0) return false;\nreturn true;\n"
+  languages:
+  - cpp
+  message: 'Detected a vulnerable IP address validation logic that can lead to DNS
+    rebinding attacks.
+
+    The original code did not properly validate IPv6 addresses and allowed ambiguous
+    formats,
+
+    which could be exploited by attackers to bypass security checks. The fix ensures
+    that
+
+    IPv6 addresses are properly enclosed in square brackets and validated, and that
+    IPv4
+
+    addresses are in strict dotted-decimal notation. Always use proper IP address
+    validation
+
+    to prevent DNS rebinding attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/2b433af094fb79cf80f086038b7f36342cb6826f
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://en.wikipedia.org/wiki/DNS_rebinding
+    - https://tools.ietf.org/html/rfc4291
+    - https://tools.ietf.org/html/rfc791
+    technology:
+    - cpp

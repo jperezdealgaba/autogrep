@@ -1,0 +1,22 @@
+rules:
+- id: vuln-drogon-645c2d8a
+  pattern: server = "wss://echo.websocket.org";
+  pattern-not: server = "wss://echo.websocket.events/.ws";
+  languages:
+  - cpp
+  message: "The server URL is hardcoded to an insecure or outdated endpoint. \nThis\
+    \ can lead to potential security risks or service disruptions if the endpoint\
+    \ is compromised or deprecated.\nUpdate the server URL to a secure and reliable\
+    \ endpoint.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/an-tao/drogon/commit/645c2d8aaf80d3502bf2598c4caeffe91e1f19a9
+    category: security
+    cwe:
+    - CWE-547
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - cpp

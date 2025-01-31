@@ -1,0 +1,24 @@
+rules:
+- id: vuln-notation-ed22fde5
+  pattern: "err = $REPO.ListSignatures($CTX, $DESC, func($SIGS []$TYPE) error {\n\
+    \  ...\n})\n"
+  pattern-not: "err = listSignatures($CTX, $REPO, $DESC, $MAX, func($SIG ocispec.Descriptor)\
+    \ error {\n  ...\n})\n"
+  languages:
+  - go
+  message: 'The code does not enforce a maximum limit on the number of signatures
+    being processed, which could lead to resource exhaustion or denial of service.
+    Use the listSignatures function with a maxSignatures parameter to limit the number
+    of signatures processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/notaryproject/notation/commit/ed22fde52f6d70ae0b53521bd28c9ccafa868c24
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A4:2021-Insecure Design
+    technology:
+    - go

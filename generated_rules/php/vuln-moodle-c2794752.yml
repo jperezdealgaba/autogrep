@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-c2794752
+  pattern: '$dfields = array(''firstname'', ''lastname'', ''email'', ''address'',
+    ''phone1'', ''phone2'', ''department'', ''institution'', ''description'', ''picture'',
+    ''city'', ''country'');
+
+    '
+  pattern-not: '$dfields = $this->allowed_default_fields;
+
+    '
+  languages:
+  - php
+  message: 'Hardcoding user profile fields directly in the code instead of using a
+    predefined list of allowed fields can lead to security issues. This can allow
+    unauthorized access or modification of sensitive user data. Use a predefined list
+    of allowed fields to ensure only valid fields are processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/c2794752ea3cdda2d64a0651da08b2cdf730d9f1
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

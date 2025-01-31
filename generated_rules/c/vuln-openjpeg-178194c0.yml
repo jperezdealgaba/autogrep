@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openjpeg-178194c0
+  pattern: "assert($CMAP[$I].mtyp == 0 || $CMAP[$I].mtyp == 1);\nif ($PCOL >= $NR_CHANNELS)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($CMAP[$I].mtyp != 0 && $CMAP[$I].mtyp != 1) {\n  opj_event_msg($MANAGER,\
+    \ EVT_ERROR, \"Invalid value for cmap[%d].mtyp = %d.\\n\", $I, $CMAP[$I].mtyp);\n\
+    \  $IS_SANE = OPJ_FALSE;\n} else if ($PCOL >= $NR_CHANNELS) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses an assert statement to validate the value of cmap[i].mtyp,
+    which can be disabled in production builds, leading to potential security vulnerabilities.
+    Instead, proper error handling should be implemented to ensure the value is always
+    validated. This can prevent undefined behavior or crashes when invalid values
+    are encountered.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/uclouvain/openjpeg/commit/178194c093422c9564efc41f9ecb5c630b43f723
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    references:
+    - "ISO 15444-1 Table I.14 \u2013 MTYPi field values"
+    technology:
+    - c

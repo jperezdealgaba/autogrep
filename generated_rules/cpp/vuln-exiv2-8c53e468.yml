@@ -1,0 +1,33 @@
+rules:
+- id: vuln-exiv2-8c53e468
+  pattern: 'xmlParser->ParseBuffer($BUFFER, $LENGTH, $FLAG);
+
+    xmlParser->ParseBuffer($BUFFER2, $LENGTH2, $FLAG2);
+
+    '
+  pattern-not: 'std::string $COPY;
+
+    $COPY.append($BUFFER);
+
+    xmlParser->ParseBuffer($COPY.c_str(), $COPY.size(), $FLAG);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected multiple calls to `xmlParser->ParseBuffer()` with potentially
+    overlapping buffer regions, which can lead to quadratic complexity and performance
+    degradation. This vulnerability was fixed by using a single `std::string` to accumulate
+    the buffer contents before parsing. Replace repeated `ParseBuffer()` calls with
+    a single call using a pre-processed buffer.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/8c53e4687b19b1951b6860bdc89962d420b1b624
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-roundcubemail-2348899a
+  pattern: 'preg_match(''!^(javascript|vbscript|data:text)!i'', $VAR)
+
+    '
+  pattern-not: 'preg_match(''!^(javascript|vbscript|data:)!i'', $VAR)
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure URL validation that allows dangerous protocols. The
+    original pattern fails to block all potentially malicious data URIs by not catching
+    variations like ''data:application''. This can lead to XSS attacks when untrusted
+    input is processed. Update the regex to block all data URIs by using ''data:''
+    instead of ''data:text''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/2348899a3fc4bcc44827d1911870a452ae6014ea
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A3: Cross-Site Scripting (XSS)'
+    technology:
+    - php

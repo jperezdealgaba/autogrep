@@ -1,0 +1,31 @@
+rules:
+- id: vuln-timetracker-d9472904
+  pattern: 'print '',"''.str_replace(''"'',''""'',$VAR).''"''
+
+    '
+  pattern-not: 'print '',"''.ttNeutralizeForCsv($VAR).''"''
+
+    '
+  languages:
+  - php
+  message: 'Detected potential CSV injection vulnerability. Directly using str_replace
+    to escape quotes in CSV output is insufficient as it doesn''t handle formula injection
+    via characters like =, +, -, or @ at the start of cell values. This can lead to
+    CSV injection attacks where malicious formulas are executed when the CSV is opened
+    in spreadsheet software. Use the ttNeutralizeForCsv function instead, which properly
+    sanitizes the input by removing dangerous characters from the start and escaping
+    quotes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/anuko/timetracker/commit/d9472904361495f318c9d0294ffd28acaaeae42f
+    category: security
+    cwe:
+    - CWE-1236
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-community/attacks/CSV_Injection
+    technology:
+    - php

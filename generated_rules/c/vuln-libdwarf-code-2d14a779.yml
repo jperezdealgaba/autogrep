@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libdwarf-code-2d14a779
+  pattern: '_dwarf_check_string_valid($DBG, $SECBEGIN, $STRBEGIN, $SECEND, $ERROR)
+
+    '
+  pattern-not: '_dwarf_check_string_valid($DBG, $SECBEGIN, $STRBEGIN, $SECEND, $ERRCODE,
+    $ERROR)
+
+    '
+  languages:
+  - c
+  message: 'The function `_dwarf_check_string_valid` is called without an error code
+    parameter, which can lead to insufficient error handling and potential security
+    vulnerabilities. Always include the error code parameter to ensure proper error
+    reporting and handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/2d14a7792889e33bc542c28d0f3792964c46214f
+    category: security
+    cwe:
+    - CWE-252
+    owasp: A10:2021 - Security Logging and Monitoring Failures
+    technology:
+    - c

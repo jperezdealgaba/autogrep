@@ -1,0 +1,29 @@
+rules:
+- id: vuln-humhub-3d40cac5
+  pattern: '$memberTitle = (!$space->isSpaceOwner() ? $options[''cannotCancelMembership''][''ownerTitle'']
+    : $options[''cannotCancelMembership''][''memberTitle'']);
+
+    '
+  pattern-not: '$memberTitle = ($space->isSpaceOwner() ? $options[''cannotCancelMembership''][''ownerTitle'']
+    : $options[''cannotCancelMembership''][''memberTitle'']);
+
+    '
+  languages:
+  - php
+  message: 'The logic in the ternary operator is inverted, leading to incorrect membership
+    title assignment. This could result in displaying the wrong membership status
+    to users, potentially causing confusion or security issues. Fix by correcting
+    the logic in the ternary operator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/humhub/humhub/commit/3d40cac5c9042ad6fdb7971bdd5fc284dcb168b7
+    category: security
+    cwe:
+    - CWE-480
+    owasp:
+    - A03:2021-Injection
+    references: []
+    technology:
+    - php

@@ -1,0 +1,36 @@
+rules:
+- id: vuln-moodle-12c28574
+  pattern: '$data->id = $this->get_courseid();
+
+    $data->fullname = $fullname;
+
+    $data->shortname = $shortname;
+
+    '
+  pattern-not: "$data->id = $this->get_courseid();\nif ($canchangefullname) {\n  \
+    \  $data->fullname = $fullname;\n} else {\n    unset($data->fullname);\n}\nif\
+    \ ($canchangeshortname) {\n    $data->shortname = $shortname;\n} else {\n    unset($data->shortname);\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected unsafe modification of course attributes without proper capability
+    checks.
+
+    This vulnerability allows unauthorized changes to course names, potentially leading
+    to
+
+    confusion or security issues. Always verify user capabilities before modifying
+
+    course attributes. Use the fixed version which includes proper capability checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/12c28574868d6f6e5c57fb63298c82cb8bdd0bb6
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - 'A01: Broken Access Control'
+    technology:
+    - php

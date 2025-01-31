@@ -1,0 +1,22 @@
+rules:
+- id: vuln-roundcubemail-4a408843
+  pattern: 'this.goto_url($ACTION, $QUERY, $LOCK)
+
+    '
+  pattern-not: 'this.goto_url($ACTION, $QUERY, $LOCK, true)
+
+    '
+  languages:
+  - javascript
+  message: 'Missing CSRF protection in `goto_url` function calls. This can lead to
+    Cross-Site Request Forgery (CSRF) attacks. Ensure that the `secure` parameter
+    is set to `true` to append the CSRF token to the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/4a408843b0ef816daf70a472a02b78cd6073a4d5
+    category: security
+    cwe: CWE-352
+    owasp: A5:2017 - Broken Access Control
+    technology: javascript

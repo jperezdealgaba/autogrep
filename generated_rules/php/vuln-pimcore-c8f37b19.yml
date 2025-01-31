@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pimcore-c8f37b19
+  pattern: "if ($VAR instanceof User && $VAR->isAdmin() && !$this->getAdminUser()->isAdmin())\
+    \ {\n    ...\n}\n"
+  pattern-not: "$VAR = $this->getAdminUser()->isAdmin();\nif ($VAR2 instanceof User\
+    \ && $VAR2->isAdmin() && !$VAR) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where admin privileges are
+    checked multiple times within the same condition. This can lead to inconsistent
+    privilege checks and potential privilege escalation. The issue was fixed by storing
+    the result of `$this->getAdminUser()->isAdmin()` in a variable and reusing it.
+    To fix this, store the result of privilege checks in a variable and use that variable
+    in subsequent conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/pimcore/commit/c8f37b19c99cd82e4e558857d3e4d5476ea7228a
+    category: security
+    cwe:
+    - 'CWE-269: Improper Privilege Management'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mantisbt-92d11a01
+  pattern: "$t_verify_user_id = gpc_get('verify_user_id', false);\n$t_account_verification\
+    \ = $t_verify_user_id ? token_get_value(TOKEN_ACCOUNT_VERIFY, $t_verify_user_id)\
+    \ : false;\nif (!$t_account_verification) {\n    auth_reauthenticate();\n    $t_user_id\
+    \ = auth_get_current_user_id();\n} else {\n    ...\n}\n"
+  pattern-not: "$t_verify_user_id = gpc_get_int('verify_user_id', 0);\n$t_account_verification\
+    \ = (bool)$t_verify_user_id;\nif ($t_account_verification) {\n    $f_confirm_hash\
+    \ = gpc_get_string('confirm_hash');\n    $t_token_confirm_hash = token_get_value(TOKEN_ACCOUNT_ACTIVATION,\
+    \ $t_verify_user_id);\n    if ($t_token_confirm_hash == null || $f_confirm_hash\
+    \ !== $t_token_confirm_hash) {\n        trigger_error(ERROR_LOST_PASSWORD_CONFIRM_HASH_INVALID,\
+    \ ERROR);\n    }\n    if (null === token_get_value(TOKEN_ACCOUNT_VERIFY, $t_verify_user_id))\
+    \ {\n        trigger_error(ERROR_SESSION_NOT_VALID, ERROR);\n    }\n} else {\n\
+    \    auth_reauthenticate();\n    $t_user_id = auth_get_current_user_id();\n}\n"
+  languages:
+  - php
+  message: Insecure user verification logic detected. The code does not validate the
+    confirmation hash or check for token expiration, which could allow unauthorized
+    password resets. Ensure proper validation of the confirmation hash and token expiration
+    to prevent account takeover.
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/92d11a01b195a1b6717a2f205218089158ea6d00
+    category: security
+    cwe:
+    - 'CWE-287: Improper Authentication'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

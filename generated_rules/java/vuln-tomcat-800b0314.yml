@@ -1,0 +1,20 @@
+rules:
+- id: vuln-tomcat-800b0314
+  pattern: "if ($C == '\\\"' || $C == '<' || $C == '>') {\n  ...\n}\n"
+  pattern-not: "if ($C == '\\\"' || $C == '<' || $C == '>' || $C == ':') {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Insufficient character validation in path comparison. Missing ':' in the
+    character check can lead to path traversal or other security issues. Ensure all
+    potentially dangerous characters are validated.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/800b03140e640f8892f27021e681645e8e320177
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - java

@@ -1,0 +1,17 @@
+rules:
+- id: vuln-drawio-59887e45
+  pattern: "public final static String encodeToString(byte[] sArr, boolean lineSep)\
+    \ {\n    ...\n    return new String(encodeToChar(sArr, lineSep));\n}\n"
+  pattern-not: "public final static String encodeToString(byte[] sArr, boolean lineSep)\
+    \ {\n    return Base64.getEncoder().encodeToString(sArr);\n}\n"
+  languages:
+  - java
+  message: Custom Base64 encoding implementation detected. Use the standard Base64
+    encoder from `java.util.Base64` to ensure security and compliance with RFC standards.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jgraph/drawio/commit/59887e45b36f06c8dd4919a32bacd994d9f084da
+    category: security
+    cwe: CWE-326
+    owasp: A3:2017-Sensitive Data Exposure
+    technology: java

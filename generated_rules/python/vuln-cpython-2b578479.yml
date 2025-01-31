@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cpython-2b578479
+  pattern: 'raise ValueError(u"netloc ''" + $NETLOC + u"'' contains invalid " + u"characters
+    under NFKC normalization")
+
+    '
+  pattern-not: 'raise ValueError("netloc %r contains invalid characters under NFKC
+    normalization" % $NETLOC)
+
+    '
+  languages:
+  - python
+  message: 'Detected an unsafe error message construction in URL parsing. Using string
+    concatenation with Unicode strings can lead to incorrect error messages and potential
+    security issues. Use `%r` formatting to ensure proper ASCII representation of
+    the netloc value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/2b578479b96aa3deeeb8bac313a02b5cf3cb1aff
+    category: security
+    cwe: CWE-116
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/urlparse.html
+    technology:
+    - python

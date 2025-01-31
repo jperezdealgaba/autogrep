@@ -1,0 +1,28 @@
+rules:
+- id: vuln-redis-15c078df
+  pattern: 'asyncCloseClientOnOutputBufferLimitReached($C);
+
+    '
+  pattern-not: 'closeClientOnOutputBufferLimitReached($C, $ASYNC);
+
+    '
+  languages:
+  - c
+  message: 'The function `asyncCloseClientOnOutputBufferLimitReached` is deprecated
+    and unsafe. It does not handle client closure properly in all scenarios, potentially
+    leading to resource leaks or undefined behavior. Use `closeClientOnOutputBufferLimitReached`
+    with the appropriate `async` flag instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/15c078df61985c76944995bfcb94c1c391c1a46d
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/redis/redis/commit/15c078df61985c76944995bfcb94c1c391c1a46d
+    technology:
+    - c

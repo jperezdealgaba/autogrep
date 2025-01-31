@@ -1,0 +1,28 @@
+rules:
+- id: vuln-exiv2-ab58026c
+  pattern: "int $VAR = sscanf($BUF, \"$FORMAT\", ...);\nif ($VAR != 3) {\n  ...\n\
+    }\n"
+  pattern-not: "int $VAR = sscanf($BUF, \"$FORMAT\", ...);\nif ($VAR != 3 || $DATE.year\
+    \ < 0 || $DATE.month < 1 || $DATE.month > 12 || $DATE.day < 1 || $DATE.day > 31)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Incomplete date validation can lead to invalid date processing. The original
+    code only checks the number of parsed values but does not validate the actual
+    date values. This can result in invalid dates being processed, potentially causing
+    unexpected behavior or security issues. Always validate the individual components
+    of a date (year, month, day) to ensure they fall within valid ranges.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Exiv2/exiv2/commit/ab58026cff0e5edebc026261e9dc4b7db05b802d
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

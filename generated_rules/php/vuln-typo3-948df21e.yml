@@ -1,0 +1,25 @@
+rules:
+- id: vuln-typo3-948df21e
+  pattern: '$qs .= trim($conf[''operator''] ?: ''AND'') . '' '';
+
+    '
+  pattern-not: "$operator = strtoupper(trim($conf['operator']));\nif (!in_array($operator,\
+    \ ['AND', 'OR'], true)) {\n    $operator = 'AND';\n}\n$qs .= $operator . ' ';\n"
+  languages:
+  - php
+  message: 'Insecure SQL operator handling detected. The operator value from user
+    input is directly used in SQL queries without proper validation, which could lead
+    to SQL injection. Validate the operator using a whitelist of allowed values (e.g.,
+    ''AND'', ''OR'') and default to a safe value if the input is invalid.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/948df21e45cf8beffa3d472e5c06f2f84833e432
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

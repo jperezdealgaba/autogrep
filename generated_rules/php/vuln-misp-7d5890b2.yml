@@ -1,0 +1,24 @@
+rules:
+- id: vuln-misp-7d5890b2
+  pattern: "if ($field != 'confirm_password') {\n  ...\n}\n"
+  pattern-not: "if ($field != 'confirm_password' && $field != 'enable_password') {\n\
+    \  ...\n}\n"
+  languages:
+  - php
+  message: "The code is missing a check for the 'enable_password' field, which could\
+    \ lead to unauthorized access or privilege escalation. \nThis is dangerous because\
+    \ it may allow attackers to bypass security controls by manipulating the 'enable_password'\
+    \ field. \nTo fix this, ensure that both 'confirm_password' and 'enable_password'\
+    \ fields are checked in the condition.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/7d5890b2fc63285f010d5845913894dd71cf232c
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - OWASP-A1
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

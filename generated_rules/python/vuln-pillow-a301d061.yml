@@ -1,0 +1,32 @@
+rules:
+- id: vuln-pillow-a301d061
+  pattern: '$QUANT_PROC = Popen($ARGS, stdout=PIPE)
+
+    check_call($TOGIF_ARGS, stdin=$QUANT_PROC.stdout, stdout=$FILE)
+
+    '
+  pattern-not: "$QUANT_PROC = Popen($ARGS, stdout=PIPE)\n$TOGIF_PROC = Popen($TOGIF_ARGS,\
+    \ stdin=$QUANT_PROC.stdout, stdout=$FILE)\n$QUANT_PROC.stdout.close()\n$RETCODE\
+    \ = $QUANT_PROC.wait()\nif $RETCODE:\n    raise CalledProcessError($RETCODE, $ARGS)\n\
+    $RETCODE = $TOGIF_PROC.wait()\nif $RETCODE:\n    raise CalledProcessError($RETCODE,\
+    \ $TOGIF_ARGS)\n"
+  languages:
+  - python
+  message: 'Detected unsafe subprocess handling that doesn''t properly check for process
+    failures.
+
+    This can lead to silent failures and unexpected behavior if the subprocess exits
+    with an error.
+
+    Fix by properly closing the pipe and checking the return code of both processes
+    using CalledProcessError.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/a301d061fbff5c5ec4e6e1ae82a361deb295b7b6
+    category: security
+    cwe: CWE-252
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

@@ -1,0 +1,19 @@
+rules:
+- id: vuln-tomcat-ad2235f5
+  pattern: "getServletContext().setAttribute($ATTR, $DIR);\nif (getServletContext()\
+    \ instanceof $TYPE) {\n    (($TYPE) getServletContext()).setAttributeReadOnly($ATTR);\n\
+    }\n"
+  pattern-not: "if ($CONTEXT == null) {\n    getServletContext();\n}\n$CONTEXT.setAttribute($ATTR,\
+    \ $DIR);\n$CONTEXT.setAttributeReadOnly($ATTR);\n"
+  languages:
+  - java
+  message: Potential null context vulnerability in setting ServletContext attributes.
+    Ensure context is properly initialized before setting attributes.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/ad2235f5b0673606d060a158d778b8613e31ebec
+    category: security
+    cwe: CWE-476
+    owasp: A9:2021-Security Misconfiguration
+    references: https://cwe.mitre.org/data/definitions/476.html
+    technology: java

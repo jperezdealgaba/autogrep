@@ -1,0 +1,29 @@
+rules:
+- id: vuln-pgbouncer-7ca3e527
+  pattern: '$CLIENT->auth_user = $DB->auth_user;
+
+    '
+  pattern-not: '$CLIENT->auth_user = $DB->auth_user;
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment of auth_user from db to client without proper validation
+    can lead to privilege escalation or unauthorized access. This vulnerability allows
+    an attacker to bypass authentication by manipulating the auth_user field. Ensure
+    proper validation and authorization checks are in place when assigning authentication-related
+    fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pgbouncer/pgbouncer/commit/7ca3e5279d05fceb1e8a043c6f5b6f58dea3ed38
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/287.html
+    technology:
+    - c

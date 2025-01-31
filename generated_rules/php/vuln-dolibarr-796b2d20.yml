@@ -1,0 +1,33 @@
+rules:
+- id: vuln-dolibarr-796b2d20
+  pattern: 'preg_replace_callback(''/&#(x?[0-9][0-9a-f]+);/i'', ''realCharForNumericEntities'',
+    $out)
+
+    '
+  pattern-not: 'preg_replace_callback(''/&#(x?[0-9][0-9a-f]+;?)/i'', ''realCharForNumericEntities'',
+    $out)
+
+    '
+  languages:
+  - php
+  message: 'The original regex pattern in the `preg_replace_callback` function does
+    not properly handle HTML entities ending with a semicolon, which can lead to incomplete
+    sanitization and potential injection vulnerabilities. This can allow attackers
+    to bypass security checks by encoding malicious characters using numeric HTML
+    entities. The fix ensures that entities ending with a semicolon are properly processed,
+    preventing such bypasses. Update the regex pattern to include an optional semicolon
+    (`;?`) to ensure all numeric entities are correctly handled.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/796b2d201acb9938b903fb2afa297db289ecc93e
+    category: security
+    cwe:
+    - 'CWE-116: Improper Encoding or Escaping of Output'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

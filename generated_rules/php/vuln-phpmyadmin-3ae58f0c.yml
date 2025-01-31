@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-3ae58f0c
+  pattern: '$export_type = isset($export_type) ? $export_type : ''pdf'';
+
+    '
+  pattern-not: "if (!isset($export_type) || !preg_match('/^[a-zA-Z]+$/', $export_type))\
+    \ {\n    $export_type = 'pdf';\n}\n"
+  languages:
+  - php
+  message: 'The code assigns a value to `$export_type` without validating its content,
+    which could lead to security vulnerabilities such as injection attacks. Validate
+    the input using a regular expression to ensure it only contains letters a-z.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/3ae58f0cd6b89ad4767920f9b214c38d3f6d4393
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

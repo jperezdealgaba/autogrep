@@ -1,0 +1,40 @@
+rules:
+- id: vuln-cacti-0e127daa
+  pattern: 'static $drop_char_match = array(''^'', ''$'', ''<'', ''>'', ''`'', ''\'''',
+    ''"'', ''|'', '','', ''?'', ''+'', ''['', '']'', ''{'', ''}'', ''#'', '';'', ''!'',
+    ''='', ''*'');
+
+    static $drop_char_replace = array('' '', '' '', '' '', '' '',  '''',   '''', ''
+    '', '' '', '' '', '' '', '' '', '' '', '' '', '' '', '' '', '' '', '' '', '' '',
+    '' '', '' '');
+
+    '
+  pattern-not: 'static $drop_char_match = array(''('','')'',''^'', ''$'', ''<'', ''>'',
+    ''`'', ''\'''', ''"'', ''|'', '','', ''?'', ''+'', ''['', '']'', ''{'', ''}'',
+    ''#'', '';'', ''!'', ''='', ''*'');
+
+    static $drop_char_replace = array('''','''','' '', '' '', '' '', '' '', '''',
+    '''', '' '', '' '', '' '', '' '', '' '', '' '', '' '', '' '', '' '', '' '', ''
+    '', '' '', '' '', '' '');
+
+    '
+  languages:
+  - php
+  message: "The character replacement array is missing parentheses, which could lead\
+    \ to insufficient sanitization of user input. \nThis vulnerability could allow\
+    \ attackers to inject malicious content or bypass security filters. \nEnsure all\
+    \ potentially dangerous characters, including parentheses, are properly sanitized.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/0e127daa11249dc0501b55b26544241518d1db7a
+    category: security
+    cwe:
+    - CWE-78
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - php

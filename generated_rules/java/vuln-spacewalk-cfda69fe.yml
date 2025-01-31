@@ -1,0 +1,22 @@
+rules:
+- id: vuln-spacewalk-cfda69fe
+  pattern: '$INPUT.setAttribute("value", $CONTEXT.getRequest().getParameter($PARAM))
+
+    '
+  pattern-not: '$INPUT.setAttribute("value", StringEscapeUtils.escapeHtml($CONTEXT.getRequest().getParameter($PARAM)))
+
+    '
+  languages:
+  - java
+  message: Potential Cross-Site Scripting (XSS) vulnerability detected. User input
+    should be properly escaped using StringEscapeUtils.escapeHtml to prevent XSS attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/spacewalkproject/spacewalk/commit/cfda69feffd04cb3280ed4c87e420ef446777839
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - java

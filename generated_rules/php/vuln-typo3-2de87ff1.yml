@@ -1,0 +1,26 @@
+rules:
+- id: vuln-typo3-2de87ff1
+  pattern: "if ($VAR->getStorage()->getUid() === 0) {\n  ...\n}\n"
+  pattern-not: "if ($VAR->getStorage()->isFallbackStorage()) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code checks if a storage''s UID is 0 to determine if it is a fallback
+    storage. This is insecure because it relies on an internal implementation detail
+    that could change. Instead, use the `isFallbackStorage()` method, which is the
+    intended and secure way to check for fallback storage. This vulnerability could
+    lead to incorrect permissions being applied or files being accessed when they
+    shouldn''t be.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/2de87ff113ba24333ab7cbb8078588743f8958d6
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Storage/Index.html
+    technology:
+    - php

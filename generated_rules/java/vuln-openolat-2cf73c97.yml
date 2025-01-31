@@ -1,0 +1,25 @@
+rules:
+- id: vuln-openolat-2cf73c97
+  pattern: 'import org.wildfly.common.Assert;
+
+    '
+  pattern-not: 'import org.junit.Assert;
+
+    '
+  languages:
+  - java
+  message: 'Incorrect Assert import detected. Using ''org.wildfly.common.Assert''
+    can lead to unexpected behavior in test cases. Replace it with ''org.junit.Assert''
+    for proper test assertions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenOLAT/OpenOLAT/commit/2cf73c972e23ccd69cc1e103e43c2c8253571d3e
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - java

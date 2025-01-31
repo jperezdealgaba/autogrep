@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gdk-pixbuf-dec9ca22
+  pattern: "$STATE->HeaderSize = $ENTRY->DIBoffset + $INFOHEADER_SIZE;\nif ($STATE->HeaderSize\
+    \ < 0) {\n  ...\n}\n"
+  pattern-not: "if ($ENTRY->DIBoffset > $G_MAXINT - $INFOHEADER_SIZE) {\n  ...\n}\n\
+    $STATE->HeaderSize = $ENTRY->DIBoffset + $INFOHEADER_SIZE;\n"
+  languages:
+  - c
+  message: 'This rule detects integer overflow vulnerabilities in C code where an
+    arithmetic operation is performed without checking for potential overflow, leading
+    to undefined behavior. The vulnerability occurs when adding two integers without
+    verifying if the result exceeds the maximum value that can be stored in the resulting
+    variable. This can lead to security issues such as memory corruption or crashes.
+    To fix this, ensure that the addition operation is checked for potential overflow
+    before performing the calculation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdk-pixbuf/commit/dec9ca22d70c0f0d4492333b4e8147afb038afd2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

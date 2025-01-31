@@ -1,0 +1,23 @@
+rules:
+- id: vuln-langchain-9ecb7240
+  pattern: "def $FUNC(..., prevent_outside: Optional[bool] = $VAL, ...):\n    ...\n"
+  pattern-not: "def $FUNC(..., prevent_outside: bool = True, ...):\n    ...\n"
+  languages:
+  - python
+  message: 'Detected a potential SSRF vulnerability in a web crawler implementation.
+    The `prevent_outside` parameter is optional and could be set to `None`, allowing
+    the crawler to potentially access external domains. This could lead to server-side
+    request forgery (SSRF) attacks. To mitigate this risk, ensure `prevent_outside`
+    is a required boolean parameter defaulting to `True`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/langchain-ai/langchain/commit/9ecb7240a480720ec9d739b3877a52f76098a2b8
+    category: security
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://python.langchain.com/docs/security
+    technology:
+    - python

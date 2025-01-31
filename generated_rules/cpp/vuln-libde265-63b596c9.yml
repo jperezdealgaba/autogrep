@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libde265-63b596c9
+  pattern: "if ($SUCCESS) {\n  $PPS[$ID] = $NEW_PPS;\n}\nreturn $SUCCESS ? $OK : $WARNING;\n"
+  pattern-not: "if (!$SUCCESS) {\n  return $WARNING;\n}\n$PPS[$ID] = $NEW_PPS;\nreturn\
+    \ $OK;\n"
+  languages:
+  - cpp
+  message: 'The original code conditionally assigns a new PPS (Picture Parameter Set)
+    only if the operation was successful, but fails to handle the case where the operation
+    is not successful, potentially leading to inconsistent state or undefined behavior.
+    The fix ensures that the PPS is always assigned and returns the appropriate warning
+    when the operation fails.
+
+    This vulnerability is dangerous because it can lead to unexpected behavior or
+    crashes in the video decoding process. To fix it, ensure that the PPS is always
+    assigned and handle the failure case explicitly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/63b596c915977f038eafd7647d1db25488a8c133
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A12:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/754.html
+    technology:
+    - cpp

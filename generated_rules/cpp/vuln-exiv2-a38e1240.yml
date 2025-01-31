@@ -1,0 +1,41 @@
+rules:
+- id: vuln-exiv2-a38e1240
+  pattern: 'size_t $SIZE = 0, $SIZE_INTERNAL = $SIZE_EXTERNAL;
+
+    ...
+
+    $SIZE = $BUF.read_uint32(0, $BIG_ENDIAN);
+
+    ...
+
+    io_->readOrThrow($BUF.data(), $SIZE - 12);
+
+    '
+  pattern-not: "const size_t $SIZE = $BUF.read_uint32(0, $BIG_ENDIAN);\nconst size_t\
+    \ $TV_SIZE = $SIZE - 12;\nif ($TV_SIZE > $BUF.size()) {\n  enforce($TV_SIZE <=\
+    \ $IO_->size() - $IO_->tell(), $ERROR_CODE);\n  $BUF.resize($TV_SIZE);\n}\nio_->readOrThrow($BUF.data(),\
+    \ $TV_SIZE);\n"
+  languages:
+  - cpp
+  message: 'Detected a potential buffer overflow vulnerability due to unsafe size
+    calculation and buffer manipulation. The original code reads data into a buffer
+    without properly validating the size, which could lead to memory corruption. The
+    fixed version introduces proper size validation and resizing of the buffer before
+    the read operation. To fix this, ensure that the buffer size is validated and
+    resized if necessary before performing read operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/a38e124076138e529774d5ec9890d0731058115a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - cpp

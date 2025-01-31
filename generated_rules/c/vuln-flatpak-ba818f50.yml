@@ -1,0 +1,28 @@
+rules:
+- id: vuln-flatpak-ba818f50
+  pattern: 'g_bytes_new($METADATA, strlen($METADATA) + 1)
+
+    '
+  pattern-not: 'g_bytes_new($METADATA, strlen($METADATA))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of `g_bytes_new` with `strlen + 1` which can lead
+    to buffer overflows or incorrect size calculations. This vulnerability occurs
+    when the size of a string is incorrectly calculated by adding 1 to the result
+    of `strlen`, potentially including the null terminator twice. This can lead to
+    memory corruption or incorrect data handling. Always use `strlen` directly without
+    adding 1 when passing the size to `g_bytes_new`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/flatpak/flatpak/commit/ba818f504c926baaf6e362be8159cfacf994310e
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

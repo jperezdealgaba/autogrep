@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-89a9d21a
+  pattern: '$params[''context''] = array($context, get_system_context());
+
+    '
+  pattern-not: '$params[''context''] = array($context);
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability involves improperly setting the context in repository
+    instances, which could lead to unauthorized access or incorrect permissions. The
+    original code included the system context alongside the current context, potentially
+    bypassing intended access controls. The fix removes the system context, ensuring
+    proper permission checks. To fix this, ensure that the context is set correctly
+    without including unnecessary system contexts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/89a9d21a15ec8bca9873f102375a6071258bc1e6
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

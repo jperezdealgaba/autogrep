@@ -1,0 +1,28 @@
+rules:
+- id: vuln-exiv2-fd5e9837
+  pattern: 'void $FUNC(std::ostream& $OUT, PrintStructureOption $OPTION);
+
+    '
+  pattern-not: 'void $FUNC(std::ostream& $OUT, PrintStructureOption $OPTION, int $DEPTH);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `printStructure` is missing the `depth` parameter, which
+    can lead to incomplete or incorrect structure printing. This vulnerability could
+    result in missing critical information during debugging or analysis. Add the `depth`
+    parameter to ensure proper structure printing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/fd5e983746c336336039e91cb6b656cf8eeccdea
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

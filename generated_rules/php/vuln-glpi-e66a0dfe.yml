@@ -1,0 +1,36 @@
+rules:
+- id: vuln-glpi-e66a0dfe
+  pattern: 'Html::nullHeader("Login", $CFG_GLPI["root_doc"] . ''/index.php'');
+
+    echo ''<div class="center b">'' . $auth->getErr() . ''<br><br>'';
+
+    echo ''<a href="'' . $CFG_GLPI["root_doc"] . ''/front/logout.php?noAUTO=1'' .
+    str_replace("?", "&", $REDIRECT) . ''">'' . __(''Log in again'') . ''</a></div>'';
+
+    Html::nullFooter();
+
+    '
+  pattern-not: "TemplateRenderer::getInstance()->display('pages/login_error.html.twig',\
+    \ [\n    'error'     => $auth->getErr(),\n    'login_url' => $CFG_GLPI[\"root_doc\"\
+    ] . '/front/logout.php?noAUTO=1' . str_replace(\"?\", \"&\", $REDIRECT),\n]);\n"
+  languages:
+  - php
+  message: 'The code directly outputs HTML and URLs without proper escaping, which
+    can lead to Cross-Site Scripting (XSS) attacks. This is dangerous because it allows
+    attackers to inject malicious scripts into the webpage, potentially compromising
+    user data or session information. To fix this, use a templating engine that automatically
+    escapes output, such as Twig, to prevent XSS vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/e66a0dfe697cbd4b3ec22736a8f8fd025a28f978
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

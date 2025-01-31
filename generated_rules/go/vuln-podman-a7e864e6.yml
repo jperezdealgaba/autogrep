@@ -1,0 +1,28 @@
+rules:
+- id: vuln-podman-a7e864e6
+  pattern: '$VAR = env.DefaultEnvVariables
+
+    '
+  pattern-not: '$VAR = env.DefaultEnvVariables()
+
+    '
+  languages:
+  - go
+  message: 'Detected direct usage of `env.DefaultEnvVariables` instead of calling
+    it as a function. This can lead to unexpected behavior or security issues as the
+    function is designed to return a new map instance each time it is called. Always
+    use `env.DefaultEnvVariables()` to ensure a fresh environment map is returned.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containers/podman/commit/a7e864e6e7de894d4edde4fff00e53dc6a0b5074
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/containers/podman/commit/a7e864e6e7de894d4edde4fff00e53dc6a0b5074
+    technology:
+    - go

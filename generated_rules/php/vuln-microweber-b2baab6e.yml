@@ -1,0 +1,29 @@
+rules:
+- id: vuln-microweber-b2baab6e
+  pattern: "[\n    'first_name'=> $request->get('first_name'),\n    'last_name'=>\
+    \ $request->get('last_name'),\n    'email'=> $request->get('email'),\n    'phone'=>\
+    \ $request->get('phone')\n]\n"
+  pattern-not: "[\n    'first_name'=> strip_tags($request->get('first_name')),\n \
+    \   'last_name'=> strip_tags($request->get('last_name')),\n    'email'=> strip_tags($request->get('email')),\n\
+    \    'phone'=> strip_tags($request->get('phone'))\n]\n"
+  languages:
+  - php
+  message: 'Detected potential Cross-Site Scripting (XSS) vulnerability due to missing
+    input sanitization.
+
+    Directly using user input without stripping HTML tags can lead to XSS attacks.
+
+    Fix this by using `strip_tags` to sanitize user input before storing or displaying
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/b2baab6e582b2efe63788d367a2bb61a2fa26470
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

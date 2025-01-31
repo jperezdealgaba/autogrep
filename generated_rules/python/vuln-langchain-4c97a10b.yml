@@ -1,0 +1,25 @@
+rules:
+- id: vuln-langchain-4c97a10b
+  pattern: 'COMMAND_EXECUTION_FUNCTIONS = ["system", "exec", "execfile", "eval"]
+
+    '
+  pattern-not: 'COMMAND_EXECUTION_FUNCTIONS = ["system", "exec", "execfile", "eval",
+    "__import__"]
+
+    '
+  languages:
+  - python
+  message: "Detected a list of dangerous command execution functions that is missing\
+    \ '__import__'. \nThis can lead to arbitrary code execution vulnerabilities if\
+    \ these functions are used without proper validation. \nEnsure all potentially\
+    \ dangerous functions are included in the list to prevent bypasses.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/langchain-ai/langchain/commit/4c97a10bd0d9385cfee234a63b5bd826a295e483
+    category: security
+    cwe: CWE-94
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/94.html
+    technology:
+    - python

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-tomcat-506d862e
+  pattern: "if ($FILE.isFile() && ($PATH.endsWith(\"/\") || $PATH.endsWith(\"\\\\\"\
+    ))) {\n  ...\n}\n"
+  pattern-not: "if ($FILE.isFile() && $PATH.endsWith(\"/\")) {\n  return null;\n}\n"
+  languages:
+  - java
+  message: 'Potential security vulnerability: File resource access with trailing slash
+    may lead to inconsistent behavior with Servlet spec rules. Ensure that file resources
+    with trailing slashes are handled correctly to avoid security issues.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/506d862e7edfa991de198e0f2e4c4540830fa531
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references: https://cwe.mitre.org/data/definitions/20.html
+    technology: java

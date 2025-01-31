@@ -1,0 +1,27 @@
+rules:
+- id: vuln-humhub-febb89ab
+  pattern: '$this->xssClean($this->stripTags($VAR))
+
+    '
+  pattern-not: '$this->stripTags($this->xssClean($VAR))
+
+    '
+  languages:
+  - php
+  message: 'The order of xssClean and stripTags functions is incorrect, which may
+    lead to XSS vulnerabilities. The stripTags function should be applied after xssClean
+    to ensure proper sanitization. This is dangerous because it can allow malicious
+    HTML to bypass the sanitization process. To fix this, reverse the order of the
+    functions to ensure proper sanitization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/humhub/humhub/commit/febb89ab823d0bd6246c6cf460addabb6d7a01d4
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

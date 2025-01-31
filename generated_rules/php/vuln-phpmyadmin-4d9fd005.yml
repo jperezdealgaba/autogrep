@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-4d9fd005
+  pattern: 'define(''PMA_MINIMUM_COMMON'', true);
+
+    '
+  pattern-not: "/**\n * @ignore\n */\ndefine('PMA_MINIMUM_COMMON', true);\n"
+  languages:
+  - php
+  message: 'The constant ''PMA_MINIMUM_COMMON'' is defined without proper documentation
+    or ignore directive. This can lead to potential security issues as it may expose
+    internal configurations or be used in unintended ways. Ensure that sensitive constants
+    are properly documented and marked with @ignore if they should not be exposed.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/4d9fd005671b05c4d74615d5939ed45e4d019e4c
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - php

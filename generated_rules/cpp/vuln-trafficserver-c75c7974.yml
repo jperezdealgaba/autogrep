@@ -1,0 +1,27 @@
+rules:
+- id: vuln-trafficserver-c75c7974
+  pattern: "if ($METHOD == HTTP_WKSIDX_GET || $API_RESP_CACHEABLE == true) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($METHOD == HTTP_WKSIDX_GET || ($HTTP_CONFIG_PARAM->cache_post_method\
+    \ == 1 && $METHOD == HTTP_WKSIDX_POST) || $API_RESP_CACHEABLE == true) {\n  ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'The code performs cache lookups for GET requests without considering caching
+    for POST requests when configured. This can lead to incorrect cache behavior and
+    potential security issues. Ensure that cache lookups include POST requests when
+    the cache_post_method configuration is enabled.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/c75c797410a8661f23ce1b9868b771457b1026f7
+    category: security
+    cwe:
+    - CWE-693
+    owasp:
+    - A5:2017-Broken Access Control
+    references:
+    - RFC 7234
+    technology:
+    - cpp

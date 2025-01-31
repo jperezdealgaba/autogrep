@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cacti-3381cba6
+  pattern: 'print ($VAR != '''' ? '' for variable '' . $VAR . '', with value of "''
+    . $VAL . ''"'' . ($MSG != '''' ? '', and error:'' . $MSG : '''') : '''')
+
+    '
+  pattern-not: 'print __(''Validation error for variable %s with a value of %s.  See
+    backtrace below for more details.'', $VAR, htmlspecialchars($VAL))
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unsanitized user input in\
+    \ string concatenation. \nThis can allow attackers to inject malicious scripts\
+    \ into the output. \nUse htmlspecialchars() or equivalent functions to sanitize\
+    \ user input before including it in HTML output.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Cacti/cacti/commit/3381cba6a9e36b01ed0ab0acfd41b00487966cb5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

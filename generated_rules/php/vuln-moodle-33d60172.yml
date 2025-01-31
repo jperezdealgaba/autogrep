@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-33d60172
+  pattern: "if (!has_capability('block/online_users:viewlist', $this->page->context))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!has_capability('block/online_users:viewlist', $this->page->context)\
+    \ || isguestuser() || !isloggedin()) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code does not properly check if the user is a guest or logged in before
+    displaying the list of online users. This can lead to unauthorized access to user
+    information. The fix includes additional checks for isguestuser() and !isloggedin()
+    to ensure that only authorized users can view the list of online users.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/33d6017287e1835513a3de8edd3fbf7a6a90af9c
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/285.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

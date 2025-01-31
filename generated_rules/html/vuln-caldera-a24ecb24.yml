@@ -1,0 +1,30 @@
+rules:
+- id: vuln-caldera-a24ecb24
+  pattern: '<input class="input is-small code" x-model="executor.cleanup">
+
+    '
+  pattern-not: '<textarea class="textarea is-small code" x-model="executor.cleanup"></textarea>
+
+    '
+  languages:
+  - html
+  message: 'The use of an `<input>` element for multi-line cleanup commands can lead
+    to improper handling of newline characters, potentially causing command injection
+    or execution issues. This vulnerability arises because `<input>` elements do not
+    support multi-line input, which can result in commands being concatenated incorrectly.
+    Replace the `<input>` element with a `<textarea>` to properly handle multi-line
+    commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mitre/caldera/commit/a24ecb2401414794a4ee2a3f46e0203517eee9e5
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - html

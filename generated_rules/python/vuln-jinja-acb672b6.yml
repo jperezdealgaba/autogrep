@@ -1,0 +1,23 @@
+rules:
+- id: vuln-jinja-acb672b6
+  pattern: 'directory = tempfile.gettempdir()
+
+    '
+  pattern-not: 'directory = $OBJ._get_default_cache_dir()
+
+    '
+  languages:
+  - python
+  message: "Detected insecure use of system temporary directory without proper isolation.\
+    \ \nThis can lead to cache collisions or security issues when multiple users \n\
+    access the same directory. Use a user-specific cache directory instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pallets/jinja/commit/acb672b6a179567632e032f547582f30fa2f4aa7
+    category: security
+    cwe: CWE-377
+    owasp: A9:2017-Insufficient Attack Protection
+    references:
+    - https://cwe.mitre.org/data/definitions/377.html
+    technology:
+    - python

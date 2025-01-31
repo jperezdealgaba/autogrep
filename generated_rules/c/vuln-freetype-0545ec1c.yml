@@ -1,0 +1,34 @@
+rules:
+- id: vuln-freetype-0545ec1c
+  pattern: '$CHARSET->sids[$IDX] = FT_GET_USHORT();
+
+    '
+  pattern-not: "{\n  FT_UShort $SID = FT_GET_USHORT();\n  if ( $SID < 65000 )\n  \
+    \  $CHARSET->sids[$IDX] = $SID;\n  else\n  {\n    $CHARSET->sids[$IDX] = 0;\n\
+    \  }\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where a SID (String ID) value is assigned
+    without validation.
+
+    This can lead to invalid SID values being used, which may cause undefined behavior
+    or crashes.
+
+    The fix involves validating the SID value against the CFF specification (must
+    be less than 65000)
+
+    and setting it to zero if invalid. Always validate SID values as per the CFF specification.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/0545ec1ca36b27cb928128870a83e5f668980bc5
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    references:
+    - https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf
+    technology:
+    - c

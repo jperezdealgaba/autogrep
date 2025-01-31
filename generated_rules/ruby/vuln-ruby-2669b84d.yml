@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ruby-2669b84d
+  pattern: "ext.value.split(/,\\s+/).each{|general_name|\n  if /\\ADNS:(.*)/ =~ general_name\n\
+    \    ...\n  elsif /\\AIP Address:(.*)/ =~ general_name\n    ...\n  end\n}\n"
+  pattern-not: "id, ostr = OpenSSL::ASN1.decode(ext.to_der).value\nsequence = OpenSSL::ASN1.decode(ostr.value)\n\
+    sequence.value.each{|san|\n  case san.tag\n  when 2\n    ...\n  when 7\n    ...\n\
+    \  end\n}\n"
+  languages:
+  - ruby
+  message: "The code is vulnerable to improper handling of Subject Alternative Names\
+    \ (SANs) in SSL certificates. \nThe original code uses a simple string split and\
+    \ regex match, which can be bypassed by crafted certificates containing NULL bytes\
+    \ or malformed IP addresses. \nThe fix properly decodes the ASN.1 structure and\
+    \ handles DNS and IP address SANs according to RFC5280 specifications.\nTo fix\
+    \ this, always use the ASN.1 decoding method provided by OpenSSL and properly\
+    \ validate the SAN values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/2669b84d407ab431e965145c827db66c91158f89
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://tools.ietf.org/html/rfc5280
+    technology:
+    - ruby

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openexr-74504503
+  pattern: 'float $VAR = ($WIDTH > 0)? (float ($H - 1) / ($WIDTH - 1)): 1;
+
+    '
+  pattern-not: 'float $VAR = ($WIDTH > 1)? (float ($H - 1) / ($WIDTH - 1)): 1;
+
+    '
+  languages:
+  - cpp
+  message: 'Potential division by zero vulnerability detected. The condition checks
+    if the width is greater than 0, which can lead to division by zero when the width
+    is 1. This can cause undefined behavior. To fix this, ensure the condition checks
+    for values greater than 1.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/74504503cff86e986bac441213c403b0ba28d58f
+    category: security
+    cwe:
+    - CWE-369
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

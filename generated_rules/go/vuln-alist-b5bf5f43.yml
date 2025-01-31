@@ -1,0 +1,24 @@
+rules:
+- id: vuln-alist-b5bf5f43
+  pattern: 'stdpath.Join($USER.BasePath, $PATH)
+
+    '
+  pattern-not: '$PATH, $ERR = $USER.JoinPath($PATH)
+
+    '
+  languages:
+  - go
+  message: 'Detected unsafe path joining using stdpath.Join with user.BasePath, which
+    can lead to path traversal vulnerabilities. Use user.JoinPath instead, which validates
+    the path and prevents directory traversal attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/alist-org/alist/commit/b5bf5f43253175b55fa2cb511fea601e677d2d83
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: A1:2017-Injection
+    technology:
+    - go

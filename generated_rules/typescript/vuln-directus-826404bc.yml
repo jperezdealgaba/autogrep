@@ -1,0 +1,26 @@
+rules:
+- id: vuln-directus-826404bc
+  pattern: "$CONFIG = {\n  ...,\n  CORS_ENABLED: true,\n  CORS_ORIGIN: true,\n  ...\n\
+    }\n"
+  pattern-not: "$CONFIG = {\n  ...,\n  CORS_ENABLED: false,\n  CORS_ORIGIN: false,\n\
+    \  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Detected insecure CORS configuration where both CORS_ENABLED and CORS_ORIGIN
+    are set to true. This can allow any domain to make cross-origin requests, potentially
+    exposing sensitive data or allowing unauthorized actions. To fix this, set CORS_ENABLED
+    and CORS_ORIGIN to false or restrict CORS_ORIGIN to specific trusted domains.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/directus/directus/commit/826404bcbe769f9bcd526baec41e696237b78ebb
+    category: security
+    cwe:
+    - CWE-942
+    owasp:
+    - A5:2021-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A5_2021-Security_Misconfiguration.html
+    technology:
+    - typescript

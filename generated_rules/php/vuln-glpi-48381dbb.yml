@@ -1,0 +1,28 @@
+rules:
+- id: vuln-glpi-48381dbb
+  pattern: 'define(''GLPI_VERSION'', ''10.0.9-dev'');
+
+    '
+  pattern-not: 'define(''GLPI_VERSION'', ''10.0.9'');
+
+    '
+  languages:
+  - php
+  message: 'The version string for GLPI includes a development suffix (''-dev''),
+    which may indicate an unstable or untested version. This can lead to security
+    vulnerabilities if deployed in production environments. Use a stable version number
+    without the ''-dev'' suffix.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/48381dbb715dc0b92ffd789604b9cb2fd695e5b5
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - php

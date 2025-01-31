@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cxf-1be97cb1
+  pattern: '$REQ.getRequestURI() + $SUFFIX
+
+    '
+  pattern-not: "$REQ.getRequestURI();\nint $INDEX = $REQ.getRequestURI().indexOf(\"\
+    ;\");\nif ($INDEX > 0) {\n    $REQ.getRequestURI().substring(0, $INDEX);\n}\n\
+    $REQ.getRequestURI() + $SUFFIX\n"
+  languages:
+  - java
+  message: 'Potential URL manipulation vulnerability due to unhandled matrix parameters
+    in request URIs.
+
+    Matrix parameters (semicolon-separated) in URLs can lead to security issues if
+    not properly handled.
+
+    Always strip matrix parameters from request URIs before further processing to
+    prevent injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/1be97cb13aef121b799b1be4d9793c0e8b925a12
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology: java

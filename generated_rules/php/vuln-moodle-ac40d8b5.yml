@@ -1,0 +1,23 @@
+rules:
+- id: vuln-moodle-ac40d8b5
+  pattern: '$mform->setType(''description'', PARAM_RAW);
+
+    '
+  pattern-not: '$mform->setType(''description'', PARAM_CLEANHTML);
+
+    '
+  languages:
+  - php
+  message: "Using PARAM_RAW for form descriptions can lead to XSS vulnerabilities\
+    \ as it does not sanitize user input. \nReplace PARAM_RAW with PARAM_CLEANHTML\
+    \ to ensure proper HTML sanitization and prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/ac40d8b589820929fe4201a3f0640414e2b9dabd
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,40 @@
+rules:
+- id: vuln-rust-241b9b45
+  pattern: "let $SRC_TOTAL = $OTHER.len();\nself.reserve($SRC_TOTAL);\nself.head =\
+    \ {\n    let $ORIGINAL_HEAD = self.head;\n    let ($SRC_HIGH, $SRC_LOW) = $OTHER.as_slices();\n\
+    \    let ($DST_HIGH, $DST_LOW) = unsafe { self.unused_as_mut_slices() };\n   \
+    \ let $SRC_CONTIGUOUS = $SRC_LOW.is_empty();\n    let $DST_HIGH_FITS_SRC = $DST_HIGH.len()\
+    \ >= $SRC_TOTAL;\n    match ($SRC_CONTIGUOUS, $DST_HIGH_FITS_SRC) {\n        (true,\
+    \ true) => {\n            unsafe { copy_whole_slice($SRC_HIGH, $DST_HIGH); }\n\
+    \            $ORIGINAL_HEAD + $SRC_TOTAL\n        },\n        (true, false) =>\
+    \ {\n            let ($SRC_1, $SRC_2) = $SRC_HIGH.split_at($DST_HIGH.len());\n\
+    \            unsafe {\n                copy_whole_slice($SRC_1, $DST_HIGH);\n\
+    \                copy_whole_slice($SRC_2, $DST_LOW);\n            }\n        \
+    \    $SRC_TOTAL - $DST_HIGH.len()\n        },\n        (false, true) => {\n  \
+    \          let ($DST_1, $DST_2) = $DST_HIGH.split_at_mut($SRC_HIGH.len());\n \
+    \           unsafe {\n                copy_whole_slice($SRC_HIGH, $DST_1);\n \
+    \               copy_whole_slice($SRC_LOW, $DST_2);\n            }\n         \
+    \   $ORIGINAL_HEAD + $SRC_TOTAL\n        },\n        (false, false) => {\n   \
+    \         ...\n        }\n    }\n};\n$OTHER.tail = $OTHER.head;\n"
+  pattern-not: 'self.extend($OTHER.drain(..));
+
+    '
+  languages:
+  - rust
+  message: 'Detected a complex manual implementation of extending a VecDeque that
+    could lead to incorrect memory handling or data corruption. This implementation
+    manually copies slices and manages head/tail pointers, which is error-prone and
+    can lead to vulnerabilities. The safer approach is to use the `extend` method
+    with `drain`, which handles all edge cases correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/rust-lang/rust/commit/241b9b45c0580ee3359b1f8139995b95c644eeac
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - rust

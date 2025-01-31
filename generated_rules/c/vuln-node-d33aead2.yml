@@ -1,0 +1,26 @@
+rules:
+- id: vuln-node-d33aead2
+  pattern: "#define $MACRO($ARG1, $ARG2, $ARG3) \\\n  for (; (void) ($ARG2 <= $ARG3\
+    \ && ($ARG1 = $FUNC($ARG2, $ARG3))), $ARG2 <= $ARG3;)\n"
+  pattern-not: "while ($ARG2 < $ARG3) {\n  $ARG1 = $FUNC($ARG2, $ARG3);\n  if ($ARG1\
+    \ == -1u)\n    return $ERROR;\n}\n"
+  languages:
+  - c
+  message: "The vulnerable code uses a macro with unsafe bounds checking that can\
+    \ lead to buffer overflows or incorrect UTF-8 decoding. \nThe issue arises because\
+    \ the macro checks for pointer equality rather than proper bounds, which can result\
+    \ in reading past the buffer end. \nReplace the macro with a safe while loop that\
+    \ explicitly checks bounds and handles decode errors properly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/d33aead28bcec32a2a450f884907a6d971631829
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

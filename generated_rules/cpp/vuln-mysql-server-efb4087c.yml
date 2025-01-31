@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mysql-server-efb4087c
+  pattern: '#define ROUNDS_MAX 999999999
+
+    '
+  pattern-not: '#define ROUNDS_MAX ROUNDS_DEFAULT
+
+    '
+  languages:
+  - cpp
+  message: 'The ROUNDS_MAX constant is set to an excessively high value (999999999),
+    which could lead to performance issues or denial of service. This was fixed by
+    setting it to ROUNDS_DEFAULT. Ensure that cryptographic parameters are set to
+    reasonable values to avoid potential security and performance risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/efb4087cfe12134e1541b39ee9a4305f7cd225f5
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

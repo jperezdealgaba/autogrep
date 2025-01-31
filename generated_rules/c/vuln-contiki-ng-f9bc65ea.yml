@@ -1,0 +1,29 @@
+rules:
+- id: vuln-contiki-ng-f9bc65ea
+  pattern: 'lvm_register_variable($VALUE, $TYPE);
+
+    lvm_set_variable($P, $VALUE);
+
+    '
+  pattern-not: "if(LVM_ERROR(lvm_register_variable($VALUE, $TYPE)) ||\n   LVM_ERROR(lvm_set_variable($P,\
+    \ $VALUE))) {\n  $RETURN($ERROR);\n}\n"
+  languages:
+  - c
+  message: 'The code directly calls `lvm_register_variable` and `lvm_set_variable`
+    without checking for errors.
+
+    This can lead to unhandled errors and potential security vulnerabilities.
+
+    Always check the return value of these functions and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/f9bc65eab2b416152f06590f8b620904bfd1aae2
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

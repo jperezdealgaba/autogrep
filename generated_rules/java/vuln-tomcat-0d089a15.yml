@@ -1,0 +1,33 @@
+rules:
+- id: vuln-tomcat-0d089a15
+  pattern: 'return skipLine();
+
+    '
+  pattern-not: 'return skipLine($BOOL);
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe handling of invalid HTTP headers. When encountering invalid
+    headers,
+
+    the skipLine() method was called without proper handling of the Content-Length
+    header.
+
+    This could lead to security vulnerabilities where malformed Content-Length headers
+
+    are not properly rejected. The fix requires passing a boolean parameter to skipLine()
+
+    to ensure proper handling of Content-Length headers according to RFC 9112.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/0d089a15047faf9cb3c82f80f4d28febd4798920
+    category: security
+    cwe: CWE-444
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc9112#section-6.3
+    technology:
+    - java

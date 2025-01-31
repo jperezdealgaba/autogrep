@@ -1,0 +1,35 @@
+rules:
+- id: vuln-geoserver-7db98573
+  pattern: "String mimeType = URLConnection.guessContentTypeFromName($RESOURCE.name());\n\
+    if (mimeType == null || MediaType.APPLICATION_OCTET_STREAM.toString().equals(mimeType))\
+    \ {\n  try (InputStream is = new BufferedInputStream($RESOURCE.in())) {\n    mimeType\
+    \ = URLConnection.guessContentTypeFromStream(is);\n  } catch (IOException $EX)\
+    \ {\n  }\n}\nreturn mimeType == null ? MediaType.APPLICATION_OCTET_STREAM : MediaType.valueOf(mimeType);\n"
+  pattern-not: "Optional.ofNullable($REQUEST.getServletContext())\n  .map($SC -> $SC.getMimeType($RESOURCE.name()))\n\
+    \  .map(MediaType::valueOf)\n  .orElse(MediaType.APPLICATION_OCTET_STREAM);\n"
+  languages:
+  - java
+  message: 'Detected unsafe MIME type guessing using URLConnection.guessContentTypeFromName/Stream.
+
+    This can lead to Cross-Site Scripting (XSS) vulnerabilities if malicious files
+    are served with incorrect MIME types.
+
+    Use the servlet context''s getMimeType() method instead, which is more secure
+    and reliable.
+
+    Additionally, ensure Content-Disposition is set to ''attachment'' for resources
+    to mitigate XSS risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/geoserver/geoserver/commit/7db985738ff2422019ccac974cf547bae5770cad
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+    technology:
+    - java

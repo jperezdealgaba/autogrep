@@ -1,0 +1,22 @@
+rules:
+- id: vuln-datahub-2a182f48
+  pattern: 'final TokenRequest $REQUEST = createTokenRequest(new AuthorizationCodeGrant($CODE,
+    new URI($URL)));
+
+    '
+  pattern-not: 'final TokenRequest $REQUEST = createTokenRequest(new AuthorizationCodeGrant($CODE,
+    new URI($URL), $VERIFIER));
+
+    '
+  languages:
+  - java
+  message: Missing CodeVerifier in AuthorizationCodeGrant can lead to security vulnerabilities
+    in OAuth2 PKCE flow. Always include the CodeVerifier when creating an AuthorizationCodeGrant.
+  severity: ERROR
+  metadata:
+    source-url: github.com/datahub-project/datahub/commit/2a182f484677d056730d6b4e9f0143e67368359f
+    category: security
+    cwe: CWE-284
+    owasp: 'A2: Broken Authentication'
+    references: https://datatracker.ietf.org/doc/html/rfc7636
+    technology: java

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-runc-d04de3a9
+  pattern: '$CAPABILITIES.Inheritable = append($CAPABILITIES.Inheritable, $CAP)
+
+    '
+  pattern-not: '$CAPABILITIES.Inheritable = []
+
+    '
+  languages:
+  - go
+  message: 'Dangerous capability inheritance detected. Appending capabilities to the
+    Inheritable set can lead to privilege escalation vulnerabilities. Capabilities
+    should not be inherited by default as they can be used by child processes to gain
+    elevated privileges. Remove the capability inheritance or explicitly set the Inheritable
+    field to an empty slice.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/d04de3a9b72d7a2455c1885fc75eb36d02cd17b5
+    category: security
+    cwe:
+    - CWE-250
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - go

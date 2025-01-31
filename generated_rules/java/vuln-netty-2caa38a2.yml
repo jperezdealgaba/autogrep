@@ -1,0 +1,29 @@
+rules:
+- id: vuln-netty-2caa38a2
+  pattern: 'long $VAR = Long.MIN_VALUE;
+
+    ...
+
+    $VAR = $EXPRESSION / 1000 + ($EXPRESSION % 1000 != 0 ? 1 : 0);
+
+    '
+  pattern-not: 'int $VAR = Integer.MIN_VALUE;
+
+    ...
+
+    $VAR = (int) ($EXPRESSION / 1000 + ($EXPRESSION % 1000 != 0 ? 1 : 0));
+
+    '
+  languages:
+  - java
+  message: "Detected usage of `long` type for cookie maxAge, which can lead to overflow\
+    \ issues. \nUse `int` instead to avoid potential vulnerabilities. \nThis issue\
+    \ was fixed in commit 2caa38a2795fe1f1ae6ceda4d69e826ed7c55e55.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/2caa38a2795fe1f1ae6ceda4d69e826ed7c55e55
+    category: security
+    cwe: CWE-190
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references: https://github.com/netty/netty/commit/2caa38a2795fe1f1ae6ceda4d69e826ed7c55e55
+    technology: java

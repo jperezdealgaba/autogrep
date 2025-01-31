@@ -1,0 +1,27 @@
+rules:
+- id: vuln-sofawiki-8e1a572b
+  pattern: '$s = str_replace("<", "", $s);
+
+    $s = str_replace(">", "", $s);
+
+    '
+  pattern-not: 'filter_var($s, FILTER_SANITIZE_STRING)
+
+    '
+  languages:
+  - php
+  message: "The code uses str_replace to sanitize input, which is insufficient for\
+    \ preventing XSS attacks. \nThis approach only removes angle brackets and does\
+    \ not handle other HTML tags or JavaScript code, leaving the application vulnerable\
+    \ to XSS. \nUse filter_var with FILTER_SANITIZE_STRING instead, as it provides\
+    \ more comprehensive sanitization.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/bellenuit/sofawiki/commit/8e1a572b0f76c2649ad75362a662b5883f6fb215
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

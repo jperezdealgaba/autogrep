@@ -1,0 +1,35 @@
+rules:
+- id: vuln-misp-e05dc512
+  pattern: "$object = $this->Event->find('first', array(\n  'conditions' => array(\n\
+    \    'Event.uuid' => $object_uuid,\n  ),\n  'fields' => array('Event.orgc_id',\
+    \ 'Event.id'),\n  'recursive' => -1\n));\n...\nif (!$this->_isSiteAdmin() && !$this->userRole['perm_tagger']\
+    \ && $object['Event']['orgc_id'] != $this->Auth->user('org_id')) {\n  throw new\
+    \ MethodNotAllowedException('Invalid Target.');\n}\n"
+  pattern-not: "$object = $this->Event->fetchEvent($this->Auth->user(), array(\n \
+    \ 'event_uuid' => $object_uuid,\n  'metadata' => 1\n));\n$object = $object[0];\n\
+    ...\nif (\n  $scope !== 'view' &&\n  !$this->_isSiteAdmin() &&\n  !$object['Event']['orgc_id']\
+    \ != $this->Auth->user('org_id')\n) {\n  throw new MethodNotAllowedException(__('Invalid\
+    \ Target.'));\n}\n"
+  languages:
+  - php
+  message: 'The code lacks proper permission checks and event fetching mechanisms,
+    which could allow unauthorized access to event data. The vulnerability occurs
+    because the code directly fetches events without verifying the user''s tagging
+    permissions and organization ownership. This can lead to unauthorized modifications
+    or access to sensitive event data. The fix introduces proper permission checks
+    and uses `fetchEvent` to ensure the user has the necessary permissions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/e05dc512a437284f14624da23cca4a829a76aebf
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/285.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

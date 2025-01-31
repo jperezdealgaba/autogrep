@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libdwarf-code-9565964f
+  pattern: "if(!$VAR) {\n  return;\n}\n$LEN = strlen($VAR);\n$FUNC($DATA, $VAR, $LEN);\n"
+  pattern-not: "if($VAR) {\n  $LEN = strlen($VAR);\n  if ($LEN) {\n    $FUNC($DATA,\
+    \ $VAR, $LEN);\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a null pointer but does not verify the string length
+    before using it. This could lead to undefined behavior if the string is empty.
+    Always verify the string length before passing it to functions like `strlen` and
+    `esb_appendn_internal`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/9565964f26966d8391fe2cfa8e6e8e59278c5f91
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1
+    technology:
+    - c

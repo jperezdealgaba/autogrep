@@ -1,0 +1,19 @@
+rules:
+- id: vuln-thrift-d9734096
+  pattern: "while ($COND) {\n  ...\n  break;\n  ...\n}\n"
+  pattern-not: "while ($COND) {\n  ...\n  continue;\n  ...\n}\n"
+  languages:
+  - java
+  message: Incorrect use of 'break' in a loop that should continue processing. This
+    can lead to premature termination of the loop, potentially causing incomplete
+    SASL authentication. Replace 'break' with 'continue' to ensure proper loop continuation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/thrift/commit/d973409661f820d80d72c0034d06a12348c8705e
+    category: security
+    cwe:
+    - CWE-835
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java

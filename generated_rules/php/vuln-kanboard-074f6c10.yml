@@ -1,0 +1,27 @@
+rules:
+- id: vuln-kanboard-074f6c10
+  pattern: '$VAR = $this->request->getIntegerParam(''$PARAM'');
+
+    $VAR2 = $this->$MODEL->getById($VAR);
+
+    '
+  pattern-not: '$VAR = $this->get$MODEL($project);
+
+    '
+  languages:
+  - php
+  message: 'Directly fetching objects by ID from request parameters without verifying
+    project ownership can lead to unauthorized access. This vulnerability allows users
+    to access or modify resources they don''t own by manipulating the ID parameter.
+    Use the project-aware getter methods (e.g., getColumn, getSwimlane) that verify
+    the resource belongs to the correct project.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/074f6c104f3e49401ef0065540338fc2d4be79f0
+    category: security
+    cwe: 'CWE-284: Improper Access Control'
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - php

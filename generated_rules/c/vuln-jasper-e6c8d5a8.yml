@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jasper-e6c8d5a8
+  pattern: 'jpc_firstone($X)
+
+    '
+  pattern-not: 'jpc_fix_firstone($X)
+
+    '
+  languages:
+  - c
+  message: 'The function `jpc_firstone` has been replaced with `jpc_fix_firstone`
+    to handle specific integer types correctly. Using `jpc_firstone` can lead to incorrect
+    calculations and potential security vulnerabilities. Replace all instances of
+    `jpc_firstone` with `jpc_fix_firstone` or `jpc_int_firstone` depending on the
+    context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/e6c8d5a838b49f94616be14753aa5c89d64605b5
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

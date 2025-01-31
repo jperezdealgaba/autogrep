@@ -1,0 +1,53 @@
+rules:
+- id: vuln-openexr-d80f11f4
+  pattern: "for (FrameBuffer::ConstIterator $K = $IFD->cachedBuffer->begin();\n  \
+    \   $K != $IFD->cachedBuffer->end(); ...)\n{\n  Slice $FROM_SLICE = $K.slice();\n\
+    \  Slice $TO_SLICE = $IFD->tFileBuffer[$K.name()];\n  char *$FROM_PTR, *$TO_PTR;\n\
+    \  int $SIZE = pixelTypeSize($TO_SLICE.type);\n  int $X_START = $LEVEL_RANGE.min.x;\n\
+    \  int $Y_START = $MIN_Y_THIS_ROW;\n  ...\n  for (int $Y = $Y_START; $Y <= $MAX_Y_THIS_ROW;\
+    \ $Y += $TO_SLICE.ySampling)\n  {\n    $FROM_PTR = reinterpret_cast<char*>($FROM_BASE\
+    \ +\n              ($Y - $TILE_RANGE.min.y) * $FROM_SLICE.yStride +\n        \
+    \      $X_START * $FROM_SLICE.xStride);\n    $TO_PTR = reinterpret_cast<char*>($TO_BASE\
+    \ +\n            divp($Y, $TO_SLICE.ySampling) * $TO_SLICE.yStride +\n       \
+    \     divp($X_START, $TO_SLICE.xSampling) * $TO_SLICE.xStride);\n    ...\n   \
+    \ for (int $X = $X_START; $X <= $LEVEL_RANGE.max.x; $X += $TO_SLICE.xSampling)\n\
+    \    {\n      for (int $I = 0; $I < $SIZE; ++$I)\n        $TO_PTR[$I] = $FROM_PTR[$I];\n\
+    \      $FROM_PTR += $FROM_SLICE.xStride * $TO_SLICE.xSampling;\n      $TO_PTR\
+    \ += $TO_SLICE.xStride;\n    }\n  }\n}\n"
+  pattern-not: "for (FrameBuffer::ConstIterator $K = $IFD->tFileBuffer.begin();\n\
+    \     $K != $IFD->tFileBuffer.end(); ...)\n{\n  Slice $TO_SLICE = $K.slice();\n\
+    \  char* $TO_PTR;\n  int $X_START = $LEVEL_RANGE.min.x;\n  int $Y_START = $MIN_Y_THIS_ROW;\n\
+    \  ...\n  FrameBuffer::ConstIterator $C = $IFD->cachedBuffer->find($K.name());\n\
+    \  if ($C != $IFD->cachedBuffer->end())\n  {\n    Slice $FROM_SLICE = $C.slice();\n\
+    \    intptr_t $FROM_BASE = reinterpret_cast<intptr_t>($FROM_SLICE.base);\n   \
+    \ int $SIZE = pixelTypeSize($TO_SLICE.type);\n    char* $FROM_PTR;\n    ...\n\
+    \    for (int $Y = $Y_START; $Y <= $MAX_Y_THIS_ROW; $Y += $TO_SLICE.ySampling)\n\
+    \    {\n      $FROM_PTR = reinterpret_cast<char*>($FROM_BASE +\n             \
+    \   ($Y - $TILE_RANGE.min.y) * $FROM_SLICE.yStride +\n                $X_START\
+    \ * $FROM_SLICE.xStride);\n      $TO_PTR = reinterpret_cast<char*>($TO_BASE +\n\
+    \              divp($Y, $TO_SLICE.ySampling) * $TO_SLICE.yStride +\n         \
+    \     divp($X_START, $TO_SLICE.xSampling) * $TO_SLICE.xStride);\n      ...\n \
+    \     for (int $X = $X_START; $X <= $LEVEL_RANGE.max.x; $X += $TO_SLICE.xSampling)\n\
+    \      {\n        for (int $I = 0; $I < $SIZE; ++$I)\n          $TO_PTR[$I] =\
+    \ $FROM_PTR[$I];\n        $FROM_PTR += $FROM_SLICE.xStride * $TO_SLICE.xSampling;\n\
+    \        $TO_PTR += $TO_SLICE.xStride;\n      }\n    }\n  }\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly accesses and copies data from the cached buffer without
+    checking if the channel exists in the source file. This can lead to accessing
+    invalid memory if the channel is not present. The fix includes checking if the
+    channel exists in the cached buffer before accessing and copying the data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/d80f11f4f55100d007ae80a162bf257ec291612c
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - cpp

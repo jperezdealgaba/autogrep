@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libdwarf-code-3767305d
+  pattern: "$RE = calloc(sizeof(struct ranges_entry), 1);\n...\nif ($RANGEPTR >= $SECTION_END)\
+    \ {\n    free($RE);\n    return $DW_DLV_NO_ENTRY;\n}\n"
+  pattern-not: "$RE = calloc(sizeof(struct ranges_entry), 1);\n...\nif ($RANGEPTR\
+    \ == $SECTION_END) {\n    break;\n}\nif ($RANGEPTR > $SECTION_END) {\n    free_allocated_ranges($BASE);\n\
+    \    _dwarf_error($DBG, $ERROR, $DW_DLE_DEBUG_RANGES_OFFSET_BAD);\n    return\
+    \ $DW_DLV_ERROR;\n    break;\n}\n"
+  languages:
+  - c
+  message: "Detected a vulnerability where memory is not properly freed when a pointer\
+    \ exceeds the section end. \nThis can lead to memory leaks and undefined behavior.\
+    \ The fix involves properly freeing allocated ranges \nand handling the error\
+    \ condition correctly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/3767305debcba8bd7e1c483ae48c509d25399252
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-119
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

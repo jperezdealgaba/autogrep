@@ -1,0 +1,30 @@
+rules:
+- id: vuln-src-2dfc98f4
+  pattern: 'auth_call($AS, $SCRIPT, $SHELL, $FFLAG ? "-f" : $USERNAME, $FFLAG ? $USERNAME
+    : 0, (char *)0);
+
+    '
+  pattern-not: 'auth_call($AS, $SCRIPT, $SHELL, "--", $USERNAME, (char *)NULL);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves improper argument handling in the `auth_call`
+    function, which can lead to security issues such as command injection or unexpected
+    behavior. The fix ensures that the arguments are properly separated using "--"
+    to prevent argument misinterpretation. Always use "--" to separate options from
+    arguments in command invocations to avoid such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openbsd/src/commit/2dfc98f42e117c7605b52b5020b630d98601dc22
+    category: security
+    cwe:
+    - CWE-88
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/88.html
+    technology:
+    - c

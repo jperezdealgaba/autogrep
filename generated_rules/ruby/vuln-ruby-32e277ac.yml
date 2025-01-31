@@ -1,0 +1,34 @@
+rules:
+- id: vuln-ruby-32e277ac
+  pattern: 'hexdigest($METHOD, $URI, hexdigest($BODY))
+
+    '
+  pattern-not: '$BODY_DIGEST = @h.new
+
+    $BODY { |$CHUNK| $BODY_DIGEST.update($CHUNK) }
+
+    $BODY_DIGEST = $BODY_DIGEST.hexdigest
+
+    hexdigest($METHOD, $URI, $BODY_DIGEST)
+
+    '
+  languages:
+  - ruby
+  message: 'The code directly hashes the entire request body in one go, which can
+    lead to memory exhaustion or incorrect digest calculation for large bodies. This
+    vulnerability can be exploited to cause denial of service or bypass security checks.
+    Instead, process the body in chunks using an incremental digest update mechanism.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/32e277acbf35de454befc1573aff1063a55403cf
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://www.ruby-lang.org/en/news/2023/03/28/memory-exhaustion-vulnerability-in-webrick/
+    technology:
+    - ruby

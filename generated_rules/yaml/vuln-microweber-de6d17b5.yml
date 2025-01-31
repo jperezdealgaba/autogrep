@@ -1,0 +1,28 @@
+rules:
+- id: vuln-microweber-de6d17b5
+  pattern: 'needs: stop-previous-runs
+
+    '
+  pattern-not: 'needs: [...]
+
+    '
+  languages:
+  - yaml
+  message: 'The workflow is missing a ''needs'' dependency, which can cause race conditions
+    or incorrect execution order. This is dangerous because it may lead to inconsistent
+    builds or failures. Fix it by ensuring all necessary dependencies are explicitly
+    listed in the ''needs'' section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/de6d17b52d261902653fbdd2ecefcaac82e54256
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds
+    technology:
+    - yaml

@@ -1,0 +1,33 @@
+rules:
+- id: vuln-claragenomicsanalysis-8524f2c0
+  pattern: 'size_t $VAR1, $VAR2;
+
+    size_t $VAR3, $VAR4;
+
+    '
+  pattern-not: 'int64_t $VAR1, $VAR2;
+
+    int64_t $VAR3, $VAR4;
+
+    '
+  pattern-inside: "class $CLASS {\n  ...\n  $RETURN_TYPE $FUNCTION($PARAMS) {\n  \
+    \  ...\n  }\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "Use of `size_t` for memory allocation calculations can lead to integer\
+    \ overflow vulnerabilities. \nThe patch replaces `size_t` with `int64_t` to prevent\
+    \ overflow issues. \nThis is critical because integer overflow can lead to incorrect\
+    \ memory allocations, \npotentially causing buffer overflows or other memory corruption\
+    \ vulnerabilities. \nAlways use a signed integer type like `int64_t` for memory\
+    \ calculations to detect overflow conditions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/clara-genomics/ClaraGenomicsAnalysis/commit/8524f2c0c690ff594a9ebc6d729351b07a1fc5f0
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

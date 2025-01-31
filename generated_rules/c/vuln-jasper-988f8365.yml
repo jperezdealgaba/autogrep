@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jasper-988f8365
+  pattern: '$MATRIX->datasize_ = $NUMROWS * $NUMCOLS;
+
+    '
+  pattern-not: "if (!jas_safe_size_mul($NUMROWS, $NUMCOLS, &$SIZE)) {\n  goto error;\n\
+    }\n$MATRIX->datasize_ = $SIZE;\n"
+  languages:
+  - c
+  message: "Detected unsafe multiplication of matrix dimensions without overflow check.\
+    \ \nThis can lead to integer overflow vulnerabilities, potentially causing memory\
+    \ corruption or security issues. \nAlways use safe multiplication functions like\
+    \ `jas_safe_size_mul` to check for overflow before assigning the result.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/988f8365f7d8ad8073b6786e433d34c553ecf568
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

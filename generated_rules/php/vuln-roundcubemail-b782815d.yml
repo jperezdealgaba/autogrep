@@ -1,0 +1,28 @@
+rules:
+- id: vuln-roundcubemail-b782815d
+  pattern: '$args = array(''msg'' => $err_str);
+
+    '
+  pattern-not: '$args = array(''msg'' => rcube::Q($err_str));
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability involves directly using unescaped user input in an array,
+    which can lead to XSS (Cross-Site Scripting) attacks. This is dangerous because
+    it allows attackers to inject malicious scripts into the application. To fix this,
+    always use the rcube::Q() function to properly escape the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/b782815dacda55eee6793249b5da1789256206fc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

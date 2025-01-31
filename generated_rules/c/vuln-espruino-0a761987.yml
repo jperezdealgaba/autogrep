@@ -1,0 +1,33 @@
+rules:
+- id: vuln-espruino-0a761987
+  pattern: 'strncpy($STR, $VAL, $LEN);
+
+    itostr($TOKEN, &$STR[2], 10);
+
+    strncat($STR, "]", $LEN);
+
+    '
+  pattern-not: 'espruino_snprintf($STR, $LEN, "?[%d]", $TOKEN);
+
+    '
+  languages:
+  - c
+  message: 'The code uses strncpy and strncat in a way that can lead to buffer overflow
+    or truncation issues.
+
+    This is dangerous because it can result in memory corruption or data loss.
+
+    Use espruino_snprintf instead to ensure proper string formatting and buffer handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/0a7619875bf79877907205f6bee08465b89ff10b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

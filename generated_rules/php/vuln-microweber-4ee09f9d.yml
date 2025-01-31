@@ -1,0 +1,29 @@
+rules:
+- id: vuln-microweber-4ee09f9d
+  pattern: '$categories_id = intval($parent_id);
+
+    '
+  pattern-not: '$categories_id = $parent_id = intval($parent_id);
+
+    '
+  languages:
+  - php
+  message: 'The assignment of `intval($parent_id)` to `$categories_id` without also
+    assigning it to `$parent_id` can lead to inconsistent state. This can cause unexpected
+    behavior in the application, especially if `$parent_id` is used later without
+    being sanitized. To fix this, ensure both variables are assigned the sanitized
+    value.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/microweber/microweber/commit/4ee09f9dda35cd1b15daa351f335c2a4a0538d29
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

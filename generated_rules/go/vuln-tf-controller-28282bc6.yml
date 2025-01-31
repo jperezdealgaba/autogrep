@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tf-controller-28282bc6
+  pattern: '$OUTPUTS, $ERR := $TF.Output($CTX)
+
+    '
+  pattern-not: '$OUTPUTS, $ERR := $TF.tfOutput($CTX)
+
+    '
+  languages:
+  - go
+  message: 'Direct usage of `tf.Output` without disabling logger can lead to sensitive
+    information leakage in logs. Use `tfOutput` which properly discards stdout and
+    stderr to prevent sensitive data exposure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weaveworks/tf-controller/commit/28282bc644054e157c3b9a3d38f1f9551ce09074
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - go

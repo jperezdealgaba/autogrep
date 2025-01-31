@@ -1,0 +1,22 @@
+rules:
+- id: vuln-framework-de16238d
+  pattern: "if ($REQ.uri.pathname.indexOf('./') !== -1) {\n  $REQ.$total_status(404);\n\
+    \  return;\n}\n"
+  pattern-not: "for (var $I = 0; $I < $REQ.uri.pathname.length; $I++) {\n  var $C\
+    \ = $REQ.uri.pathname[$I];\n  var $N = $REQ.uri.pathname[$I + 1];\n  if (($C ===\
+    \ '.' && $N === '/') || ($C === '%' && $N === '2' && $REQ.uri.pathname[$I + 2]\
+    \ === 'e')) {\n    $REQ.$total_status(404);\n    return;\n  }\n}\n"
+  languages:
+  - javascript
+  message: Insecure path validation detected. The previous check for './' in pathnames
+    was insufficient and could be bypassed. Use a more robust validation that checks
+    for both './' and URL-encoded variations to prevent path traversal attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/totaljs/framework/commit/de16238d13848149f5d1dae51f54e397a525932b
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - javascript

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-bd68c54d
+  pattern: '$_SESSION[''debug''][''queries''][$hash][''query''] = $query
+
+    '
+  pattern-not: '$_SESSION[''debug''][''queries''][$hash][''query''] = htmlspecialchars($query)
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of a query string stored in the session, which
+    could lead to XSS vulnerabilities. Always use htmlspecialchars() or equivalent
+    functions to escape output before storing it in the session.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/bd68c54d1beeef79d237e8bfda44690834012a76
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

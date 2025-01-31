@@ -1,0 +1,32 @@
+rules:
+- id: vuln-wekan-4c6084ab
+  pattern: 'reject_unauthorized: $SETTING || true
+
+    '
+  pattern-not: 'reject_unauthorized: $SETTING !== undefined ? $SETTING : true
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure default value for ''reject_unauthorized'' setting. Using ''||
+    true'' as a fallback
+
+    can lead to disabled certificate validation, making the application vulnerable
+    to
+
+    man-in-the-middle attacks. Always explicitly check if the setting is undefined
+
+    before providing a default value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wekan/wekan/commit/4c6084ab6841809e09a387f1cb8d31668ce6d2e9
+    category: security
+    cwe: CWE-295
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/TLS_Server_Config_Cheat_Sheet.html
+    technology:
+    - javascript
+    - ldap

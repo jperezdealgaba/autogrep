@@ -1,0 +1,28 @@
+rules:
+- id: vuln-roundcubemail-7c96646d
+  pattern: 'exec("$curdir/chgdbmailusers -c $username -w $newpass $args", $output,
+    $returnvalue);
+
+    '
+  pattern-not: 'exec($command, $output, $returnvalue);
+
+    '
+  languages:
+  - php
+  message: "The use of `exec` without proper shell argument escaping can lead to command\
+    \ injection vulnerabilities. \nIn this case, `escapeshellarg` should be used to\
+    \ properly escape shell arguments to prevent malicious input from being executed\
+    \ as part of the command. \nAdditionally, the command length should be checked\
+    \ to avoid potential buffer overflow issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/7c96646de0efda16cded8491138bfefe31aca940
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

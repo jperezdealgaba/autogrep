@@ -1,0 +1,41 @@
+rules:
+- id: vuln-hestiacp-3d4c309c
+  pattern: "$cmd = \"curl --request POST \"\n  . ($sslEnabled ? \"\" : \"--insecure\
+    \ \" )\n  . \"--url $installUrl \"\n  . \"--header 'Content-Type: application/x-www-form-urlencoded'\
+    \ \"\n  . \"--data l=en \"\n  . \"--data 'd[title]=\" . $options['wiki_name']\
+    \ . \"' \"\n  . \"--data 'd[acl]=on' \"\n  . \"--data 'd[superuser]=\" . $options['superuser']\
+    \ . \"' \"\n  . \"--data 'd[fullname]=\" . $options['real_name'] . \"' \"\n  .\
+    \ \"--data 'd[email]=\" . $options['email'] . \"' \"\n  . \"--data 'd[password]=\"\
+    \ . $options['password'] . \"' \"\n  . \"--data 'd[confirm]=\" . $options['password']\
+    \ . \"' \"\n  . \"--data 'd[policy]=\" . substr($options['initial_ACL_policy'],\
+    \ 0, 1) . \"' \"\n  . \"--data 'd[license]=\" . explode(\":\", $options['content_license'])[0]\
+    \ . \"' \"\n  . \"--data submit=\";\n"
+  pattern-not: "$cmd = implode(\" \", array(\n  \"curl\",\n  \"--request POST\",\n\
+    \  ($sslEnabled ? \"\" : \"--insecure \"),\n  \"--url \" . escapeshellarg($installUrl),\n\
+    \  \"--header 'Content-Type: application/x-www-form-urlencoded'\",\n  '--data-binary\
+    \ ' . escapeshellarg(http_build_query(array(\n    \"l\" => \"en\",\n    \"d\"\
+    \ => array(\n      \"title\" => $options['wiki_name'],\n      'acl' => 'on',\n\
+    \      'superuser' => $options['superuser'],\n      'fullname' => $options['real_name'],\n\
+    \      'email' => $options['email'],\n      'password' => $options['password'],\n\
+    \      'confirm' => $options['password'],\n      'policy' => substr($options['initial_ACL_policy'],\
+    \ 0, 1),\n      'license' => explode(\":\", $options['content_license'])[0]\n\
+    \    ),\n    'submit' => ''\n  )))\n));\n"
+  languages:
+  - php
+  message: "Detected a command injection vulnerability due to improper shell argument\
+    \ escaping. \nThe original code concatenates user-controlled input directly into\
+    \ a shell command, \nwhich can lead to arbitrary command execution. The fix uses\
+    \ `escapeshellarg` to properly \nescape the arguments. Always use proper escaping\
+    \ functions when constructing shell commands \nto prevent injection attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/hestiacp/hestiacp/commit/3d4c309cf138943cfd1e71ae51556406987aa4bf
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

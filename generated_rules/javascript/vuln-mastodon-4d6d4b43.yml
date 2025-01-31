@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mastodon-4d6d4b43
+  pattern: "if ($TYPE !== 'setHeight' || !$IFRAMES[$ID]) {\n  ...\n}\n"
+  pattern-not: "if ($TYPE !== 'setHeight' || !$IFRAMES[$ID] || window.location.origin\
+    \ !== $EVENT.origin || $ID.toString() === '__proto__') {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: "Missing origin validation and '__proto__' check in iframe message handler.\
+    \ \nThis can lead to security vulnerabilities such as cross-site scripting (XSS)\
+    \ or prototype pollution. \nAlways validate the message origin and check for '__proto__'\
+    \ in the message data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/4d6d4b43c6186a13e67b92eaf70fe1b70ea24a09
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-1321
+    owasp:
+    - A2:2017-Broken Authentication
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy
+    - https://portswigger.net/web-security/dom-based/prototype-pollution
+    technology:
+    - javascript

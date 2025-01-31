@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mlflow-432b8ccf
+  pattern: 'jinja2.Environment(loader=jinja2.BaseLoader()).from_string($TEMPLATE)
+
+    '
+  pattern-not: 'SandboxedEnvironment(loader=BaseLoader()).from_string($TEMPLATE)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe use of Jinja2 Environment without sandboxing. This can
+    lead to template injection vulnerabilities, allowing attackers to execute arbitrary
+    code. Use SandboxedEnvironment instead to safely render templates.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mlflow/mlflow/commit/432b8ccf27fd3a76df4ba79bb1bec62118a85625
+    category: security
+    cwe: CWE-94
+    owasp: A1:2017-Injection
+    references:
+    - https://jinja.palletsprojects.com/en/3.1.x/sandbox/
+    technology:
+    - python

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-microweber-33eb4cc0
+  pattern: "$is_dangerous_file = $files_utils->is_dangerous_file($fileName_ext);\n\
+    if ($is_dangerous_file) {\n    ...\n}\n"
+  pattern-not: "$is_allowed_file = $files_utils->is_allowed_file($fileName_ext);\n\
+    if ($is_allowed_file == false) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'The code uses a dangerous file detection method that may not be comprehensive,
+    potentially allowing malicious files to be uploaded. Instead, use an allowlist
+    approach to explicitly permit only safe file types. This vulnerability could lead
+    to security breaches if attackers upload harmful files. Replace the `is_dangerous_file`
+    check with `is_allowed_file` and ensure the allowed file types are explicitly
+    defined.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/33eb4cc0f80c1f86388c1862a8aee1061fa5d72e
+    category: security
+    cwe:
+    - 434
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-flatpak-7fe63f2e
+  pattern: 'flatpak_context_set_persistent($CONTEXT, $PATH)
+
+    '
+  pattern-not: 'flatpak_context_set_persistent($CONTEXT, $PATH, $ERROR)
+
+    '
+  languages:
+  - c
+  message: 'The function `flatpak_context_set_persistent` is being called without
+    proper validation of the `PATH` parameter, which can lead to security vulnerabilities.
+    The patch adds validation for non-graphical and non-UTF8 characters in paths to
+    prevent potential exploits. Always validate paths using `flatpak_validate_path_characters`
+    and propagate errors properly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/7fe63f2e8f1fd2dafc31d45154cf0b191ebec66c
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-ruby-7b9354af
+  pattern: '/\A#{WFKV_}*=#{WFKV_}*(?:[;&]#{WFKV_}*=#{WFKV_}*)*\z/o
+
+    '
+  pattern-not: '/\A#{WFKV_}=#{WFKV_}(?:[;&]#{WFKV_}=#{WFKV_})*\z/o
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression pattern used for URI validation is vulnerable due
+    to incorrect use of the ''*'' quantifier, which can lead to false positives in
+    URI validation. This could allow malicious URIs to bypass validation checks. Use
+    the corrected pattern that properly restricts the quantifiers to ensure accurate
+    URI validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/7b9354af8805c02ed968765abe300162e0fcc943
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - ruby

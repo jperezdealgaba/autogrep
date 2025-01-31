@@ -1,0 +1,23 @@
+rules:
+- id: vuln-typo3-14d10135
+  pattern: "if (empty($options['logFile'])) {\n  ...\n}\n"
+  pattern-not: "if (empty($options['logFile']) &&\n    ($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']\
+    \ ?? '') !== ''\n) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where logging could create
+    guessable filenames if TYPO3 is not properly configured. This could lead to information
+    disclosure or other security risks. Ensure that logging is only performed when
+    the encryption key is properly set in the TYPO3 configuration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/14d101359c71ee963cf51ad0c8ae777b7b9ec9a1
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - php

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-xen-7b0d89d5
+  pattern: "$RET = reassign_device_ownership($S, $D, $DEVFN, $PDEV);\nif ( $RET ||\
+    \ $D == $DOM_IO )\n    return $RET;\n"
+  pattern-not: "if ( $D == $DOM_IO )\n    return reassign_device_ownership($S, $D,\
+    \ $DEVFN, $PDEV);\n"
+  languages:
+  - c
+  message: 'The original code incorrectly handles the return value of `reassign_device_ownership`
+    when `$D == $DOM_IO`, potentially leading to incorrect error handling and device
+    reassignment failures. This can cause security issues such as improper device
+    isolation or resource leaks. The fix ensures that `reassign_device_ownership`
+    is only called when necessary and its return value is properly handled.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/7b0d89d547d4a7428133d837ef2e69ad474fa3e7
+    category: security
+    cwe:
+    - CWE-703
+    technology:
+    - c

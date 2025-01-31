@@ -1,0 +1,25 @@
+rules:
+- id: vuln-moodle-545eb1bc
+  pattern: '$VAR.innerHTML = "<a title=''"+$TITLE+"'' href=''"+$CFG.wwwroot+"/mod/forum/settracking.php?id="+$FORUMID+"''>"+$TEXT+"<\/a>"
+
+    '
+  pattern-not: '$VAR.innerHTML = "<a title=''"+$TITLE+"'' href=''"+$CFG.wwwroot+"/mod/forum/settracking.php?id="+$FORUMID+"&amp;sesskey="+$CFG.sesskey+"''>"+$TEXT+"<\/a>"
+
+    '
+  languages:
+  - javascript
+  message: 'Missing session key in URL can lead to CSRF vulnerabilities. Always include
+    a session key (sesskey) in URLs that perform sensitive actions to prevent unauthorized
+    requests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/545eb1bcfdbfc352bf6c31edf440485ba6d5af42
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - javascript

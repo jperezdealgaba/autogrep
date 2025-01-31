@@ -1,0 +1,34 @@
+rules:
+- id: vuln-moodle-85b531e8
+  pattern: "if (has_capability('moodle/user:viewuseractivitiesreport', $personalcontext))\
+    \ {\n    if ($course->showreports and (is_viewing($coursecontext, $user) or is_enrolled($coursecontext,\
+    \ $user))) {\n        ...\n    }\n} else if ($user->id == $USER->id) {\n    if\
+    \ ($course->showreports and (is_viewing($coursecontext, $USER) or is_enrolled($coursecontext,\
+    \ $USER))) {\n        ...\n    }\n}\n"
+  pattern-not: "if ($user->id == $USER->id) {\n    if ($course->showreports and (is_viewing($coursecontext,\
+    \ $USER) or is_enrolled($coursecontext, $USER))) {\n        ...\n    }\n} else\
+    \ if (has_capability('moodle/user:viewuseractivitiesreport', $personalcontext))\
+    \ {\n    if ($course->showreports and (is_viewing($coursecontext, $user) or is_enrolled($coursecontext,\
+    \ $user))) {\n        ...\n    }\n}\n"
+  languages:
+  - php
+  message: 'The code contains a logic flaw in the capability check for user reports.
+    The original code first checks for the ''moodle/user:viewuseractivitiesreport''
+    capability and then checks if the user is the current user, which can lead to
+    incorrect access control. The fixed version correctly prioritizes checking if
+    the user is the current user first, and then checks for the capability. This ensures
+    proper access control and prevents unauthorized access to user reports.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/85b531e8beae3497ec2075e07e59c581fccb317c
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/Access_API
+    technology:
+    - php

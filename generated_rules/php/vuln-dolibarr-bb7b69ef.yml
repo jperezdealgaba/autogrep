@@ -1,0 +1,28 @@
+rules:
+- id: vuln-dolibarr-bb7b69ef
+  pattern: '$email = GETPOST(''email'', ''custom'', 0, ''FILTER_VALIDATE_EMAIL'')
+
+    '
+  pattern-not: '$email = GETPOST(''email'', ''custom'', 0, FILTER_VALIDATE_EMAIL)
+
+    '
+  languages:
+  - php
+  message: 'The email validation filter is incorrectly passed as a string, which can
+    lead to improper validation of user input. This can allow malicious users to submit
+    invalid or harmful email addresses. Use the constant FILTER_VALIDATE_EMAIL directly
+    instead of passing it as a string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/bb7b69ef43673ed403436eac05e0bc31d5033ff7
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://www.php.net/manual/en/filter.filters.validate.php
+    technology:
+    - php

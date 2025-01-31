@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ruby-4fc6b252
+  pattern: 'exec($INTERPRETER, $SCRIPT_FILENAME)
+
+    '
+  pattern-not: 'exec(*[$INTERPRETER, $SCRIPT_FILENAME])
+
+    '
+  languages:
+  - ruby
+  message: "Direct use of `exec` with a single argument can lead to command injection\
+    \ vulnerabilities. \nUse an array to pass arguments to `exec` to safely handle\
+    \ command execution.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/4fc6b25289fe83e4cede024d9fea83217bffdc7e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - ruby

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-revive-adserver-a323fd62
+  pattern: '$optionValue = empty($mi->$feature) ? $GLOBALS[''strAutoDetect''] : $mi->$feature
+
+    '
+  pattern-not: '$optionValue = empty($mi->$feature) ? $GLOBALS[''strAutoDetect'']
+    : htmlspecialchars($mi->$feature)
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to XSS (Cross-Site Scripting) because it directly
+    outputs user-controlled data without proper escaping. This allows attackers to
+    inject malicious scripts into the output. To fix this, use `htmlspecialchars`
+    or another appropriate escaping function to sanitize the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/a323fd626627e8d42819fd5b7e2829196b5c54a3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS).html
+    technology:
+    - php

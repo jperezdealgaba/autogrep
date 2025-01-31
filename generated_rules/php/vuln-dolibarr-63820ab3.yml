@@ -1,0 +1,28 @@
+rules:
+- id: vuln-dolibarr-63820ab3
+  pattern: '$VAR .= $VAL;
+
+    if ($SORTORDER) $VAR .= '' ''.$SORTORDER;
+
+    '
+  pattern-not: '$VAR .= preg_replace(''/[^0-9a-z_\.]/i'','''',$VAL);
+
+    if ($SORTORDER) $VAR .= '' ''.preg_replace(''/[^0-9a-z]/i'','''',$SORTORDER);
+
+    '
+  languages:
+  - php
+  message: "Direct concatenation of user input into SQL queries can lead to SQL injection\
+    \ vulnerabilities. \nThe code should sanitize input using `preg_replace` to remove\
+    \ any potentially harmful characters.\nThis vulnerability was fixed by adding\
+    \ input sanitization to prevent SQL injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/63820ab37537fdff842539425b2bf2881f0d8e91
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

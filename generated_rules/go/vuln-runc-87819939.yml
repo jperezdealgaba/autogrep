@@ -1,0 +1,23 @@
+rules:
+- id: vuln-runc-87819939
+  pattern: "dest, err := securejoin.SecureJoin($ROOTFS, $DESTINATION)\nif err != nil\
+    \ {\n    return err\n}\nif err := os.MkdirAll(dest, 0o755); err != nil {\n   \
+    \ return err\n}\n"
+  pattern-not: "dest, err := createMountpoint($ROOTFS, $MOUNT, $MOUNTFD, $SOURCE)\n\
+    if err != nil {\n    return fmt.Errorf(\"create mount destination for %s mount:\
+    \ %w\", $DESTINATION, err)\n}\n"
+  languages:
+  - go
+  message: "Directly creating mountpoints without proper validation can lead to security\
+    \ vulnerabilities, \nsuch as symlink attacks or rootfs manipulation. Use the `createMountpoint`\
+    \ function instead, \nwhich performs necessary safety checks and validations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/8781993968fd964ac723ff5f360b6f259e809a3e
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - go

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redis-0bf90d94
+  pattern: "static void *getMcontextEip(ucontext_t *uc) {\n  ...\n  return (void*)\
+    \ $EXPRESSION;\n  ...\n}\n"
+  pattern-not: "static void* getAndSetMcontextEip(ucontext_t *uc, void *eip) {\n \
+    \ ...\n  GET_SET_RETURN($EXPRESSION, eip);\n  ...\n}\n"
+  languages:
+  - c
+  message: "Direct return of instruction pointer from ucontext_t without proper validation\
+    \ can lead to crashes when accessing invalid addresses. \nThis vulnerability occurs\
+    \ when the instruction pointer (eip/rip) is directly returned without checking\
+    \ if it points to a valid memory location, potentially causing crashes when logging\
+    \ stack traces.\nThe fix involves using a safer function (getAndSetMcontextEip)\
+    \ that allows validation and modification of the instruction pointer before returning\
+    \ it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/0bf90d944313919eb8e63d3588bf63a367f020a3
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://en.wikipedia.org/wiki/Instruction_pointer
+    - https://man7.org/linux/man-pages/man3/getcontext.3.html
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bigbluebutton-b21ca835
+  pattern: 'return new File($DIR.getAbsolutePath() + File.separatorChar + $FILENAME);
+
+    '
+  pattern-not: "try {\n    File $FILE = new File($DIR.getAbsolutePath() + File.separatorChar\
+    \ + $FILENAME);\n    String $CANONICAL = $FILE.getCanonicalPath();\n    if ($CANONICAL.startsWith($BASEDIR))\
+    \ {\n        return $FILE;\n    }\n} catch (IOException $E) {\n    return null;\n\
+    }\nreturn null;\n"
+  languages:
+  - java
+  message: Potential path traversal vulnerability. Directly constructing file paths
+    from user input can lead to unauthorized file access. Always validate and sanitize
+    file paths using getCanonicalPath() and ensure they are within the expected directory.
+  severity: ERROR
+  metadata:
+    source-url: github.com/bigbluebutton/bigbluebutton/commit/b21ca8355a57286a1e6df96984b3a4c57679a463
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java

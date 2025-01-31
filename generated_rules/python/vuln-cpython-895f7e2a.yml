@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cpython-895f7e2a
+  pattern: 'return any($SELF in $NET for $NET in $SELF._constants._private_networks)
+
+    '
+  pattern-not: "return (\n    any($SELF in $NET for $NET in $SELF._constants._private_networks)\n\
+    \    and all($SELF not in $NET for $NET in $SELF._constants._private_networks_exceptions)\n\
+    )\n"
+  languages:
+  - python
+  message: 'Detected incomplete IP address private network check. The original code
+    only checks if the address is in private networks without considering exceptions,
+    which could lead to incorrect classification of IP addresses. Update the logic
+    to include exception checks for specific IP ranges.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/895f7e2ac23eff4743143beef0f0c5ac71ea27d3
+    category: security
+    cwe: CWE-697
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml
+    - https://www.iana.org/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.xhtml
+    technology: python

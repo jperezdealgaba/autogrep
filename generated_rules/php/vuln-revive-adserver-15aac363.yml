@@ -1,0 +1,34 @@
+rules:
+- id: vuln-revive-adserver-15aac363
+  pattern: 'MAX_header(''Cache-Control: private, max-age=0, no-cache'');
+
+    MAX_header(''Expires: Mon, 26 Jul 1997 05:00:00 GMT'');
+
+    '
+  pattern-not: 'MAX_header(''Cache-Control: no-cache, no-store, must-revalidate'');
+
+    MAX_header(''Expires: 0'');
+
+    '
+  languages:
+  - php
+  message: 'Insecure cache control headers detected. The previous implementation allowed
+    caching in certain scenarios, which could lead to sensitive information being
+    stored in caches. This is dangerous as it may expose sensitive data to unauthorized
+    users. Fix by using ''Cache-Control: no-cache, no-store, must-revalidate'' and
+    ''Expires: 0'' to ensure no caching occurs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/15aac363749e46ec6806d01734aeaff20116a073
+    category: security
+    cwe:
+    - CWE-524: Information Exposure Through Caching
+    owasp:
+    - A05:2021 - Security Misconfiguration
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - php

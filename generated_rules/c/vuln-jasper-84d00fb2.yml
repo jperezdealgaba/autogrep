@@ -1,0 +1,29 @@
+rules:
+- id: vuln-jasper-84d00fb2
+  pattern: 'stepsizes[$BANDNO] = JPC_QCX_MANT($MANT) | JPC_QCX_EXPN($EXPN + ($BANDNO
+    + 2) / 3);
+
+    '
+  pattern-not: "uint_fast16_t $E = $EXPN + ($BANDNO + 2) / 3;\nif ($E >= 0x20)\n \
+    \ return -1;\nstepsizes[$BANDNO] = JPC_QCX_MANT($MANT) | JPC_QCX_EXPN($E);\n"
+  languages:
+  - c
+  message: 'This rule detects potential integer overflow vulnerabilities in JPC_QCX_EXPN
+    calculations. The original code performs an arithmetic operation without checking
+    for overflow, which could lead to undefined behavior or security vulnerabilities.
+    The fix introduces a bounds check to ensure the exponent value does not exceed
+    0x20 before using it in the calculation. To fix this issue, always validate arithmetic
+    operations that could result in overflow, especially when dealing with bitwise
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/84d00fb29a22e360c2ff91bdc2cd81c288826bfc
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

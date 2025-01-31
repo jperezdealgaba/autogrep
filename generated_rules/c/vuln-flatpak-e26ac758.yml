@@ -1,0 +1,29 @@
+rules:
+- id: vuln-flatpak-e26ac758
+  pattern: 'seccomp_rule_add($SECCOMP, SCMP_ACT_ERRNO(EPERM), $SCALL, $ARG_COUNT,
+    $ARG)
+
+    '
+  pattern-not: 'seccomp_rule_add($SECCOMP, SCMP_ACT_ERRNO($ERRNUM), $SCALL, $ARG_COUNT,
+    $ARG)
+
+    '
+  languages:
+  - c
+  message: 'The seccomp rule is using a hardcoded EPERM error code instead of a variable
+    that can be validated. This can lead to security issues if the error code is not
+    properly checked. Use a variable for the error code and ensure it is validated
+    against acceptable values (e.g., EPERM or ENOSYS) before using it in the seccomp
+    rule.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/e26ac7586c392b5eb35ff4609fe232c52523b2cf
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

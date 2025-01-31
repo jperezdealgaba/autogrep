@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ffmpeg-8001e9f7
+  pattern: "if ($VAR == AV_PIX_FMT_NONE) {\n  ...\n}\n"
+  pattern-not: "if ($VAR == possible_fmts_nb) {\n  return AVERROR_PATCHWELCOME;\n\
+    }\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when the pixel format is not properly checked,
+    which can lead to undefined behavior or crashes. The patch fixes this by ensuring
+    a proper check on the number of possible formats and returning an error if none
+    match. To fix this, ensure that the condition checks for the correct variable
+    and handles the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/8001e9f7d17e90b4b0898ba64e3b8bbd716c513c
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/369.html
+    technology:
+    - c

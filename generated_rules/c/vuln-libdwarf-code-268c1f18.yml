@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libdwarf-code-268c1f18
+  pattern: 'DECODE_LEB128_UWORD($LINE_PTR, $UTMP2);
+
+    '
+  pattern-not: 'DECODE_LEB128_UWORD_CK($LINE_PTR, $UTMP2, $DBG, $ERROR, $LINE_PTR_END);
+
+    '
+  languages:
+  - c
+  message: 'The code uses DECODE_LEB128_UWORD without bounds checking, which can lead
+    to buffer overflows. This vulnerability can be exploited to read or write out-of-bounds
+    memory, potentially leading to crashes or arbitrary code execution. Always use
+    the checked version DECODE_LEB128_UWORD_CK which includes bounds checking and
+    error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/268c1f18d1d28612af3b72d7c670076b1b88e51c
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A1:2017-Injection
+    references:
+    - https://en.wikipedia.org/wiki/Buffer_overflow
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

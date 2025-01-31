@@ -1,0 +1,26 @@
+rules:
+- id: vuln-node-1ca3f5ab
+  pattern: 'node::StringEqualNoCase($HOST.data(), "localhost6")
+
+    '
+  pattern-not: 'node::StringEqualNoCase($HOST.data(), "localhost")
+
+    '
+  languages:
+  - cpp
+  message: 'The code contains a potentially insecure hostname comparison by including
+    "localhost6" as a valid hostname. This could allow an attacker to bypass security
+    checks by using "localhost6" instead of "localhost". Remove "localhost6" from
+    the comparison to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/1ca3f5abcbe03bc037e264291b8bec606daae30a
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - cpp

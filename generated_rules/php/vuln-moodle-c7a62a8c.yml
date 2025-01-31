@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-c7a62a8c
+  pattern: '$sql .= " ORDER BY $sortorder";
+
+    '
+  pattern-not: "$sortorderparts = explode(' ', $sortorder, 2);\n$sortorder = get_safe_orderby([\n\
+    \    'id' => 'u.id',\n    'firstname' => 'u.firstname',\n    'lastname' => 'u.lastname',\n\
+    \    'default' => 'u.id',\n], $sortorderparts[0], $sortorderparts[1] ?? '');\n\
+    $sql .= \" {$sortorder}\";\n"
+  languages:
+  - php
+  message: 'Detected unsafe SQL ORDER BY clause using unvalidated user input. This
+    can lead to SQL injection vulnerabilities. Always validate and sanitize user input
+    before using it in SQL queries. Use a safe function like get_safe_orderby to ensure
+    only allowed fields and directions are used.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/c7a62a8c82219b50589257f79021da1df1a76808
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

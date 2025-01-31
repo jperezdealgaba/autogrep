@@ -1,0 +1,26 @@
+rules:
+- id: vuln-server-807945f2
+  pattern: '$ITEM->set_extraction_flag($FLAG);
+
+    '
+  pattern-not: "{\n  int $NEW_FLAG = $FLAG;\n  $ITEM->walk(&Item::set_extraction_flag_processor,\
+    \ false, (void*)&$NEW_FLAG);\n}\n"
+  languages:
+  - cpp
+  message: 'Directly setting the extraction flag on an item without propagating it
+    to sub-items can lead to inconsistent item states. This can cause issues during
+    cleanup, where a fixed item may contain non-fixed sub-items, leading to potential
+    undefined behavior or security vulnerabilities. To fix this, use the `walk` method
+    with `set_extraction_flag_processor` to ensure the flag is applied to all sub-items.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MariaDB/server/commit/807945f2eb5fa22e6f233cc17b85a2e141efe2c8
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-ruby-3ce238b5
+  pattern: '$HEADER_VALUE =~ /\r\n/
+
+    '
+  pattern-not: '/[\r\n]/ =~ $HEADER_VALUE.to_s
+
+    '
+  languages:
+  - ruby
+  message: 'Detected potential HTTP response splitting vulnerability. The code checks
+    for CRLF sequences in header values using a pattern that may miss some variations.
+    This can allow attackers to inject malicious headers. To fix, use the updated
+    pattern that checks for both CR and LF characters separately and ensure the header
+    value is converted to a string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/3ce238b5f9795581eb84114dcfbdf4aa086bfecc
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/HTTP_Response_Splitting
+    technology:
+    - ruby

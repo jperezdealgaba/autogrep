@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libarchive-d24e79e8
+  pattern: "static int $FUNC(struct archive_read *$A) {\n  int $RET = ARCHIVE_OK;\n\
+    \  $RET = archive_write_free($A->extract->ad);\n  free($A->extract);\n  $A->extract\
+    \ = NULL;\n  return ($RET);\n}\n"
+  pattern-not: "static int $FUNC(struct archive_read *$A) {\n  int $RET = ARCHIVE_OK;\n\
+    \  if ($A->extract->ad != NULL) {\n    $RET = archive_write_free($A->extract->ad);\n\
+    \  }\n  free($A->extract);\n  $A->extract = NULL;\n  return ($RET);\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential NULL pointer dereference in archive_read_extract_cleanup
+    function. The function directly calls archive_write_free without checking if a->extract->ad
+    is NULL, which can lead to a crash. The fix involves adding a NULL check before
+    calling archive_write_free.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libarchive/libarchive/commit/d24e79e8f9547ae475a3a0c9516e079a14010838
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

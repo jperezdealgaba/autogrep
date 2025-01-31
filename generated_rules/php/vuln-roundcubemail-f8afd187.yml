@@ -1,0 +1,29 @@
+rules:
+- id: vuln-roundcubemail-f8afd187
+  pattern: '$vars = array(''email'' => $status->getData(''missing''));
+
+    $msg  = ''enigma.'' . $mode . ''nokey'';
+
+    '
+  pattern-not: "if ($email = $status->getData('missing')) {\n    $vars = array('email'\
+    \ => $email);\n    $msg  = 'enigma.' . $mode . 'nokey';\n}\nelse {\n    $msg =\
+    \ 'enigma.' . ($encrypt_enable ? 'encryptnoprivkey' : 'signnokey');\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses the result of `getData(''missing'')` without checking
+    if it''s empty, which can lead to incorrect error handling. This vulnerability
+    can cause the application to display wrong error messages or fail to handle missing
+    keys properly. Always validate the result of `getData(''missing'')` before using
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/f8afd18713ce357b2411036453e718bfaeb403dc
+    category: security
+    cwe:
+    - 'CWE-391: Unchecked Error Condition'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - php

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tomcat-2c522795
+  pattern: 'SSLEngine $ENGINE = $SSL_CONTEXT.createSSLEngine();
+
+    '
+  pattern-not: 'SSLEngine $ENGINE = $SSL_CONTEXT.createSSLEngine($HOST, $PORT);
+
+    SSLParameters $PARAMS = $ENGINE.getSSLParameters();
+
+    $PARAMS.setEndpointIdentificationAlgorithm("HTTPS");
+
+    $ENGINE.setSSLParameters($PARAMS);
+
+    '
+  languages:
+  - java
+  message: "Missing host verification in SSL/TLS configuration. This can lead to man-in-the-middle\
+    \ attacks as the server's identity is not properly verified. \nTo fix this, ensure\
+    \ that the SSLEngine is configured with host and port parameters, and enable endpoint\
+    \ identification using the HTTPS algorithm.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/2c522795166c930741a9cecca76797bf48cb1634
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java

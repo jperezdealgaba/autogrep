@@ -1,0 +1,32 @@
+rules:
+- id: vuln-roundcubemail-27142642
+  pattern: '$VAR = escapeshellcmd($VAR);
+
+    '
+  pattern-not: '$VAR = escapeshellarg($VAR);
+
+    '
+  languages:
+  - php
+  message: 'The use of `escapeshellcmd` is insecure for command injection prevention
+    as it does not properly escape arguments. Use `escapeshellarg` instead to ensure
+    that arguments are safely quoted.
+
+    This vulnerability can lead to command injection attacks if the input is not properly
+    sanitized.
+
+    To fix this, replace `escapeshellcmd` with `escapeshellarg`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/271426429bfbb5b63e6dec91b1e4780e8ef1c67e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.escapeshellarg.php
+    technology:
+    - php

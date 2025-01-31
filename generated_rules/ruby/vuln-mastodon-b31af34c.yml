@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mastodon-b31af34c
+  pattern: '$USER.find_for_oauth($AUTH, $RESOURCE)
+
+    '
+  pattern-not: '$USER.find_for_omniauth($AUTH, $RESOURCE)
+
+    '
+  languages:
+  - ruby
+  message: 'The method `find_for_oauth` is deprecated and insecure. It has been replaced
+    with `find_for_omniauth` which includes additional security checks. Using the
+    old method can lead to authentication bypass and account takeover vulnerabilities.
+    Update the code to use `find_for_omniauth` instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/b31af34c9716338e4a32a62cc812d1ca59e88d15
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - ruby

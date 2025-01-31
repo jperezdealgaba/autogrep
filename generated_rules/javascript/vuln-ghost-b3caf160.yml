@@ -1,0 +1,24 @@
+rules:
+- id: vuln-ghost-b3caf160
+  pattern: 'return $MODEL.$METHOD($FRAME.options)
+
+    '
+  pattern-not: "const options = {\n  ...$FRAME.options,\n  mongoTransformer: $TRANSFORMER\n\
+    };\nreturn $MODEL.$METHOD($FRAME.data, options)\n"
+  languages:
+  - javascript
+  message: "Detected potential exposure of sensitive fields via direct MongoDB queries.\
+    \ \nThe vulnerability allows filtering by sensitive fields like 'password' and\
+    \ 'email'. \nTo fix, use a mongoTransformer to reject private fields in query\
+    \ operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TryGhost/Ghost/commit/b3caf16005289cc9909488391b4a26f3f4a66a90
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - javascript
+    - mongodb

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glpi-e248ed56
+  pattern: "if (self::$output_type == self::HTML_OUTPUT) {\n  ...\n}\n"
+  pattern-not: "if ($html_output) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Direct comparison of `self::$output_type` with `self::HTML_OUTPUT` can
+    lead to inconsistent behavior and potential security issues. The output type should
+    be checked once and stored in a variable for consistent use throughout the code.
+    This ensures that all subsequent checks are consistent and reduces the risk of
+    logic errors.
+
+    To fix this, store the result of the comparison in a variable and use that variable
+    for all subsequent checks.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/e248ed5649d267c0f61a17d99b7bd6be4074aadb
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libgd-4b1e18a0
+  pattern: '$FUNC($IM, $OUT, $COMPRESSION);
+
+    $RV = gdDPExtractData($OUT, $SIZE);
+
+    '
+  pattern-not: "if (!_gdImageBmpCtx($IM, $OUT, $COMPRESSION))\n  $RV = gdDPExtractData($OUT,\
+    \ $SIZE);\nelse\n  $RV = NULL;\n"
+  languages:
+  - c
+  message: 'The code directly calls a function and proceeds to extract data without
+    checking the return value, which could lead to undefined behavior if the function
+    fails. This vulnerability can cause crashes or security issues if the function
+    fails silently. Always check the return value of functions before proceeding with
+    dependent operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/4b1e18a00ce7c4b7e6919c3b3109a034393b805a
+    category: security
+    cwe:
+    - CWE-252
+    owasp: 'A6: Security Misconfiguration'
+    references: https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c

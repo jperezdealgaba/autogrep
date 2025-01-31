@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jasper-1e84674d
+  pattern: 'assert($N >= 0 && $N < 32);
+
+    '
+  pattern-not: "if ($N < 0 || $N >= 32) {\n  return ...;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves the use of `assert` for input validation, which
+    can be disabled in production builds, leading to potential undefined behavior.
+    This is dangerous because it can result in security vulnerabilities if the input
+    is not properly validated. Replace the `assert` with proper error handling using
+    conditional checks and return statements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/1e84674d95353c64e5c4c0e7232ae86fd6ea813b
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/ERR33-C.+Detect+and+handle+standard+library+errors
+    technology:
+    - c

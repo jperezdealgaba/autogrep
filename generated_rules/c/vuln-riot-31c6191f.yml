@@ -1,0 +1,22 @@
+rules:
+- id: vuln-riot-31c6191f
+  pattern: "if ($FBUF->sfr.arq_timeout_event.msg.content.ptr != NULL) {\n  ...\n}\n"
+  pattern-not: "if (_arq_scheduled($FBUF)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a direct check of `arq_timeout_event.msg.content.ptr` which is
+    unsafe as it does not verify if the event is scheduled. This can lead to incorrect
+    state management and potential use-after-free vulnerabilities. Use the `_arq_scheduled`
+    function to safely check if the event is scheduled.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/RIOT-OS/RIOT/commit/31c6191f6196f1a05c9765cffeadba868e3b0723
+    category: security
+    cwe:
+    - CWE-416
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

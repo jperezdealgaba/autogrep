@@ -1,0 +1,31 @@
+rules:
+- id: vuln-passenger-94428057
+  pattern: "switch (getFileTypeNoFollowSymlinks($PATH)) {\n  case FT_NONEXISTANT:\n\
+    \    ...\n  case FT_DIRECTORY:\n    verifyDirectoryPermissions($PATH);\n    ...\n\
+    \  default:\n    throw RuntimeException(\"'\" + $PATH + \"' already exists, and\
+    \ is not a directory\");\n}\n"
+  pattern-not: "struct stat $BUF;\nint $RET;\ndo {\n  $RET = lstat($PATH.c_str(),\
+    \ &$BUF);\n} while ($RET == -1 && errno == EAGAIN);\nif ($RET == 0) {\n  if (S_ISDIR($BUF.st_mode))\
+    \ {\n    verifyDirectoryPermissions($PATH, $BUF);\n  } else {\n    throw RuntimeException(\"\
+    '\" + $PATH + \"' already exists, and is not a directory\");\n  }\n} else if (errno\
+    \ == ENOENT) {\n  ...\n} else {\n  int $E = errno;\n  throw FileSystemException(\"\
+    Cannot lstat '\" + $PATH + \"'\", $E, $PATH);\n}\n"
+  languages:
+  - cpp
+  message: "The code uses getFileTypeNoFollowSymlinks to check file types, which can\
+    \ lead to TOCTOU (Time-of-Check to Time-of-Use) vulnerabilities. \nThis is dangerous\
+    \ because the file system state can change between the check and the use, potentially\
+    \ leading to security issues.\nThe fix introduces a retry loop with lstat and\
+    \ directly checks the file type using S_ISDIR, avoiding the TOCTOU issue.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phusion/passenger/commit/94428057c602da3d6d34ef75c78091066ecac5c0
+    category: security
+    cwe:
+    - CWE-367
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/367.html
+    technology:
+    - cpp

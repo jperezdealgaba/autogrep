@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-0933619b
+  pattern: 'sprintf($GLOBALS[''strThemeNotFound''], $theme)
+
+    '
+  pattern-not: 'sprintf($GLOBALS[''strThemeNotFound''], PMA_sanitize($theme))
+
+    '
+  languages:
+  - php
+  message: 'Unsafe use of unsanitized input in sprintf() can lead to XSS vulnerabilities.
+
+    The variable $theme is directly used in sprintf() without sanitization, which
+    can allow an attacker to inject malicious code.
+
+    To fix this, use PMA_sanitize() to sanitize the input before using it in sprintf().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0933619b6b2534b221817ea3f631cb984c258d6b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

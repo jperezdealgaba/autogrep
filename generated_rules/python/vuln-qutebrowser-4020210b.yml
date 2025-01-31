@@ -1,0 +1,26 @@
+rules:
+- id: vuln-qutebrowser-4020210b
+  pattern: 'self._has_ssl_errors = True
+
+    '
+  pattern-not: 'self._insecure_hosts.add($URL.host())
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure handling of SSL errors. Previously, the code only set
+    a boolean flag `_has_ssl_errors` without tracking the specific insecure hosts.
+    This could lead to incorrect SSL status reporting. The fix introduces tracking
+    of insecure hosts in a shared set `_insecure_hosts` to properly handle SSL warnings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/qutebrowser/qutebrowser/commit/4020210b193f77cf1785b21717f6ef7c5de5f0f8
+    category: security
+    cwe: 'CWE-295: Improper Certificate Validation'
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - python

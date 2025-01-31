@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-5379d443
+  pattern: "{\n  ...,\n  \"files\": [\"vendor/phpmyadmin/motranslator/src/functions.php\"\
+    ],\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"files\": [...],\n  ...\n}\n"
+  languages:
+  - json
+  message: 'The composer.json file includes a direct reference to a specific file
+    in the vendor directory, which can lead to security issues. This practice is dangerous
+    because it can expose internal files or create dependencies on specific file paths
+    that may change. Instead, rely on autoloading mechanisms provided by Composer.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/5379d443d3269d577abe34faeb86e5ab9ace1b4a
+    category: security
+    cwe:
+    - CWE-427
+    - CWE-494
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://getcomposer.org/doc/04-schema.md#files
+    technology:
+    - json

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glpi-5c3eee69
+  pattern: '$_POST[''custom_css_code''] = $_UPOST[''custom_css_code''];
+
+    '
+  pattern-not: '$_POST[''custom_css_code''] = $DB->escape($_UPOST[''custom_css_code'']);
+
+    '
+  languages:
+  - php
+  message: "Direct assignment of user input to $_POST without proper escaping can\
+    \ lead to XSS vulnerabilities. \nThis is dangerous because it allows attackers\
+    \ to inject malicious scripts into the application. \nTo fix this, use proper\
+    \ escaping functions like $DB->escape() to sanitize the input.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/5c3eee696b503fdf502f506b00d15cf5b324b326
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

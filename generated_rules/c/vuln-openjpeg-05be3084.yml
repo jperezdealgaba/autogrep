@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openjpeg-05be3084
+  pattern: 'get_ushort(*(unsigned short*)($VAR))
+
+    '
+  pattern-not: 'get_tga_ushort(*(unsigned short*)($VAR))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe usage of `get_ushort` which does not properly handle endianness.
+    This can lead to incorrect data interpretation and potential security vulnerabilities.
+    Replace with `get_tga_ushort` which correctly handles little-endian serialized
+    values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/05be3084460e46282ee63f04c72c451f3271fd28
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

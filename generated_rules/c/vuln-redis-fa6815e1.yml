@@ -1,0 +1,28 @@
+rules:
+- id: vuln-redis-fa6815e1
+  pattern: 'getRangeLongFromObjectOrReply($C, $ARG, 1, LONG_MAX, $COUNT, "COUNT must
+    be > 0")
+
+    '
+  pattern-not: 'getRangeLongFromObjectOrReply($C, $ARG, 1, $MAX_COUNT, $COUNT, "COUNT
+    must be > 0")
+
+    '
+  languages:
+  - c
+  message: 'Detected potential integer overflow vulnerability due to unchecked use
+    of LONG_MAX in getRangeLongFromObjectOrReply. This can lead to excessive memory
+    allocation or incorrect calculations. The fix introduces a max_count limit by
+    dividing LONG_MAX by a factor (sizeof(streamID) * attempts_factor) to prevent
+    overflow. Ensure proper bounds checking when handling large input values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/fa6815e14ea5adff93c5cd7be513c02a7c6e3f2a
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

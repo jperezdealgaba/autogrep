@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gvdb-d83587b2
+  pattern: 'g_file_replace_contents_async($FILE, $STR->str, $STR->len, ...)
+
+    '
+  pattern-not: 'g_file_replace_contents_async($FILE, g_bytes_get_data($BYTES, NULL),
+    g_bytes_get_size($BYTES), ...)
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of string length with g_file_replace_contents_async.
+    This can lead to buffer overflows or incorrect file writes. Use g_bytes_get_data
+    and g_bytes_get_size to ensure the correct data and size are passed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/GNOME/gvdb/commit/d83587b2a364eb9a9a53be7e6a708074e252de14
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

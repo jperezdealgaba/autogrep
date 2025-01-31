@@ -1,0 +1,28 @@
+rules:
+- id: vuln-atutor-945a9dca
+  pattern: "if(defined('MYSQLI_ENABLED')){\n    $addslashes = 'trim';\n}else{\n  \
+    \  $addslashes = 'mysql_real_escape_string';\n}\n"
+  pattern-not: '$addslashes = ''mysql_real_escape_string'';
+
+    '
+  languages:
+  - php
+  message: 'The use of ''trim'' as a sanitization function is insecure and can lead
+    to SQL injection vulnerabilities. The ''trim'' function does not properly escape
+    SQL special characters, making it ineffective for sanitizing user input. Instead,
+    always use a proper escaping function like ''mysql_real_escape_string'' or prepared
+    statements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/atutor/ATutor/commit/945a9dca01def8536516088da30fe6a4b7e9fa85
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-rust-0148b971
+  pattern: '$X.to_string().len()
+
+    '
+  pattern-not: "$X = $NUM;\nlet mut $DIGITS = 0;\nloop {\n    $DIGITS += 1;\n    $X\
+    \ /= 10;\n    if $X == 0 {\n        break $DIGITS;\n    }\n}\n"
+  languages:
+  - rust
+  message: "Using `.to_string().len()` to count digits is inefficient as it involves\
+    \ unnecessary string allocation. \nThis can lead to performance issues, especially\
+    \ in hot code paths. \nReplace it with an iterative approach that counts digits\
+    \ directly without string conversion.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/0148b971c921a0831fbf3357e5936eec724e3566
+    category: performance
+    cwe:
+    - CWE-400
+    technology:
+    - rust

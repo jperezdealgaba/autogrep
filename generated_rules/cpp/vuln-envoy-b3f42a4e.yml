@@ -1,0 +1,28 @@
+rules:
+- id: vuln-envoy-b3f42a4e
+  pattern: '$CONNECTION.reserveBuffer(std::max(4096U, $PATH->value().size() + 4096))
+
+    '
+  pattern-not: '$CONNECTION.reserveBuffer($PATH->value().size() + $METHOD->value().size()
+    + 4096)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected potential buffer size calculation vulnerability. The buffer size
+    calculation does not account for the method size, which could lead to insufficient
+    buffer allocation and potential overflow. This issue was part of CVE-2019-18801.
+    Ensure that the buffer size calculation includes both the path and method sizes
+    to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/b3f42a4ebbd51e816cfde63ee672ce31e420602a
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - cpp

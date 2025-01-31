@@ -1,0 +1,23 @@
+rules:
+- id: vuln-bigbluebutton-d43ea3f9
+  pattern: "WebApp.connectHandlers.use('/useragent', (req, res) => {\n  const $USER_AGENT\
+    \ = req.headers['user-agent'];\n  ...\n  res.writeHead(200);\n  res.end($RESPONSE);\n\
+    });\n"
+  pattern-not: "WebApp.connectHandlers.use('/useragent', (req, res) => {\n  const\
+    \ $USER_AGENT = req.headers['user-agent'];\n  ...\n  res.setHeader('Content-Type',\
+    \ 'application/json');\n  res.writeHead(200);\n  res.end($RESPONSE);\n});\n"
+  languages:
+  - javascript
+  message: "Missing Content-Type header in HTTP response can lead to security issues\
+    \ like MIME sniffing attacks. \nAlways set the appropriate Content-Type header\
+    \ to prevent browsers from interpreting responses incorrectly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/bigbluebutton/bigbluebutton/commit/d43ea3f94c9814b9cdfca4581aa26008e15572c6
+    category: security
+    cwe: CWE-116
+    owasp: 'A6: Security Misconfiguration'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+    technology:
+    - javascript

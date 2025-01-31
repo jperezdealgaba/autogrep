@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyadmin-1490533d
+  pattern: 'var $VAR = $STRING1 + $SELECTOR.val() + $STRING2 + $PARENT_DB;
+
+    '
+  pattern-not: 'var $VAR = escapeHtml($STRING1 + $SELECTOR.val() + $STRING2 + $PARENT_DB);
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unescaped user input in string concatenation.
+    Use escapeHtml or similar sanitization functions to prevent XSS attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/1490533d91e9d3820e78ca4eac7981886eaea2cb
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

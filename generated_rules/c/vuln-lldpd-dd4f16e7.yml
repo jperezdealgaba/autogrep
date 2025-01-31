@@ -1,0 +1,28 @@
+rules:
+- id: vuln-lldpd-dd4f16e7
+  pattern: 'CHECK_TLV_SIZE(4, "Organisational")
+
+    '
+  pattern-not: 'CHECK_TLV_SIZE(1 + (int)sizeof($ORGID), "Organisational")
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability is a hardcoded size check in the `CHECK_TLV_SIZE` macro,
+    which can lead to buffer overflows or incorrect parsing of LLDP packets. This
+    is dangerous because it can allow attackers to craft malicious packets that bypass
+    validation checks, potentially leading to memory corruption or denial of service.
+    The fix is to use a dynamic size check based on the actual size of the organizational
+    ID (`orgid`).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lldpd/lldpd/commit/dd4f16e7e816f2165fba76e3d162cd8d2978dcb2
+    category: security
+    cwe:
+    - 'CWE-130: Improper Handling of Length Parameter Inconsistency'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

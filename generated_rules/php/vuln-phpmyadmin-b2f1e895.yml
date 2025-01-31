@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-b2f1e895
+  pattern: "if ($GLOBALS['lang_failed_cookie']) {\n    trigger_error(\n        sprintf(\n\
+    \            __('Unknown language: %1$s.'),\n            htmlspecialchars($GLOBALS['lang_failed_cookie'])\n\
+    \        ),\n        E_USER_ERROR\n    );\n}\n"
+  pattern-not: "if ($GLOBALS['lang_failed_cfg']\n    || $GLOBALS['lang_failed_cookie']\n\
+    \    || $GLOBALS['lang_failed_request']) {\n        __('Ignoring unsupported language\
+    \ code.'),\n}\n"
+  languages:
+  - php
+  message: 'Detected a vulnerable pattern where language validation errors are handled
+    separately, which can lead to inconsistent error handling and potential security
+    issues. The vulnerability arises from handling language validation errors in separate
+    blocks, which can be bypassed or lead to inconsistent behavior. To fix this, consolidate
+    language validation checks into a single condition and use a unified error message.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b2f1e895038a5700bf8e81fb9a5da36cbdea0eeb
+    category: security
+    cwe:
+    - CWE-755
+    owasp:
+    - OWASP_2017_A6
+    references: https://github.com/phpmyadmin/phpmyadmin/commit/b2f1e895038a5700bf8e81fb9a5da36cbdea0eeb
+    technology:
+    - php

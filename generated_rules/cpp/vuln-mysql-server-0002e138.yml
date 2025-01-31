@@ -1,0 +1,32 @@
+rules:
+- id: vuln-mysql-server-0002e138
+  pattern: 'MYSQL *$MYSQL = mysql_real_connect($MYSQL_ARG, $HOST, $USER, $PASSWD,
+    $DB, $PORT, $UNIX_SOCKET, $CLIENT_FLAG);
+
+    '
+  pattern-not: "MYSQL *$MYSQL;\n#if defined(HAVE_OPENSSL) && !defined(EMBEDDED_LIBRARY)\n\
+    enum mysql_ssl_mode $OPT_SSL_MODE = SSL_MODE_REQUIRED;\nif ($SSL_REQUIRED && mysql_options($MYSQL_ARG,\
+    \ MYSQL_OPT_SSL_MODE, (char *) &$OPT_SSL_MODE)) {\n  NET *$NET = &$MYSQL_ARG->net;\n\
+    \  $NET->last_errno = CR_SSL_CONNECTION_ERROR;\n  strmov($NET->last_error, \"\
+    Client library doesn't support MYSQL_SSL_REQUIRED option\");\n  strmov($NET->sqlstate,\
+    \ \"HY000\");\n  return NULL;\n}\n#endif\n$MYSQL = mysql_real_connect($MYSQL_ARG,\
+    \ $HOST, $USER, $PASSWD, $DB, $PORT, $UNIX_SOCKET, $CLIENT_FLAG);\n"
+  languages:
+  - cpp
+  message: 'The code directly calls `mysql_real_connect()` without proper SSL mode
+    checking when SSL is required. This can lead to insecure connections if SSL is
+    not enforced. To fix this, ensure that `mysql_options()` is called with `MYSQL_OPT_SSL_MODE`
+    set to `SSL_MODE_REQUIRED` before calling `mysql_real_connect()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/0002e1380d5f8c113b6bce91f2cf3f75136fd7c7
+    category: security
+    cwe:
+    - 'CWE-319: Cleartext Transmission of Sensitive Information'
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://dev.mysql.com/doc/refman/8.0/en/mysql-real-connect.html
+    technology:
+    - cpp

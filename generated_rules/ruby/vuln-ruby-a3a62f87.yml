@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ruby-a3a62f87
+  pattern: '$VAR = OpenSSL::ASN1.decode($EXT.to_der).value
+
+    '
+  pattern-not: '$VAR = OpenSSL::ASN1.decode($EXT.to_der).value.last
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unsafe handling of ASN1 decoded values. The original code directly
+    accesses the decoded value array without proper bounds checking, which could lead
+    to security vulnerabilities. Use `.value.last` to safely access the last element
+    of the decoded value array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/a3a62f87e144be31b9ca8ad6415b207f43f4e126
+    category: security
+    cwe:
+    - 'CWE-129: Improper Validation of Array Index'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - ruby

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-foreman-31b7d5de
+  pattern: '$PASS.empty? ? nil : ($PASS =~ /^\$1\$foreman\$.*/ ? $PASS : $PASS.crypt("$1$foreman$"))
+
+    '
+  pattern-not: '$PASS.empty? ? nil : ($PASS.starts_with?(''$'') ? $PASS : $PASS.crypt("$1$#{SecureRandom.base64(6)}"))
+
+    '
+  languages:
+  - ruby
+  message: 'Detected use of a static salt in password hashing, which can lead to predictable
+    hashes and security vulnerabilities.
+
+    This is dangerous because it makes it easier for attackers to perform dictionary
+    or rainbow table attacks.
+
+    To fix this, use a cryptographically secure random salt instead of a static one.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/31b7d5de00c21735164fa92940e6be2c08820c37
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - ruby

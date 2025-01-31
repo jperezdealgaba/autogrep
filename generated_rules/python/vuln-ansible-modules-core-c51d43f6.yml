@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ansible-modules-core-c51d43f6
+  pattern: 'cursor.execute("ALTER USER %s@%s IDENTIFIED BY %s", ($USER, $HOST, $PASSWORD))
+
+    '
+  pattern-not: 'cursor.execute("ALTER USER %s@%s IDENTIFIED WITH mysql_native_password
+    BY %s", ($USER, $HOST, $PASSWORD))
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure MySQL user authentication configuration. The use of
+    ''IDENTIFIED BY'' without specifying a secure authentication plugin can lead to
+    vulnerabilities. Use ''IDENTIFIED WITH mysql_native_password BY'' instead to ensure
+    secure authentication.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ansible/ansible-modules-core/commit/c51d43f604cc1e62805b3bae6dda1cc35d349984
+    category: security
+    cwe: CWE-287
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://dev.mysql.com/doc/refman/8.0/en/alter-user.html
+    technology:
+    - python
+    - mysql

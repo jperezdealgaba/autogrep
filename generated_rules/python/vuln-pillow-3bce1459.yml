@@ -1,0 +1,24 @@
+rules:
+- id: vuln-pillow-3bce1459
+  pattern: 'newline = whitespace_optional + newline_only + whitespace_optional
+
+    '
+  pattern-not: 'newline = whitespace_optional_no_nl + newline_only + whitespace_optional_no_nl
+
+    '
+  languages:
+  - python
+  message: Detected insecure handling of newline characters in PDF parsing. This can
+    lead to improper parsing of PDF content and potential security vulnerabilities.
+    Use 'whitespace_optional_no_nl' instead of 'whitespace_optional' to exclude newline
+    characters.
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/3bce145966374dd39ce58a6fc0083f8d1890719c
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - python

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mysql-server-044e3b1d
+  pattern: 'parse_option($ARG1, $ARG2, $ARG3);
+
+    '
+  pattern-not: "if(parse_option($ARG1, $ARG2, $ARG3) == -1) {\n  ...\n  return ...;\n\
+    }\n"
+  languages:
+  - c
+  message: 'The function `parse_option` is called without checking its return value,
+    which can lead to unhandled errors. This can result in undefined behavior or security
+    vulnerabilities if the function fails. Always check the return value of `parse_option`
+    and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/044e3b1d07c0854c39178d3054ab0cd0a3188436
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-dspace-277b499a
+  pattern: 'groupService.setName($ROLE, "COLLECTION_" + $COLLECTION.getID().toString()
+    + "_" + $TYPE_OF_GROUP_STRING + "_DEFAULT_READ")
+
+    '
+  pattern-not: 'groupService.setName($ROLE, getDefaultReadGroupName($COLLECTION, $TYPE_OF_GROUP_STRING))
+
+    '
+  languages:
+  - java
+  message: 'Insecure group name generation detected. Direct string concatenation for
+    group names can lead to inconsistencies and security issues. Use the dedicated
+    method `getDefaultReadGroupName` to ensure consistent and secure group naming.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DSpace/DSpace/commit/277b499a5cd3a4f5eb2370513a1b7e4ec2a6e041
+    category: security
+    cwe: CWE-330
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/DSpace/DSpace/commit/277b499a5cd3a4f5eb2370513a1b7e4ec2a6e041
+    technology:
+    - java

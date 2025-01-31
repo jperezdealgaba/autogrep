@@ -1,0 +1,40 @@
+rules:
+- id: vuln-flatpak-cc140104
+  pattern: 'g_environ_setenv($ENV, $VAR, $VAL, TRUE)
+
+    '
+  pattern-not: 'g_environ_setenv($ENV, $VAR, $VAL, TRUE);
+
+    if ($VAR[0] == ''\0'') { ... }
+
+    if (strchr($VAR, ''='') != NULL) { ... }
+
+    g_string_append($ENV_STRING, $VAR);
+
+    g_string_append_c($ENV_STRING, ''='');
+
+    g_string_append($ENV_STRING, $VAL);
+
+    g_string_append_c($ENV_STRING, ''\0'');
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe environment variable handling. The code does not validate
+    the environment variable name, which could allow an attacker to inject malicious
+    code. Ensure that environment variable names are not empty and do not contain
+    ''='' characters to prevent security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/cc1401043c075268ecc652eac557ef8076b5eaba
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - c

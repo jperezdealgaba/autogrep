@@ -1,0 +1,19 @@
+rules:
+- id: vuln-phpmyadmin-11496890
+  pattern: "function handleResponse($JSON) {\n    $RESPONSE = JSON.parse($JSON);\n\
+    \    ...\n}\n"
+  pattern-not: "function handleResponse($RESPONSE) {\n    dataType: 'json',\n    ...\n\
+    }\n"
+  languages:
+  - javascript
+  message: Potential security vulnerability due to unsafe JSON parsing of untrusted
+    input. Directly parse the response object instead of using JSON.parse on raw input
+    to prevent JSON injection attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/11496890d7e21786cbfd9fd17ab968f498116b3f
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    technology:
+    - javascript

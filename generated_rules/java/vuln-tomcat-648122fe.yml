@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tomcat-648122fe
+  pattern: "if(Constants.IS_SECURITY_ENABLED) {\n  try {\n    PrivilegedIntrospectHelper\
+    \ $HELPER = new PrivilegedIntrospectHelper($BEAN, $PROP, $VALUE, $REQUEST, $PARAM,\
+    \ $IGNORE_METHOD_NF);\n    AccessController.doPrivileged($HELPER);\n  } catch(PrivilegedActionException\
+    \ $EX) {\n    Exception $E = $EX.getException();\n    throw ($JASPER_EXCEPTION)$E;\n\
+    \  }\n} else {\n  internalIntrospecthelper($BEAN, $PROP, $VALUE, $REQUEST, $PARAM,\
+    \ $IGNORE_METHOD_NF);\n}\n"
+  pattern-not: 'internalIntrospecthelper($BEAN, $PROP, $VALUE, $REQUEST, $PARAM, $IGNORE_METHOD_NF);
+
+    '
+  languages:
+  - java
+  message: 'Insecure use of PrivilegedIntrospectHelper detected. This can lead to
+    security bypasses by allowing privileged actions to be executed without proper
+    validation. The code should directly call internalIntrospecthelper without the
+    unnecessary security check wrapper.
+
+    Fix by removing the PrivilegedIntrospectHelper and directly calling internalIntrospecthelper.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/648122fef84d3b43223e0b5ae668f84719dada0a
+    category: security
+    cwe:
+    - CWE-266
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - java

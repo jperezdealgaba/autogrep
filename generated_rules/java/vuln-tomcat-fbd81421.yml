@@ -1,0 +1,21 @@
+rules:
+- id: vuln-tomcat-fbd81421
+  pattern: "parameterCount++;\nif ($LIMIT > -1 && parameterCount > $LIMIT) {\n   \
+    \ ...\n}\n"
+  pattern-not: "if ($LIMIT > -1 && parameterCount >= $LIMIT) {\n    parameterCount++;\n\
+    \    ...\n}\n"
+  languages:
+  - java
+  message: 'Potential parameter count limit vulnerability. The parameter count increment
+    should be checked after the limit condition to prevent bypassing the limit check.
+    This could lead to denial of service or resource exhaustion. Move the increment
+    after the limit check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/fbd81421629afe8b8a3922d59020cde81caea861
+    category: security
+    cwe: CWE-400
+    owasp: A1:2017-Injection
+    technology: java

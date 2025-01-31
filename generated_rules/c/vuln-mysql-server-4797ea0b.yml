@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mysql-server-4797ea0b
+  pattern: "LIST *element = $MYSQL->stmts;\nLIST *pruned_list = $INIT;\nfor (; element;\
+    \ element = element->next) {\n  MYSQL_STMT *stmt = (MYSQL_STMT *) element->data;\n\
+    \  ...\n}\n"
+  pattern-not: "LIST *pruned_list = NULL;\nwhile ($MYSQL->stmts) {\n  LIST *element\
+    \ = $MYSQL->stmts;\n  MYSQL_STMT *stmt;\n  $MYSQL->stmts = list_delete(element,\
+    \ element);\n  stmt = (MYSQL_STMT *) element->data;\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Incorrect handling of LIST in mysql_prune_stmt_list() can lead to memory
+    corruption or use-after-free vulnerabilities. The original code iterates over
+    a linked list without properly managing the list''s state during deletion, which
+    can result in undefined behavior. The fix involves using a while loop and properly
+    deleting elements from the list. To fix this issue, ensure that list elements
+    are properly deleted during iteration to prevent memory corruption.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/4797ea0b772d5f4c5889bc552424132806f46e93
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c

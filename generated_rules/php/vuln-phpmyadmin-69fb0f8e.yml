@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-69fb0f8e
+  pattern: 'preg_replace(''/'' . PMA_backquote($VAR) . ''/'', ...)
+
+    '
+  pattern-not: 'preg_replace(''/'' . preg_quote(PMA_backquote($VAR), ''/'') . ''/'',
+    ...)
+
+    '
+  languages:
+  - php
+  message: "The code uses `PMA_backquote` without `preg_quote`, which can lead to\
+    \ regex injection vulnerabilities. \nThis is dangerous because it allows an attacker\
+    \ to inject arbitrary regex patterns, potentially causing unexpected behavior\
+    \ or security issues. \nTo fix this, wrap `PMA_backquote` with `preg_quote` to\
+    \ properly escape regex special characters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/69fb0f8e7dc38075427aceaf09bcac697d0590ff
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

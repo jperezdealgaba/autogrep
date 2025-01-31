@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ruby-03821335
+  pattern: 'URI.parse "#{uri.scheme}://#{res.target}#{uri.path}"
+
+    '
+  pattern-not: "$TARGET = res.target.to_s.strip\nif /\\.#{Regexp.quote($HOST)}\\z/\
+    \ =~ $TARGET\n  URI.parse \"#{uri.scheme}://#$TARGET#{uri.path}\"\nelse\n  $URI\n\
+    end\n"
+  languages:
+  - ruby
+  message: 'Detected a potential DNS rebinding vulnerability in URI parsing. The code
+    directly uses the target from a DNS response without validating it against the
+    original host. This could allow an attacker to perform DNS rebinding attacks,
+    redirecting requests to malicious domains. To fix, ensure the target domain is
+    validated against the original host before using it in URI construction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/038213351b757fb5a62bc9313b64fcb78ff2ce97
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - ruby

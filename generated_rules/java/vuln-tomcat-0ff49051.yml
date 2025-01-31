@@ -1,0 +1,20 @@
+rules:
+- id: vuln-tomcat-0ff49051
+  pattern: "SecurityConstraint $CONSTRAINTS[] = $CONTEXT.findConstraints();\nif (($CONSTRAINTS\
+    \ == null) || ($CONSTRAINTS.length == 0)) {\n    return;\n}\n"
+  pattern-not: '// Always need an authenticator to support @ServletSecurity annotations
+
+    '
+  languages:
+  - java
+  message: Missing authenticator for @ServletSecurity annotations. This can lead to
+    security bypass as the authenticator is not enforced when no security constraints
+    are defined. Always ensure an authenticator is present to handle security annotations.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/0ff4905158b77787a7f3aca55c9dec93456665dc
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-singularity-618c9d56
+  pattern: 'file, err := instance.Add($NAME, $PRIVILEGED, $SUBDIR)
+
+    '
+  pattern-not: 'file, err := instance.Add($NAME, $SUBDIR)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of deprecated privileged instance creation. The privileged
+    parameter was removed to simplify instance management and improve security. Use
+    the new instance.Add method without the privileged parameter to ensure proper
+    instance handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sylabs/singularity/commit/618c9d56802399adb329c23ea2b70598eaff4a31
+    category: security
+    cwe:
+    - CWE-250
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - go

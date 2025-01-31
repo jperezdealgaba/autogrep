@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cri-o-e0d3814d
+  pattern: "if err := $SPECGEN.AddProcessCapabilityAmbient($CAP); err != nil {\n \
+    \ return $ERR\n}\n"
+  pattern-not: 'specgen.Spec().Process.Capabilities.Ambient = []string{}
+
+    '
+  languages:
+  - go
+  message: 'The code adds ambient capabilities to a process, which can lead to privilege
+    escalation. Kubernetes and pods expect that switching to a non-root user results
+    in the capabilities being dropped. This issue should be fixed by removing all
+    ambient capabilities to ensure security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cri-o/cri-o/commit/e0d3814d97f76ac76b85433a86210d660efb8974
+    category: security
+    cwe:
+    - CWE-250
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://kubernetes.io/docs/concepts/security/pod-security-standards/
+    technology:
+    - go

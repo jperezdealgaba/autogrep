@@ -1,0 +1,21 @@
+rules:
+- id: vuln-typo3-fdf9cdad
+  pattern: unserialize($VAR)
+  pattern-not: unserialize($VAR, ['allowed_classes' => false])
+  languages:
+  - php
+  message: "Detected unsafe usage of unserialize() without the 'allowed_classes' option.\
+    \ \nThis can lead to object injection vulnerabilities, allowing an attacker to\
+    \ execute arbitrary code \nor manipulate application behavior. \nAlways use the\
+    \ 'allowed_classes' option set to false to prevent deserialization of potentially\
+    \ \ndangerous objects.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/fdf9cdade0da9acc970f1dd763ae23708c318293
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php

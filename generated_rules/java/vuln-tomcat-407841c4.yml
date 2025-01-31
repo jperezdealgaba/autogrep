@@ -1,0 +1,21 @@
+rules:
+- id: vuln-tomcat-407841c4
+  pattern: 'Double.parseDouble($ENTRY.substring($SEMI + 3))
+
+    '
+  pattern-not: "String $STRQUALITY = $ENTRY.substring($SEMI + 3);\nif ($STRQUALITY.length()\
+    \ <= 5) {\n    $QUALITY = Double.parseDouble($STRQUALITY);\n} else {\n    $QUALITY\
+    \ = 0.0;\n}\n"
+  languages:
+  - java
+  message: Direct parsing of substring without length validation can lead to security
+    vulnerabilities. Always validate the length of the substring before parsing to
+    prevent potential denial of service or other security issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/407841c426dc52a4c6b8ccd297df6c484a540056
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - java

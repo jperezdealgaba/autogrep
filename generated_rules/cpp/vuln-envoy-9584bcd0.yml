@@ -1,0 +1,24 @@
+rules:
+- id: vuln-envoy-9584bcd0
+  pattern: "if ($READ_BUFFER.length() > 0) {\n  ...\n}\n"
+  pattern-not: "if ($READ_BUFFER.length() > 0 || $TRANSPORT_WANTS_READ) {\n  ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'Detected a missing check for `transport_wants_read_` in read buffer condition.
+    This can lead to missed read resumptions when data is held in transport socket
+    internal buffers, potentially causing connection stalls or incomplete data processing.
+    Ensure to check both `read_buffer_.length() > 0` and `transport_wants_read_` to
+    properly handle read resumptions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/9584bcd09865ba6ce01b69c0dfcfa591b3e998ec
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Insufficient Logging & Monitoring
+    technology:
+    - cpp

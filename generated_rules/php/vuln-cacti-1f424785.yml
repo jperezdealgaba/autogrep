@@ -1,0 +1,29 @@
+rules:
+- id: vuln-cacti-1f424785
+  pattern: 'form_selectable_cell($poller[''hostname''], $poller[''id''], '''', ''right'')
+
+    '
+  pattern-not: 'form_selectable_cell(html_escape($poller[''hostname'']), $poller[''id''],
+    '''', ''right'')
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of `$poller[''hostname'']` in `form_selectable_cell()`.
+    This can lead to Cross-Site Scripting (XSS) vulnerabilities if the input contains
+    malicious JavaScript code. Always use `html_escape()` or similar functions to
+    sanitize user-controlled data before outputting it to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/1f42478506d83d188f68ce5ff41728a7bd159f53
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A3: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

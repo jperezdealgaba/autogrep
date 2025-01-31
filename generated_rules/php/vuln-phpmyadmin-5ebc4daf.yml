@@ -1,0 +1,33 @@
+rules:
+- id: vuln-phpmyadmin-5ebc4daf
+  pattern: 'curl_setopt($CH, CURLOPT_SSL_VERIFYHOST, 0);
+
+    curl_setopt($CH, CURLOPT_SSL_VERIFYPEER, 0);
+
+    '
+  pattern-not: 'curl_setopt($CH, CURLOPT_SSL_VERIFYHOST, 2);
+
+    curl_setopt($CH, CURLOPT_SSL_VERIFYPEER, 1);
+
+    '
+  languages:
+  - php
+  message: 'Disabling SSL certificate verification (CURLOPT_SSL_VERIFYHOST and CURLOPT_SSL_VERIFYPEER)
+    can expose the application to Man-in-the-Middle (MITM) attacks. Always verify
+    SSL certificates to ensure secure communication. Set CURLOPT_SSL_VERIFYHOST to
+    2 and CURLOPT_SSL_VERIFYPEER to 1 to enable proper SSL verification.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/5ebc4daf131dd3bd646326267f3e765d0249bbb4
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://curl.se/libcurl/c/CURLOPT_SSL_VERIFYHOST.html
+    - https://curl.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html
+    technology:
+    - php

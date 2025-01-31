@@ -1,0 +1,31 @@
+rules:
+- id: vuln-nautobot-7c4cf313
+  pattern: 'path("files/", include("db_file_storage.urls"))
+
+    '
+  pattern-not: "url(\n    \"files/download/\",\n    get_file_with_authorization,\n\
+    \    {\"add_attachment_headers\": True},\n    name=\"db_file_storage.download_file\"\
+    ,\n),\nurl(\n    \"files/get/\",\n    get_file_with_authorization,\n    {\"add_attachment_headers\"\
+    : False},\n    name=\"db_file_storage.get_file\",\n),\n"
+  languages:
+  - python
+  message: 'Detected unauthenticated file access via db_file_storage.urls. This can
+    allow unauthorized users to access or download files without proper permission
+    checks. The vulnerability was fixed by implementing a custom view with authentication
+    and permission checks.
+
+    To fix this, replace the direct inclusion of db_file_storage.urls with authenticated
+    views that verify user permissions before serving files.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nautobot/nautobot/commit/7c4cf3137f45f1541f09f2f6a7f8850cd3a2eaee
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://docs.djangoproject.com/en/stable/topics/auth/default/#the-permission-required-decorator
+    technology:
+    - python
+    - django

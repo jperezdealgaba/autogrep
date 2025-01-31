@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libvirt-b7ff9e69
+  pattern: 'return &$PROG->procs[$PROCEDURE];
+
+    '
+  pattern-not: "$PROC = &$PROG->procs[$PROCEDURE];\nif (!$PROC->func)\n    return\
+    \ NULL;\nreturn $PROC;\n"
+  languages:
+  - c
+  message: 'Directly returning a pointer from an array without checking its validity
+    can lead to NULL pointer dereference vulnerabilities. This could cause crashes
+    or undefined behavior if the function pointer is NULL. Always check the validity
+    of the returned pointer before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/b7ff9e696063189a715802d081d55a398663c15a
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-mantisbt-7cc4539f
+  pattern: "$t_manage_arr = explode(':', gpc_get_cookie($t_cookie_name));\n$c_hide_inactive\
+    \ = $t_manage_arr[0];\nif (isset($t_manage_arr[1])) {\n    $c_sort = $t_manage_arr[1];\n\
+    } else {\n    $c_sort = 'username';\n}\nif (isset($t_manage_arr[2])) {\n    $c_dir\
+    \ = $t_manage_arr[2];\n} else {\n    $c_dir = 'DESC';\n}\nif (isset($t_manage_arr[3]))\
+    \ {\n    $c_show_disabled = $t_manage_arr[3];\n}\n"
+  pattern-not: "$t_manage_arr = explode(':', gpc_get_cookie($t_cookie_name));\n$f_hide_inactive\
+    \ = (bool)$t_manage_arr[0];\nif (isset($t_manage_arr[1])) {\n    $f_sort = $t_manage_arr[1];\n\
+    } else {\n    $f_sort = 'username';\n}\nif (isset($t_manage_arr[2])) {\n    $f_dir\
+    \ = $t_manage_arr[2];\n} else {\n    $f_dir = 'DESC';\n}\nif (isset($t_manage_arr[3]))\
+    \ {\n    $f_show_disabled = $t_manage_arr[3];\n}\n"
+  languages:
+  - php
+  message: 'The code directly assigns values from a cookie to variables without proper
+    type casting, which can lead to type confusion vulnerabilities. This can be exploited
+    to bypass security checks or cause unexpected behavior. Always cast cookie values
+    to the appropriate type before using them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/7cc4539f
+    category: security
+    cwe:
+    - 'CWE-843: Access of Resource Using Incompatible Type (''Type Confusion'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/843.html
+    technology:
+    - php

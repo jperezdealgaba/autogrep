@@ -1,0 +1,36 @@
+rules:
+- id: vuln-dolibarr-d08d28c0
+  pattern: "function test_sql_and_script_inject($val, $get) {\n    ...\n    $sql_inj\
+    \ += preg_match('/<script/i', $val);\n    $sql_inj += preg_match('/base[\\s]+href/i',\
+    \ $val);\n    if ($get) $sql_inj += preg_match('/img[\\s]+src/i', $val);\n   \
+    \ if ($get) $sql_inj += preg_match('/style[\\s]*=/i', $val);\n    if ($get) $sql_inj\
+    \ += preg_match('/javascript:/i', $val);\n    if ($get) $sql_inj += preg_match('/\"\
+    /i', $val);\n    ...\n}\n"
+  pattern-not: "function test_sql_and_script_inject($val, $type) {\n    ...\n    $sql_inj\
+    \ += preg_match('/<script/i', $val);\n    $sql_inj += preg_match('/base[\\s]+href/i',\
+    \ $val);\n    if ($type == 1) {\n        $sql_inj += preg_match('/img[\\s]+src/i',\
+    \ $val);\n        $sql_inj += preg_match('/style[\\s]*=/i', $val);\n        $sql_inj\
+    \ += preg_match('/javascript:/i', $val);\n    }\n    if ($type == 1) $sql_inj\
+    \ += preg_match('/\"/i', $val);\n    if ($type == 2) $sql_inj += preg_match('/[\\\
+    s;\"]/', $val);\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a vulnerable implementation of SQL and XSS injection checks.
+    The original code did not properly validate PHP_SELF and had inconsistent checks
+    for different input types. This could lead to bypassing security filters and potential
+    SQL injection or XSS attacks. Update the function to properly handle different
+    input types (GET, POST, PHP_SELF) with appropriate validation patterns.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/d08d28c0cda1f762a47cc205d4363de03df16675
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

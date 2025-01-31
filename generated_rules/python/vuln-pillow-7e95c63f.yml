@@ -1,0 +1,23 @@
+rules:
+- id: vuln-pillow-7e95c63f
+  pattern: '["Tests/images/sgi_overrun_expandrowF04.bin", "Tests/images/sgi_crash.bin"]
+
+    '
+  pattern-not: "[\n    \"Tests/images/sgi_overrun_expandrowF04.bin\",\n    \"Tests/images/sgi_crash.bin\"\
+    ,\n    \"Tests/images/crash-6b7f2244da6d0ae297ee0754a424213444e92778.sgi\",\n\
+    \    \"Tests/images/ossfuzz-5730089102868480.sgi\",\n]\n"
+  languages:
+  - python
+  message: Incomplete test coverage for SGI image handling. This could lead to undetected
+    vulnerabilities in image processing. Ensure all known test cases are included
+    to prevent potential crashes or security issues.
+  severity: WARNING
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/7e95c63fa7f503f185d3d9eb16b9cee1e54d1e46
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - python

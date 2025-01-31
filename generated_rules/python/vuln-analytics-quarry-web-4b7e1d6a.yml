@@ -1,0 +1,24 @@
+rules:
+- id: vuln-analytics-quarry-web-4b7e1d6a
+  pattern: 'return Response(json.dumps($DATA))
+
+    '
+  pattern-not: "return Response(\n    json.dumps($DATA),\n    mimetype='application/json'\n\
+    )\n"
+  languages:
+  - python
+  message: 'Detected a missing ''mimetype'' parameter in Response objects. This can
+    lead to incorrect content type interpretation, potentially causing security issues
+    like XSS. Always specify ''mimetype=''application/json'''' when returning JSON
+    responses.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/analytics-quarry-web/commit/4b7e1d6a3a52ec6cf826a971135a38b0f74785d2
+    category: security
+    cwe: CWE-116
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://flask.palletsprojects.com/en/2.3.x/api/#flask.Response
+    technology: python

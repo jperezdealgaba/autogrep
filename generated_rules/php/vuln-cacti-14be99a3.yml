@@ -1,0 +1,30 @@
+rules:
+- id: vuln-cacti-14be99a3
+  pattern: "$aud = verify_data_input($DATA_INPUT['hash'], $DATA_INPUT['input_string']);\n\
+    if ($aud['status']) {\n    ...\n} else {\n    ...\n}\n"
+  pattern-not: "$aud = verify_data_input_whitelist($DATA_INPUT['hash'], $DATA_INPUT['input_string']);\n\
+    if ($aud === true) {\n    ...\n} elseif ($aud == false) {\n    ...\n} elseif ($aud\
+    \ == '-1') {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Detected the use of an insecure data input verification function. The
+    original function `verify_data_input` does not properly validate input against
+    a whitelist, which could lead to security vulnerabilities. The fix involves using
+    `verify_data_input_whitelist` to ensure that input strings are validated against
+    a predefined whitelist. To fix this, replace `verify_data_input` with `verify_data_input_whitelist`
+    and update the conditional checks to handle the new return values (`true`, `false`,
+    and `-1`).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/14be99a33bef17092b0f0b67d1887e5d2743f156
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

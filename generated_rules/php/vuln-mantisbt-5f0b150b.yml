@@ -1,0 +1,36 @@
+rules:
+- id: vuln-mantisbt-5f0b150b
+  pattern: '$t_can_download = access_has_bug_level(config_get(''download_attachments_threshold''),
+    $p_bug_id);
+
+    $t_can_download = $t_can_download || ($t_uploaded_by_me && config_get(''allow_download_own_attachments''));
+
+    '
+  pattern-not: '$t_can_download = access_has_bug_level(config_get(''download_attachments_threshold'',
+    null, null, bug_get_field($p_bug_id, ''project_id'')), $p_bug_id);
+
+    $t_can_download = $t_can_download || ($t_uploaded_by_me && config_get(''allow_download_own_attachments'',
+    null, null, bug_get_field($p_bug_id, ''project_id'')));
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable due to missing project context in `config_get`
+    calls, which could lead to incorrect access control decisions. This is dangerous
+    because it may allow unauthorized users to download attachments. To fix this,
+    ensure that `config_get` includes the project context by passing the project ID
+    obtained via `bug_get_field`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/5f0b150b
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A01: Broken Access Control'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Broken_Access_Control
+    technology:
+    - php

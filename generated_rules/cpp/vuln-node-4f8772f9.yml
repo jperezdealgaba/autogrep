@@ -1,0 +1,28 @@
+rules:
+- id: vuln-node-4f8772f9
+  pattern: 'StreamWriteResult { $FALSE, $ERR, $REQ_WRAP, $BYTES }
+
+    '
+  pattern-not: 'StreamWriteResult { $FALSE, $ERR, $REQ_WRAP, $BYTES, $WRAP_OBJ }
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a missing `BaseObjectPtr<AsyncWrap>` in `StreamWriteResult` initialization.
+    This can lead to improper resource management and potential memory issues. Always
+    include the `wrap_obj` parameter to ensure proper object lifetime management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/4f8772f9b731118628256189b73cd202149bbd97
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-772
+    owasp:
+    - 'A9: Insecure Components'
+    references:
+    - https://github.com/nodejs/node/commit/4f8772f9b731118628256189b73cd202149bbd97
+    technology:
+    - cpp

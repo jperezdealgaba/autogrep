@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openjpeg-6daf5f3e
+  pattern: 'OPJ_FLOAT64 $VAR = opj_dwt_norms_real[$ORIENT][$LEVEL];
+
+    '
+  pattern-not: 'OPJ_FLOAT64 $VAR = opj_dwt_getnorm_real($LEVEL, $ORIENT);
+
+    '
+  languages:
+  - c
+  message: "Direct array access to `opj_dwt_norms_real` is vulnerable to out-of-bounds\
+    \ access. \nUse the safer `opj_dwt_getnorm_real` function instead to ensure proper\
+    \ bounds checking.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/6daf5f3e1ec6eff03b7982889874a3de6617db8d
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - c

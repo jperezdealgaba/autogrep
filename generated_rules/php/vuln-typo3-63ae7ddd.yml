@@ -1,0 +1,24 @@
+rules:
+- id: vuln-typo3-63ae7ddd
+  pattern: '$retVal = $_SERVER[''REQUEST_URI''];
+
+    '
+  pattern-not: '$retVal = ''/'' . ltrim($_SERVER[''REQUEST_URI''], ''/'');
+
+    '
+  languages:
+  - php
+  message: 'Direct use of $_SERVER[''REQUEST_URI''] without proper sanitization can
+    lead to path manipulation vulnerabilities. Ensure that the request URI is properly
+    sanitized by prefixing it with a ''/'' and trimming any leading slashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/63ae7ddd11d284a121f23ce86282e3149bc16f96
+    category: security
+    cwe:
+    - CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-zoneminder-b2a97ee1
+  pattern: '$VAR = $_REQUEST[''scale''];
+
+    '
+  pattern-not: '$VAR = validNum($_REQUEST[''scale'']);
+
+    '
+  languages:
+  - php
+  message: 'Directly using user input from $_REQUEST without validation can lead to
+    security vulnerabilities such as XSS or SQL injection. Always validate or sanitize
+    user input using a function like validNum() to ensure it meets expected criteria.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/b2a97ee190c6dc3e30b9c36b9c33c33348dde4d6
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

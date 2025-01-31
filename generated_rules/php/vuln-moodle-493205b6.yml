@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-493205b6
+  pattern: 'file_get_contents($TEMPPATH . ''/course_files/'' . $DATA[''initialcontent''])
+
+    '
+  pattern-not: 'file_get_contents($TEMPPATH . ''/course_files/'' . clean_param($DATA[''initialcontent''],
+    PARAM_FILE))
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential file path traversal vulnerability due to unvalidated
+    user input in file_get_contents. This can allow attackers to read arbitrary files
+    on the server by manipulating the ''initialcontent'' parameter. To fix this, use
+    clean_param with PARAM_FILE to sanitize the input before using it in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/493205b6b280633bcbc49d2eaf4f61a52252c26c
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

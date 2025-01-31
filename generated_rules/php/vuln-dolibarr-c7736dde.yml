@@ -1,0 +1,30 @@
+rules:
+- id: vuln-dolibarr-c7736dde
+  pattern: 'print dol_htmlentitiesbr($OBJECT->note);
+
+    '
+  pattern-not: 'print dol_string_onlythesehtmltags(dol_htmlentitiesbr($OBJECT->note_private));
+
+    '
+  languages:
+  - php
+  message: 'Detected potentially unsafe HTML output. The code directly prints user-controlled
+    HTML content without proper sanitization, which can lead to XSS vulnerabilities.
+    Use `dol_string_onlythesehtmltags` in conjunction with `dol_htmlentitiesbr` to
+    sanitize HTML output and prevent XSS attacks. Ensure sensitive content is marked
+    with the `sensiblehtmlcontent` class to apply additional CSS protections.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/c7736dde41826ac6eca3e838e57eab2f0304e256
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

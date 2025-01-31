@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jruby-0b06b48a
+  pattern: 'YAML.load($RESPONSE)
+
+    '
+  pattern-not: 'Gem::SafeYAML.load($RESPONSE)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unsafe YAML deserialization using `YAML.load`. This can lead
+    to arbitrary code execution when processing untrusted input. Use `Gem::SafeYAML.load`
+    or a similar safe deserialization method to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jruby/jruby/commit/0b06b48ab4432237ce5fc1bef47f2c6bcf7843f7
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - ruby

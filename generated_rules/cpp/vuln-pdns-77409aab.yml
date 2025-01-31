@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pdns-77409aab
+  pattern: "if ($QTYPE != QType::ANY && $QTYPE != QType::ADDR && !$ECSINDEX.empty())\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!$ECSINDEX.empty()) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The code incorrectly checks for QType::ANY and QType::ADDR conditions
+    in conjunction with ECS index checks. This can lead to incorrect handling of DNS
+    queries, potentially causing security vulnerabilities or unexpected behavior.
+    The condition should be simplified to only check the ECS index, as shown in the
+    fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PowerDNS/pdns/commit/77409aab0be43071b365760213894d6388c3df30
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://github.com/PowerDNS/pdns/commit/77409aab0be43071b365760213894d6388c3df30
+    technology:
+    - cpp

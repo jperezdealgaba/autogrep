@@ -1,0 +1,21 @@
+rules:
+- id: vuln-spreed-837a336e
+  pattern: "if (!newTrack && this._outputStream) {\n  this._stopBlackVideo()\n  this._setOutputTrack('default',\
+    \ null)\n  return\n}\n"
+  pattern-not: "if (!newTrack && this._outputStream) {\n  this._stopBlackVideo()\n\
+    \  this._setOutputTrack('default', blackVideoTracks[1])\n  return\n}\n"
+  languages:
+  - javascript
+  message: 'Potential vulnerability in video track handling where a black video track
+    is not properly set when an input track is removed. This can lead to inconsistent
+    video output states. Ensure that a black video track is set as the output track
+    when removing an input track to maintain proper video handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/spreed/commit/837a336ef5f03b83d7754a3f8861b0ea97901deb
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: javascript

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-discourse-2c45b949
+  pattern: '$NOTIFICATIONS = filter_inaccessible_notifications($NOTIFICATIONS)
+
+    '
+  pattern-not: '$NOTIFICATIONS = Notification.filter_inaccessible_topic_notifications($GUARDIAN,
+    $NOTIFICATIONS)
+
+    '
+  languages:
+  - ruby
+  message: 'The `filter_inaccessible_notifications` method does not properly check
+    accessibility permissions, potentially exposing private notifications to unauthorized
+    users. This can lead to information disclosure. The method should be replaced
+    with `Notification.filter_inaccessible_topic_notifications` which properly verifies
+    access permissions using the user''s guardian.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/2c45b949ea0e9d6fa8e5af2dd07f6521ede08bf1
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - ruby

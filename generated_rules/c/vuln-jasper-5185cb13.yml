@@ -1,0 +1,30 @@
+rules:
+- id: vuln-jasper-5185cb13
+  pattern: '$OPTS->max_samples = $VALUE * JAS_MEBI;
+
+    '
+  pattern-not: '$OPTS->max_samples = JAS_DEC_DEFAULT_MAX_SAMPLES;
+
+    '
+  languages:
+  - c
+  message: 'The code directly sets `max_samples` using a hardcoded value multiplied
+    by `JAS_MEBI`, which can lead to integer overflows or excessive memory allocation.
+    This vulnerability could be exploited to cause denial of service or memory corruption.
+    Use `JAS_DEC_DEFAULT_MAX_SAMPLES` or validate the input using safe arithmetic
+    functions like `jas_safe_size_mul` and `jas_safe_size_add`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/5185cb13da413f826dcc5f1e0c1eb3e038dc0874
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-128
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/128.html
+    technology:
+    - c

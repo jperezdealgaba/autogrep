@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-dedd542c
+  pattern: '$newtablename = preg_replace("/^" . $from_prefix . "/", $to_prefix, $current);
+
+    '
+  pattern-not: "if (substr($current, 0, strlen($from_prefix)) == $from_prefix) {\n\
+    \    $newtablename = $to_prefix . substr($current, strlen($from_prefix));\n} else\
+    \ {\n    $newtablename = $current;\n}\n"
+  languages:
+  - php
+  message: 'The use of `preg_replace` with user-controlled input can lead to security
+    vulnerabilities such as ReDoS (Regular Expression Denial of Service) or unintended
+    string manipulations. This pattern should be replaced with a safer string manipulation
+    method like `substr` and a direct comparison to ensure security and performance.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/dedd542cdaf1606ca9aa3f6f8f8adb078d8ad549
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure.html
+    technology:
+    - php

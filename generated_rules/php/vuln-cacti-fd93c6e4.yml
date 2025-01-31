@@ -1,0 +1,32 @@
+rules:
+- id: vuln-cacti-fd93c6e4
+  pattern: '$sql_having .= ($i == 0 ? '''':'' OR '') . ''`'' . implode(''`.`'', explode(''.'',
+    $column[''field_name''])) . ''`'' . '' LIKE "%'' . $filter . ''%"''
+
+    '
+  pattern-not: '$sql_having .= ($i == 0 ? '''':'' OR '') . ''`'' . implode(''`.`'',
+    explode(''.'', $column[''field_name''])) . ''`'' . '' LIKE '' . db_qstr(''%''
+    . $filter . ''%'')
+
+    '
+  languages:
+  - php
+  message: 'Detected a SQL injection vulnerability due to improper sanitization of
+    user input in a SQL query. The vulnerability occurs when user-controlled input
+    is directly concatenated into a SQL query without proper escaping, allowing an
+    attacker to manipulate the query. To fix this, use parameterized queries or proper
+    escaping functions like `db_qstr`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/fd93c6e47651958b77c3bbe6a01fff695f81e886
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

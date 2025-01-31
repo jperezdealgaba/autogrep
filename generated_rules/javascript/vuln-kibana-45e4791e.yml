@@ -1,0 +1,25 @@
+rules:
+- id: vuln-kibana-45e4791e
+  pattern: 'if (!$FIELD) return $CONVERTER($SOURCE, $FIELD, $HIT);
+
+    '
+  pattern-not: 'if (!$FIELD) return _.escape($CONVERTER($SOURCE));
+
+    '
+  languages:
+  - javascript
+  message: 'Potential XSS vulnerability due to unescaped HTML output. The return value
+    of $CONVERTER is directly used without escaping, which can lead to HTML injection.
+    Use _.escape or similar methods to sanitize the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/elastic/kibana/commit/45e4791efd405b2691c4008d6c3a050e0e7bbdcc
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

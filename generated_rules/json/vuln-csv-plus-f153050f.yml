@@ -1,0 +1,23 @@
+rules:
+- id: vuln-csv-plus-f153050f
+  pattern: '"version": "0.8.0"'
+  pattern-not: '"version": "0.8.1"'
+  languages:
+  - json
+  message: 'The package version 0.8.0 contains a security vulnerability. Using this
+    version may expose your application to known risks. Upgrade to version 0.8.1 to
+    mitigate the vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/plusone-masaki/csv-plus/commit/f153050f21aa26d839749a4906c9fbbe50ddc52c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - OWASP-A9
+    references:
+    - https://github.com/plusone-masaki/csv-plus/commit/f153050f21aa26d839749a4906c9fbbe50ddc52c
+    technology:
+    - json

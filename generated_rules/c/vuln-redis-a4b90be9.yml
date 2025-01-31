@@ -1,0 +1,30 @@
+rules:
+- id: vuln-redis-a4b90be9
+  pattern: 'int reghisto[$X+2] = {0};
+
+    '
+  pattern-not: 'int reghisto[64] = {0};
+
+    '
+  languages:
+  - c
+  message: "The array 'reghisto' is declared with a size that could lead to buffer\
+    \ overflow vulnerabilities. \nThe size should be fixed to a safe value (e.g.,\
+    \ 64) to prevent potential overflows that could write data to incorrect memory\
+    \ locations.\nThis vulnerability is dangerous because it could lead to memory\
+    \ corruption, crashes, or even arbitrary code execution.\nTo fix this, ensure\
+    \ the array size is set to a safe, fixed value that accommodates all possible\
+    \ input scenarios.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/a4b90be9fcd5e1668ac941cabce3b1ab38dbe326
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

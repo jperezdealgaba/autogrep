@@ -1,0 +1,31 @@
+rules:
+- id: vuln-ruby-1cfe43fd
+  pattern: '$F = open($FILENAME, ...)
+
+    '
+  pattern-not: '$F = File.open($FILENAME, ...)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `open` without `File` prefix can lead to command injection
+    vulnerabilities when the filename contains special characters.
+
+    This is dangerous because an attacker could execute arbitrary commands by crafting
+    a malicious filename.
+
+    Always use `File.open` instead of `open` to safely handle file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/1cfe43fd85c66a9e2b5068480b3e043c31e6b8ca
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://ruby-doc.org/core/File.html#method-c-open
+    technology:
+    - ruby

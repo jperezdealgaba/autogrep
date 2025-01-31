@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mantisbt-bd094ded
+  pattern: 'echo ''</a>&#160;'' . $t_href . file_get_display_name( $v_filename ) .
+    ''</a>'';
+
+    '
+  pattern-not: 'echo ''</a>&#160;'' . $t_href . string_html_specialchars( file_get_display_name(
+    $v_filename ) ) . ''</a>'';
+
+    '
+  languages:
+  - php
+  message: 'The code directly outputs the result of `file_get_display_name($v_filename)`
+    without proper HTML escaping, which can lead to Cross-Site Scripting (XSS) vulnerabilities.
+    Always use `string_html_specialchars()` or equivalent functions to escape user-controlled
+    data before outputting it in HTML context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/bd094dede74ff6e313e286e949e2387233a96eea
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jasper-a4dc77cc
+  pattern: "if ($PREC > 38) {\n  ...\n}\n"
+  pattern-not: "if ($PREC < 1U + $SGND || $PREC > 38) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected insufficient precision validation in image processing code. This
+    vulnerability can lead to incorrect handling of image data, potentially causing
+    crashes or security issues. Ensure that precision values are validated to be at
+    least 1 bit for unsigned samples and 2 bits for signed samples.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/a4dc77cca1163347d0aa677d56da332c3f119021
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

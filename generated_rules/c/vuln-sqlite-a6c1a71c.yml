@@ -1,0 +1,24 @@
+rules:
+- id: vuln-sqlite-a6c1a71c
+  pattern: "if( $DB->mallocFailed || sqliteProcessJoin($PARSE, $P) ){\n  ...\n}\n"
+  pattern-not: "if( $PARSE->nErr || $DB->mallocFailed || sqliteProcessJoin($PARSE,\
+    \ $P) ){\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The condition in the if-statement does not check for parse errors (nErr),
+    which could lead to incorrect execution flow when errors occur. This is dangerous
+    because it may cause the program to proceed with invalid or unexpected data. To
+    fix this, ensure that parse errors are checked before other conditions in the
+    if-statement.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sqlite/sqlite/commit/a6c1a71cde082e09750465d5675699062922e387
+    category: security
+    cwe:
+    - 'CWE-391: Unchecked Error Condition'
+    owasp:
+    - A10:2021 - Security Logging and Monitoring Failures
+    technology:
+    - c

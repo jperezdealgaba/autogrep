@@ -1,0 +1,24 @@
+rules:
+- id: vuln-mantisbt-5fb97960
+  pattern: '$COMMAND = $TOOL . '' -T'' . $FORMAT
+
+    '
+  pattern-not: '$COMMAND = escapeshellcmd($TOOL . '' -T'' . $FORMAT)
+
+    '
+  languages:
+  - php
+  message: "Detected potential command injection vulnerability due to missing input\
+    \ sanitization. \nThe code constructs a shell command by directly concatenating\
+    \ user-controlled input, which can lead to arbitrary command execution. \nTo fix\
+    \ this, use `escapeshellcmd` to sanitize the command string before execution.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/5fb979604d88c630343b3eaf2b435cd41918c501
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

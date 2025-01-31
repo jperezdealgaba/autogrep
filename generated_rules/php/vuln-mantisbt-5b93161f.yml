@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mantisbt-5b93161f
+  pattern: 'require_once( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $t_action_include_file
+    );
+
+    '
+  pattern-not: 'bug_group_action_init( $f_action );
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe dynamic file inclusion vulnerability. The code includes
+    a file based on user-controlled input without proper validation, which could lead
+    to arbitrary file inclusion and remote code execution. Use the `bug_group_action_init`
+    function to properly validate and include the file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/5b93161f3ece2f73410c296fed8522f6475d273d
+    category: security
+    cwe:
+    - CWE-98
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/File_Inclusion
+    technology:
+    - php

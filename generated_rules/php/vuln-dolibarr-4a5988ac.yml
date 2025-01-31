@@ -1,0 +1,25 @@
+rules:
+- id: vuln-dolibarr-4a5988ac
+  pattern: '$VAR = isset($_GET["$PARAM"]) ? $_GET["$PARAM"] : $_POST["$PARAM"];
+
+    '
+  pattern-not: '$VAR = GETPOST("$PARAM", ''$TYPE'');
+
+    '
+  languages:
+  - php
+  message: Direct use of $_GET or $_POST without proper sanitization can lead to security
+    vulnerabilities such as SQL injection or XSS. Use the GETPOST function with a
+    specified type for secure input handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/4a5988accbb770b74105baacd5a034689272128c
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

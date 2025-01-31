@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-2c639e85
+  pattern: '$record->groupid = $VAR;
+
+    '
+  pattern-not: '$record->groupid = $currentgroup;
+
+    '
+  languages:
+  - php
+  message: 'The assignment of groupid in the record object is potentially unsafe as
+    it directly assigns a variable without proper validation. This could lead to security
+    vulnerabilities such as unauthorized group access or data manipulation. Ensure
+    that the value assigned to groupid is properly validated and sanitized, or use
+    a trusted source like $currentgroup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/2c639e85a32aaef4a9978e5ca139fb74ca5d6ae4
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

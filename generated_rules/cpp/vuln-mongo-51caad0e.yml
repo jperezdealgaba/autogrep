@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mongo-51caad0e
+  pattern: 'uassert($CODE, $MSG, isValidUTF8($REGEX) && isValidUTF8($FLAGS));
+
+    '
+  pattern-not: "if (!isValidUTF8($REGEX) || !isValidUTF8($FLAGS))\n  return Status{ErrorCodes::BadValue,\
+    \ $MSG};\n"
+  languages:
+  - cpp
+  message: 'The code uses `uassert` to validate UTF-8 strings in regular expressions,
+    which can lead to assertion failures instead of proper error handling. This can
+    cause the application to crash rather than gracefully handle invalid input. Replace
+    `uassert` with proper error handling using `Status` to return an error message
+    instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mongodb/mongo/commit/51caad0e005e1a6dc1bd529cb809ba0d7d5eef0d
+    category: security
+    cwe:
+    - 'CWE-755: Improper Handling of Exceptional Conditions'
+    owasp: A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/755.html
+    technology:
+    - cpp

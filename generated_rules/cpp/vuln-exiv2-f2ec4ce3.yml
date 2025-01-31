@@ -1,0 +1,77 @@
+rules:
+- id: vuln-exiv2-f2ec4ce3
+  pattern: 'std::string $VAR = $KEYWORD + ''\0'';
+
+    ...
+
+    $VAR += ''\0'';
+
+    ...
+
+    byte $LENGTH[4];
+
+    ul2Data($LENGTH, static_cast<uint32_t>($VAR.size() + $COMPRESSED_LENGTH), $ENDIAN);
+
+    ...
+
+    return std::string((const char*)$LENGTH, 4) + $CHUNKTYPE + $VAR;
+
+    '
+  pattern-not: 'const byte* $HEADER = (const byte*) "ICC PROFILE\0\0";
+
+    const byte* $TYPE = (const byte*) "iCCP";
+
+    uint32_t $HEADERLEN = 13;
+
+    uint32_t $TYPELEN = 4;
+
+    uint32_t $CHUNKLENGTH = $HEADERLEN + $COMPRESSED_SIZE;
+
+    byte $LENGTH[4];
+
+    ul2Data($LENGTH, $CHUNKLENGTH, $ENDIAN);
+
+    uLong $TMP = crc32(0L, Z_NULL, 0);
+
+    $TMP = crc32($TMP, (const Bytef*)$HEADER, $HEADERLEN);
+
+    $TMP = crc32($TMP, (const Bytef*)$COMPRESSED_DATA, $COMPRESSED_SIZE);
+
+    byte $CRC[4];
+
+    ul2Data($CRC, $TMP, $ENDIAN);
+
+    ...
+
+    outIo.write($LENGTH, 4) != 4
+
+    || outIo.write($TYPE, $TYPELEN) != $TYPELEN
+
+    || outIo.write($HEADER, $HEADERLEN) != $HEADERLEN
+
+    || outIo.write($COMPRESSED_DATA, $COMPRESSED_SIZE) != $COMPRESSED_SIZE
+
+    || outIo.write($CRC, 4) != 4
+
+    '
+  languages:
+  - cpp
+  message: 'The original code constructs a PNG iCCP chunk header in an insecure manner,
+    potentially leading to incorrect chunk formation or security vulnerabilities.
+    The fixed version properly calculates the chunk length, includes CRC checks, and
+    ensures correct header formation. Always use secure methods for constructing binary
+    data headers, including proper length calculations and checksums.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/f2ec4ce36adb3f233e3b39df1f7a49fad8f1104c
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.w3.org/TR/PNG/
+    technology:
+    - cpp

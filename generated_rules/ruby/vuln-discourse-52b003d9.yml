@@ -1,0 +1,28 @@
+rules:
+- id: vuln-discourse-52b003d9
+  pattern: 'accepts_nested_attributes_for $VAR, allow_destroy: true
+
+    '
+  pattern-not: 'accepts_nested_attributes_for $VAR, allow_destroy: true, limit: $LIMIT
+
+    '
+  languages:
+  - ruby
+  message: 'Detected `accepts_nested_attributes_for` without a `limit` parameter.
+    This can lead to a denial of service (DoS) attack by allowing an attacker to submit
+    an excessive number of nested records, potentially overwhelming the server. Always
+    set a reasonable limit on the number of nested records that can be created.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/52b003d915761f1581ae2d105f3cbe76df7bf1ff
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - A05:2021 - Security Misconfiguration
+    references:
+    - https://guides.rubyonrails.org/active_record_nested_attributes.html
+    technology:
+    - ruby

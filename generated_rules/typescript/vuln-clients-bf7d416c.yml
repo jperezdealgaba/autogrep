@@ -1,0 +1,27 @@
+rules:
+- id: vuln-clients-bf7d416c
+  pattern: 'const $OPTIONS = { allFrames: true, ... }
+
+    '
+  pattern-not: 'const $OPTIONS = { frameId: $FRAMEID, ... }
+
+    '
+  languages:
+  - typescript
+  message: 'Using `allFrames: true` in script execution options can lead to unintended
+    script execution in all frames, potentially causing security issues. Instead,
+    use `frameId` to target specific frames.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bitwarden/clients/commit/bf7d416c68d970ce837469516a52aad1641d9c92
+    category: security
+    cwe:
+    - CWE-1021
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://developer.chrome.com/docs/extensions/reference/scripting/
+    technology:
+    - typescript

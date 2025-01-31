@@ -1,0 +1,26 @@
+rules:
+- id: vuln-opensips-8f87c7c0
+  pattern: 'delete_sdp_line($MSG, $S)
+
+    '
+  pattern-not: 'delete_sdp_line($MSG, $S, $STREAM)
+
+    '
+  languages:
+  - c
+  message: 'The function `delete_sdp_line` is being called without the required `stream`
+    parameter, which is used to safeguard the identification of line boundaries. This
+    could lead to out-of-bounds memory access or incorrect line deletion. Always pass
+    the `stream` parameter to ensure proper boundary checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/OpenSIPS/opensips/commit/8f87c7c03da55f9c79bd92e67fa2c94b2a7ce5cf
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - c

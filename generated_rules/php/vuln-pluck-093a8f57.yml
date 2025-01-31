@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pluck-093a8f57
+  pattern: "if (isset($_POST['save'], $cont1) && $cont1 != '0' && file_exists('data/inc/lang/'.$cont1)\
+    \ && $cont1 != $langpref) {\n  ...\n}\n"
+  pattern-not: "if (isset($_POST['save'], $cont1) && $cont1 != '0' && file_exists('data/inc/lang/'.$cont1)\
+    \ && $cont1 != $langpref && strlen($cont1) < 10) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "Detected a potential path traversal vulnerability due to missing length\
+    \ validation on the `$cont1` variable. \nThis could allow an attacker to manipulate\
+    \ the file path and access unauthorized files. \nTo fix this, ensure that the\
+    \ length of `$cont1` is validated to prevent path traversal attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/093a8f57b00d93b03aef8e653966302a94d833f8
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

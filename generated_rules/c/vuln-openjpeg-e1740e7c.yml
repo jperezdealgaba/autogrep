@@ -1,0 +1,20 @@
+rules:
+- id: vuln-openjpeg-e1740e7c
+  pattern: "if ($INDEX >= $PI->include_size) {\n    opj_pi_emit_error($PI, \"Invalid\
+    \ access to pi->include\");\n    return OPJ_FALSE;\n}\n"
+  pattern-not: "if ($INDEX >= $PI->include_size) {\n    return OPJ_FALSE;\n}\n"
+  languages:
+  - c
+  message: Potential out-of-bounds access detected. The code checks if an index is
+    out of bounds but does not prevent the access. This could lead to undefined behavior
+    or security vulnerabilities. Ensure that the access is properly guarded or handled.
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/e1740e7ce79d0a1676db4da0f4189b64e85f52cb
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

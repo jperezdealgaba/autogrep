@@ -1,0 +1,20 @@
+rules:
+- id: vuln-django-e34f3c0e
+  pattern: "if len($NEW_VALUE) >= len($VALUE):\n    ...\n"
+  pattern-not: "if $VALUE.count('<') == $NEW_VALUE.count('<'):\n    ...\n"
+  languages:
+  - python
+  message: 'Detected potential HTML tag stripping vulnerability. Comparing string
+    lengths to determine if tags were stripped is unreliable and can lead to security
+    issues. Instead, compare the count of ''<'' characters to ensure all tags are
+    properly stripped.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/e34f3c0e9ee5fc9022428fe91640638bafd4cda7
+    category: security
+    cwe: CWE-116
+    owasp: A03:2021-Injection
+    technology:
+    - python

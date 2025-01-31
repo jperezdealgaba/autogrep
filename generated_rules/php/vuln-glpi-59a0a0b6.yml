@@ -1,0 +1,28 @@
+rules:
+- id: vuln-glpi-59a0a0b6
+  pattern: 'define(''GLPI_VERSION'', ''9.5.3'');
+
+    '
+  pattern-not: 'define(''GLPI_VERSION'', ''9.5.4'');
+
+    '
+  languages:
+  - php
+  message: 'The version of GLPI is outdated and may contain security vulnerabilities.
+    Using an outdated version can expose the application to known exploits and attacks.
+    Update to the latest version to ensure security patches are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/59a0a0b6101fcd54b00bfc6a61d4e707513c08c9
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9: Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

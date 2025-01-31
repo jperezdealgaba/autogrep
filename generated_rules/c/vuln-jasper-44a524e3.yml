@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jasper-44a524e3
+  pattern: "if (!(buf = jas_realloc2($VAR, $BUFSIZE, sizeof(unsigned char)))) {\n\
+    \  ...\n}\n"
+  pattern-not: "if (!(buf = jas_realloc2($VAR, $BUFSIZE, sizeof(unsigned char))) &&\n\
+    \  $BUFSIZE) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code performs a memory reallocation without checking if the buffer
+    size is zero. This can lead to undefined behavior or memory corruption if the
+    reallocation fails due to a zero buffer size. Always ensure that the buffer size
+    is non-zero before performing reallocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/44a524e367597af58d6265ae2014468b334d0309
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,33 @@
+rules:
+- id: vuln-gifsicle-06d53362
+  pattern: "if ($FR->left >= 0)\n  $DESTI->left = $FR->left + ($FR->position_is_offset\
+    \ ? $DESTI->left : 0);\nif ($FR->top >= 0)\n  $DESTI->top = $FR->top + ($FR->position_is_offset\
+    \ ? $DESTI->top : 0);\n"
+  pattern-not: "if ($FR->left >= 0) {\n  int $LEFT = $FR->left + ($FR->position_is_offset\
+    \ ? $DESTI->left : 0);\n  if ($LEFT + $DESTI->width > 65535) {\n    error(1, \"\
+    left position %d out of range\", $LEFT);\n    return 0;\n  }\n  $DESTI->left =\
+    \ $LEFT;\n}\nif ($FR->top >= 0) {\n  int $TOP = $FR->top + ($FR->position_is_offset\
+    \ ? $DESTI->top : 0);\n  if ($TOP + $DESTI->height > 65535) {\n    error(1, \"\
+    top position %d out of range\", $TOP);\n    return 0;\n  }\n  $DESTI->top = $TOP;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Potential integer overflow vulnerability detected. The code directly assigns
+    the result of an addition to a variable without checking for overflow. This can
+    lead to undefined behavior or security issues if the result exceeds the maximum
+    allowable value (65535 in this case). To fix this, add bounds checking before
+    assigning the result to ensure it does not exceed the maximum value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kohler/gifsicle/commit/06d533628b1f3a75d06cbb29773dc6aaa2916fc3
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

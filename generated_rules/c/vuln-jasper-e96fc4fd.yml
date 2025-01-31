@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jasper-e96fc4fd
+  pattern: "jp2_box_t *jp2_box_create(int type)\n{\n  jp2_box_t *box;\n  jp2_boxinfo_t\
+    \ *boxinfo;\n  if (!(box = jas_malloc(sizeof(jp2_box_t)))) {\n    return 0;\n\
+    \  }\n  ...\n}\n"
+  pattern-not: "jp2_box_t *jp2_box_create(int type)\n{\n  jp2_box_t *box;\n  jp2_boxinfo_t\
+    \ *boxinfo;\n  if (!(box = jp2_box_create0())) {\n    return 0;\n  }\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Potential memory allocation vulnerability detected. The function `jp2_box_create`
+    directly allocates memory using `jas_malloc` without proper initialization and
+    error handling. This can lead to uninitialized memory usage or memory leaks. Use
+    the safer `jp2_box_create0` function instead, which properly initializes the box
+    structure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/e96fc4fdd525fa0ede28074a7e2b1caf94b58b0d
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-zoneminder-9268db14
+  pattern: '$connkey = isset($_REQUEST[''connkey'']) ? $_REQUEST[''connkey''] : generateConnKey();
+
+    '
+  pattern-not: '$connkey = isset($_REQUEST[''connkey'']) ? validInt($_REQUEST[''connkey''])
+    : generateConnKey();
+
+    '
+  languages:
+  - php
+  message: 'The code directly assigns user input from $_REQUEST[''connkey''] to $connkey
+    without proper validation. This can lead to security vulnerabilities such as SQL
+    injection or other attacks if the input is not sanitized. Always validate and
+    sanitize user inputs before using them. Use the `validInt` function or similar
+    validation methods to ensure the input is safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/9268db14a79c4ccd444c2bf8d24e62b13207b413
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

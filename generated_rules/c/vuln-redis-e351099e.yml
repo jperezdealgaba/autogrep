@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redis-e351099e
+  pattern: "int alloc_already_optimal = 0;\n#if defined(USE_JEMALLOC)\n    alloc_already_optimal\
+    \ = (je_nallocx($NEWLEN, 0) == zmalloc_size($SH));\n#endif\n\nif ($USE_REALLOC\
+    \ && !alloc_already_optimal) {\n    $NEWSH = s_realloc($SH, $NEWLEN);\n    if\
+    \ ($NEWSH == NULL) return NULL;\n    $S = (char*)$NEWSH+$OLDHDRLEN;\n} else if\
+    \ (!alloc_already_optimal) {\n    ...\n}\n"
+  pattern-not: "if ($USE_REALLOC) {\n    int alloc_already_optimal = 0;\n    #if defined(USE_JEMALLOC)\n\
+    \        alloc_already_optimal = (je_nallocx($NEWLEN, 0) == zmalloc_size($SH));\n\
+    \    #endif\n    if (!alloc_already_optimal) {\n        $NEWSH = s_realloc($SH,\
+    \ $NEWLEN);\n        if ($NEWSH == NULL) return NULL;\n        $S = (char*)$NEWSH+$OLDHDRLEN;\n\
+    \    }\n} else {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code contains a vulnerability where the reallocation logic is incorrectly
+    structured, potentially leading to unnecessary reallocations when using Jemalloc.
+    This can cause performance degradation and memory inefficiencies. The issue was
+    fixed by restructuring the reallocation logic to only check for optimal allocation
+    size when realloc is actually used.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: https://github.com/redis/redis/commit/e351099e1119fb89496be578f5232c61ce300224
+    category: performance
+    cwe:
+    - CWE-770
+    technology:
+    - c

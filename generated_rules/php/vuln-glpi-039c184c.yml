@@ -1,0 +1,28 @@
+rules:
+- id: vuln-glpi-039c184c
+  pattern: '$CURRENTCSRFTOKEN = md5(uniqid(rand(), true));
+
+    '
+  pattern-not: '$CURRENTCSRFTOKEN = bin2hex(random_bytes(32));
+
+    '
+  languages:
+  - php
+  message: 'Using `md5(uniqid(rand(), true))` for generating CSRF tokens is insecure
+    because it relies on weak entropy sources. This can make the token predictable
+    and vulnerable to brute-force attacks. Use `bin2hex(random_bytes(32))` instead
+    to generate cryptographically secure random tokens.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/039c184cba0f1b564fde2d934f103910db779922
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+    technology:
+    - php

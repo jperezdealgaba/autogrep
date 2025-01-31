@@ -1,0 +1,26 @@
+rules:
+- id: vuln-feh-f7a547b7
+  pattern: 'static unsigned short $LEN = 0;
+
+    '
+  pattern-not: 'static size_t $LEN = 0;
+
+    '
+  languages:
+  - c
+  message: "Using 'unsigned short' for length variables can lead to integer overflow\
+    \ vulnerabilities. \nThis is dangerous because it can cause buffer overflows or\
+    \ incorrect memory allocation. \nUse 'size_t' instead, which is designed for sizes\
+    \ and lengths.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/derf/feh/commit/f7a547b7ef8fc8ebdeaa4c28515c9d72e592fb6d
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

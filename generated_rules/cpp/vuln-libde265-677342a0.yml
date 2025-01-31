@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libde265-677342a0
+  pattern: 'bandIdx = $TABLE[ $IMG[$X+$I+($Y+$J)*$STRIDE]>>$SHIFT ];
+
+    '
+  pattern-not: 'int $PIXEL = $IMG[$X+$I+($Y+$J)*$STRIDE];
+
+    $PIXEL = Clip3(0,$MAX,$PIXEL);
+
+    bandIdx = $TABLE[ $PIXEL>>$SHIFT ];
+
+    '
+  languages:
+  - cpp
+  message: "Detected potential out-of-bounds array access due to unvalidated pixel\
+    \ value. \nThis can lead to illegal memory access when decoding errors occur,\
+    \ causing crashes or undefined behavior. \nAlways validate pixel values using\
+    \ Clip3() to ensure they are within the valid range before using them as array\
+    \ indices.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/677342a07667f56744a5087d6f7732981f784e2f
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

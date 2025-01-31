@@ -1,0 +1,22 @@
+rules:
+- id: vuln-keystone-7402f5ef
+  pattern: 'raise exception.Unauthorized(message=$MESSAGE)
+
+    '
+  pattern-not: 'raise exception.Unauthorized()
+
+    '
+  languages:
+  - python
+  message: Detected Unauthorized exceptions with detailed error messages. This can
+    expose sensitive information to attackers. Use generic error messages instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/7402f5ef994599653bdbb3ed5ff1a2b8c3e72b9f
+    category: security
+    cwe: CWE-209
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://cwe.mitre.org/data/definitions/209.html
+    technology:
+    - python

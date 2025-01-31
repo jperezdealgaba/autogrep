@@ -1,0 +1,26 @@
+rules:
+- id: vuln-typo3-302b35e7
+  pattern: 'substr(md5(uniqid('''').getmypid()), 0, $VAR)
+
+    '
+  pattern-not: 't3lib_div::getRandomHexString($VAR)
+
+    '
+  languages:
+  - php
+  message: 'The use of md5 with uniqid() and getmypid() for generating random strings
+    is insecure and can lead to predictable values. This can be exploited in security-sensitive
+    contexts. Use a cryptographically secure random number generator like t3lib_div::getRandomHexString()
+    instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/302b35e714ca30ddb71ab36b9cbb2bea760a2f0e
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

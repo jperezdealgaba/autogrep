@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tomcat-15fcd166
+  pattern: '$SSI_MEDIATOR.getVariableValue($VARIABLE_NAME)
+
+    '
+  pattern-not: '$SSI_MEDIATOR.getVariableValue($VARIABLE_NAME, "entity")
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe usage of SSI (Server Side Includes) variable retrieval.
+    The method `getVariableValue` without the encoding parameter can lead to XSS vulnerabilities.
+    Always specify the encoding parameter to ensure proper handling of special characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/15fcd166ea2c1bb79e8541b8e1a43da9c452ceea
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - java

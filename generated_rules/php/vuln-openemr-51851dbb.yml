@@ -1,0 +1,40 @@
+rules:
+- id: vuln-openemr-51851dbb
+  pattern: '$sql = "DELETE from categories_to_documents where document_id IN (SELECT
+    id from documents where documents.url like ''%" . $filename . "'')";
+
+    sqlQuery($sql);
+
+    $sql = "DELETE from documents where documents.url like ''%" . $filename . "''";
+
+    sqlQuery($sql);
+
+    '
+  pattern-not: '$sql = "DELETE from categories_to_documents where document_id IN (SELECT
+    id from documents where documents.url like ?)";
+
+    sqlQuery($sql, [''%''.$filename]);
+
+    $sql = "DELETE from documents where documents.url like ?";
+
+    sqlQuery($sql, [''%''.$filename]);
+
+    '
+  languages:
+  - php
+  message: 'Detected a SQL query concatenating user input directly into the query
+    string, which makes it vulnerable to SQL injection. This is dangerous as it allows
+    attackers to manipulate the database. Use prepared statements with parameterized
+    queries to fix this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/51851dbbd01631fafdced231237396af0e657990
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

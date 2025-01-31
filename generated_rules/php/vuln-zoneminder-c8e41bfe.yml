@@ -1,0 +1,30 @@
+rules:
+- id: vuln-zoneminder-c8e41bfe
+  pattern: '$line = $_POST[''line''];
+
+    '
+  pattern-not: '$line = validInt($_POST[''line'']);
+
+    '
+  languages:
+  - php
+  message: 'Directly assigning user input from $_POST to a variable without validation
+    can lead to security vulnerabilities such as SQL injection or integer overflow.
+    Always validate and sanitize user inputs before using them. In this case, use
+    a function like validInt() to ensure the input is a valid integer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/c8e41bfee75cb0a70e69d8f1488aa948fc31831a
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

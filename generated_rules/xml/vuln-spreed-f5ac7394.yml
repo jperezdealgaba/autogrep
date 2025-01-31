@@ -1,0 +1,28 @@
+rules:
+- id: vuln-spreed-f5ac7394
+  pattern: '<version>12.2.6</version>
+
+    '
+  pattern-not: '<version>12.2.7</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version 12.2.6 of the Spreed application contains a vulnerability
+    that has been fixed in version 12.2.7. Using the outdated version may expose the
+    application to security risks. Update to version 12.2.7 or later to mitigate the
+    issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/spreed/commit/f5ac73940f9f683b11e518d1c54150bf50dab9be
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - xml

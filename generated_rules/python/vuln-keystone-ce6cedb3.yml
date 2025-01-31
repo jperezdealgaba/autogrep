@@ -1,0 +1,27 @@
+rules:
+- id: vuln-keystone-ce6cedb3
+  pattern: 'return $AUTH[''identity''][''methods''] or []
+
+    '
+  pattern-not: "$METHOD_NAMES = []\nfor $METHOD in $AUTH['identity']['methods']:\n\
+    \    if $METHOD not in $METHOD_NAMES:\n        $METHOD_NAMES.append($METHOD)\n\
+    return $METHOD_NAMES\n"
+  languages:
+  - python
+  message: 'Detected unsafe handling of authentication methods that does not filter
+    out duplicates.
+
+    This can lead to inconsistent behavior or security issues when processing authentication
+    requests.
+
+    Fix by sanitizing the methods list to remove duplicates while preserving order.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/ce6cedb30c5c4b4cf4db9380f09443de22414b39
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A01:2021-Broken Access Control
+    technology:
+    - python

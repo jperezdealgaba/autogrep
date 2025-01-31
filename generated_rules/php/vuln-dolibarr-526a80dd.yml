@@ -1,0 +1,32 @@
+rules:
+- id: vuln-dolibarr-526a80dd
+  pattern: '$paramclear = " \"".str_replace("\"", "\\\"", $code)."\" \"".str_replace("\"",
+    "\\\"", strtoupper($encoding))."\"";
+
+    '
+  pattern-not: '$paramclear = " ".escapeshellarg($code)." ".escapeshellarg(strtoupper($encoding));
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential command injection vulnerability due to improper shell
+    argument escaping.
+
+    The code constructs a shell command without properly escaping user input, which
+    could allow an attacker to inject arbitrary commands.
+
+    Use `escapeshellarg()` to safely escape shell arguments and prevent command injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/526a80dd202bbca396687a502d52c27e06e97fff
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

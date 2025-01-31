@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-0d4adbfc
+  pattern: '''SELECT COUNT(*) FROM `'' . PMA_sqlAddslashes($VAR, true) . ''`;''
+
+    '
+  pattern-not: '''SELECT COUNT(*) FROM '' . PMA_backquote($VAR) . '';''
+
+    '
+  languages:
+  - php
+  message: 'The code uses PMA_sqlAddslashes for table names in SQL queries, which
+    is vulnerable to SQL injection. This function does not properly escape all special
+    characters in table names, allowing attackers to inject malicious SQL code. Use
+    PMA_backquote instead, which properly handles table name escaping by wrapping
+    the name in backticks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0d4adbfc1996c7d715b0ac9fa39a2ac14d8b28ad
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://www.phpmyadmin.net/docs/
+    technology:
+    - php

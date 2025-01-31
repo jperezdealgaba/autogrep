@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpmyadmin-615212a1
+  pattern: '''<a href="'' . htmlspecialchars(isset($OPTIONS[0]) ? $OPTIONS[0] : '''')
+    . htmlspecialchars($BUFFER)
+
+    '
+  pattern-not: "$URL = (isset($OPTIONS[0]) ? $OPTIONS[0] : '') . $BUFFER;\n$PARSED\
+    \ = parse_url($URL);\nif (isset($PARSED['scheme']) && $PARSED['scheme'] == 'javascript')\
+    \ {\n    return htmlspecialchars($URL);\n}\n'<a href=\"' . htmlspecialchars($URL)\n"
+  languages:
+  - php
+  message: 'The code directly concatenates user-controlled input into a URL without
+    validating the scheme, which can lead to JavaScript injection (XSS). This is dangerous
+    because it allows attackers to execute arbitrary JavaScript in the context of
+    the application. To fix this, validate the URL scheme using parse_url() and reject
+    ''javascript:'' schemes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/615212a14d7d87712202f37354acf8581987fc5a
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A2:2017 - Broken Authentication
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

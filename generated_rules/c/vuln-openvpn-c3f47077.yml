@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openvpn-c3f47077
+  pattern: "if (buf_advance(&$BUF, 40))\n{\n  ...\n}\n"
+  pattern-not: "if (buf_advance(&$BUF, 40)\n    && BLEN(&$BUF) >= (int) sizeof(struct\
+    \ openvpn_tcphdr))\n{\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing buffer length check after advancing the buffer pointer.
+    This vulnerability could lead to buffer overreads when processing TCP headers,
+    potentially causing crashes or information disclosure. Always verify the remaining
+    buffer size after advancing the pointer to ensure it contains enough data for
+    the expected structure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenVPN/openvpn/commit/c3f47077a7756de5929094569421a95aa66f2022
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

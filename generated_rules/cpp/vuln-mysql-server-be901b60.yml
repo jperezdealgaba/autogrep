@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mysql-server-be901b60
+  pattern: 'create_partition_name($OUT, $IN1, $IN2, $IN3, $IN4);
+
+    '
+  pattern-not: 'if ((create_partition_name($OUT, $IN1, $IN2, $IN3, $IN4)))
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unhandled return value from create_partition_name(). This function
+    can fail and return an error, which must be checked to prevent potential issues
+    with partition name creation. Always check the return value of create_partition_name()
+    and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/be901b60ae59c93848c829d1b0b2cb523ab8692e
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - cpp

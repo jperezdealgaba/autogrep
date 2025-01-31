@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wasmtime-8bb07523
+  pattern: "if *$SIZE == OperandSize::Size64 {\n    $SSE_OPCODE::Movsd\n} else {\n\
+    \    $SSE_OPCODE::Movss\n}\n"
+  pattern-not: "match *$TY {\n    types::F64 => $SSE_OPCODE::Movsd,\n    types::F32\
+    \ => $SSE_OPCODE::Movsd,\n    types::F32X4 => $SSE_OPCODE::Movaps,\n    types::F64X2\
+    \ => $SSE_OPCODE::Movapd,\n    $TY => {\n        debug_assert!($TY.is_vector()\
+    \ && $TY.bytes() == 16);\n        $SSE_OPCODE::Movdqa\n    }\n}\n"
+  languages:
+  - rust
+  message: 'The code uses a binary check on `OperandSize` to determine the SSE opcode,
+    which can lead to incorrect behavior for certain types. This can cause misalignment
+    or incorrect operations on floating-point and vector types. The fix uses a match
+    statement to properly handle different types (F32, F64, F32X4, F64X2) and ensures
+    correct opcode selection. To fix this, replace the binary check with a match statement
+    that handles all relevant types explicitly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bytecodealliance/wasmtime/commit/8bb07523e22df1ab3cbd265c77e836bf84186eb7
+    category: security
+    cwe:
+    - CWE-1284
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - rust

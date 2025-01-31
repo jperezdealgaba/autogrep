@@ -1,0 +1,26 @@
+rules:
+- id: vuln-websvn-20865288
+  pattern: "function showDirFiles($svnrep, $subs, $level, $limit, $rev, $peg, $listing,\
+    \ $index, $treeview = true) {\n  ...\n  $logList = $svnrep->getList($path, $rev,\
+    \ $peg);\n  ...\n}\n"
+  pattern-not: "function showSearchResults($svnrep, $path, $searchstring, $rev, $peg,\
+    \ $listing, $index=0, $treeview = true) {\n  ...\n  $logList = $svnrep->getListSearch($path,\
+    \ $searchstring, $rev, $peg);\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The function `showDirFiles` uses `getList` without proper input validation,
+    which can lead to security vulnerabilities. The patch introduces `getListSearch`
+    to handle search functionality securely. Ensure that all directory and file operations
+    are properly validated and use secure methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/websvnphp/websvn/commit/208652884c71bed62e97c445cf25f7ce8899dc41
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

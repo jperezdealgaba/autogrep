@@ -1,0 +1,30 @@
+rules:
+- id: vuln-neomutt-9c36717a
+  pattern: 'goto err_close_conn;
+
+    '
+  pattern-not: 'goto bail;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves the use of an incorrect goto label ''err_close_conn''
+    which is conditionally compiled under USE_SSL. This can lead to inconsistent error
+    handling and resource management, potentially causing resource leaks or undefined
+    behavior. The fix replaces ''err_close_conn'' with ''bail'' to ensure consistent
+    error handling regardless of SSL usage. Always use consistent error handling labels
+    to avoid such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neomutt/neomutt/commit/9c36717a3e2af1f2c1b7242035455ec8112b4b06
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - c

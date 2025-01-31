@@ -1,0 +1,25 @@
+rules:
+- id: vuln-pillow-774e53bb
+  pattern: "for $I in range(i32($S, 4)):\n    ...\n"
+  pattern-not: "$BANDS = i32($S, 4)\nif $BANDS > 4:\n    raise IOError(\"Invalid number\
+    \ of bands\")\nfor $I in range($BANDS):\n    ...\n"
+  languages:
+  - python
+  message: 'Detected unsafe direct use of i32() result in a loop without validation.
+
+    This can lead to processing invalid data if the number of bands exceeds the limit.
+
+    Add a validation check before the loop to ensure the number of bands is within
+    the expected range.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/774e53bb132461d8d5ebefec1162e29ec0ebc63d
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - python

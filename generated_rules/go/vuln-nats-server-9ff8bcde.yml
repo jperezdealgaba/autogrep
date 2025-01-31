@@ -1,0 +1,19 @@
+rules:
+- id: vuln-nats-server-9ff8bcde
+  pattern: "func ($FUNC *AccountClaims) IsRevoked($PUBKEY string) bool {\n  return\
+    \ $FUNC.Revocations.IsRevoked($PUBKEY, time.Now())\n}\n"
+  pattern-not: "func ($FUNC *AccountClaims) IsRevoked($PUBKEY string) bool {\n  return\
+    \ true\n}\n"
+  languages:
+  - go
+  message: "The IsRevoked method uses time.Now() to check if a JWT is revoked, which\
+    \ can lead to unstable and unexpected behavior. \nInstead, use IsRevokedAt with\
+    \ the JWT's issue time for a stable response.\nThis vulnerability can cause incorrect\
+    \ revocation checks and security issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nats-io/nats-server/commit/9ff8bcde2e46009e98bd9e88f598af355f62c168
+    category: security
+    cwe: CWE-384
+    owasp: A02:2021 - Cryptographic Failures
+    technology: go

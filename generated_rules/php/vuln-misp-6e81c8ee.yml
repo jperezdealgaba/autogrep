@@ -1,0 +1,33 @@
+rules:
+- id: vuln-misp-6e81c8ee
+  pattern: '$url = Configure::read(''MISP.baseurl'') . $path;
+
+    '
+  pattern-not: '$url = empty(Configure::read(''Security.rest_client_baseurl'')) ?
+    (Configure::read(''MISP.baseurl'') . $path) : (Configure::read(''Security.rest_client_baseurl'')
+    . $path);
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability occurs when constructing URLs without proper validation,
+    which could allow arbitrary URL queries. This can lead to Server-Side Request
+    Forgery (SSRF) attacks, enabling attackers to make requests to internal resources.
+    The fix involves using a configurable base URL and validating the ''use_full_path''
+    parameter. Always validate and sanitize URL construction and consider implementing
+    restrictions on allowed URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/6e81c8ee8ad19576c055b5c4773f914b918f32be
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    - https://cwe.mitre.org/data/definitions/918.html
+    technology:
+    - php

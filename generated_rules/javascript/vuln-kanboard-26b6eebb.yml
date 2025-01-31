@@ -1,0 +1,42 @@
+rules:
+- id: vuln-kanboard-26b6eebb
+  pattern: '$PASTE_CATCHER = document.createElement(''div'');
+
+    ...
+
+    $PASTE_CATCHER.contentEditable = true;
+
+    ...
+
+    document.body.insertBefore($PASTE_CATCHER, document.body.firstChild);
+
+    '
+  pattern-not: '$PASTE_CATCHER = document.createElement(''template'');
+
+    ...
+
+    $PASTE_CATCHER.contentEditable = true;
+
+    ...
+
+    document.body.insertBefore($PASTE_CATCHER, document.body.firstChild);
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure use of ''div'' element for clipboard handling. Using a ''div''
+    with contentEditable=true can lead to XSS vulnerabilities when handling untrusted
+    content. Replace with ''template'' element for safer clipboard handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/26b6eebb78d4306e48b836a58f7c386251aa2bc7
+    category: security
+    cwe: CWE-79
+    owasp: 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+    technology:
+    - javascript

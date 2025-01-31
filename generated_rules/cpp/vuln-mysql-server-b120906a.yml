@@ -1,0 +1,32 @@
+rules:
+- id: vuln-mysql-server-b120906a
+  pattern: "$FLAGS |= BTR_NO_LOCKING_FLAG;\nmtr.set_log_mode(MTR_LOG_NO_REDO);\nif\
+    \ (dict_table_is_intrinsic($INDEX->table)) {\n  $FLAGS |= BTR_NO_UNDO_LOG_FLAG;\n\
+    }\n"
+  pattern-not: 'ut_ad($FLAGS & BTR_NO_LOCKING_FLAG);
+
+    ut_ad(!dict_table_is_intrinsic($INDEX->table) || ($FLAGS & BTR_NO_UNDO_LOG_FLAG));
+
+    mtr.set_log_mode(MTR_LOG_NO_REDO);
+
+    '
+  languages:
+  - cpp
+  message: 'The code modifies flags and logging mode without proper assertions to
+    ensure consistency. This can lead to inconsistent state handling in temporary
+    tables, potentially causing data integrity issues during recovery. Ensure that
+    flags and logging modes are properly validated using assertions like `ut_ad`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/b120906a40ea9a6767c2de1c0658e7b19aaaa395
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Security Logging and Monitoring Failures'
+    references:
+    - https://dev.mysql.com/doc/refman/8.0/en/innodb-redo-log.html
+    technology:
+    - cpp

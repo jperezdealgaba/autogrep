@@ -1,0 +1,24 @@
+rules:
+- id: vuln-cacti-80ec47b0
+  pattern: 'return $PREPEND . db_fetch_cell_prepared($QUERY, $ARGS);
+
+    '
+  pattern-not: 'return $PREPEND . html_escape(db_fetch_cell_prepared($QUERY, $ARGS));
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped output from database\
+    \ queries. \nThis can allow attackers to inject malicious scripts into the web\
+    \ page. \nTo fix this, ensure all output is properly escaped using `html_escape()`\
+    \ or similar functions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/80ec47b08a06dddc4f2135562d29f2c619cc264f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

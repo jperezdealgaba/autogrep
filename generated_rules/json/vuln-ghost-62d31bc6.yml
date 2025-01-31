@@ -1,0 +1,21 @@
+rules:
+- id: vuln-ghost-62d31bc6
+  pattern: "{\n  ...,\n  \"version\": \"4.9.4\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"4.10.0\",\n  ...\n}\n"
+  languages:
+  - json
+  message: "The version specified in package.json is outdated and may contain known\
+    \ vulnerabilities. \nUsing outdated versions can expose the application to security\
+    \ risks. \nUpdate to version 4.10.0 or later to mitigate these risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TryGhost/Ghost/commit/62d31bc65d92e2893358abc9e01f0b02fb31ae00
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://github.com/TryGhost/Ghost/releases
+    technology:
+    - json

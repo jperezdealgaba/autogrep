@@ -1,0 +1,23 @@
+rules:
+- id: vuln-xen-62e7fb70
+  pattern: "$TYPE $FUNC(...) {\n  ...\n  $PG = alloc_domheap_page(NULL, 0);\n  ...\n\
+    \  page_suppress_refcounting($PG);\n  ...\n}\n"
+  pattern-not: "$TYPE $FUNC(...) {\n  ...\n  $PG = alloc_domheap_page($D, MEMF_no_refcount);\n\
+    \  ...\n  if ( !get_page_and_type($PG, $D, PGT_writable_page) ) {\n    domain_crash($D);\n\
+    \    return -ENODATA;\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: "The code allocates a page without proper refcounting, which can lead to\
+    \ use-after-free vulnerabilities. \nThe patch fixes this by using the correct\
+    \ domain parameter and adding proper page type checking. \nAlways ensure pages\
+    \ are properly refcounted and use the correct domain parameter when allocating\
+    \ pages.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/62e7fb702db4adaa9415ac87d95e0f461e32d9ca
+    category: security
+    cwe:
+    - CWE-416
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

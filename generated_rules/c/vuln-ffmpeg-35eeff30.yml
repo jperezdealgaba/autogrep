@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ffmpeg-35eeff30
+  pattern: 'strcpy($DST, $SRC);
+
+    '
+  pattern-not: "if (av_strlcpy($DST, $SRC, sizeof($DST)) >= sizeof($DST))\n    return\
+    \ $ERROR;\n"
+  languages:
+  - c
+  message: 'Detected use of unsafe `strcpy` function which can lead to buffer overflow
+    vulnerabilities.
+
+    This is dangerous because it can allow attackers to overwrite adjacent memory,
+    potentially leading to arbitrary code execution.
+
+    Use `av_strlcpy` or similar safe string copy functions that check buffer bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/35eeff30caf34df835206f1c12bcf4b7c2bd6758
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

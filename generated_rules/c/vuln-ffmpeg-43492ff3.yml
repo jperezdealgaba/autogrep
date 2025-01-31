@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ffmpeg-43492ff3
+  pattern: '$VAR->coord[$INDEX][0] = FFMAX($EXPR1, $EXPR2);
+
+    $VAR->coord[$INDEX][1] = FFMIN($EXPR3, $EXPR4);
+
+    '
+  pattern-not: '$VAR->coord[$INDEX][0] = av_clip($EXPR1, $EXPR2, $EXPR3);
+
+    $VAR->coord[$INDEX][1] = av_clip($EXPR4, $EXPR5, $EXPR6);
+
+    '
+  languages:
+  - c
+  message: "The code uses FFMAX and FFMIN to calculate coordinates, which can lead\
+    \ to out-of-bounds values. \nThis is dangerous because it can cause buffer overflows\
+    \ or incorrect image processing. \nThe fix is to use av_clip to ensure the values\
+    \ are within the valid range.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/43492ff3ab68a343c1264801baa1d5a02de10167
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://ffmpeg.org/doxygen/trunk/group__lavu__math.html#ga8d3c8b7b5d6b3b8b8b8b8b8b8b8b8b8
+    technology:
+    - c

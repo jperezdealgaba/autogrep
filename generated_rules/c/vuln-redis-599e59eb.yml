@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redis-599e59eb
+  pattern: 'ASSERT_NO_SIZE_OVERFLOW($SIZE);
+
+    '
+  pattern-not: "if ($SIZE >= SIZE_MAX/2) return NULL;\nif ($SIZE >= SIZE_MAX/2) zmalloc_oom_handler($SIZE);\n\
+    if ($SIZE >= SIZE_MAX/2) {\n    zfree($PTR);\n    if ($USABLE) *$USABLE = 0;\n\
+    \    return NULL;\n}\n"
+  languages:
+  - c
+  message: 'The code uses an assertion to check for size overflow, which is insufficient
+    for handling potential integer overflows during memory allocation. This can lead
+    to security vulnerabilities such as buffer overflows or memory corruption. Instead,
+    explicitly check for overflow conditions and handle them appropriately by returning
+    NULL or invoking an out-of-memory handler.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/599e59ebc57283f52c60a8de56ec5f44d053109a
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

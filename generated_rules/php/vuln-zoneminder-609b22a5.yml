@@ -1,0 +1,26 @@
+rules:
+- id: vuln-zoneminder-609b22a5
+  pattern: '$monitor = new ZM\Monitor($monitor_id);
+
+    '
+  pattern-not: '$monitor = ZM\Monitor::find_one([''Id''=>$monitor_id]);
+
+    if (!$monitor) continue;
+
+    '
+  languages:
+  - php
+  message: 'Direct instantiation of ZM\Monitor with untrusted input can lead to security
+    vulnerabilities. The code does not validate the input or check if the monitor
+    exists, which could result in unexpected behavior or security issues. To fix this,
+    use ZM\Monitor::find_one() to retrieve the monitor and validate its existence.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/609b22a54d22229a278afe548a32a05a00fc8c13
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - php

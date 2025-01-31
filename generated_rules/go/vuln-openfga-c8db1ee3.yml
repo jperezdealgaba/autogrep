@@ -1,0 +1,33 @@
+rules:
+- id: vuln-openfga-c8db1ee3
+  pattern: "func isUsersetRewriteValid(allRelations map[string]struct{}, relationsOnType\
+    \ map[string]struct{}, objectType, relation string, rewrite *openfgapb.Userset)\
+    \ error {\n    ...\n    if _, ok := relationsOnType[tupleset]; !ok {\n       \
+    \ ...\n    }\n    ...\n}\n"
+  pattern-not: "func isUsersetRewriteValid(allRelations map[string]*openfgapb.Relation,\
+    \ relationsOnType map[string]*openfgapb.Relation, objectType, relation string,\
+    \ rewrite *openfgapb.Userset) error {\n    ...\n    tuplesetRelation, ok := relationsOnType[tupleset]\n\
+    \    if !ok {\n        ...\n    }\n    tuplesetRewrite := tuplesetRelation.GetRewrite()\n\
+    \    if reflect.TypeOf(tuplesetRewrite.GetUserset()) != reflect.TypeOf(&openfgapb.Userset_This{})\
+    \ {\n        return errors.Errorf(\"the '%s#%s' relation is referenced in at least\
+    \ one tupleset and thus must be a direct relation\", objectType, tupleset)\n \
+    \   }\n    ...\n}\n"
+  languages:
+  - go
+  message: 'The function `isUsersetRewriteValid` does not properly validate tupleset
+    relations. Tupleset relations must only be direct relationships and cannot involve
+    rewrites like `ComputedUserset`, `Union`, `Intersection`, or `Exclusion`. This
+    could lead to security vulnerabilities in the authorization model. Update the
+    function to check that tupleset relations are direct relationships only.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openfga/openfga/commit/c8db1ee3d2a366f18e585dd33236340e76e784c4
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - 'A01: Broken Access Control'
+    technology:
+    - go

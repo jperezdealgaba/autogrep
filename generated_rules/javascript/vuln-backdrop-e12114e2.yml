@@ -1,0 +1,19 @@
+rules:
+- id: vuln-backdrop-e12114e2
+  pattern: "{\n  top: ($INPUT.outerHeight() + $OFFSET.top - $(document).scrollTop())\
+    \ + 'px',\n  left: ($OFFSET.left - $(document).scrollLeft()) + 'px',\n  position:\
+    \ 'fixed'\n}\n"
+  pattern-not: "{\n  top: ($INPUT.outerHeight() + $OFFSET.top) + 'px',\n  left: $OFFSET.left\
+    \ + 'px',\n  position: 'absolute'\n}\n"
+  languages:
+  - javascript
+  message: Using 'fixed' position with scroll offset can cause incorrect positioning
+    in mobile Safari. Use 'absolute' position instead to ensure consistent behavior
+    across browsers.
+  severity: WARNING
+  metadata:
+    source-url: github.com/backdrop/backdrop/commit/e12114e260c9781082545829ed2213b6195f4ec1
+    category: compatibility
+    cwe: CWE-1104
+    technology:
+    - javascript

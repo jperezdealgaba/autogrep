@@ -1,0 +1,30 @@
+rules:
+- id: vuln-moodle-695a18b6
+  pattern: "$cm = get_coursemodule_from_instance('assign', $assignmentid, 0, false,\
+    \ MUST_EXIST);\n...\nforeach ($userids as $userid) {\n    ...\n    $detail = 'User\
+    \ id: ' . $userid . ', Assignment id: ' . $assignmentid;\n    $warnings[] = self::generate_warning($assignmentid,\
+    \ ...);\n}\n"
+  pattern-not: "$cm = get_coursemodule_from_instance('assign', $params['assignmentid'],\
+    \ 0, false, MUST_EXIST);\nself::validate_context($context);\n...\nforeach ($params['userids']\
+    \ as $userid) {\n    ...\n    $detail = 'User id: ' . $userid . ', Assignment\
+    \ id: ' . $params['assignmentid'];\n    $warnings[] = self::generate_warning($params['assignmentid'],\
+    \ ...);\n}\n"
+  languages:
+  - php
+  message: 'Direct use of variables like $assignmentid and $userids without validation
+    can lead to security vulnerabilities such as unauthorized access or data manipulation.
+    The code should use validated parameters from the $params array and ensure context
+    validation with self::validate_context($context). This prevents potential security
+    issues by enforcing proper access controls and data validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/695a18b6aa9661f812a1a745a888df5acdbd7bc6
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

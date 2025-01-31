@@ -1,0 +1,24 @@
+rules:
+- id: vuln-kimai2-76e09447
+  pattern: '$this->markdown->toHtml($CONTENT, false)
+
+    '
+  pattern-not: '$this->markdown->toHtml($CONTENT)
+
+    '
+  languages:
+  - php
+  message: "The use of `toHtml` with `safe` parameter set to `false` can lead to XSS\
+    \ vulnerabilities. \nThis allows unsafe HTML content to be rendered, potentially\
+    \ enabling attackers to inject malicious scripts. \nAlways use the safe mode by\
+    \ removing the `safe` parameter or setting it to `true`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/kevinpapst/kimai2/commit/76e09447c85e762882126b49626a4fe4d93fe8b5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

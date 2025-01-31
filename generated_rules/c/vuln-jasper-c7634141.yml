@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jasper-c7634141
+  pattern: "if ($COND) {\n  ...\n  bmp_info_destroy($INFO);\n  return 0;\n  ...\n\
+    }\n"
+  pattern-not: "if ($COND) {\n  ...\n  goto error;\n  ...\n}\nerror:\nif ($INFO) {\n\
+    \  bmp_info_destroy($INFO);\n}\nreturn 0;\n"
+  languages:
+  - c
+  message: 'The code directly returns after destroying the BMP info without proper
+    error handling, which can lead to resource management issues and potential security
+    vulnerabilities. The patch introduces a consistent error handling mechanism using
+    `goto error` to ensure proper cleanup. Always use a centralized error handling
+    approach to manage resources safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/c76341412ea7924c554955f21d2e564f9133a1e5
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology:
+    - c

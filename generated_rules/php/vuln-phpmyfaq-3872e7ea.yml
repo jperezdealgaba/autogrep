@@ -1,0 +1,25 @@
+rules:
+- id: vuln-phpmyfaq-3872e7ea
+  pattern: '$redirectAction = Filter::filterInput(INPUT_POST, ''redirect-action'',
+    FILTER_UNSAFE_RAW);
+
+    '
+  pattern-not: '$redirectAction = Filter::filterInput(INPUT_POST, ''redirect-action'',
+    FILTER_SANITIZE_SPECIAL_CHARS);
+
+    '
+  languages:
+  - php
+  message: "Detected use of FILTER_UNSAFE_RAW for user input, which does not sanitize\
+    \ the input and can lead to security vulnerabilities such as XSS. \nUse FILTER_SANITIZE_SPECIAL_CHARS\
+    \ or another appropriate sanitization filter to ensure the input is safe.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpmyfaq/commit/3872e7eac2ddeac182fc1335cc312d1392d56f98
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

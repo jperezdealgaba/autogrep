@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pluck-8f6541e6
+  pattern: 'copy($_FILES[''$VAR''][''tmp_name''], ''files/''.$_FILES[''$VAR''][''name''])
+
+    '
+  pattern-not: 'copy($_FILES[''$VAR''][''tmp_name''], ''files/''.latinOnlyInput($_FILES[''$VAR''][''name'']))
+
+    '
+  languages:
+  - php
+  message: "Detected potential file upload vulnerability due to missing input sanitization.\
+    \ \nThe file name is used directly without proper sanitization, which can lead\
+    \ to \ndirectory traversal, XSS, or execution of malicious scripts. Always sanitize\
+    \ \nfile names using a function like `latinOnlyInput` to remove dangerous characters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/8f6541e60c9435e82e9c531a20cb3c218d36976e
+    category: security
+    cwe:
+    - CWE-434
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

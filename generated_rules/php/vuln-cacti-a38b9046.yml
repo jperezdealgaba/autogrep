@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cacti-a38b9046
+  pattern: 'print ''<td><input type="text" size="25" id="filter" value="'' . get_request_var($VAR)
+    . ''"></td>'';
+
+    '
+  pattern-not: 'print ''<td><input type="text" size="25" id="filter" value="'' . html_escape_request_var($VAR)
+    . ''"></td>'';
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped user input in HTML output, which can lead to Cross-Site\
+    \ Scripting (XSS) vulnerabilities. \nThe function `get_request_var()` retrieves\
+    \ user input without proper escaping, allowing malicious scripts to be injected.\
+    \ \nUse `html_escape_request_var()` to properly escape user input before including\
+    \ it in HTML output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/a38b9046e9772612fda847b46308f9391a49891e
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

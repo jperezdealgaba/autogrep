@@ -1,0 +1,18 @@
+rules:
+- id: vuln-langchain-bf0b3cc0
+  pattern: "if prevent_outside and not $PATH.startswith($BASE_URL):\n    ...\n"
+  pattern-not: "if prevent_outside:\n    $PARSED_PATH = urlparse($PATH)\n    if $PARSED_BASE_URL.netloc\
+    \ != $PARSED_PATH.netloc:\n        ...\n    if not $PATH.startswith($BASE_URL_TO_USE):\n\
+    \        ...\n"
+  languages:
+  - python
+  message: Detected insecure URL validation. The original code only checks if the
+    path starts with the base URL, which can be bypassed. Use urlparse to properly
+    validate the netloc and path components.
+  severity: ERROR
+  metadata:
+    source-url: github.com/langchain-ai/langchain/commit/bf0b3cc0b5ade1fb95a5b1b6fa260e99064c2e22
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology: python

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-cxf-1338469
+  pattern: 'Arrays.equals($ACTUAL, $EXPECTED)
+
+    '
+  pattern-not: 'MessageDigest.isEqual($ACTUAL, $EXPECTED)
+
+    '
+  languages:
+  - java
+  message: "Using `Arrays.equals()` for cryptographic comparisons is vulnerable to\
+    \ timing attacks. \nUse `MessageDigest.isEqual()` instead, which provides constant-time\
+    \ comparison to prevent \ntiming-based side-channel attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/1338469
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - java

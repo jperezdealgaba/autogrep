@@ -1,0 +1,18 @@
+rules:
+- id: vuln-ua-java-legacy-6f176f2b
+  pattern: "if ($RES.getResponseHeader().getServiceResult().isGood()) {\n  ...\n}\n"
+  pattern-not: "if (($RES.getResponseHeader() != null) && ($RES.getResponseHeader().getServiceResult()\
+    \ != null) && ($RES.getResponseHeader().getServiceResult().isGood())) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Potential NullPointerException vulnerability. The code does not check for
+    null values before accessing nested methods. Always validate that objects are
+    not null before accessing their properties or methods.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OPCFoundation/UA-Java-Legacy/commit/6f176f2b445a27c157f1a32f225accc9ce8873c0
+    category: security
+    cwe: CWE-476
+    owasp: A1
+    technology: java

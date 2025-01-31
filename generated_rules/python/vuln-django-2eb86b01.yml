@@ -1,0 +1,23 @@
+rules:
+- id: vuln-django-2eb86b01
+  pattern: "if ($MODIFIED or settings.SESSION_SAVE_EVERY_REQUEST):\n    ...\n"
+  pattern-not: "if ($MODIFIED or settings.SESSION_SAVE_EVERY_REQUEST) and not $EMPTY:\n\
+    \    ...\n"
+  languages:
+  - python
+  message: 'Detected a missing check for empty sessions in Django''s session middleware.
+    This could lead to unnecessary session cookies being set, which may expose session
+    information unnecessarily. The fix includes adding a check for empty sessions
+    to prevent setting cookies when the session is empty.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/2eb86b01d7b59be06076f6179a454d0fd0afaff6
+    category: security
+    cwe: CWE-200
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://docs.djangoproject.com/en/stable/topics/http/sessions/
+    technology:
+    - python

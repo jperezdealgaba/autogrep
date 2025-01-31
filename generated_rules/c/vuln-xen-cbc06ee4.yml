@@ -1,0 +1,22 @@
+rules:
+- id: vuln-xen-cbc06ee4
+  pattern: "static void $FUNC($TYPE $PARAM) {\n    ...\n    $TAIL($PARAM);\n    BUG();\n\
+    }\n"
+  pattern-not: "static void $FUNC(void) {\n    ...\n    reset_stack_and_jump_ind($TAIL);\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potentially unsafe function call pattern where a function pointer
+    is called directly without using `reset_stack_and_jump_ind`. This can lead to
+    stack corruption or unexpected behavior. The correct approach is to use `reset_stack_and_jump_ind`
+    to ensure proper stack handling and prevent return from noreturn functions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/cbc06ee4280371f78f5858cd613c8d1e2a53ecd3
+    category: security
+    cwe:
+    - CWE-119
+    technology:
+    - c

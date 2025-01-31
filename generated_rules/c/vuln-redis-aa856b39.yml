@@ -1,0 +1,30 @@
+rules:
+- id: vuln-redis-aa856b39
+  pattern: 'lua_pushstring($LUA, $ERR);
+
+    lua_error($LUA);
+
+    '
+  pattern-not: 'luaPushError($LUA, $ERR);
+
+    luaError($LUA);
+
+    '
+  languages:
+  - c
+  message: "Direct use of `lua_pushstring` followed by `lua_error` can lead to inconsistent\
+    \ error handling and potential security issues. \nThe vulnerability arises because\
+    \ the error message is not properly formatted and doesn't include necessary metadata.\
+    \ \nInstead, use `luaPushError` and `luaError` which properly format the error\
+    \ message and include additional context like source and line number.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/aa856b39f2ca65dbcc0eaae2d2c52f7a35291bbf
+    category: security
+    cwe:
+    - CWE-209
+    - CWE-248
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

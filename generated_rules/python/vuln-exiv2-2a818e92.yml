@@ -1,0 +1,22 @@
+rules:
+- id: vuln-exiv2-2a818e92
+  pattern: 'retval = [0, 0]
+
+    '
+  pattern-not: 'retval = [0]
+
+    '
+  languages:
+  - python
+  message: Detected incorrect return value handling. This can lead to unexpected behavior
+    or security vulnerabilities. Ensure the return value array is correctly sized.
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/2a818e924d3b586863c5d2ee550ea50396829dd8
+    category: security
+    cwe: CWE-665
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - python

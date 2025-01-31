@@ -1,0 +1,21 @@
+rules:
+- id: vuln-libvirt-4c4d0e2d
+  pattern: 'virMediatedDeviceTypeFree(*$VAR[i])
+
+    '
+  pattern-not: 'virMediatedDeviceTypeFree((*$VAR)[i])
+
+    '
+  languages:
+  - c
+  message: "Incorrect pointer dereferencing in virMediatedDeviceTypeFree call. \n\
+    This can lead to undefined behavior or memory corruption. \nThe correct usage\
+    \ is to dereference the pointer array before accessing its elements, e.g., virMediatedDeviceTypeFree((*$VAR)[i]).\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/4c4d0e2da07b5a035b26a0ff13ec27070f7c7b1a
+    category: security
+    cwe:
+    - 'CWE-476: NULL Pointer Dereference'
+    technology:
+    - c

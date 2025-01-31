@@ -1,0 +1,37 @@
+rules:
+- id: vuln-flatpak-52346bf1
+  pattern: "$BUFFER = memmem($BUF, $POS, $AUTH_END_STRING, strlen($AUTH_END_STRING));\n\
+    if ($BUFFER != NULL)\n  return $BUFFER - $BUF->data + strlen($AUTH_END_STRING);\n"
+  pattern-not: "$BUFFER = memmem($BUF, $POS, $AUTH_END_STRING, strlen($AUTH_END_STRING));\n\
+    if ($BUFFER != NULL) {\n  if (auth_line_is_valid($BUFFER, $BUFFER + strlen($AUTH_END_STRING)))\n\
+    \    return $BUFFER - $BUF->data + strlen($AUTH_END_STRING);\n}\n"
+  languages:
+  - c
+  message: 'Detected insecure authentication line handling in DBus proxy. The original
+    code
+
+    directly matches authentication strings without proper validation, which could
+
+    allow malicious input to bypass security checks. This vulnerability could lead
+
+    to authentication bypass or injection attacks. The fix introduces proper validation
+
+    of ASCII characters and control characters in the authentication line. Update
+
+    the code to include the auth_line_is_valid() check before processing authentication
+
+    data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/52346bf187b5a7f1c0fe9075b328b7ad6abe78f6
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://dbus.freedesktop.org/doc/dbus-specification.html#auth-mechanisms
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mastodon-637c7d46
+  pattern: 'image: tootsuite/mastodon:v3.3.1
+
+    '
+  pattern-not: 'image: tootsuite/mastodon:v3.3.2
+
+    '
+  languages:
+  - yaml
+  message: 'Detected use of outdated Mastodon image version v3.3.1. This version may
+    contain security vulnerabilities or bugs that have been fixed in later versions.
+    Update to v3.3.2 or a newer version to ensure security and stability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/637c7d464b2876765370d1143b7ba6441efb730b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/mastodon/mastodon/releases
+    technology:
+    - yaml

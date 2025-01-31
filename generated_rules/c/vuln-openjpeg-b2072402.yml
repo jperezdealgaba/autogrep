@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openjpeg-b2072402
+  pattern: '$EXPR1 + $EXPR2 + $EXPR3 + $EXPR4
+
+    '
+  pattern-not: '$EXPR1 + $EXPR2 + $EXPR3
+
+    '
+  languages:
+  - c
+  message: "The vulnerability involves incorrect arithmetic calculations in image\
+    \ subsampling parameters. \nThe original code adds unnecessary offset values (image->x0\
+    \ and image->y0) to the subsampling parameters, \nwhich could lead to incorrect\
+    \ image processing and potential memory corruption. \nThis is dangerous because\
+    \ it can cause undefined behavior or crashes when processing malformed images.\
+    \ \nTo fix it, remove the unnecessary offset additions from the subsampling calculations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/b2072402b7e14d22bba6fb8cde2a1e9996e9a919
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/682.html
+    technology:
+    - c

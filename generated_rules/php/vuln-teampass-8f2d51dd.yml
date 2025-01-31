@@ -1,0 +1,27 @@
+rules:
+- id: vuln-teampass-8f2d51dd
+  pattern: "DB::update(\n    prefix_table(\"users\"),\n    array($POST_TYPE => $NEW_GROUPES),\n\
+    \    \"id = %i\",\n    $VAL[0]\n)\n"
+  pattern-not: "DB::update(\n    prefix_table(\"users\"),\n    array($POST_TYPE =>\
+    \ $NEW_GROUPES),\n    \"id = %i\",\n    $VAL[0]\n) |> pattern-inside: |\n    if\
+    \ ($_SESSION['is_admin'] === \"1\"\n        || (in_array($DATA_USER['isAdministratedByRole'],\
+    \ $_SESSION['user_roles']))\n        || ($_SESSION['user_can_manage_all_users']\
+    \ === \"1\" && $DATA_USER['admin'] !== \"1\")\n    ) { ... }\n"
+  languages:
+  - php
+  message: 'Missing authorization check before updating user permissions. This vulnerability
+    allows unauthorized users to modify other users'' permissions by directly calling
+    the update function without proper authorization checks. The fix adds validation
+    to ensure only authorized users (admins or users with proper roles) can perform
+    these updates. To fix this, always verify the current user''s permissions before
+    performing sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nilsteampassnet/TeamPass/commit/8f2d51dd6c24f76e4f259d0df22cff9b275f2dd1
+    category: security
+    cwe: 'CWE-862: Missing Authorization'
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - php

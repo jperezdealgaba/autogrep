@@ -1,0 +1,29 @@
+rules:
+- id: vuln-openjpeg-79c7d7af
+  pattern: '$DIRPTR->filename_buf = (char*)malloc($SIZE * $OPJ_PATH_LEN * sizeof(char));
+
+    $DIRPTR->filename = (char**) malloc($SIZE * sizeof(char*));
+
+    '
+  pattern-not: '$DIRPTR->filename_buf = (char*)calloc($SIZE, $OPJ_PATH_LEN * sizeof(char));
+
+    $DIRPTR->filename = (char**) calloc($SIZE, sizeof(char*));
+
+    '
+  languages:
+  - c
+  message: 'The use of `malloc` without initialization can lead to uninitialized memory
+    access vulnerabilities. This is dangerous because it can expose sensitive data
+    or cause undefined behavior. Replace `malloc` with `calloc` to ensure memory is
+    zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/79c7d7af598b778c3cdcb455df23d50efc95eb3c
+    category: security
+    cwe:
+    - CWE-908
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

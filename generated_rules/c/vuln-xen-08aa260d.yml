@@ -1,0 +1,28 @@
+rules:
+- id: vuln-xen-08aa260d
+  pattern: '(void)page_get_owner_and_reference($PAGE);
+
+    '
+  pattern-not: "$TD = page_get_owner_and_reference($PAGE);\nif ( $TD != $RD || $RD->is_dying\
+    \ )\n{\n    if ( $TD )\n        put_page($PAGE);\n    $PAGE = NULL;\n    $RC =\
+    \ $ERROR_CODE;\n    goto $LABEL;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when the return value of `page_get_owner_and_reference`
+    is ignored, which can lead to incorrect handling of page references. This can
+    result in use-after-free or double-free vulnerabilities if the page is later accessed
+    or freed without proper validation. To fix this, always check the return value
+    of `page_get_owner_and_reference` and handle the page reference appropriately,
+    especially when the owning domain is dying.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/08aa260dd172de625ecc2b64b78b1aa68de1f472
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

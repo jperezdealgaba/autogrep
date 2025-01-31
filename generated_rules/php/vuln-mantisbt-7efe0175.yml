@@ -1,0 +1,31 @@
+rules:
+- id: vuln-mantisbt-7efe0175
+  pattern: '$query = "...$VAR...";
+
+    $result = db_query($query);
+
+    '
+  pattern-not: '$query = "... . db_param() ...";
+
+    $result = db_query_bound($query, $VAR);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe SQL query construction with direct variable interpolation,
+    which can lead to SQL injection vulnerabilities. Use parameterized queries with
+    db_param() and db_query_bound() to safely handle user input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/7efe0175f0853e18ebfacedfd2374c4179028b3f
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

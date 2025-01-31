@@ -1,0 +1,31 @@
+rules:
+- id: vuln-ruby-b78fa27a
+  pattern: 'FilePathValue($PATH);
+
+    '
+  pattern-not: '$PATH = unixsock_path_value($PATH);
+
+    '
+  languages:
+  - c
+  message: 'The use of `FilePathValue` without proper validation can lead to security
+    vulnerabilities, particularly when handling Unix socket paths. This function does
+    not adequately check for empty or null strings, which can cause undefined behavior
+    or security issues. The patch introduces `unixsock_path_value` to properly validate
+    and handle Unix socket paths, ensuring that empty or null strings are safely managed.
+    To fix this, replace `FilePathValue` with `unixsock_path_value` to ensure proper
+    validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/b78fa27ae0b717c5569878c106a67d5047e5fb88
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

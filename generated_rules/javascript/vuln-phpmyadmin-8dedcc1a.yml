@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-8dedcc1a
+  pattern: '$VAR.value += $CHARS.charAt(Math.floor(Math.random() * $CHARS.length))
+
+    '
+  pattern-not: '$VAR.value += $CHARS.charAt(Math.abs($RANDOM) % $CHARS.length)
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure use of Math.random() for cryptographic purposes detected. Math.random()
+    is not cryptographically secure and can lead to predictable values. Use window.crypto.getRandomValues()
+    or similar secure random number generators instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/8dedcc1a175eb07debd4fe116407c43694c60b22
+    category: security
+    cwe: CWE-330
+    owasp: A2:2017-Cryptographic Failures
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
+    technology:
+    - javascript

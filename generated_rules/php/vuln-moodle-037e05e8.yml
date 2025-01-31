@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-037e05e8
+  pattern: 'self::$attachmentoptions = array(''subdirs'' => false, ''maxfiles'' =>
+    -1, ''maxbytes'' => $CFG->maxbytes, ''accepted_types'' => ''*'');
+
+    '
+  pattern-not: 'self::$attachmentoptions = array(''subdirs'' => false, ''maxfiles''
+    => -1, ''maxbytes'' => $CFG->maxbytes, ''accepted_types'' => ''*'', ''enable_filemanagement''
+    => $showfilemanager);
+
+    '
+  languages:
+  - php
+  message: 'The code is missing the ''enable_filemanagement'' option in the file attachment
+    configuration, which could lead to unauthorized file management. Ensure that the
+    ''enable_filemanagement'' option is included and properly set based on user capabilities
+    to prevent security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/037e05e8b266bff4835f0d2eea33ef86fb71d585
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-neomutt-36a29280
+  pattern: 'mutt_error("%s", $S + 3);
+
+    '
+  pattern-not: 'mutt_error("%s", $S + 2);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect offset in the `mutt_error` function,
+    which could lead to incorrect error message handling or potential information
+    disclosure. The offset `+3` should be `+2` to correctly reference the intended
+    string. This issue could be dangerous as it might expose sensitive information
+    or cause incorrect error messages to be displayed. To fix this, ensure the correct
+    offset is used when referencing the string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neomutt/neomutt/commit/36a29280448097f34ce9c94606195f2ac643fed1
+    category: security
+    cwe:
+    - CWE-193
+    owasp: A6:2021 - Vulnerable and Outdated Components
+    technology:
+    - c

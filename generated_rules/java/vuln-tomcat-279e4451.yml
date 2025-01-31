@@ -1,0 +1,33 @@
+rules:
+- id: vuln-tomcat-279e4451
+  pattern: "static {\n    webDigesters[$INDEX] = DigesterFactory.newDigester($_, $_,\
+    \ webRuleSet);\n    webDigesters[$INDEX].getParser();\n    webFragmentDigesters[$INDEX]\
+    \ = DigesterFactory.newDigester($_, $_, webFragmentRuleSet);\n    webFragmentDigesters[$INDEX].getParser();\n\
+    \    ...\n}\n"
+  pattern-not: "public void createWebXmlDigester(boolean namespaceAware, boolean validation)\
+    \ {\n    if (webDigesters[$INDEX] == null) {\n        webDigesters[$INDEX] = DigesterFactory.newDigester(validation,\
+    \ namespaceAware, webRuleSet);\n        webFragmentDigesters[$INDEX] = DigesterFactory.newDigester(validation,\
+    \ namespaceAware, webFragmentRuleSet);\n    }\n    ...\n}\n"
+  languages:
+  - java
+  message: 'Static initialization of webDigesters and webFragmentDigesters can lead
+    to thread safety issues and improper initialization.
+
+    The digester instances should be created lazily and checked for null before initialization
+    to ensure proper thread safety and resource management.
+
+    Move the initialization logic to a method and check for null before creating new
+    instances.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/279e4451cb996f810fbca2f78b6340412d9daa7b
+    category: security
+    cwe:
+    - CWE-362
+    - CWE-665
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - java

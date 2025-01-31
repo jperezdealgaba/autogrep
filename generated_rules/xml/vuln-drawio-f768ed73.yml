@@ -1,0 +1,25 @@
+rules:
+- id: vuln-drawio-f768ed73
+  pattern: '<filelist dir="${war.dir}/js/sanitizer" files="sanitizer.min.js"/>
+
+    '
+  pattern-not: '<filelist dir="${war.dir}/js/sanitizer" files="purify.min.js"/>
+
+    '
+  languages:
+  - xml
+  message: "The use of 'sanitizer.min.js' may introduce security vulnerabilities.\
+    \ \nThis file is potentially unsafe and should be replaced with 'purify.min.js'\
+    \ \nto ensure proper sanitization of input and prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jgraph/drawio/commit/f768ed73875d5eca20110b9c1d72f2789cd1bab7
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - xml

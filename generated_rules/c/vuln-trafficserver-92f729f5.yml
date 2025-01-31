@@ -1,0 +1,24 @@
+rules:
+- id: vuln-trafficserver-92f729f5
+  pattern: "if (strstr($STR, $VALUE) != NULL) {\n  ...\n}\n"
+  pattern-not: "if ($LEN >= $MIN_LEN && strstr($STR, $VALUE) != NULL) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential vulnerability due to missing length check before\
+    \ using strstr(). \nThis can lead to security issues such as buffer overflows\
+    \ or incorrect string matching. \nAlways verify the length of the string before\
+    \ performing operations like strstr() to ensure safety.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/92f729f5edaa17fa69355216da6c71ba5ea8de5b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

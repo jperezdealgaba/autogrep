@@ -1,0 +1,23 @@
+rules:
+- id: vuln-lxml-f2330237
+  pattern: "_is_image_dataurl = re.compile(\n    r'^data:image/.+;base64', re.I).search\n"
+  pattern-not: "_find_image_dataurls = re.compile(\n    r'^data:image/(.+);base64,',\
+    \ re.I).findall\n"
+  languages:
+  - python
+  message: Detected insecure handling of image data URLs. The previous implementation
+    did not properly validate image types, potentially allowing SVG images with embedded
+    scripts. Update the code to explicitly check for unsafe image types like SVG or
+    XML.
+  severity: ERROR
+  metadata:
+    source-url: github.com/lxml/lxml/commit/f2330237440df7e8f39c3ad1b1aa8852be3b27c0
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - python

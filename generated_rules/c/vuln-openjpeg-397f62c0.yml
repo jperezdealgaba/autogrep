@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openjpeg-397f62c0
+  pattern: '$SIZE = (OPJ_UINT32)(($X1 - $X0) * ($Y1 - $Y0) * (OPJ_INT32)sizeof(OPJ_UINT32));
+
+    '
+  pattern-not: '$SIZE = 1 + (OPJ_UINT32)(($X1 - $X0) * ($Y1 - $Y0) * (OPJ_INT32)sizeof(OPJ_UINT32));
+
+    '
+  languages:
+  - c
+  message: "This rule detects a potential buffer overflow vulnerability due to incorrect\
+    \ size calculation. \nThe original code calculates the size of a buffer without\
+    \ adding 1, which can lead to insufficient memory allocation. \nThis can cause\
+    \ buffer overflow, potentially leading to memory corruption or code execution.\
+    \ \nThe fix is to add 1 to the size calculation to ensure sufficient memory is\
+    \ allocated.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/397f62c0a838e15d667ef50e27d5d011d2c79c04
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://github.com/uclouvain/openjpeg/issues/835
+    technology:
+    - c

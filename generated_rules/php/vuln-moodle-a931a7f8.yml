@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-a931a7f8
+  pattern: "public function get_selected_users() {\n  global $DB;\n  $idlist = array();\n\
+    \  if (!empty($this->filters->userids)) {\n    $idlist = explode(',', $this->filters->userids);\n\
+    \    list($where, $params) = $DB->get_in_or_equal($idlist);\n    [$order] = users_order_by_sql();\n\
+    \    return $DB->get_records_select('user', \"id $where\", $params, $order);\n\
+    \  }\n  return $idlist;\n}\n"
+  pattern-not: "public function get_selected_users(): array {\n  return $this->users;\n\
+    }\n"
+  languages:
+  - php
+  message: 'The function directly retrieves user records based on filter input without
+    proper access control checks. This can expose sensitive user information to unauthorized
+    users. The fix ensures that only users with proper access permissions are retrieved
+    by using a filtered list of users (`$this->users`). Always validate user access
+    permissions before retrieving user data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/a931a7f8cec3657827268837b27962a13817ca2b
+    category: security
+    cwe:
+    - CWE-284
+    - CWE-863
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

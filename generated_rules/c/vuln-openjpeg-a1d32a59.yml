@@ -1,0 +1,25 @@
+rules:
+- id: vuln-openjpeg-a1d32a59
+  pattern: '$VAR[$INDEX] *= (1 << $SHIFT)
+
+    '
+  pattern-not: '$VAR[$INDEX] <<= $SHIFT
+
+    '
+  languages:
+  - c
+  message: "Detected potential integer overflow vulnerability due to multiplication\
+    \ on signed types. \nWhen multiplying a signed integer by a left-shifted value,\
+    \ large values can cause overflow, \nleading to undefined behavior. To fix, use\
+    \ unsigned types and left shift directly instead \nof multiplication.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/a1d32a596a94280178c44a55d7e7f1acd992ed5d
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/uclouvain/openjpeg/issues/1053
+    technology:
+    - c

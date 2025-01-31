@@ -1,0 +1,27 @@
+rules:
+- id: vuln-redis-697af434
+  pattern: 'server.vm_enabled != 0
+
+    '
+  pattern-not: 'server.ds_enabled != 0
+
+    '
+  languages:
+  - c
+  message: 'The use of `vm_enabled` indicates outdated and potentially insecure virtual
+    memory management in Redis. This implementation has been replaced with a more
+    secure and efficient disk store (`ds_enabled`). Using the old virtual memory system
+    can lead to security vulnerabilities and performance issues. Update the code to
+    use `ds_enabled` and the new disk store implementation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/697af434fbeb2e3ba2ba9687cd283ed1a2734fa5
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

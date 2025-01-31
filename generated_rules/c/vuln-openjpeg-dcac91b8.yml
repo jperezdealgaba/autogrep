@@ -1,0 +1,31 @@
+rules:
+- id: vuln-openjpeg-dcac91b8
+  pattern: 'opj_j2k_write_sot($J2K, $DATA, $NB_BYTES_WRITTEN, $STREAM, $MANAGER)
+
+    '
+  pattern-not: 'opj_j2k_write_sot($J2K, $DATA, $TOTAL_DATA_SIZE, $NB_BYTES_WRITTEN,
+    $STREAM, $MANAGER)
+
+    '
+  languages:
+  - c
+  message: 'The function `opj_j2k_write_sot` is called without checking the size of
+    the output buffer, which can lead to buffer overflow vulnerabilities. This is
+    dangerous because it can allow attackers to overwrite adjacent memory, potentially
+    leading to arbitrary code execution or crashes. Always pass and validate the total
+    data size parameter to ensure the buffer is large enough to handle the data being
+    written.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/dcac91b8c72f743bda7dbfa9032356bc8110098a
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

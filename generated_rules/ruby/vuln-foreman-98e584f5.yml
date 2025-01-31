@@ -1,0 +1,22 @@
+rules:
+- id: vuln-foreman-98e584f5
+  pattern: '"#{icon($RECORD, $OPTS)} #{$RECORD.to_label}".html_safe'
+  pattern-not: icon($RECORD, $OPTS).html_safe << $RECORD.to_label
+  languages:
+  - ruby
+  message: "Detected unsafe HTML escaping in string interpolation. \nThis can lead\
+    \ to XSS vulnerabilities as the combined string is marked as HTML safe without\
+    \ proper escaping of the individual components.\nTo fix, ensure each component\
+    \ is safely escaped before combining them.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/98e584f5a7860fb92a9916d5e5ec524372e3f8ae
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://guides.rubyonrails.org/security.html#cross-site-scripting-xss
+    technology:
+    - ruby

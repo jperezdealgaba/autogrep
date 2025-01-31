@@ -1,0 +1,25 @@
+rules:
+- id: vuln-cxf-1a4fe22f
+  pattern: "if ($TOKEN.hasAttributeNS($NS, \"Id\")) {\n  return $TOKEN.getAttributeNS($NS,\
+    \ \"Id\");\n} else if ($TOKEN.hasAttributeNS(null, \"ID\")) {\n  ...\n} else if\
+    \ ($TOKEN.hasAttributeNS(null, \"AssertionID\")) {\n  ...\n}\n"
+  pattern-not: "if (\"Assertion\".equals($TOKEN.getLocalName())\n    && $SAML2_NS.equals($TOKEN.getNamespaceURI()))\
+    \ {\n  ...\n} else if (\"Assertion\".equals($TOKEN.getLocalName())\n    && $SAML_NS.equals($TOKEN.getNamespaceURI()))\
+    \ {\n  ...\n} else if ($USERNAME_TOKEN_LN.equals($TOKEN.getLocalName())\n    &&\
+    \ $WSSE_NS.equals($TOKEN.getNamespaceURI())) {\n  ...\n} else if ($BINARY_TOKEN_LN.equals($TOKEN.getLocalName())\n\
+    \    && $WSSE_NS.equals($TOKEN.getNamespaceURI())) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Insecure token ID retrieval detected. Use secure methods to generate unique
+    IDs for different token types (SAML, UsernameToken, BinarySecurityToken).
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/1a4fe22fc297f8be204788bcdfcd498e91201a01
+    category: security
+    cwe:
+    - CWE-330
+    - CWE-310
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java

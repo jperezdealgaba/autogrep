@@ -1,0 +1,28 @@
+rules:
+- id: vuln-roundcubemail-74cd0a9b
+  pattern: '($key == ''href'' && !preg_match(''!^javascript!i'', $value))
+
+    '
+  pattern-not: '($key == ''href'' && !preg_match(''!^(javascript|vbscript|data:text)!i'',
+    $value))
+
+    '
+  languages:
+  - php
+  message: "The code is vulnerable to XSS attacks due to insufficient validation of\
+    \ the 'href' attribute. \nThe original pattern only checks for 'javascript:' URLs,\
+    \ leaving the application open to attacks using 'vbscript:' or 'data:text' URLs.\
+    \ \nTo fix this, update the regex pattern to include checks for 'vbscript:' and\
+    \ 'data:text' URLs.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/74cd0a9b62f11bc07c5a1d3ba0098b54883eb0ba
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

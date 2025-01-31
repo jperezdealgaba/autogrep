@@ -1,0 +1,30 @@
+rules:
+- id: vuln-misp-934c8281
+  pattern: '$sql = ''DELETE FROM bruteforces WHERE `expire` <= NOW();'';
+
+    '
+  pattern-not: '$sql = ''DELETE FROM bruteforces WHERE `expire` <= "'' . $expire .
+    ''";'';
+
+    '
+  languages:
+  - php
+  message: 'The use of `NOW()` in SQL queries without proper sanitization can lead
+    to SQL injection vulnerabilities. This is dangerous because it allows attackers
+    to manipulate the query and potentially access or modify sensitive data. To fix
+    this, use parameterized queries or ensure that the expiration time is properly
+    sanitized and concatenated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/934c82819237b4edf1da64587b72a87bec5dd520
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

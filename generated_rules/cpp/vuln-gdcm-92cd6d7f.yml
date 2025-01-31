@@ -1,0 +1,25 @@
+rules:
+- id: vuln-gdcm-92cd6d7f
+  pattern: '$NPIXELS = $DIMS[0] * $DIMS[1] * $DIMS[2];
+
+    '
+  pattern-not: "$BOXREGION.SetRegion(0, $DIMS[0] - 1, 0, $DIMS[1] - 1, 0, $DIMS[2]\
+    \ - 1);\nif ($BOXREGION.IsValid()) {\n  ...\n}\n$NPIXELS = $BOXREGION.Area();\n"
+  languages:
+  - cpp
+  message: "Direct multiplication of array dimensions can lead to integer overflow\
+    \ vulnerabilities. \nThis is dangerous because it can result in incorrect memory\
+    \ allocation or buffer overflow.\nUse a robust computation method like BoxRegion\
+    \ to validate the dimensions before calculating the area.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/malaterre/GDCM/commit/92cd6d7fe0d01c61cf68ac4ef65ef388ee252415
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

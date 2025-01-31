@@ -1,0 +1,35 @@
+rules:
+- id: vuln-podman-550cff9a
+  pattern: "func readStatusUserNS($PID string) ([]string, error) {\n  $PATH := fmt.Sprintf(\"\
+    /proc/%s/status\", $PID)\n  $ARGS := []string{\"nsenter\", \"-U\", \"-t\", $PID,\
+    \ \"cat\", $PATH}\n  $CMD := exec.Command($ARGS[0], $ARGS[1:]...)\n  $OUTPUT,\
+    \ $ERR := $CMD.CombinedOutput()\n  ...\n}\n"
+  pattern-not: "func readStatus($PID string) ([]string, error) {\n  $PATH := fmt.Sprintf(\"\
+    /proc/%s/status\", $PID)\n  $DATA, $ERR := ioutil.ReadFile($PATH)\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected use of nsenter to read process status files. This approach is
+    vulnerable to security issues as it:
+
+    1. Executes external commands
+
+    2. Exposes potential privilege escalation vectors
+
+    3. Can be manipulated via PID namespaces
+
+    Instead, use direct file reading with proper permission checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containers/podman/commit/550cff9aceef27ff7fdefe0b39badb760c7e5331
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - go
+    references:
+    - https://man7.org/linux/man-pages/man1/nsenter.1.html
+    - https://man7.org/linux/man-pages/man2/pid_namespaces.7.html

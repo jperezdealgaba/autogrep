@@ -1,0 +1,18 @@
+rules:
+- id: vuln-tomcat-2344a4c0
+  pattern: decrementActiveRemoteStreamCount()
+  pattern-not: decrementActiveRemoteStreamCount($STREAM)
+  languages:
+  - java
+  message: Potential mis-counting of active streams due to missing stream parameter
+    in decrementActiveRemoteStreamCount(). This can lead to incorrect enforcement
+    of the maximum concurrent streams limit. Always pass the stream object to ensure
+    accurate counting.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/2344a4c0d03e307ba6b8ab6dc8b894cc8bac63f2
+    category: security
+    cwe: CWE-400
+    owasp: 'A1: Injection'
+    technology:
+    - java

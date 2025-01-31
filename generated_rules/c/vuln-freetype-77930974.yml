@@ -1,0 +1,26 @@
+rules:
+- id: vuln-freetype-77930974
+  pattern: "if ( !$FUNC( $FACE, $TTAG_CFF, $STREAM, 0 ) )\n  $NUM_INSTANCES = 0;\n"
+  pattern-not: "if ( $FUNC( $FACE, $TTAG_glyf, $STREAM, 0 ) &&\n     !$FUNC( $FACE,\
+    \ $TTAG_CFF, $STREAM, 0 ) )\n  $NUM_INSTANCES = 0;\n"
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the absence of a specific table
+    (TTAG_CFF) is checked without first ensuring the presence of another required
+    table (TTAG_glyf). This can lead to incorrect handling of font data, potentially
+    causing crashes or undefined behavior. The fix involves adding a check for the
+    presence of the TTAG_glyf table before checking for the TTAG_CFF table.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/freetype/freetype/commit/779309744222a736eba0f1731e8162fce6288d4e
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2020-15999
+    technology:
+    - c

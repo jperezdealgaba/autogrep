@@ -1,0 +1,24 @@
+rules:
+- id: vuln-tomcat-494429ca
+  pattern: "while (!getErrorState().isError() && $KEEPALIVE && !isAsync() && $UPGRADETOKEN\
+    \ == null && !$ENDPOINT.isPaused()) {\n  ...\n  if ($SENDFILEDATA != null) {\n\
+    \    ...\n  }\n  ...\n}\n"
+  pattern-not: "while (!getErrorState().isError() && $KEEPALIVE && !isAsync() && $UPGRADETOKEN\
+    \ == null &&\n          $SENDFILESTATE == SendfileState.DONE && !$ENDPOINT.isPaused())\
+    \ {\n  ...\n  $SENDFILESTATE = processSendfile($SOCKETWRAPPER);\n  ...\n  if ($SENDFILESTATE\
+    \ == SendfileState.PENDING) {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - java
+  message: "Incomplete handling of sendfile states in the keep-alive loop may lead\
+    \ to improper processing of file transfers. \nThe vulnerability could cause incomplete\
+    \ file transfers or unexpected behavior in the HTTP connection. \nEnsure proper\
+    \ state checking for sendfile operations by using the SendfileState enum and handling\
+    \ all states appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/494429ca210641b6b7affe89a2b0a6c0ff70109b
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - java

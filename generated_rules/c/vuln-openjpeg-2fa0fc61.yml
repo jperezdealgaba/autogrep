@@ -1,0 +1,29 @@
+rules:
+- id: vuln-openjpeg-2fa0fc61
+  pattern: "$EXPR && (\n  $COMP1.dx == $COMP2.dx &&\n  $COMP2.dx == $COMP3.dx &&\n\
+    \  $COMP1.dy == $COMP2.dy &&\n  $COMP2.dy == $COMP3.dy &&\n  $COMP1.prec == $COMP2.prec\
+    \ &&\n  $COMP2.prec == $COMP3.prec\n)\n"
+  pattern-not: 'are_comps_similar($IMAGE)
+
+    '
+  languages:
+  - c
+  message: 'Detected direct comparison of image component properties without proper
+    validation. This can lead to security vulnerabilities if the components are not
+    properly checked for consistency. Use the `are_comps_similar` function to ensure
+    all components are validated correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/2fa0fc61f2d546c8b67e7c5a9cbc61d98e1f7af0
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

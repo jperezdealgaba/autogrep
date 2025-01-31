@@ -1,0 +1,31 @@
+rules:
+- id: vuln-redis-c9928576
+  pattern: 'createLongLongConfig("proto-max-bulk-len", NULL, MODIFIABLE_CONFIG, $MIN,
+    LLONG_MAX, $VAR, $DEFAULT, MEMORY_CONFIG, NULL, NULL)
+
+    '
+  pattern-not: 'createLongLongConfig("proto-max-bulk-len", NULL, MODIFIABLE_CONFIG,
+    $MIN, LONG_MAX, $VAR, $DEFAULT, MEMORY_CONFIG, NULL, NULL)
+
+    '
+  languages:
+  - c
+  message: 'The use of LLONG_MAX instead of LONG_MAX in the configuration of "proto-max-bulk-len"
+    can lead to potential integer overflow vulnerabilities. This is dangerous because
+    it can cause unexpected behavior or crashes when dealing with large values. To
+    fix this, replace LLONG_MAX with LONG_MAX to ensure the value remains within safe
+    bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/c992857618db99776917f10bf4f2345a5fdc78b0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-keystone-bdb88c66
+  pattern: 'self.assertNotEqual($V1, $V2)
+
+    '
+  pattern-not: 'self.assertEqual($V1, $V2)
+
+    '
+  languages:
+  - python
+  message: Incorrect assertion detected. Using assertNotEqual instead of assertEqual
+    can lead to false positives in test cases. Replace with assertEqual to ensure
+    correct validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/bdb88c662ac2035f9b0d8a229a5db5f60f5f16ae
+    category: security
+    cwe: CWE-691
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertEqual
+    technology:
+    - python

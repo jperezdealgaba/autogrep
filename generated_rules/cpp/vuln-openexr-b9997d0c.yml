@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openexr-b9997d0c
+  pattern: 'int $WIDTH = $EXPR + 1;
+
+    '
+  pattern-not: 'ptrdiff_t $WIDTH = $EXPR + 1;
+
+    '
+  languages:
+  - cpp
+  message: 'The use of ''int'' for width calculation can lead to integer overflow
+    vulnerabilities when dealing with large data windows. This can cause incorrect
+    memory allocations or buffer overflows. Use ''ptrdiff_t'' instead to safely handle
+    large values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/b9997d0c045fa01af3d2e46e1a74b07cc4519446
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phpmyadmin-d3ccf798
+  pattern: 'printf(__(...), $GLOBALS[''db''], $GLOBALS[''table''])
+
+    '
+  pattern-not: 'printf(__(...), htmlspecialchars($GLOBALS[''db'']), htmlspecialchars($GLOBALS[''table'']))
+
+    '
+  languages:
+  - php
+  message: 'Unescaped output of $GLOBALS[''db''] and $GLOBALS[''table''] in printf
+    function can lead to XSS vulnerabilities. Always use htmlspecialchars() to escape
+    user-controlled data before outputting it to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/d3ccf798fdbd4f8a89d4088130637d8dee918492
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

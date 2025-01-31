@@ -1,0 +1,29 @@
+rules:
+- id: vuln-revive-adserver-c40abff6
+  pattern: '$replace[] = (!empty($macros[2][$i])) ? urlencode(stripslashes($_REQUEST[$macros[1][$i]]))
+    : stripslashes($_REQUEST[$macros[1][$i]]);
+
+    '
+  pattern-not: '$replace[] = (!empty($macros[2][$i])) ? urlencode(stripslashes($_REQUEST[$macros[1][$i]]))
+    : htmlspecialchars(stripslashes($_REQUEST[$macros[1][$i]]), ENT_QUOTES);
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped user input from $_REQUEST being directly used in output.
+    This can lead to Cross-Site Scripting (XSS) vulnerabilities. Always use htmlspecialchars()
+    with ENT_QUOTES when outputting user-controlled data to prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/c40abff62fde08e6f692655b400b7210773b9213
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

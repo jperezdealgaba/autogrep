@@ -1,0 +1,31 @@
+rules:
+- id: vuln-node-bf00665a
+  pattern: "const $RESULT = win32SplitPath($PATH);\nconst $ROOT = $RESULT[0];\nvar\
+    \ $DIR = $RESULT[1];\nif (!$ROOT && !$DIR) {\n  ...\n}\nif ($DIR) {\n  $DIR =\
+    \ $DIR.substr(0, $DIR.length - 1);\n}\nreturn $ROOT + $DIR;\n"
+  pattern-not: "const $LEN = $PATH.length;\nif ($LEN === 0)\n...\nfor (var $I = $LEN\
+    \ - 1; $I >= $OFFSET; --$I) {\n  $CODE = $PATH.charCodeAt($I);\n  if ($CODE ===\
+    \ 47 || $CODE === 92) {\n    if (!$MATCHEDSLASH) {\n      $END = $I;\n      break;\n\
+    \    }\n  } else {\n    $MATCHEDSLASH = false;\n  }\n}\nif ($END === -1) {\n \
+    \ if ($ROOTEND === -1)\n    return \".\";\n  else\n    $END = $ROOTEND;\n}\nreturn\
+    \ $PATH.slice(0, $END);\n"
+  languages:
+  - javascript
+  message: 'Insecure path handling detected. The old implementation used a regex-based
+    split approach that could be vulnerable to path manipulation attacks. The new
+    implementation uses a more secure character-by-character parsing approach. Update
+    your path handling code to use the new secure implementation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/bf00665af68c8aaf43112a244535bd1094d68f16
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    technology:
+    - javascript
+    - nodejs
+    references:
+    - https://nodejs.org/api/path.html
+    - https://cwe.mitre.org/data/definitions/22.html

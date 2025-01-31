@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libgd-e13a342c
+  pattern: 'sscanf($H, "%x", $B);
+
+    '
+  pattern-not: "if (sscanf($H, \"%x\", $B) != 1) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of `sscanf` without checking the return value can lead to undefined
+    behavior if the input is invalid. This can cause security vulnerabilities such
+    as memory corruption or unexpected program behavior. Always check the return value
+    of `sscanf` to ensure the input was successfully parsed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/e13a342c079aeb73e31dfa19eaca119761bac3f3
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

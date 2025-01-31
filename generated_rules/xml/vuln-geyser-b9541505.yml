@@ -1,0 +1,27 @@
+rules:
+- id: vuln-geyser-b9541505
+  pattern: '<version>1.4.1-SNAPSHOT</version>
+
+    '
+  pattern-not: '<version>1.4.2-SNAPSHOT</version>
+
+    '
+  languages:
+  - xml
+  message: 'Detected an outdated version ''1.4.1-SNAPSHOT'' in the XML configuration.
+    Using outdated versions can expose the application to known vulnerabilities. Update
+    to the latest version ''1.4.2-SNAPSHOT'' to mitigate these risks.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/GeyserMC/Geyser/commit/b9541505af68ac7b7c093206ac7b1ba88957a5a6
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - xml

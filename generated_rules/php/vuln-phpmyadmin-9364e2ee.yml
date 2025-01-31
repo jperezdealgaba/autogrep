@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-9364e2ee
+  pattern: '$A . PMA_getReportData()
+
+    '
+  pattern-not: '$A . htmlspecialchars(PMA_getReportData())
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output from PMA_getReportData(). This can lead to Cross-Site
+    Scripting (XSS) vulnerabilities if the output contains user-controlled input.
+    Always use htmlspecialchars() or similar functions to escape output before including
+    it in HTML context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/9364e2eee5681681caf7205c0933bc18af11e233
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.htmlspecialchars.php
+    technology:
+    - php

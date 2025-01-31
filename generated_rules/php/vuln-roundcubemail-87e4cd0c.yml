@@ -1,0 +1,28 @@
+rules:
+- id: vuln-roundcubemail-87e4cd0c
+  pattern: '$dump .= $node->nodeValue;
+
+    '
+  pattern-not: '$dump .= htmlspecialchars($node->nodeValue, ENT_QUOTES, ''UTF-8'');
+
+    '
+  languages:
+  - php
+  message: 'Directly appending node values to a string without proper sanitization
+    can lead to XSS vulnerabilities. In this case, CDATA sections containing malicious
+    scripts can be executed in the browser. Always sanitize or escape node values
+    using functions like htmlspecialchars to prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/87e4cd0cf2c550e77586860b94e5c75d2b7686d0
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

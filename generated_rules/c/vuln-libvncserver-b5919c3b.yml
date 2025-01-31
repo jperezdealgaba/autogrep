@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libvncserver-b5919c3b
+  pattern: 'ssize_t $RET;
+
+    '
+  pattern-not: 'int $RET = 0;
+
+    '
+  languages:
+  - c
+  message: 'The use of `ssize_t` for return values in this context can lead to potential
+    issues with type compatibility and incorrect error handling. The patch replaces
+    `ssize_t` with `int` and initializes the variable to 0, which ensures proper type
+    usage and initialization. This change prevents potential undefined behavior and
+    improves code reliability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/b5919c3be1bb7de91f12eb390e7502e3b06034d7
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

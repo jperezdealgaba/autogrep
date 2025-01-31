@@ -1,0 +1,25 @@
+rules:
+- id: vuln-openemr-a6b24033
+  pattern: '$v_database = 257;
+
+    '
+  pattern-not: '$v_database = 258;
+
+    '
+  languages:
+  - php
+  message: "The database version is outdated and may contain security vulnerabilities.\
+    \ \nUsing an outdated version can expose the system to known exploits and bugs.\
+    \ \nUpdate the database version to the latest secure version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/a6b24033bce5ab725b2902715b3956d1dfca34d7
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - php

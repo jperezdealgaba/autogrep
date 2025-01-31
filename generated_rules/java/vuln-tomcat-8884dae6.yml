@@ -1,0 +1,17 @@
+rules:
+- id: vuln-tomcat-8884dae6
+  pattern: "if ($FIRST && $REQUEST.getContentLengthLong() > 0 || $WAITING_FOR_BODY_MESSAGE)\
+    \ {\n    $RECEIVE(true);\n}\n"
+  pattern-not: "if ($WAITING_FOR_BODY_MESSAGE || $FIRST && $REQUEST.getContentLengthLong()\
+    \ > 0) {\n    $REFILL_READ_BUFFER(true);\n}\n"
+  languages:
+  - java
+  message: Incorrect handling of AJP request body messages can lead to improper stream
+    termination. Use refillReadBuffer instead of receive for proper buffer management.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/8884dae60ace77a87ed9385442ce429e98c3a479
+    category: security
+    cwe: CWE-444
+    owasp: A01:2021 - Broken Access Control
+    technology: java

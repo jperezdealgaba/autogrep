@@ -1,0 +1,30 @@
+rules:
+- id: vuln-discourse-f55e0fe7
+  pattern: "result = result.where(<<~SQL, name: $OPTIONS[:exclude_tag]) if $OPTIONS[:exclude_tag].present?\n\
+    \  topics.id NOT IN (\n    SELECT topic_tags.topic_id\n    FROM topic_tags\n \
+    \   INNER JOIN tags ON tags.id = topic_tags.tag_id\n    WHERE tags.name = :name\n\
+    \  )\n  SQL\n"
+  pattern-not: "if $OPTIONS[:exclude_tag].present? &&\n     !DiscourseTagging.hidden_tag_names($GUARDIAN).include?($OPTIONS[:exclude_tag])\n\
+    \  result = result.where(<<~SQL, name: $OPTIONS[:exclude_tag])\n    topics.id\
+    \ NOT IN (\n      SELECT topic_tags.topic_id\n      FROM topic_tags\n      INNER\
+    \ JOIN tags ON tags.id = topic_tags.tag_id\n      WHERE tags.name = :name\n  \
+    \  )\n    SQL\nend\n"
+  languages:
+  - ruby
+  message: 'The code directly uses the `exclude_tag` option in a SQL query without
+    checking if the tag is hidden or restricted. This can lead to unauthorized access
+    to topics that should be hidden based on tag permissions. To fix this, ensure
+    that the tag is not hidden or restricted before using it in the query by adding
+    a check with `DiscourseTagging.hidden_tag_names`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/f55e0fe7910149c431861c18ce407d1be0d6091a
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - ruby

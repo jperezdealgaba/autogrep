@@ -1,0 +1,27 @@
+rules:
+- id: vuln-trafficserver-d0dda3f1
+  pattern: "if (++$VAL_HITS >= $HITS || ($BYTES > 0 && $VAL_BYTES > $BYTES)) {\n \
+    \ ...\n}\n"
+  pattern-not: "if ($CACHEABLE && ($VAL_HITS >= $HITS || ($BYTES > 0 && $VAL_BYTES\
+    \ > $BYTES))) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The vulnerability occurs when cache promotion logic does not check if
+    the request is cacheable before promoting it. This can lead to incorrect cache
+    promotions for non-cacheable requests, potentially causing resource exhaustion
+    or cache poisoning. The fix involves adding a cacheable check before promoting
+    the request. Ensure that cache promotion logic verifies request cacheability using
+    appropriate headers and methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/d0dda3f1b1cc5f0b8e77135571c4e1e21b702d08
+    category: security
+    cwe:
+    - CWE-400
+    - CWE-524
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - cpp

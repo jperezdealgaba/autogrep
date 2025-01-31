@@ -1,0 +1,30 @@
+rules:
+- id: vuln-pillow-9a2c9f72
+  pattern: 'return IMAGING_CODEC_MEMORY;
+
+    '
+  pattern-not: 'state->errcode = IMAGING_CODEC_MEMORY;
+
+    return -1;
+
+    '
+  languages:
+  - c
+  message: 'Directly returning error codes without setting the state->errcode can
+    lead to inconsistent error handling and potential security vulnerabilities. Always
+    set the error code in the state structure before returning an error value to ensure
+    proper error tracking and handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/9a2c9f722f78773e608d44710873437baf3f17d1
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology:
+    - c

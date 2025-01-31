@@ -1,0 +1,23 @@
+rules:
+- id: vuln-red-discordbot-d8d3e9fc
+  pattern: '" | ".join($FIELDS).format(member=$MEMBER, **$M_DATA)
+
+    '
+  pattern-not: '" | ".join($FIELDS)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe string formatting with untrusted data. Using format()
+    with ** operator can lead to security vulnerabilities if user-controlled data
+    is passed. Use direct string concatenation or safe formatting methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cog-Creators/Red-DiscordBot/commit/d8d3e9fceb7935259c2efd15a03c2a687f942554
+    category: security
+    cwe: CWE-134
+    owasp: A1:2017-Injection
+    technology:
+    - python

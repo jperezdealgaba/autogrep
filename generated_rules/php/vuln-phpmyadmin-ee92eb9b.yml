@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmyadmin-ee92eb9b
+  pattern: '$VAR = filter_input(INPUT_GET, $ARG);
+
+    '
+  pattern-not: '$VAR = isset($_GET[$ARG]) ? $_GET[$ARG] : null;
+
+    '
+  languages:
+  - php
+  message: "Insecure use of `filter_input` for GET parameters can lead to undefined\
+    \ behavior and security vulnerabilities. \nDirectly accessing `$_GET` with proper\
+    \ null checks is safer and more reliable. \nReplace `filter_input(INPUT_GET, ...)`\
+    \ with `isset($_GET[...]) ? $_GET[...] : null` to ensure proper handling of missing\
+    \ parameters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/ee92eb9bab8e2d546756c1d4aec81ec7c8e44b83
+    category: security
+    cwe:
+    - CWE-473
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://www.php.net/manual/en/function.filter-input.php
+    - https://www.php.net/manual/en/reserved.variables.get.php
+    technology:
+    - php

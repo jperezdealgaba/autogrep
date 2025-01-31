@@ -1,0 +1,27 @@
+rules:
+- id: vuln-node-0c2a5723
+  pattern: 'RAND_bytes($BUFFER, $SIZE) <= 0
+
+    '
+  pattern-not: 'CSPRNG($BUFFER, $SIZE).is_err()
+
+    '
+  languages:
+  - cpp
+  message: "The use of RAND_bytes() with a <= 0 check is insecure because it does\
+    \ not properly handle entropy failures. \nThis can lead to weak cryptographic\
+    \ keys or predictable random values. \nUse CSPRNG() instead, which properly checks\
+    \ for entropy and handles failures.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/0c2a5723beff39d1f62daec96b5389da3d427e79
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://www.openssl.org/docs/man1.1.1/man3/RAND_bytes.html
+    - https://nodejs.org/api/crypto.html
+    technology:
+    - cpp

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openexr-6bad53af
+  pattern: "if ($X <= 0 || $Y <= 0) {\n  ...\n}\n"
+  pattern-not: "if ($X <= 0 || $Y <= 0 || $X > INT_MAX || $Y > INT_MAX) {\n  ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'The code checks for negative values but fails to validate against integer
+    overflow by not checking if the values exceed INT_MAX. This can lead to undefined
+    behavior or security vulnerabilities when the values are used in calculations
+    or memory allocations. Add checks to ensure values do not exceed INT_MAX.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/6bad53af7eebed507564dd5fc90320e4c6a6c0bc
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

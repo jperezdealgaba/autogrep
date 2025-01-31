@@ -1,0 +1,35 @@
+rules:
+- id: vuln-wasmtime-e60c3742
+  pattern: "let memory_size = if $INSTANCE_LIMITS.memory_pages > 0 {\n    usize::try_from(\n\
+    \        u64::from($TUNABLES.static_memory_bound) * u64::from(WASM_PAGE_SIZE)\n\
+    \            + $TUNABLES.static_memory_offset_guard_size,\n    )\n    .map_err(|_|\
+    \ anyhow!(\"memory reservation size exceeds addressable memory\"))?\n} else {\n\
+    \    0\n};\n"
+  pattern-not: "let static_memory_bound =\n    u64::from($TUNABLES.static_memory_bound)\
+    \ * u64::from(WASM_PAGE_SIZE);\nlet memory_size =\n    usize::try_from(static_memory_bound\
+    \ + $TUNABLES.static_memory_offset_guard_size)\n        .map_err(|_| anyhow!(\"\
+    memory reservation size exceeds addressable memory\"))?;\n"
+  languages:
+  - rust
+  message: 'Detected potentially unsafe memory size calculation in Wasmtime. The original
+    code may fail to properly handle static memory bounds, leading to incorrect memory
+    reservations. This could result in out-of-bounds memory access or other memory-related
+    vulnerabilities. The fix involves explicitly calculating the static memory bound
+    before determining the total memory size. Update the code to use the fixed version
+    where the static memory bound is calculated separately and then combined with
+    the guard size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bytecodealliance/wasmtime/commit/e60c3742904ccbb3e26da201c9221c38a4981d72
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-125
+    owasp: 'A5: Security Misconfiguration'
+    references:
+    - https://github.com/bytecodealliance/wasmtime/commit/e60c3742904ccbb3e26da201c9221c38a4981d72
+    technology:
+    - rust
+    - wasm

@@ -1,0 +1,33 @@
+rules:
+- id: vuln-phpmyadmin-331c560f
+  pattern: '$cfg = array();
+
+    include $CONFIG_FILE_PATH;
+
+    $GLOBALS[''ConfigFile'']->setConfigData($cfg);
+
+    '
+  pattern-not: "$GLOBALS['ConfigFile']->setConfigData(\n    loadConfig($CONFIG_FILE_PATH)\n\
+    );\n"
+  languages:
+  - php
+  message: 'Directly including a configuration file without proper validation or encapsulation
+    can lead to arbitrary code execution. The vulnerability occurs because the configuration
+    file is included directly into the global scope, which can be exploited if the
+    file path is controllable by an attacker. Use a function to load the configuration
+    file to avoid polluting the global scope and add proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/331c560fbfa0e7d2dce674b5e88e983c5f2a451d
+    category: security
+    cwe:
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/73.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

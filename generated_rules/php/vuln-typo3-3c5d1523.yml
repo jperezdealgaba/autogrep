@@ -1,0 +1,24 @@
+rules:
+- id: vuln-typo3-3c5d1523
+  pattern: '$confData[''label''] = trim($PARTS);
+
+    '
+  pattern-not: '$confData[''label''] = t3lib_div::removeXSS(trim($PARTS));
+
+    '
+  languages:
+  - php
+  message: "The vulnerability involves missing XSS sanitization in the assignment\
+    \ of a label value. \nThis can lead to Cross-Site Scripting (XSS) attacks if user\
+    \ input is not properly sanitized. \nTo fix this, use `t3lib_div::removeXSS` or\
+    \ similar sanitization functions before assigning the value.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/3c5d15233ca765fabeac21f0600d831595d31cd8
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-mantisbt-f779e3d4
+  pattern: "$t_dummy = user_get_field($p_user_id, $FIELD);\nif (!empty($t_dummy))\
+    \ {\n    $t_result[$KEY] = $t_dummy;\n}\n"
+  pattern-not: "if ($t_is_same_user || $t_can_manage || $t_can_see_realname) {\n \
+    \   $t_realname = user_get_realname($p_user_id);\n    if (!empty($t_realname))\
+    \ {\n        $t_result['real_name'] = $t_realname;\n    }\n}\nif ($t_is_same_user\
+    \ || $t_can_manage || $t_can_see_email) {\n    $t_email = user_get_email($p_user_id);\n\
+    \    if (!empty($t_email)) {\n        $t_result['email'] = $t_email;\n    }\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected insecure user information retrieval without proper access control
+    checks.
+
+    This vulnerability allows unauthorized access to sensitive user information such
+    as real names and email addresses.
+
+    To fix this, ensure that access to user information is properly guarded by access
+    control checks like `$t_is_same_user`, `$t_can_manage`, or `$t_can_see_realname`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/f779e3d4394a0638d822849863c4098421d911c5
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

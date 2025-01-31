@@ -1,0 +1,24 @@
+rules:
+- id: vuln-moodle-bac703c5
+  pattern: "if ($mode == UPDATE_ALL_LANG) {\n  ...\n}\n"
+  pattern-not: "if ($mode == UPDATE_ALL_LANG && confirm_sesskey()) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Missing session key verification in Moodle language import tool. This
+    vulnerability allows unauthorized actions to be performed without proper session
+    validation, potentially leading to unauthorized modifications. Always verify the
+    session key using `confirm_sesskey()` when processing sensitive actions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/bac703c534d05d4502580fbe32447d5c777869bf
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://docs.moodle.org/dev/Session_key
+    technology:
+    - php

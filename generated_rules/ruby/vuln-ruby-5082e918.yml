@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ruby-5082e918
+  pattern: '/\A(?:%\h\h|[^%]+)*\z/ =~ $STR
+
+    '
+  pattern-not: '/\A[^%]*(?:%\h\h[^%]*)*\z/ =~ $STR
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression used for validating percent-encoded strings is
+    vulnerable to bypass attacks. The original pattern allows for sequences that are
+    not properly encoded, potentially leading to security issues such as injection
+    attacks. Use the updated pattern that ensures proper validation of percent-encoded
+    strings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/5082e91876502a2f3dde862406a0efe9f85afcdb
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

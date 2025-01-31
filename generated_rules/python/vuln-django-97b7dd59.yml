@@ -1,0 +1,23 @@
+rules:
+- id: vuln-django-97b7dd59
+  pattern: 're.compile(r''<(/)?([^ ]+?)(?:(\s*/)| .*?)?>'', re.S)
+
+    '
+  pattern-not: 're.compile(r''<(/)?(\S+?)(?:(\s*/)|\s.*?)?>'', re.S)
+
+    '
+  languages:
+  - python
+  message: "Detected a potentially catastrophic backtracking vulnerability in a regular\
+    \ expression pattern. \nThe pattern '[^ ]+?' can cause exponential time complexity\
+    \ with certain inputs, leading to a denial of service. \nUse '\\S+?' instead to\
+    \ avoid this issue.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/97b7dd59bb8d6163239061e2022153c3415d146d
+    category: security
+    cwe: CWE-1333
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology: python

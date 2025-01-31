@@ -1,0 +1,26 @@
+rules:
+- id: vuln-roundcubemail-3e8832d0
+  pattern: '$dump .= '' '' . $ns->nodeName . ''="'' . $ns->nodeValue . ''"''
+
+    '
+  pattern-not: "$dump .= sprintf(' %s=\"%s\"',\n    $ns->nodeName,\n    htmlspecialchars($ns->nodeValue,\
+    \ ENT_QUOTES, $this->config['charset'])\n)\n"
+  languages:
+  - php
+  message: 'Detected direct concatenation of node values without proper escaping,
+    which can lead to XSS vulnerabilities. Always use `htmlspecialchars` to escape
+    node values before including them in HTML attributes to prevent injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/3e8832d029b035e3fcfb4c75839567a9580b4f82
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

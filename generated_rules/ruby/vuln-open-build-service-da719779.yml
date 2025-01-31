@@ -1,0 +1,32 @@
+rules:
+- id: vuln-open-build-service-da719779
+  pattern: 'backend_build_command($CMD, $PARAMS.slice(:package, :arch, :repository))
+
+    '
+  pattern-not: 'backend_build_command($CMD, $PROJECT, $PARAMS.slice(:package, :arch,
+    :repository))
+
+    '
+  languages:
+  - ruby
+  message: 'The backend_build_command method is being called without the required
+    build_project parameter, which could lead to incorrect build operations. This
+    vulnerability occurs because the project name is derived from the current context
+    rather than explicitly passed, potentially causing operations to be performed
+    on the wrong project. To fix this, always pass the build_project parameter explicitly
+    when calling backend_build_command.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openSUSE/open-build-service/commit/da7197792a29f5e197d5777340c6e2d8e8643a7a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

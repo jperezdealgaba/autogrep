@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ruby-339e11a7
+  pattern: 'StringValuePtr($VAR)
+
+    '
+  pattern-not: 'SafeStringValueCStr($VAR)
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe use of `StringValuePtr` which can lead to security vulnerabilities.\
+    \ \nThe function does not perform proper safety checks on the input object, potentially\
+    \ leading to memory corruption or crashes. \nUse `SafeStringValueCStr` instead,\
+    \ which ensures the object is safe before converting it to a C string.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/339e11a7f178312d937b7c95dd3115ce7236597a
+    category: security
+    cwe:
+    - CWE-119
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

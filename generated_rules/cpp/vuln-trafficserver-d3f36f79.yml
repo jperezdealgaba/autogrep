@@ -1,0 +1,39 @@
+rules:
+- id: vuln-trafficserver-d3f36f79
+  pattern: 'int8_t $CLIENT_VERIFY = 0;
+
+    ...
+
+    $CLIENT_VERIFY = $PARAMS->clientVerify ? ($PARAMS->clientVerify == 1 ? 2 : 1)
+    : 0;
+
+    ...
+
+    if ($CLIENT_VERIFY) { ... }
+
+    '
+  pattern-not: "if ($NPS && $NPS->verifyLevel != static_cast<uint8_t>(YamlSNIConfig::Level::UNSET))\
+    \ {\n  $OPTIONS->clientVerificationFlag = $NPS->verifyLevel;\n} else {\n  $OPTIONS->clientVerificationFlag\
+    \ = $PARAMS->clientVerify ? ($PARAMS->clientVerify == 1 ? 2 : 1) : 0;\n}\n...\n\
+    if ($OPTIONS->clientVerificationFlag) { ... }\n"
+  languages:
+  - cpp
+  message: 'The code uses a potentially uninitialized or incorrectly set client verification
+    flag, which could lead to improper SSL/TLS verification. This vulnerability could
+    allow man-in-the-middle attacks or unauthorized access. Ensure that client verification
+    flags are properly initialized and checked against a defined set of levels, such
+    as those in YamlSNIConfig::Level.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/d3f36f79820ea10c26573c742b1bbc370c351716
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/295.html
+    technology:
+    - cpp

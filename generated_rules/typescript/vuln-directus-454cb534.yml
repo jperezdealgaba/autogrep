@@ -1,0 +1,28 @@
+rules:
+- id: vuln-directus-454cb534
+  pattern: "if ($USER?.status !== 'active') {\n  ...\n  if ($USER?.status === 'suspended')\
+    \ {\n    ...\n  } else {\n    ...\n  }\n} else if ($USER.provider !== $PROVIDER)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($USER?.status !== 'active' || $USER?.provider !== $PROVIDER) {\n\
+    \  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Detected an authentication bypass vulnerability where provider validation
+    is performed after status validation, allowing potential bypass of provider checks.
+    This can lead to unauthorized access if a user''s status is ''active'' but their
+    provider is invalid. Combine both status and provider checks in a single condition
+    to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/directus/directus/commit/454cb534d6ffa547feb11f4d74b932ae7368dae2
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - typescript

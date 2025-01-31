@@ -1,0 +1,25 @@
+rules:
+- id: vuln-riot-89afc378
+  pattern: "if ($LEN < (0xff - 7)) {\n  ...\n}\n"
+  pattern-not: "if ($LEN < 0xff) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The condition `if (len < (0xff - 7))` is incorrect and can lead to buffer
+    overflow vulnerabilities. The check should be `if (len < 0xff)` to ensure that
+    `len` does not exceed the maximum allowed value. This vulnerability can be exploited
+    to cause undefined behavior or security issues. Always verify that the length
+    of data does not exceed the intended bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/RIOT-OS/RIOT/commit/89afc378a92bf198246335fd2fa64a76dfe6e00e
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-1d170eef
+  pattern: '$cmdline = ''echo '' . PMA_EscapeShellArg($buffer) . '' | '' . $program
+    . '' '' . PMA_EscapeShellArg($poptions, '''');
+
+    '
+  pattern-not: '$cmdline = ''echo '' . PMA_EscapeShellArg($buffer) . '' | '' . $program
+    . '' '' . PMA_SecureShellArgs($poptions);
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to shell injection due to insufficient escaping
+    of shell arguments. The function `PMA_EscapeShellArg` does not properly escape
+    all shell special characters, which can lead to arbitrary command execution. Use
+    the `PMA_SecureShellArgs` function instead to properly escape shell arguments
+    and prevent injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/1d170eefbf3b07c6bd968d9905a419aaf3aeedf0
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

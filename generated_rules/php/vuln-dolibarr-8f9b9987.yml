@@ -1,0 +1,34 @@
+rules:
+- id: vuln-dolibarr-8f9b9987
+  pattern: '$VAR = GETPOST(''$X'');
+
+    ...
+
+    header("Location: ".GETPOST(''$Y''));
+
+    '
+  pattern-not: '$VAR = GETPOST(''$X'', ''$TYPE'');
+
+    ...
+
+    header("Location: ".$VAR);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe use of GETPOST without type validation before header redirection.
+
+    This can lead to open redirect vulnerabilities if user input is not properly validated.
+
+    Always validate input with a specific type (e.g., ''alpha'', ''int'') and use
+    the validated variable for redirection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/8f9b9987ffb42cfbe907fe31ded3001bfc1b3417
+    category: security
+    cwe: 'CWE-601: URL Redirection to Untrusted Site (''Open Redirect'')'
+    owasp: 'A1: Injection'
+    technology:
+    - php

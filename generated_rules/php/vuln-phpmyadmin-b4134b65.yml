@@ -1,0 +1,31 @@
+rules:
+- id: vuln-phpmyadmin-b4134b65
+  pattern: 'preg_replace(''/\[a@([^"@]*)@([^]"]*)\]/'', ''<a href="\1" target="\2">'',
+    $MESSAGE)
+
+    '
+  pattern-not: 'preg_replace(''/\[a@([^"@]*)@([^]"]*)\]/e'', ''\''<a href="\'' . PMA_sanitizeUri(\''$1\'')
+    . \''" target="\2">\'''', $MESSAGE)
+
+    '
+  languages:
+  - php
+  message: 'The code uses `preg_replace` with a pattern that directly interpolates
+    user input into an HTML attribute, which can lead to XSS vulnerabilities. The
+    vulnerability is dangerous because it allows attackers to inject malicious JavaScript
+    code via the URL parameter. To fix this, sanitize the input using a function like
+    `PMA_sanitizeUri` before using it in the HTML context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b4134b65a7e7ed355121b6c2db9ea6c9624509bc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

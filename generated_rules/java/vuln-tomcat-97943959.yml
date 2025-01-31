@@ -1,0 +1,19 @@
+rules:
+- id: vuln-tomcat-97943959
+  pattern: "if (!$FILE.getCanonicalFile().toPath().startsWith($STORAGE_DIR.getCanonicalFile().toPath()))\
+    \ {\n  ...\n}\nreturn $FILE;\n"
+  pattern-not: "$CANONICAL_FILE = $FILE.getCanonicalFile();\nif (!$CANONICAL_FILE.toPath().startsWith($STORAGE_DIR.getCanonicalFile().toPath()))\
+    \ {\n  ...\n}\nreturn $CANONICAL_FILE;\n"
+  languages:
+  - java
+  message: Potential path traversal vulnerability due to direct use of file object
+    without canonicalization. Always use canonical file paths to prevent path traversal
+    attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/97943959ba721ad5e8e8ba765a68d2b153348530
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    references: https://cwe.mitre.org/data/definitions/22.html
+    technology: java

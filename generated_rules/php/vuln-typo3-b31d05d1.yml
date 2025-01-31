@@ -1,0 +1,32 @@
+rules:
+- id: vuln-typo3-b31d05d1
+  pattern: "$imageTagMarkers = [\n  '###publicUrl###' => htmlspecialchars($processedImage->getPublicUrl()\
+    \ ?? ''),\n  '###alt###' => htmlspecialchars($this->file->getProperty('alternative')\
+    \ ?: $this->title),\n  '###title###' => htmlspecialchars($this->file->getProperty('title')\
+    \ ?: $this->title),\n  '###width###' => $processedImage->getProperty('width'),\n\
+    \  '###height###' => $processedImage->getProperty('height'),\n];\n$this->imageTag\
+    \ = str_replace(array_keys($imageTagMarkers), array_values($imageTagMarkers),\
+    \ $this->imageTag);\n"
+  pattern-not: "$imageAttributes = [\n  'src' => $processedImage->getPublicUrl() ??\
+    \ '',\n  'alt' => $this->file->getProperty('alternative') ?: $this->title,\n \
+    \ 'title' => $this->file->getProperty('title') ?: $this->title,\n  'width' =>\
+    \ (string)$processedImage->getProperty('width'),\n  'height' => (string)$processedImage->getProperty('height'),\n\
+    ];\n$this->imageTag = sprintf('<img %s>', GeneralUtility::implodeAttributes($imageAttributes,\
+    \ true));\n"
+  languages:
+  - php
+  message: "The code is vulnerable to XSS due to improper HTML attribute handling.\
+    \ \nThe original code directly inserts attributes into an HTML tag without proper\
+    \ escaping, \nwhich could allow an attacker to inject malicious attributes. \n\
+    The fix uses `GeneralUtility::implodeAttributes` to properly escape and format\
+    \ the attributes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/b31d05d1da3eeaeead2d19eb43b1c3f9c88e15ee
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

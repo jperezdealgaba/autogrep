@@ -1,0 +1,30 @@
+rules:
+- id: vuln-claragenomicsanalysis-3217f01b
+  pattern: '$VAR1 = $VAR2 * CUDAPOA_MAX_CONSENSUS_SIZE;
+
+    $VAR3 = $VAR4 * $VAR5 * CUDAPOA_MAX_SEQUENCE_SIZE;
+
+    '
+  pattern-not: '$VAR1 = $VAR2 * static_cast<size_t>(CUDAPOA_MAX_CONSENSUS_SIZE);
+
+    $VAR3 = $VAR4 * $VAR5 * static_cast<size_t>(CUDAPOA_MAX_SEQUENCE_SIZE);
+
+    '
+  languages:
+  - cpp
+  message: 'The code performs arithmetic operations without proper type casting, which
+    can lead to integer overflows. This is dangerous because it can cause unexpected
+    behavior, memory corruption, or security vulnerabilities. To fix this, use `static_cast<size_t>`
+    to ensure the arithmetic operations are performed with the correct type.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/clara-genomics/ClaraGenomicsAnalysis/commit/3217f01b0525596c214a66d4154ce20c437c530f
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

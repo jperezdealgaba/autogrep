@@ -1,0 +1,31 @@
+rules:
+- id: vuln-openjpeg-afb308b9
+  pattern: '$LHS = 1 + (OPJ_UINT32)(($X1 - $X0) * ...);
+
+    '
+  pattern-not: '$LHS = 2 + (OPJ_UINT32)(($X1 - $X0) * ...);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects an insufficient buffer size allocation vulnerability.
+    The original code adds 1 to the calculated size, which is insufficient and can
+    lead to buffer overflows. The issue was fixed by changing the offset to 2. This
+    vulnerability is dangerous because it can result in memory corruption, potentially
+    leading to arbitrary code execution or crashes. To fix this, ensure the buffer
+    size is calculated with a sufficient offset to accommodate all possible data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/afb308b9ccbe129608c9205cf3bb39bbefad90b9
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/uclouvain/openjpeg/issues/835
+    - https://github.com/uclouvain/openjpeg/issues/982
+    technology:
+    - c

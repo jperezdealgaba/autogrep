@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redis-79f089bd
+  pattern: 'createSentinelAddr($HOSTNAME, $PORT)
+
+    '
+  pattern-not: 'createSentinelAddr($HOSTNAME, $PORT, $IS_ACCEPT_UNRESOLVED)
+
+    '
+  languages:
+  - c
+  message: 'The function `createSentinelAddr` is called without the `is_accept_unresolved`
+    parameter, which can lead to unresolved hostname issues. This can cause the function
+    to return NULL when it fails to resolve the hostname, potentially leading to unexpected
+    behavior or crashes. The fix includes adding the `is_accept_unresolved` parameter
+    to control whether unresolved hostnames are accepted.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/79f089bdd92348d5fa3965258f539752f2eb8e78
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/redis/redis/commit/79f089bdd92348d5fa3965258f539752f2eb8e78
+    technology:
+    - c

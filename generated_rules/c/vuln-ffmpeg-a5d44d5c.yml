@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ffmpeg-a5d44d5c
+  pattern: 'FF_ALLOC_OR_GOTO($C, $C->$BUF, $SIZE * $MULT * sizeof($TYPE *), $FAIL);
+
+    '
+  pattern-not: 'FF_ALLOCZ_OR_GOTO($C, $C->$BUF, $SIZE * $MULT * sizeof($TYPE *), $FAIL);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of FF_ALLOC_OR_GOTO instead of FF_ALLOCZ_OR_GOTO. This can
+    lead to uninitialized memory usage, which may expose sensitive information or
+    cause undefined behavior. Use FF_ALLOCZ_OR_GOTO to ensure memory is zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/a5d44d5c220e12ca0cb7a4eceb0f74759cb13111
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

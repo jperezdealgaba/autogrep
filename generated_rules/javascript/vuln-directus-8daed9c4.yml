@@ -1,0 +1,25 @@
+rules:
+- id: vuln-directus-8daed9c4
+  pattern: "{\n  title: 'Guides',\n  children: [\n    {\n      type: 'page',\n   \
+    \   path: '/configuration/sso',\n      title: 'Single Sign-On (SSO)',\n    },\n\
+    \  ],\n}\n"
+  pattern-not: "{\n  title: 'Guides',\n  children: [\n    {\n      type: 'page',\n\
+    \      path: '/configuration/sso',\n      title: 'Single Sign-On (SSO)',\n   \
+    \   secure: true,\n    },\n  ],\n}\n"
+  languages:
+  - javascript
+  message: 'Insecure configuration detected in VuePress setup. The SSO configuration
+    lacks security measures which could expose sensitive data. Ensure all sensitive
+    routes are properly secured.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/directus/directus/commit/8daed9c41baeaf1d08c1e292bf9f0dcef65e48fb
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology:
+    - javascript

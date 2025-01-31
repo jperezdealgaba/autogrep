@@ -1,0 +1,29 @@
+rules:
+- id: vuln-roundcubemail-06c5a203
+  pattern: '$VAR = preg_replace(''/^[^\.]+\./'', '''', $EXPR);
+
+    '
+  pattern-not: '$VAR = preg_replace(''/^[^.]+\.(?![^.]+$)/'', '''', $EXPR);
+
+    '
+  languages:
+  - php
+  message: 'The use of a simple regex pattern ''/^[^\.]+\./'' to remove the first
+    part of a domain name can lead to incorrect results when the domain has only one
+    part (e.g., ''domain.tld''). This can cause security issues if the truncated domain
+    is used in security-sensitive contexts. The fixed version uses ''/^[^.]+\.(?![^.]+$)/''
+    to ensure that domains with only one part remain valid.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/06c5a2033105074109282d2a88d760789f9a8370
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - php

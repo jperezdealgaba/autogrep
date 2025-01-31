@@ -1,0 +1,31 @@
+rules:
+- id: vuln-misp-238010bf
+  pattern: '$data = FileAccessTool::readFromFile($file[''tmp_name''], $file[''size'']);
+
+    '
+  pattern-not: "$matches = null;\n$tmp_name = $file['tmp_name'];\nif (preg_match_all('/[\\\
+    w\\/\\-\\.]*/', $tmp_name, $matches) && file_exists($file['tmp_name'])) {\n  \
+    \  $data = FileAccessTool::readFromFile($matches[0][0], $file['size']);\n} else\
+    \ {\n    throw new NotFoundException(__('Invalid file.'));\n}\n"
+  languages:
+  - php
+  message: 'Directly using user-provided file paths without validation can lead to
+    path traversal or file inclusion vulnerabilities. An attacker could manipulate
+    the file path to access or execute unauthorized files. To fix this, validate the
+    file path using a regular expression and ensure the file exists before accessing
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/238010bfd004680757b324cba0c6344f77a25399
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-23
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-ce96f23f
+  pattern: '$mform->addElement(''text'', ''webdav_password'', get_string(''webdav_password'',
+    ''repository_webdav''), array(''size'' => ''40''))
+
+    '
+  pattern-not: '$mform->addElement(''password'', ''webdav_password'', get_string(''webdav_password'',
+    ''repository_webdav''), array(''size'' => ''40''))
+
+    '
+  languages:
+  - php
+  message: 'Detected use of ''text'' input type for password fields, which is insecure
+    as it exposes sensitive information in plaintext. Use ''password'' input type
+    to mask the password and prevent exposure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/ce96f23fe15ce6addc2f56af015452c3ea406190
+    category: security
+    cwe:
+    - CWE-312
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - php

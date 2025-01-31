@@ -1,0 +1,35 @@
+rules:
+- id: vuln-ffmpeg-e1219cda
+  pattern: '$LEN = $X + strlen($SEP);
+
+    $AP = av_malloc($LEN * $COUNT);
+
+    '
+  pattern-not: "$LEN = $X + strlen($SEP);\nif ($COUNT >= (INT_MAX - 1)/$LEN)\n   \
+    \ return NULL;\n$AP = av_malloc($LEN * $COUNT + 1);\n"
+  languages:
+  - c
+  message: 'This rule detects potential integer overflow vulnerabilities in memory
+    allocation.
+
+    The vulnerability occurs when using a small integer type for component_len and
+
+    multiplying it by count without proper bounds checking. This can lead to buffer
+
+    overflows or arbitrary code execution. To fix this, use a larger integer type
+
+    like uint64_t and add bounds checking before the allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/e1219cdaf9fb4bc8cea410e1caf802373c1bfe51
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

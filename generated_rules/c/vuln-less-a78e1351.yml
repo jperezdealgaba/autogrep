@@ -1,0 +1,24 @@
+rules:
+- id: vuln-less-a78e1351
+  pattern: "if ($VAR->prev_esc && $CH == '\\\\')\n  return $ANSI_END;\n"
+  pattern-not: "if ($VAR->prev_esc)\n  return ($CH == '\\\\') ? $ANSI_END : $ANSI_ERR;\n"
+  languages:
+  - c
+  message: 'The code incorrectly handles ANSI escape sequences by not properly checking
+    the character after an escape sequence. This can lead to incorrect parsing of
+    ANSI codes, potentially causing security issues such as command injection or unexpected
+    behavior. The fix ensures that the character is properly validated before returning
+    the ANSI end state.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gwsw/less/commit/a78e1351113cef564d790a730d657a321624d79c
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-74
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-sqlite-f39168e4
+  pattern: "if( sqlite3ExprIsConstantOrGroupBy($PARSE, $EXPR, $GROUPBY) ){\n    ...\n\
+    }\n"
+  pattern-not: "if( sqlite3ExprIsConstantOrGroupBy($PARSE, $EXPR, $GROUPBY) \n &&\
+    \ ExprAlwaysFalse($EXPR)==0\n){\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The condition check in the SQLite query processing logic is incomplete
+    as it does not verify if the expression is always false. This could lead to incorrect
+    query results or security vulnerabilities if the expression evaluation is not
+    properly constrained. The fix involves adding an additional check using `ExprAlwaysFalse`
+    to ensure the expression is not always false.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sqlite/sqlite/commit/f39168e468af3b1d6b6d37efdcb081eced6724b2
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://www.sqlite.org/src/info/f39168e468af3b1d6b6d37efdcb081eced6724b2
+    technology:
+    - c

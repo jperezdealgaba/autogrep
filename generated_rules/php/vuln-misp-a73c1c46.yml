@@ -1,0 +1,26 @@
+rules:
+- id: vuln-misp-a73c1c46
+  pattern: "if (isset($options['order'])) {\n  $params['order'] = $options['order'];\n\
+    }\n"
+  pattern-not: "if (!empty($options['order'])) {\n  $options['order'] = $this->findOrder(\n\
+    \    $options['order'],\n    $MODEL,\n    $ALLOWED_FIELDS\n  );\n}\n"
+  languages:
+  - php
+  message: 'Detected unsafe handling of SQL ORDER BY parameters. Using untrusted input
+    directly in SQL queries can lead to SQL injection vulnerabilities. The fix involves
+    validating and sanitizing the ''order'' parameter using a whitelist of allowed
+    fields. Always validate and sanitize user inputs before using them in SQL queries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/a73c1c461bc6f8a048eae92b5e99823afd892d1e
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

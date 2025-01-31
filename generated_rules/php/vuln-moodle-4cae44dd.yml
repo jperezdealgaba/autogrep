@@ -1,0 +1,33 @@
+rules:
+- id: vuln-moodle-4cae44dd
+  pattern: 'return [''post'' => true, ''view'' => true];
+
+    '
+  pattern-not: "global $DB, $USER;\n$canpost = $canview = true;\nif ($args->context->contextlevel\
+    \ == CONTEXT_USER && $USER->id != $args->context->instanceid) {\n    $sqlparam\
+    \ = [\n        'blockname' => 'comments',\n        'parentcontextid' => $args->context->id,\n\
+    \        'pagetypepattern' => 'user-profile',\n    ];\n    $canpost = $canview\
+    \ = $DB->record_exists_select(\n        'block_instances',\n        'blockname\
+    \ = :blockname AND parentcontextid = :parentcontextid AND pagetypepattern = :pagetypepattern',\n\
+    \        $sqlparam,\n    );\n}\nreturn ['post' => $canpost, 'view' => $canview];\n"
+  languages:
+  - php
+  message: 'The code returns hardcoded permissions for posting and viewing comments
+    without proper authorization checks. This can allow unauthorized users to post
+    or view comments on user profiles. The vulnerability was fixed by adding a check
+    to verify if the comment block is present in the target user''s profile before
+    granting access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/4cae44dd0e9a7da47d08d9b75e0ebba0e4b422f4
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology:
+    - php

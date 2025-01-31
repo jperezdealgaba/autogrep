@@ -1,0 +1,27 @@
+rules:
+- id: vuln-contiki-ng-280019dc
+  pattern: "if($VAR + $LEN > $MTU) {\n  ...\n}\n"
+  pattern-not: "if($LEN > $MTU - $VAR) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in buffer size calculation.
+
+    The original code adds the current index and payload length before comparing to
+    the MTU,
+
+    which could lead to an overflow and bypass the size check.
+
+    To fix, subtract the current index from the MTU before comparing with the payload
+    length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/280019dce685bd5cfa217880762976980aeecf30
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cacti-0bb77ee9
+  pattern: '$error_text = __(''Password is required.  Login failed.'');
+
+    '
+  pattern-not: '$error_text = __(''Invalid Password provided.  Login failed.'');
+
+    '
+  languages:
+  - php
+  message: 'The error message "Password is required. Login failed." is too generic
+    and can reveal unnecessary information to attackers. It should be replaced with
+    a more general message like "Invalid Password provided. Login failed." to prevent
+    information disclosure. This reduces the risk of attackers using the error message
+    to infer valid usernames or other sensitive information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/0bb77ee9b4d1c7a99e0140b88789e050e523e628
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - A07:2021 - Identification and Authentication Failures
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dolibarr-3a3ccc25
+  pattern: '$_GET[''$VAR'']
+
+    '
+  pattern-not: 'GETPOSTINT(''$VAR'')
+
+    '
+  languages:
+  - php
+  message: 'Direct use of $_GET without proper input validation can lead to security
+    vulnerabilities such as SQL injection or XSS. Use GETPOSTINT or similar functions
+    to sanitize and validate input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/3a3ccc253b8eceddee84f158b2c262a4033b9402
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

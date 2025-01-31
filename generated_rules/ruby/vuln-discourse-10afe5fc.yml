@@ -1,0 +1,29 @@
+rules:
+- id: vuln-discourse-10afe5fc
+  pattern: '$NORMALIZER.send($METHOD)
+
+    '
+  pattern-not: '$NORMALIZER.public_send($METHOD)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `send` method can lead to security vulnerabilities as it allows
+    calling private methods or bypassing access controls. Use `public_send` instead
+    to ensure only public methods are called, which is safer and prevents unintended
+    method access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/10afe5fcf1ebf2e49cb80716d5e62e184c53519b
+    category: security
+    cwe:
+    - CWE-749
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://ruby-doc.org/core-3.0.0/Object.html#method-i-send
+    - https://ruby-doc.org/core-3.0.0/Object.html#method-i-public_send
+    technology:
+    - ruby

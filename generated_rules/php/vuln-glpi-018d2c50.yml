@@ -1,0 +1,30 @@
+rules:
+- id: vuln-glpi-018d2c50
+  pattern: '$_POST["entity_restrict"] = Toolbox::jsonDecode($_POST["entity_restrict"]);
+
+    '
+  pattern-not: "$decoded = Toolbox::jsonDecode($_POST['entity_restrict']);\n$entities\
+    \ = [];\nif (is_array($decoded)) {\n   foreach ($decoded as $value) {\n      $entities[]\
+    \ = (int)$value;\n   }\n}\n$_POST[\"entity_restrict\"] = $entities;\n"
+  languages:
+  - php
+  message: 'Directly assigning JSON-decoded user input to $_POST without validation
+    or type casting can lead to security vulnerabilities. This can allow attackers
+    to inject unexpected data types or values, potentially leading to issues like
+    SQL injection or other data manipulation attacks. Always validate and sanitize
+    user input before using it in your application. In this case, ensure that the
+    decoded values are properly cast to integers and stored in an array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/018d2c5061200d69f7f5a9154dd8590b79d87a45
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

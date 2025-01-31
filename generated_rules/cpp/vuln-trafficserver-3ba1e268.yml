@@ -1,0 +1,30 @@
+rules:
+- id: vuln-trafficserver-3ba1e268
+  pattern: '$TUNNEL.set_producer_chunking_action($PRODUCER, $SKIP_BYTES, $ACTION)
+
+    '
+  pattern-not: '$TUNNEL.set_producer_chunking_action($PRODUCER, $SKIP_BYTES, $ACTION,
+    $DROP_CHUNKED_TRAILERS)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a call to `set_producer_chunking_action` without the `drop_chunked_trailers`
+    parameter. This could lead to security vulnerabilities where chunked trailers
+    are not properly filtered, potentially allowing malicious content to pass through.
+    Always include the `drop_chunked_trailers` parameter to ensure proper handling
+    of chunked content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/3ba1e2685f89bcd631b66748f70f69a5eecf741b
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://httpwg.org/specs/rfc7230.html#chunked.trailer.part
+    technology:
+    - cpp

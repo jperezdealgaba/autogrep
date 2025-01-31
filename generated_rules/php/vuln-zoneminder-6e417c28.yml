@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zoneminder-6e417c28
+  pattern: '$modal = validJsStr($_REQUEST[''modal'']);
+
+    '
+  pattern-not: '$modal = detaintPath($_REQUEST[''modal'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected use of `validJsStr` for sanitizing user input, which may not
+    be sufficient for path validation. This can lead to path traversal or other security
+    vulnerabilities. Use `detaintPath` instead to properly sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/6e417c28eac89664afa46b2fc1f7217622d0ef24
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

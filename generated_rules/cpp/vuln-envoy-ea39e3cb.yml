@@ -1,0 +1,19 @@
+rules:
+- id: vuln-envoy-ea39e3cb
+  pattern: "if ($CHILD_STATUS != Status::JwtMissed && $CHILD_STATUS != Status::JwtUnknownIssuer)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (($CHILD_STATUS != Status::JwtMissed && $CHILD_STATUS != Status::JwtUnknownIssuer)\
+    \ ||\n    $FINAL_STATUS == Status::JwtMissed) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "The JWT verification logic incorrectly handles JwtMissed and JwtUnknownIssuer\
+    \ statuses. \nThis can lead to incorrect authentication decisions, potentially\
+    \ allowing unauthorized access. \nThe fix ensures that JwtUnknownIssuer is preferred\
+    \ over JwtMissed and other errors are prioritized.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/ea39e3cba652bcc4b11bb0d5c62b017e584d2e5a
+    category: security
+    cwe: 'CWE-287: Improper Authentication'
+    owasp: 'A2: Broken Authentication'
+    technology: cpp

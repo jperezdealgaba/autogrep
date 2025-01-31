@@ -1,0 +1,24 @@
+rules:
+- id: vuln-red-discordbot-726bfd38
+  pattern: "$USER = $GUILD.get_member($USER_ID)\nif $USER is not None:\n    if $USER_ID\
+    \ in $TEMPBANS:\n        continue\n"
+  pattern-not: "$MEMBER = $GUILD.get_member($USER_ID)\nif $MEMBER is not None:\n \
+    \   $MEMBERS[$USER_ID] = $MEMBER\nelif not $GUILD.chunked:\n    $TO_QUERY.append($USER_ID)\n"
+  languages:
+  - python
+  message: 'Detected unsafe member handling in ban functionality. The original code
+    skips hierarchy checks for tempbanned users, potentially allowing unauthorized
+    bans. The fix ensures proper member handling and hierarchy checks by using a more
+    robust approach with member caching and querying.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cog-Creators/Red-DiscordBot/commit/726bfd38adfdfaef760412a68e01447b470f438b
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A5:2017-Broken Access Control
+    technology:
+    - python

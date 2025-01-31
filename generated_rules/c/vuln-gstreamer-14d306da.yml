@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gstreamer-14d306da
+  pattern: '$Z.avail_out += 4096;
+
+    '
+  pattern-not: '$Z.avail_out += $LENGTH - $Z.total_out;
+
+    '
+  languages:
+  - c
+  message: 'The code directly adds 4096 to `avail_out` without checking if it exceeds
+    the maximum allowed size, which can lead to integer overflow and memory corruption.
+    This vulnerability can be exploited to cause a denial of service or potentially
+    execute arbitrary code. To fix this, ensure that the length is checked against
+    the maximum allowed size before performing the addition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GStreamer/gstreamer/commit/14d306da6da51a762c4dc701d161bb52ab66d774
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

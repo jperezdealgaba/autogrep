@@ -1,0 +1,29 @@
+rules:
+- id: vuln-flatpak-d9a8f9d8
+  pattern: "if (g_key_file_load_from_bytes($METADATA, $BYTES, G_KEY_FILE_NONE, NULL))\n\
+    {\n  $RESOLVED_METADATA = g_bytes_ref($BYTES);\n  $RESOLVED_METAKEY = g_steal_pointer(&$METAKEY);\n\
+    }\nelse\n{\n  g_message(\"Warning: Failed to parse metadata for %s\\n\", $REF);\n\
+    }\n"
+  pattern-not: "if (!g_key_file_load_from_bytes($METADATA, $BYTES, G_KEY_FILE_NONE,\
+    \ NULL))\n  return flatpak_fail_error($ERROR, FLATPAK_ERROR_INVALID_DATA, \"Metadata\
+    \ for %s is invalid\", $REF);\n\n$RESOLVED_METADATA = g_bytes_ref($BYTES);\n$RESOLVED_METAKEY\
+    \ = g_steal_pointer(&$METAKEY);\n"
+  languages:
+  - c
+  message: "The code fails to properly handle errors when parsing metadata, which\
+    \ can lead to undefined behavior or security issues. \nThe patch introduces proper\
+    \ error handling by returning an error and ensuring the function fails safely.\
+    \ \nTo fix this, ensure that all error conditions are properly checked and handled,\
+    \ and use appropriate error reporting mechanisms.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/d9a8f9d8ccc0b7c1135d0ecde006a75d25f66aee
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology:
+    - c

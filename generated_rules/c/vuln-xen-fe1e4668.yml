@@ -1,0 +1,29 @@
+rules:
+- id: vuln-xen-fe1e4668
+  pattern: 'unsigned long $END_GFN = 1UL << (DEFAULT_DOMAIN_ADDRESS_WIDTH - PAGE_SHIFT);
+
+    unsigned int $LEVEL = amd_iommu_get_paging_mode($END_GFN);
+
+    '
+  pattern-not: 'unsigned int $LEVEL = hd->arch.amd.paging_mode;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves calculating the paging mode using a potentially
+    incorrect `end_gfn` value derived from `DEFAULT_DOMAIN_ADDRESS_WIDTH`. This can
+    lead to incorrect memory mapping and potential security issues. The fix uses the
+    correct paging mode stored in `hd->arch.amd.paging_mode`. Always use the correct
+    paging mode value to avoid memory mapping errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/fe1e4668b373ec4c1e5602e75905a9fa8cc2be3f
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

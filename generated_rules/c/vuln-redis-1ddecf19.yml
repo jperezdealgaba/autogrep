@@ -1,0 +1,34 @@
+rules:
+- id: vuln-redis-1ddecf19
+  pattern: 'uint32_t *$LCS = zmalloc((size_t)($ALEN+1)*($BLEN+1)*sizeof(uint32_t));
+
+    '
+  pattern-not: "unsigned long long $LCSSIZE = (unsigned long long)($ALEN+1)*($BLEN+1);\n\
+    unsigned long long $LCSALLOC = $LCSSIZE * sizeof(uint32_t);\nuint32_t *$LCS =\
+    \ NULL;\nif ($LCSALLOC < SIZE_MAX && $LCSALLOC / $LCSSIZE == sizeof(uint32_t))\n\
+    \    $LCS = ztrymalloc($LCSALLOC);\n"
+  languages:
+  - c
+  message: 'This pattern detects potential integer overflow vulnerabilities in memory
+    allocation.
+
+    The original code directly multiplies dimensions without checking for overflow,
+    which can lead to insufficient memory allocation or security vulnerabilities.
+
+    The fixed version introduces checks to prevent overflow and ensures safe memory
+    allocation.
+
+    To fix this, always validate the size calculation before allocation and use appropriate
+    checks to prevent overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/redis/redis/commit/1ddecf1958924b178b76a31d989ef1e05af81964
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017 - Using Components with Known Vulnerabilities
+    technology:
+    - c

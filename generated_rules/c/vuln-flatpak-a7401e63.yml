@@ -1,0 +1,25 @@
+rules:
+- id: vuln-flatpak-a7401e63
+  pattern: 'g_print (_("Skipping invalid Exec argument %s\n"), $ARG);
+
+    '
+  pattern-not: "{\n  flatpak_fail_error ($ERROR, FLATPAK_ERROR_EXPORT_FAILED,\n  \
+    \                   _(\"Invalid Exec argument %s\"), $ARG);\n  goto out;\n}\n"
+  languages:
+  - c
+  message: 'The code prints an error message but does not handle the error properly,
+    which can lead to continued execution with invalid arguments. This can cause security
+    vulnerabilities by allowing invalid or malicious input to be processed. Use `flatpak_fail_error`
+    to properly handle the error and terminate the execution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/a7401e638bf0c03102039e216ab1081922f140ae
+    category: security
+    cwe:
+    - 'CWE-391: Unchecked Error Condition'
+    owasp:
+    - 'A12: Security Misconfiguration'
+    technology:
+    - c

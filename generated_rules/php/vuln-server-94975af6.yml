@@ -1,0 +1,28 @@
+rules:
+- id: vuln-server-94975af6
+  pattern: '$VAR->addHeader(''Content-Disposition'', ''attachment; filename="owncloud.log"'');
+
+    '
+  pattern-not: '$VAR->addHeader(''Content-Type'', ''application/octet-stream'');
+
+    $VAR->addHeader(''Content-Disposition'', ''attachment; filename="nextcloud.log"'');
+
+    '
+  languages:
+  - php
+  message: 'The Content-Disposition header is being set without specifying the Content-Type
+    header, which can lead to incorrect file handling and potential security issues.
+    Always include the Content-Type header when setting Content-Disposition to ensure
+    proper file handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/94975af6db1551c2d23136c2ea22866a5b416070
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - php

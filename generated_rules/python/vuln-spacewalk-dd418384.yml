@@ -1,0 +1,16 @@
+rules:
+- id: vuln-spacewalk-dd418384
+  pattern: "if $PKG[3] == '0' or $PKG[3] == '':\n  ...\n"
+  pattern-not: "if $PKG[3] == '0' or $PKG[3] == '' or $PKG[3] == None:\n  ...\n"
+  languages:
+  - python
+  message: Incomplete null check detected. This can lead to unexpected behavior when
+    the value is None. Always check for None explicitly in addition to empty strings.
+  severity: ERROR
+  metadata:
+    source-url: github.com/spacewalkproject/spacewalk/commit/dd418384171473c3e31386a1b4792f8c555dc744
+    category: security
+    cwe: CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

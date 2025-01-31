@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glpi-ebca9b1a
+  pattern: '$input = array_merge($VAR->fields, [...]);
+
+    '
+  pattern-not: '$input = array_merge(Toolbox::addslashes_deep($VAR->fields), [...]);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe merging of array fields without proper escaping. This
+    can lead to SQL injection or other security vulnerabilities when the data is used
+    in database queries. Always use `Toolbox::addslashes_deep()` or similar escaping
+    functions when merging untrusted data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/ebca9b1a7e6a347e30273f281e3518f34e42c8c4
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

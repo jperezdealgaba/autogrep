@@ -1,0 +1,29 @@
+rules:
+- id: vuln-util-linux-ebbeb2c7
+  pattern: 'setuid(getuid());
+
+    setgid(getgid());
+
+    '
+  pattern-not: "if(setgid(getgid()) < 0)\n  die(EX_FAIL, _(\"$MSG: cannot set group\
+    \ id: %s\"), strerror(errno));\nif(setuid(getuid()) < 0)\n  die(EX_FAIL, _(\"\
+    $MSG: cannot set user id: %s\"), strerror(errno));\n"
+  languages:
+  - c
+  message: "Detected unsafe privilege drop without error handling. \nThe code attempts\
+    \ to drop privileges using setuid() and setgid() but does not check for errors.\
+    \ \nIf these calls fail, the program may continue running with elevated privileges,\
+    \ leading to potential privilege escalation vulnerabilities. \nAlways check the\
+    \ return value of setuid() and setgid() and handle errors appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/ebbeb2c7ac1b00b6083905957837a271e80b187e
+    category: security
+    cwe:
+    - CWE-273
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://man7.org/linux/man-pages/man2/setuid.2.html
+    - https://man7.org/linux/man-pages/man2/setgid.2.html
+    technology:
+    - c

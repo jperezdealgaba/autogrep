@@ -1,0 +1,22 @@
+rules:
+- id: vuln-keystone-58ac6691
+  pattern: 'return
+
+    '
+  pattern-not: 'self.token_api.revoke_tokens($CONTEXT, $USER_ID)
+
+    '
+  languages:
+  - python
+  message: Missing token revocation during user deletion. This can lead to security
+    vulnerabilities where tokens remain valid even after the user is deleted. Ensure
+    all tokens are revoked when a user is deleted.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/58ac6691a21675be9e2ffb0f84a05fc3cd4d2e2e
+    category: security
+    cwe: CWE-613
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/613.html
+    technology: python

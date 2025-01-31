@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libarchive-b31744df
+  pattern: "static time_t $T;\ntime_t $A;\nif ($T == 0) {\n  $A = 1;\n  while ($A\
+    \ > $T) {\n    $T = $A;\n    $A = $A * 2 + 1;\n  }\n}\n"
+  pattern-not: "if (((time_t)0) < ((time_t)-1)) {\n  return (~(time_t)0);\n} else\
+    \ {\n  const uintmax_t $MAX_UNSIGNED_TIME_T = (uintmax_t)(~(time_t)0);\n  const\
+    \ uintmax_t $MAX_SIGNED_TIME_T = $MAX_UNSIGNED_TIME_T >> 1;\n  return (time_t)$MAX_SIGNED_TIME_T;\n\
+    }\n"
+  languages:
+  - c
+  message: "Detected unsafe time_t computation that may lead to incorrect time handling.\
+    \ \nThe original code attempts to compute the maximum value of time_t by iterating,\n\
+    which can result in undefined behavior or incorrect results on different systems.\n\
+    The fix properly handles both signed and unsigned time_t types according to POSIX\
+    \ conventions.\nReplace with the fixed code that checks if time_t is signed or\
+    \ unsigned and returns the appropriate maximum value.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libarchive/libarchive/commit/b31744df71084a8734f97199e42418f55d08c6c5
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_types.h.html
+    technology:
+    - c

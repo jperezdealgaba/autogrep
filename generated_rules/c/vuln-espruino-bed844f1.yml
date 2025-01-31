@@ -1,0 +1,28 @@
+rules:
+- id: vuln-espruino-bed844f1
+  pattern: 'strncpy($STR, $SRC, $LEN);
+
+    '
+  pattern-not: 'strcpy($STR, $SRC);
+
+    '
+  languages:
+  - c
+  message: 'The use of `strncpy` without proper length checking can lead to buffer
+    overflows or truncation issues. In this case, `strncpy` was replaced with `strcpy`
+    after ensuring the destination buffer is large enough to handle the source string.
+    This change prevents potential truncation and ensures the string is copied correctly.
+    Always validate buffer sizes before using `strcpy` or ensure `strncpy` is used
+    with proper length checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/bed844f109b6c222816740555068de2e101e8018
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

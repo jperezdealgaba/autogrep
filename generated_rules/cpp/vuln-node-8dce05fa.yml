@@ -1,0 +1,29 @@
+rules:
+- id: vuln-node-8dce05fa
+  pattern: "if (FLAG_randomize_hashes) {\n  if (FLAG_hash_seed == 0) {\n    int rnd\
+    \ = $ISOLATE->random_number_generator()->NextInt();\n    set_hash_seed(Smi::FromInt(rnd\
+    \ & Name::kHashBitMask));\n  } else {\n    set_hash_seed(Smi::FromInt(FLAG_hash_seed));\n\
+    \  }\n}\n"
+  pattern-not: "if (FLAG_randomize_hashes) InitializeHashSeed();\nvoid InitializeHashSeed()\
+    \ {\n  if (FLAG_hash_seed == 0) {\n    int rnd = $ISOLATE->random_number_generator()->NextInt();\n\
+    \    set_hash_seed(Smi::FromInt(rnd & Name::kHashBitMask));\n  } else {\n    set_hash_seed(Smi::FromInt(FLAG_hash_seed));\n\
+    \  }\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly handles hash seed initialization within a conditional
+    block, which can lead to inconsistent hash seeding. This vulnerability can be
+    exploited to predict hash values, potentially leading to hash collision attacks.
+    Refactor the code to use a dedicated function for hash seed initialization to
+    ensure consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/nodejs/node/commit/8dce05fa71be65b0299fc546e92ef4862158057d
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - cpp

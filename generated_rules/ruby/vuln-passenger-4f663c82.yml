@@ -1,0 +1,26 @@
+rules:
+- id: vuln-passenger-4f663c82
+  pattern: '$F.chmod(0700, $FILENAME)
+
+    '
+  pattern-not: '$F.chmod(0700)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected use of `chmod` with both mode and filename arguments, which can
+    lead to incorrect file permissions. This is dangerous because it may expose sensitive
+    files or directories. Use `chmod` with only the mode argument to ensure proper
+    permissions are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phusion/passenger/commit/4f663c8246f529e32575d50196d11cde12a6dfda
+    category: security
+    cwe:
+    - CWE-276
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - ruby

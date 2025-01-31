@@ -1,0 +1,27 @@
+rules:
+- id: vuln-runc-9aef5044
+  pattern: 'fmt.Errorf("Bad label option %q, valid options ''disable, user, role,
+    level, type''", $CON)
+
+    '
+  pattern-not: 'fmt.Errorf("Bad label option %q, valid options ''disable, user, role,
+    level, type, filetype''", $CON)
+
+    '
+  languages:
+  - go
+  message: 'The error message for invalid SELinux label options is missing the ''filetype''
+    option. This could lead to misconfiguration or security issues when handling SELinux
+    labels. Ensure that all valid options are included in the error message.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/9aef50441511f0e9954d31d5ae84429040032e7c
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - go

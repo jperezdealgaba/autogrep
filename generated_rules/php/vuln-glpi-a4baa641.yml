@@ -1,0 +1,25 @@
+rules:
+- id: vuln-glpi-a4baa641
+  pattern: '$input = $this->fields;
+
+    '
+  pattern-not: '$input = Toolbox::addslashes_deep($this->fields);
+
+    '
+  languages:
+  - php
+  message: 'Detected direct assignment of fields without escaping, which can lead
+    to SQL injection vulnerabilities. Use `Toolbox::addslashes_deep` to properly escape
+    the fields before using them in database operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/a4baa64114eb92fd2adf6056a36e0582324414ba
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

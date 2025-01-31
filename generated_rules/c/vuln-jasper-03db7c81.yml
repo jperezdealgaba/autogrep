@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jasper-03db7c81
+  pattern: "if (jas_image_cmpttype($IMAGE, 0) == $TYPE) {\n    ...\n}\n"
+  pattern-not: "if (jas_image_numcmpts($IMAGE) >= $NUM &&\n    jas_image_cmpttype($IMAGE,\
+    \ 0) == $TYPE) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks the component type of an image without first verifying
+    that the image has enough components.
+
+    This can lead to out-of-bounds access if the image has fewer components than assumed.
+
+    Fix the issue by adding a check for the number of components before accessing
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/03db7c81f6a8a92d896249bc673877749987fd7a
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

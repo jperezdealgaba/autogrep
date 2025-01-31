@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-1cc7466d
+  pattern: 'preg_quote($VAR)
+
+    '
+  pattern-not: 'preg_quote($VAR, $DELIMITER)
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure use of `preg_quote()` without specifying the delimiter.
+    When the delimiter is not explicitly provided, certain characters in the input
+    string may not be properly escaped, leading to potential regex injection vulnerabilities.
+    Always specify the delimiter as the second argument to `preg_quote()` to ensure
+    proper escaping.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/1cc7466db3a05e95fe57a6702f41773e6829d54b
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.preg-quote.php
+    technology:
+    - php

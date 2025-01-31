@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cfrpki-5f64bcd1
+  pattern: "if $VAR > *$MAX {\n  log.Fatal($MESSAGE)\n}\n"
+  pattern-not: "if $VAR > *$MAX {\n  log.Warning($MESSAGE)\n  $STABLE.Store(true)\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected a potential infinite repository traversal vulnerability. The
+    code uses log.Fatal() when maximum iterations are reached, which causes the application
+    to crash instead of gracefully handling the condition. This can lead to denial
+    of service and unreliable system behavior. Replace log.Fatal() with a warning
+    and implement a graceful termination mechanism.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudflare/cfrpki/commit/5f64bcd13477b29cd7ddff6fff3c65dfac3423ca
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017 - Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - go

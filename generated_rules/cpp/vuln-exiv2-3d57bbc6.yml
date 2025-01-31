@@ -1,0 +1,47 @@
+rules:
+- id: vuln-exiv2-3d57bbc6
+  pattern: 'std::filebuf $BUFFER;
+
+    $BUFFER.open($PATH.c_str(), std::ios::out);
+
+    std::ostream $STREAM(&$BUFFER);
+
+    ...
+
+    $BUFFER.close();
+
+    '
+  pattern-not: 'Exiv2::FileIo $FILE($PATH);
+
+    $FILE.open("wb");
+
+    $FILE.write($DATA, $SIZE);
+
+    $FILE.close();
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe file handling using std::filebuf and std::ostream for
+    writing binary data.
+
+    This approach can lead to resource leaks or incomplete writes if exceptions occur.
+    Use
+
+    Exiv2::FileIo for safer file operations, which provides proper resource management
+    and
+
+    error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/3d57bbc6e6036723df3c7da352e40267c90d1640
+    category: security
+    cwe:
+    - CWE-362
+    - CWE-415
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

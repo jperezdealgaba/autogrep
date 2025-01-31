@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dolibarr-d26b2a69
+  pattern: 'dolibarr_set_const($_, $_, $_POST["$_"], ...)
+
+    '
+  pattern-not: 'dolibarr_set_const($_, $_, GETPOST("$_",''$_''), ...)
+
+    '
+  languages:
+  - php
+  message: 'Direct use of $_POST variables without sanitization can lead to security
+    vulnerabilities such as SQL injection or XSS. Use GETPOST with appropriate sanitization
+    filters (e.g., ''alpha'', ''nohtml'') to ensure safe input handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/d26b2a694de30f95e46ea54ea72cc54f0d38e548
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

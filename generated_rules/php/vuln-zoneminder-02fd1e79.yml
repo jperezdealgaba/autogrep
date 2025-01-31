@@ -1,0 +1,32 @@
+rules:
+- id: vuln-zoneminder-02fd1e79
+  pattern: '$where[] = $SELECTOR.'' = ?'';
+
+    $values[] = $FUNCTION($ID[$INDEX]);
+
+    '
+  pattern-not: '$where[] = $SELECTOR.'' = :selector$INDEX'';
+
+    $values['':selector$INDEX''] = $FUNCTION($ID[$INDEX]);
+
+    '
+  languages:
+  - php
+  message: 'Detected a SQL query construction vulnerability where user input is directly
+    concatenated into the query without proper parameterization. This can lead to
+    SQL injection attacks. To fix this, use named parameters in the query and bind
+    the values separately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/02fd1e79b3bfa5b2e2087cb1255f9dbd921ccae8
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

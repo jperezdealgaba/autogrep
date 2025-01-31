@@ -1,0 +1,27 @@
+rules:
+- id: vuln-xen-e2b7fa75
+  pattern: "static void remove_child_entry(struct connection *$CONN, struct node *$NODE,\
+    \ size_t $OFFSET) {\n  ...\n  if (write_node($CONN, $NODE, true))\n    corrupt($CONN,\
+    \ \"Can't update parent node '%s'\", $NODE->name);\n  ...\n}\n"
+  pattern-not: "static int remove_child_entry(struct connection *$CONN, struct node\
+    \ *$NODE, size_t $OFFSET) {\n  ...\n  return write_node($CONN, $NODE, true);\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `remove_child_entry` previously had a void return type and
+    did not properly handle the return value of `write_node`. This could lead to silent
+    failures when updating parent nodes, potentially causing data corruption or inconsistent
+    states. The fix changes the return type to `int` and ensures the return value
+    is properly checked and handled by the caller.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/e2b7fa7508d7bff94ea72def2bb85c264065b2c0
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

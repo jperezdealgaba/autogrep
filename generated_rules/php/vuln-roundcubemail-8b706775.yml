@@ -1,0 +1,28 @@
+rules:
+- id: vuln-roundcubemail-8b706775
+  pattern: '"/^(N:[^;\R]*)$/m"
+
+    '
+  pattern-not: '"/^(N:[^;\r\n]*)$/m"
+
+    '
+  languages:
+  - php
+  message: 'The regular expression pattern ''/^(N:[^;\R]*)$/m'' is vulnerable because
+    it uses \R which matches any Unicode newline sequence, potentially leading to
+    incorrect parsing of vCard data. This can be exploited to bypass validation or
+    cause parsing errors. The fix replaces \R with \r\n to explicitly match only CRLF
+    line endings, which is the standard for vCard format. Use ''/^(N:[^;\r\n]*)$/m''
+    instead to ensure proper handling of line endings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/8b706775f38447e6af6028d0caa409be261f5693
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

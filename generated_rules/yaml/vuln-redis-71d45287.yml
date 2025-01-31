@@ -1,0 +1,31 @@
+rules:
+- id: vuln-redis-71d45287
+  pattern: 'run: ./runtest --valgrind --verbose --clients 1 --dump-logs ${{github.event.inputs.test_args}}
+
+    '
+  pattern-not: 'run: ./runtest --valgrind --verbose --clients 1 --tags -large-memory
+    --dump-logs ${{github.event.inputs.test_args}}
+
+    '
+  languages:
+  - yaml
+  message: 'The test command is missing the `--tags -large-memory` flag, which could
+    lead to running memory-intensive tests that may cause system instability or crashes.
+    This is particularly dangerous in CI/CD environments where resource constraints
+    can lead to failures or security issues. To fix this, ensure that the `--tags
+    -large-memory` flag is included in the test command to exclude memory-intensive
+    tests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/71d452876ebf8456afaadd6b3c27988abadd1148
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://redis.io/topics/security
+    technology:
+    - yaml

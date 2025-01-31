@@ -1,0 +1,20 @@
+rules:
+- id: vuln-tomcat-339b40bc
+  pattern: 'super(null);
+
+    '
+  pattern-not: 'super(SocketBufferHandler.EMPTY);
+
+    '
+  languages:
+  - java
+  message: "Passing null to super() can lead to null pointer exceptions and undefined\
+    \ behavior. \nInstead, use a proper buffer handler like SocketBufferHandler.EMPTY\
+    \ to ensure safe initialization.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/339b40bc07bdba9ded565929b9a3448c5a78f015
+    category: security
+    cwe: CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: java

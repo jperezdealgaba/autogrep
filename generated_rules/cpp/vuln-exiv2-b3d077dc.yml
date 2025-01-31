@@ -1,0 +1,34 @@
+rules:
+- id: vuln-exiv2-b3d077dc
+  pattern: 'if ($SIZE < 2 || $O > $SIZE-2) throw Error($ERR);
+
+    '
+  pattern-not: 'if ($O+2 > $SIZE) throw Error($ERR);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential buffer overflow vulnerability due to incorrect bounds
+    checking.
+
+    The original code checks if the offset is greater than size-2, which can lead
+    to accessing memory beyond the intended bounds.
+
+    This can result in memory corruption or crashes. The fix ensures proper bounds
+    checking by verifying that the offset plus the required size does not exceed the
+    total size.
+
+    Always ensure that bounds checks are correctly implemented to prevent buffer overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Exiv2/exiv2/commit/b3d077dcaefb6747fff8204490f33eba5a144edb
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

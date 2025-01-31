@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ffmpeg-e6d3fd94
+  pattern: 'avpriv_request_sample($TRACK->par, "Multiple independent substreams")
+
+    '
+  pattern-not: 'avpriv_request_sample($MOV->fc, "Multiple independent substreams")
+
+    '
+  languages:
+  - c
+  message: "The vulnerability occurs due to incorrect parameter usage in the `avpriv_request_sample`\
+    \ function. \nThe original code uses `track->par`, which is incorrect and could\
+    \ lead to undefined behavior or crashes. \nThe fix replaces it with `mov->fc`,\
+    \ which is the correct parameter. \nThis issue is dangerous as it could cause\
+    \ the application to behave unpredictably or crash when handling multiple independent\
+    \ substreams. \nTo fix this, ensure the correct parameter is passed to the function.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/e6d3fd942f772f54ab6a5ca619cdaadef26b7702
+    category: security
+    cwe:
+    - CWE-628
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-django-02e65928
+  pattern: "filename = os.path.join($PATH, $NAME)\nif filename.endswith(('/', '\\\\\
+    ')):\n  ...\n"
+  pattern-not: "filename = self.target_filename($PATH, $NAME)\nif $NAME.endswith(('/',\
+    \ '\\\\')):\n  ...\n"
+  languages:
+  - python
+  message: Detected potential path traversal vulnerability. The code does not properly
+    validate file paths, which could allow attackers to write files outside the intended
+    directory. Use `target_filename` method to validate paths and prevent directory
+    traversal.
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/02e6592835b4559909aa3aaaf67988fef435f624
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.djangoproject.com/en/3.2/ref/utils/#django.utils.archive.Archive
+    technology:
+    - python

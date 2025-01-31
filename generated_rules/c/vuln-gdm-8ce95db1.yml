@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gdm-8ce95db1
+  pattern: "g_signal_connect(\n  $DISPLAY_SKELETON,\n  $SIGNAL_NAME,\n  G_CALLBACK($HANDLER),\n\
+    \  $SELF\n);\n"
+  pattern-not: "g_signal_connect_object(\n  $DISPLAY_SKELETON,\n  $SIGNAL_NAME,\n\
+    \  G_CALLBACK($HANDLER),\n  $SELF,\n  $FLAGS\n);\n"
+  languages:
+  - c
+  message: "The use of `g_signal_connect` instead of `g_signal_connect_object` can\
+    \ lead to potential memory safety issues due to incorrect object lifecycle management.\
+    \ \nThis can cause use-after-free vulnerabilities or other undefined behavior\
+    \ when the callback is invoked after the object has been destroyed. \nReplace\
+    \ `g_signal_connect` with `g_signal_connect_object` and ensure the appropriate\
+    \ flags are set to manage object references correctly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdm/commit/8ce95db12cae23d558ff637c5e3c9e0b82937944
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect-object
+    technology:
+    - c

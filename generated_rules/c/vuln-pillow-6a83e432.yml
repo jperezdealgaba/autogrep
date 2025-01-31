@@ -1,0 +1,29 @@
+rules:
+- id: vuln-pillow-6a83e432
+  pattern: "if (strcmp($IM->mode, \"1\") == 0 && $STATE->xsize > $STATE->bytes * 8)\
+    \ {\n    ...\n} else if (strcmp($IM->mode, \"P\") == 0 && $STATE->xsize > $STATE->bytes)\
+    \ {\n    ...\n}\n"
+  pattern-not: "if (($STATE->xsize * $STATE->bits + 7) / 8 > $STATE->bytes) {\n  \
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the bounds checking for image
+    decoding in the PCX format is insufficient. The original code only checks the
+    bounds for specific image modes ("1" and "P") separately, which can lead to buffer
+    overflows if the image data exceeds the allocated buffer size. The fix consolidates
+    the bounds check by considering the bit depth and ensuring the total size of the
+    image data does not exceed the allocated buffer. This vulnerability could be exploited
+    to cause a crash or potentially execute arbitrary code. To fix this, ensure that
+    the bounds check accounts for the bit depth and the total size of the image data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/6a83e4324738bb0452fbe8074a995b1c73f08de7
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c

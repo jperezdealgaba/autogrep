@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-d4985a77
+  pattern: 'optional_param($VAR1, $VAR2, PARAM_NOTAGS)
+
+    '
+  pattern-not: 'optional_param($VAR1, $VAR2, PARAM_ALPHANUM)
+
+    '
+  languages:
+  - php
+  message: 'The use of PARAM_NOTAGS in optional_param() is dangerous as it does not
+    properly sanitize input, potentially allowing malicious data to be processed.
+    This can lead to security vulnerabilities such as XSS. Use PARAM_ALPHANUM instead
+    to ensure only alphanumeric characters are accepted.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/d4985a77391123c5959db432c076328f8d5e3624
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://docs.moodle.org/dev/Data_validation
+    technology:
+    - php

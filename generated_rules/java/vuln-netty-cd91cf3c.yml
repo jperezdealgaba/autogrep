@@ -1,0 +1,21 @@
+rules:
+- id: vuln-netty-cd91cf3c
+  pattern: "private static HAProxyTLV readNextTLV(final ByteBuf $HEADER) {\n    ...\n\
+    \    final HAProxyTLV $TLV = readNextTLV($BUF);\n    ...\n}\n"
+  pattern-not: "private static HAProxyTLV readNextTLV(final ByteBuf $HEADER, int $NESTING_LEVEL)\
+    \ {\n    ...\n    if ($NESTING_LEVEL > MAX_NESTING_LEVEL) {\n        throw new\
+    \ HAProxyProtocolException(...);\n    }\n    ...\n    final HAProxyTLV $TLV =\
+    \ readNextTLV($BUF, $NESTING_LEVEL + 1);\n    ...\n}\n"
+  languages:
+  - java
+  message: Recursive TLV parsing without nesting level check can lead to stack overflow.
+    Add a nesting level check and throw an exception if the maximum level is exceeded.
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/cd91cf3c99123bd1e53fd6a1de0e3d1922f05bb2
+    category: security
+    cwe:
+    - CWE-674
+    owasp: A1:2017-Injection
+    technology:
+    - java

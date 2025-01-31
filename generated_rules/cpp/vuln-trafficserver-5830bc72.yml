@@ -1,0 +1,27 @@
+rules:
+- id: vuln-trafficserver-5830bc72
+  pattern: 'mime_hdr_field_delete($HEAP, $HH->m_fields_impl, $CONTENT_LENGTH_FIELD)
+
+    '
+  pattern-not: 'mime_hdr_field_delete($HEAP, $HH->m_fields_impl, $CONTENT_LENGTH_FIELD,
+    true)
+
+    '
+  languages:
+  - cpp
+  message: 'The function `mime_hdr_field_delete` is being called without the required
+    `bool` parameter, which can lead to improper handling of memory and potential
+    security vulnerabilities. Always include the `bool` parameter to ensure proper
+    memory management and avoid undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/5830bc72611e85e7a31098ce86710242f29076dc
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

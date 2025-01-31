@@ -1,0 +1,32 @@
+rules:
+- id: vuln-jasper-93a94803
+  pattern: 'jas_stream_fileobj_t *$VAR = JAS_CAST(jas_stream_fileobj_t *, $OBJ);
+
+    '
+  pattern-not: 'jas_stream_fileobj_t *$VAR;
+
+    $VAR = JAS_CAST(jas_stream_fileobj_t *, $OBJ);
+
+    '
+  languages:
+  - c
+  message: 'The direct casting and assignment of a pointer in a single statement can
+    lead to potential type confusion or incorrect assumptions about the object''s
+    type. This can be dangerous as it may result in undefined behavior or security
+    vulnerabilities if the object is not of the expected type. Instead, declare the
+    pointer first and then perform the casting and assignment in separate steps to
+    ensure clarity and safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/93a94803ee65469cc882f39d3916b190f8b5ed18
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/704.html
+    technology:
+    - c

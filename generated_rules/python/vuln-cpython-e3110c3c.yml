@@ -1,0 +1,20 @@
+rules:
+- id: vuln-cpython-e3110c3c
+  pattern: "def parse_multipart($FP, $PDICT, $ENCODING=\"utf-8\", $ERRORS=\"replace\"\
+    ):\n    ...\n"
+  pattern-not: "def parse_multipart($FP, $PDICT, $ENCODING=\"utf-8\", $ERRORS=\"replace\"\
+    , $SEPARATOR='&'):\n    ...\n"
+  languages:
+  - python
+  message: Detected use of parse_multipart without the separator parameter. This can
+    lead to incorrect parsing of query arguments when using non-standard separators.
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/e3110c3cfbb7daa690d54d0eff6c264c870a71bf
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/cgi.html
+    technology:
+    - python

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-podman-d102d02e
+  pattern: 'acquireCNILock(filepath.Join($CONFIG.Engine.TmpDir, $LOCKFILE))
+
+    '
+  pattern-not: 'acquireCNILock($CONFIG)
+
+    '
+  languages:
+  - go
+  message: 'Detected a potential security vulnerability where the CNI lock file is
+    created in a temporary directory. This could lead to race conditions or security
+    issues if the temporary directory is not properly secured. The issue has been
+    fixed by creating the lock file in a dedicated CNI configuration directory. To
+    fix this, ensure that the lock file is created in a secure, dedicated directory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containers/podman/commit/d102d02eb1cd135d877d946249a4fa1769ba17d0
+    category: security
+    cwe:
+    - CWE-362
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    technology:
+    - go

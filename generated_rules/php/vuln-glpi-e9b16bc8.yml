@@ -1,0 +1,28 @@
+rules:
+- id: vuln-glpi-e9b16bc8
+  pattern: 'echo "<a href=''".htmlentities($_SERVER[''REQUEST_URI''])."'' class=''vsubmit''>Reload</a>";
+
+    '
+  pattern-not: 'echo "<a href=''".htmlspecialchars($_SERVER[''REQUEST_URI''], ENT_QUOTES
+    | ENT_HTML5, ''UTF-8'')."'' class=''vsubmit''>Reload</a>";
+
+    '
+  languages:
+  - php
+  message: 'The code uses `htmlentities` to sanitize `$_SERVER[''REQUEST_URI'']`,
+    which is insufficient for preventing XSS attacks. `htmlentities` does not encode
+    single quotes by default, making it vulnerable to attribute injection. Use `htmlspecialchars`
+    with appropriate flags (ENT_QUOTES | ENT_HTML5) and specify the charset (UTF-8)
+    to properly sanitize the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/e9b16bc8e9b61ebb2d35b96b9c71cd25c5af9e48
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

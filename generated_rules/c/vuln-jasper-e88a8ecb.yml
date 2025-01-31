@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jasper-e88a8ecb
+  pattern: "if (!jas_safe_size_mul($NUMROWS, $NUMCOLS, &$SIZE)) {\n  ...\n}\n"
+  pattern-not: "if (!jas_safe_size_mul($NUMROWS, $NUMCOLS, &$SIZE) ||\n    $SIZE >\
+    \ UINT_FAST32_MAX) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This code performs a size multiplication without checking if the result
+    exceeds UINT_FAST32_MAX, which can lead to integer overflow vulnerabilities. This
+    vulnerability could allow attackers to cause memory corruption or other undefined
+    behavior. To fix this, add a check to ensure the result does not exceed UINT_FAST32_MAX.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/e88a8ecb8b0e2a7954c0147c1e5c15fdd588eca0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jasper-fc03b573
+  pattern: "if ($PASSNO < $NUMPASSES) {\n  $RET = JAS_MIN($RET, $NUMPASSES - $PASSNO);\n\
+    }\n"
+  pattern-not: '$RET = JAS_MIN($RET, $NUMPASSES - $PASSNO);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerable code conditionally updates the return value based on a
+    comparison, which can lead to incorrect behavior or security issues. This can
+    be dangerous as it may result in unexpected program behavior or potential exploitation.
+    The fix removes the conditional check to ensure the return value is always updated
+    correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/fc03b57384225055847ec92659e50f95d9ea63f2
+    category: security
+    cwe:
+    - CWE-670
+    owasp:
+    - A12:2021 - Security Misconfiguration
+    technology:
+    - c

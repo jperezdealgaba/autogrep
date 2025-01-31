@@ -1,0 +1,22 @@
+rules:
+- id: vuln-jetty-project-session-validation
+  pattern: "if (isInvalid()) {\n  throw new IllegalStateException(\"Session not valid\"\
+    );\n}\n"
+  pattern-not: 'checkValidForRead();
+
+    '
+  languages:
+  - java
+  message: 'Direct session validation using isInvalid() without proper error handling
+    can lead to inconsistent session states. Use checkValidForRead() instead to ensure
+    proper session validation and error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/eclipse/jetty.project/commit/087f486b4461746b4ded45833887b3ccb136ee85
+    category: security
+    cwe: 'CWE-665: Improper Initialization'
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - java

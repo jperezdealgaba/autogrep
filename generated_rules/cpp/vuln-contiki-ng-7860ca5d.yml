@@ -1,0 +1,27 @@
+rules:
+- id: vuln-contiki-ng-7860ca5d
+  pattern: '#define DB_VM_BYTECODE_SIZE 128
+
+    '
+  pattern-not: '#define DB_VM_BYTECODE_SIZE 256
+
+    '
+  languages:
+  - cpp
+  message: 'The DB_VM_BYTECODE_SIZE is set to a potentially insufficient value of
+    128, which could lead to buffer overflows or other memory-related vulnerabilities.
+    This value was increased to 256 in the patch to ensure adequate space for bytecode
+    operations. To fix this, increase the value of DB_VM_BYTECODE_SIZE to 256 or higher,
+    depending on the application''s requirements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/7860ca5da037c1562793154a70a91a47cbe573de
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

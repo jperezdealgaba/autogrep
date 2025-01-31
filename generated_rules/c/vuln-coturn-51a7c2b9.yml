@@ -1,0 +1,29 @@
+rules:
+- id: vuln-coturn-51a7c2b9
+  pattern: 'while((*$DATA == ''\r'') || (*$DATA == ''\n'')) ++$DATA;
+
+    '
+  pattern-not: 'while((*$DATA == ''\r'') || (*$DATA == ''\n'')) { ++$DATA; --$DATA_LEN;
+    }
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to missing decrement
+    of data length while incrementing the data pointer. This can lead to reading beyond
+    the allocated buffer, causing crashes or security vulnerabilities.
+
+    To fix this, ensure that the data length is decremented in sync with the data
+    pointer increment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/coturn/coturn/commit/51a7c2b9bf924890c7a3ff4db9c4976c5a93340a
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

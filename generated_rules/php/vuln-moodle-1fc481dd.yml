@@ -1,0 +1,30 @@
+rules:
+- id: vuln-moodle-1fc481dd
+  pattern: 'format_text($VAR_CONTENT, $VAR_FORMAT, array(''overflowdiv'' => true))
+
+    '
+  pattern-not: 'format_text($VAR_CONTENT, $VAR_FORMAT, array(''overflowdiv'' => true,
+    ''blanktarget'' => true))
+
+    '
+  languages:
+  - php
+  message: 'The `format_text` function is being called without the ''blanktarget''
+    option, which can lead to security vulnerabilities by allowing links to open in
+    the same window. This could expose users to phishing or other malicious content.
+    Always include the ''blanktarget'' option to ensure links open in a new tab, mitigating
+    this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/1fc481dd7b09e08e85824c1fe6733b303a36bdce
+    category: security
+    cwe:
+    - CWE-1022
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://docs.moodle.org/dev/format_text
+    technology:
+    - php

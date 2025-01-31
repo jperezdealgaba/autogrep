@@ -1,0 +1,29 @@
+rules:
+- id: vuln-atutor-950a0299
+  pattern: 'if ($row[''member_id''] != '''')
+
+    '
+  pattern-not: 'if ($row[''member_id''] != '''' && isset($_REQUEST[''code'']) && $_REQUEST[''code'']
+    == $code)
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to unauthorized access due to missing validation
+    of the ''code'' parameter in the URL. This allows attackers to bypass authentication
+    by manipulating the ''member_id'' parameter. To fix this, ensure that the ''code''
+    parameter is validated against a securely generated code, as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/atutor/ATutor/commit/950a0299954e69b8742cc1f1a632f564435d4d7d
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

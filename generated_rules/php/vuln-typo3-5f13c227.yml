@@ -1,0 +1,32 @@
+rules:
+- id: vuln-typo3-5f13c227
+  pattern: '$this->tag->setContent($this->getValue())
+
+    '
+  pattern-not: '$this->tag->setContent(htmlspecialchars($this->getValue()))
+
+    '
+  languages:
+  - php
+  message: 'The content of a textarea is not being properly escaped, which can lead
+    to XSS vulnerabilities.
+
+    Directly setting content without escaping allows attackers to inject malicious
+    scripts.
+
+    To fix this, always use htmlspecialchars() to escape the content before setting
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/5f13c2276c8b753ceb76b31d1034a47c781d302a
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

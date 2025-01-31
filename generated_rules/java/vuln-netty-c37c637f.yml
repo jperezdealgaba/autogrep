@@ -1,0 +1,25 @@
+rules:
+- id: vuln-netty-c37c637f
+  pattern: '$ESC.escape($VALUE)
+
+    '
+  pattern-not: '$ESC.escape($NAME, $VALUE)
+
+    '
+  languages:
+  - java
+  message: "Detected insecure header value escaping without proper error handling.\
+    \ \nThe escape method should include the header name to provide better error context\
+    \ \nwhen value conversion fails. This helps in debugging and prevents potential\
+    \ \ninformation leakage. Update to use the version that includes the header name\
+    \ as \na parameter.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/c37c637f096e7be3dffd36edee3455c8e90cb1b0
+    category: security
+    cwe: 'CWE-209: Information Exposure Through an Error Message'
+    owasp: A03:2021 - Injection
+    references:
+    - https://netty.io/security.html
+    technology:
+    - java

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-zoneminder-3268f952
+  pattern: '$path = str_replace(''../'', '''', $path);
+
+    '
+  pattern-not: "do {\n  $path = str_replace('../', '', $path, $count);\n} while($count);\n"
+  languages:
+  - php
+  message: 'Insecure path sanitization detected. A single call to str_replace is insufficient
+    to remove all ''../'' sequences, which could allow directory traversal attacks.
+    Use a loop to ensure all ''../'' sequences are removed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/3268f95282d4f99d6cec3a6e0a83f341cf48166a
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

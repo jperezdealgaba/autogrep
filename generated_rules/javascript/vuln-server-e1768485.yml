@@ -1,0 +1,23 @@
+rules:
+- id: vuln-server-e1768485
+  pattern: 'const $URL = $C.from($DATA, "base64").toString() || "/";
+
+    window.location = $URL;
+
+    '
+  pattern-not: "if ($URL.startsWith(\"/\")) {\n    window.location = (0, $GENERATE_URL)($URL);\n\
+    }\n"
+  languages:
+  - javascript
+  message: Potential open redirect vulnerability detected. Ensure that redirect URLs
+    are validated and only allow relative paths starting with '/'.
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/e1768485db5942600ee8cb335980602a3b492747
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - javascript

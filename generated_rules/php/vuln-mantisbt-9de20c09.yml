@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mantisbt-9de20c09
+  pattern: "if( !file_can_download_bug_attachments( $VAR1, (int)$VAR2 ) ) {\n  ...\n\
+    }\n"
+  pattern-not: "if( !file_can_download_bug_attachments( $VAR1, $VAR2 )\n|| !file_can_download_bugnote_attachments(\
+    \ $VAR3, $VAR2 )\n) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code is missing a check for bugnote attachment permissions, which
+    could allow unauthorized access to sensitive files. This vulnerability occurs
+    because the code only checks if the user can download bug attachments but does
+    not verify if they have permission to download bugnote attachments. To fix this,
+    ensure that both `file_can_download_bug_attachments` and `file_can_download_bugnote_attachments`
+    are checked before allowing file downloads.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/9de20c09e5a557e57159a61657ce62f1a4f578fe
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

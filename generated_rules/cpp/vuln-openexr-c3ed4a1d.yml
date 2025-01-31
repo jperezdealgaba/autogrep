@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openexr-c3ed4a1d
+  pattern: '(double)(2 << ($EXPR - $VAR))
+
+    '
+  pattern-not: '(double)(2ll << ($EXPR - $VAR))
+
+    '
+  languages:
+  - cpp
+  message: "Detected a potential integer overflow vulnerability due to the use of\
+    \ '2 <<' without the 'll' suffix. \nThis can lead to undefined behavior when the\
+    \ shift operation exceeds the bit width of the integer type. \nTo fix this, use\
+    \ '2ll <<' to ensure the operation is performed on a 64-bit integer.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/c3ed4a1db1f39bf4524a644cb2af81dc8cfab33f
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

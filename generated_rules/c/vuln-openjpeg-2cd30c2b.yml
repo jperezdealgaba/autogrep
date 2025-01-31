@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openjpeg-2cd30c2b
+  pattern: "static unsigned short get_ushort(const unsigned char *data) {\n    unsigned\
+    \ short val = *(const unsigned short *)data;\n    #ifdef OPJ_BIG_ENDIAN\n    val\
+    \ = ((val & 0xffU) << 8) | (val >> 8);\n    #endif\n    return val;\n}\n"
+  pattern-not: "static unsigned short get_tga_ushort(const unsigned char *data) {\n\
+    \    return data[0] | (data[1] << 8);\n}\n"
+  languages:
+  - c
+  message: 'The function `get_ushort` directly casts a byte array to a short, which
+    can lead to incorrect endianness handling. This can cause misinterpretation of
+    data and potential security vulnerabilities. Use `get_tga_ushort` instead, which
+    correctly handles little-endian byte order.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/2cd30c2b06ce332dede81cccad8b334cde997281
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

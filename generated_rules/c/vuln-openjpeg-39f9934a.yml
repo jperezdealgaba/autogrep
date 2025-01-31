@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openjpeg-39f9934a
+  pattern: "for( $I = 0; $QUERY_PARAM.box_type[$I][0] != 0 && $I < $MAX_NUMOFBOX;\
+    \ $I++ ) {\n  ...\n}\n"
+  pattern-not: "for( $I = 0; $I < $MAX_NUMOFBOX && $QUERY_PARAM.box_type[$I][0] !=\
+    \ 0; $I++ ) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Potential out-of-bounds array access due to incorrect loop condition order.
+
+    The condition `query_param.box_type[i][0] != 0` is checked before `i < MAX_NUMOFBOX`,
+
+    which could lead to accessing memory beyond the array bounds if `i` exceeds `MAX_NUMOFBOX`.
+
+    Fix by reordering the conditions to check the array bounds first.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/39f9934a70f5f01ddb7adc70801e981efb146f05
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

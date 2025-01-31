@@ -1,0 +1,36 @@
+rules:
+- id: vuln-exiv2-0f9eb74c
+  pattern: '$IO.read($VAR1, $LEN);
+
+    $IO.read($VAR2, $LEN);
+
+    $IO.read($VAR3, $LEN);
+
+    '
+  pattern-not: 'readOrThrow($IO, $VAR1, $LEN, $ERROR);
+
+    readOrThrow($IO, $VAR2, $LEN, $ERROR);
+
+    readOrThrow($IO, $VAR3, $LEN, $ERROR);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe read operations without error handling. This can lead
+    to corrupted data or undefined behavior if the read operation fails. Replace with
+    readOrThrow or similar error-handling mechanisms to ensure proper validation of
+    input data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/0f9eb74c44c908e170a64cab590949d53749af8e
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - cpp

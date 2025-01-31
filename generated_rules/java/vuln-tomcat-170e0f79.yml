@@ -1,0 +1,23 @@
+rules:
+- id: vuln-tomcat-170e0f79
+  pattern: "Processor $PROC = (Processor) $WRAPPER.getCurrentProcessor();\n...\nif\
+    \ ($PROC.isUpgrade()) {\n    ...\n}\n"
+  pattern-not: "Processor $PROC = (Processor) $WRAPPER.takeCurrentProcessor();\n...\n\
+    if ($PROC != null && $PROC.isUpgrade()) {\n    ...\n}\n"
+  languages:
+  - java
+  message: Potential race condition in processor handling. Use `takeCurrentProcessor()`
+    instead of `getCurrentProcessor()` to ensure thread safety and proper processor
+    ownership.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/170e0f792bd18ff031677890ba2fe50eb7a376c1
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - java

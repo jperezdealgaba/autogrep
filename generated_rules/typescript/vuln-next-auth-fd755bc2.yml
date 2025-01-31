@@ -1,0 +1,23 @@
+rules:
+- id: vuln-next-auth-fd755bc2
+  pattern: "<input\n  type=\"text\"\n  ...\n/>\n"
+  pattern-not: "<input\n  type=\"email\"\n  required\n  ...\n/>\n"
+  languages:
+  - typescript
+  message: "Detected an input field with type=\"text\" that should be type=\"email\"\
+    \ with required attribute. \nUsing type=\"text\" for email inputs can lead to\
+    \ insufficient client-side validation, allowing invalid or malicious email formats\
+    \ to be submitted. \nTo fix this, change the type to \"email\" and add the required\
+    \ attribute to ensure proper validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextauthjs/next-auth/commit/fd755bc29e6dea318429bec819eebcaecbdf7529
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email
+    technology:
+    - typescript

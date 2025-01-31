@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redis-1dc89e2d
+  pattern: 'addReply($CLIENT, $HDR[$LL])
+
+    '
+  pattern-not: 'addReplyProto($CLIENT, $HDR[$LL]->ptr, $HDR_LEN)
+
+    '
+  languages:
+  - c
+  message: 'The function `addReply` is being used to send a response header directly,
+    which can lead to potential vulnerabilities due to incorrect handling of the response
+    length. This can cause issues with protocol compliance and buffer overflows. Use
+    `addReplyProto` instead, which explicitly handles the length of the response to
+    ensure proper protocol handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/1dc89e2d0230f4bcadf21ee8185b79a12b001cf0
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://redis.io/topics/protocol
+    technology:
+    - c

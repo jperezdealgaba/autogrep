@@ -1,0 +1,36 @@
+rules:
+- id: vuln-bigbluebutton-39a685be
+  pattern: 'const $DIV = document.createElement(''div'');
+
+    $DIV.innerHTML = $INPUT;
+
+    ...
+
+    '
+  pattern-not: 'import { stripTags, unescapeHtml, escapeHtml } from ''/imports/utils/string-utils'';
+
+    ...
+
+    unescapeHtml(stripTags($INPUT));
+
+    ...
+
+    escapeHtml($INPUT);
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unsafe HTML manipulation. Use the provided
+    string-utils functions (stripTags, unescapeHtml, escapeHtml) for safe HTML handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/bigbluebutton/bigbluebutton/commit/39a685be8b006d4d5472f54dda0657851a726569
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

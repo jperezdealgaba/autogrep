@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-3fe10595
+  pattern: 'repository::get_moodle_file($source)
+
+    '
+  pattern-not: 'repository::get_moodle_file($reference)
+
+    '
+  languages:
+  - php
+  message: 'The use of `$source` directly in `get_moodle_file` is unsafe as it can
+    lead to security vulnerabilities. The `$source` parameter is not cleaned and can
+    be manipulated by an attacker. Instead, use `$reference`, which is obtained from
+    `get_file_reference($source)` to ensure the file reference is properly validated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/3fe105953d14766393e24372806fcf0a2b77c96d
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

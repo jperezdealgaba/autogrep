@@ -1,0 +1,30 @@
+rules:
+- id: vuln-analytics-dashboard-widget-855d9560
+  pattern: 'print(json_encode($analytics[$data]));
+
+    '
+  pattern-not: '$data = $analytics[$data];
+
+    print(json_encode($data));
+
+    '
+  languages:
+  - php
+  message: 'Directly encoding an array element from `$analytics[$data]` to JSON can
+    lead to unexpected behavior or vulnerabilities if `$data` is not properly sanitized.
+    This can result in encoding unintended or malicious data. To fix this, first assign
+    the array element to a variable and then encode it to JSON.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Sterc/Analytics-dashboard-widget/commit/855d9560d3782c105568eedf9b22a769fbf29cc0
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-hestiacp-2326aa52
+  pattern: 'echo "<b>" . $KEY . "= </b> " . $VAL . " ";
+
+    '
+  pattern-not: 'echo "<span class=\"u-text-bold\">" . htmlentities($KEY) . "= </span>
+    " . htmlentities($VAL) . " ";
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped output of variables in HTML context, which can lead\
+    \ to Cross-Site Scripting (XSS) vulnerabilities. \nThe variables $KEY and $VAL\
+    \ are directly embedded into HTML without proper escaping, allowing potential\
+    \ injection of malicious scripts. \nTo fix this, use htmlentities() or htmlspecialchars()\
+    \ to escape the output before rendering it in HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/hestiacp/hestiacp/commit/2326aa525a7ba14513af783f29cb5e62a476e67a
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://www.php.net/manual/en/function.htmlentities.php
+    technology:
+    - php

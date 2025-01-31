@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libvirt-524de6cc
+  pattern: 'virDomainDiskSourceFormat($BUF, $SRC, "source", 0, false, 0, true, NULL)
+
+    '
+  pattern-not: 'virDomainDiskSourceFormat($BUF, $SRC, "source", 0, false, $FLAGS,
+    true, NULL)
+
+    '
+  languages:
+  - c
+  message: 'The function `virDomainDiskSourceFormat` is called with a hardcoded value
+    of `0` for the `xmlformatflags` parameter, which can lead to insecure XML formatting.
+    This vulnerability could allow for XML injection or other security issues. Use
+    a secure flag like `VIR_DOMAIN_DEF_FORMAT_SECURE` instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/524de6cc35d3b222f0e940bb0fd027f5482572c5
+    category: security
+    cwe:
+    - CWE-91
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://libvirt.org/formatdomain.html
+    technology:
+    - c

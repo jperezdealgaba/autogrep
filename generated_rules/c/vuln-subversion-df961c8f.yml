@@ -1,0 +1,26 @@
+rules:
+- id: vuln-subversion-df961c8f
+  pattern: '$VAR = "$SVN_SSH ssh -q"
+
+    '
+  pattern-not: '$VAR = "$SVN_SSH ssh -q --"
+
+    '
+  languages:
+  - c
+  message: 'The SSH command is missing the ''--'' argument separator, which can lead
+    to command injection if the hostname starts with a ''-''. This is dangerous because
+    an attacker could craft a malicious hostname to execute arbitrary commands. To
+    fix this, always include ''--'' in SSH commands to separate options from arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/subversion/commit/df961c8f7d48f435a631716ff7d164f323940da5
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

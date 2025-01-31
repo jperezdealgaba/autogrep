@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-4a2acd8c
+  pattern: '<input type="hidden" name="id" value="<?php echo $form->id ?>" />
+
+    '
+  pattern-not: '<input type="hidden" name="id" value="<?php echo $id ?>" />
+
+    '
+  languages:
+  - html
+  message: 'Detected a potential security vulnerability where a hidden input field
+    directly accesses a form object property. This can lead to improper data handling
+    or security issues if the form object is not properly sanitized. Instead, use
+    a direct variable reference to ensure proper data handling.
+
+    To fix this, replace `$form->id` with `$id` to avoid direct object property access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/4a2acd8c7e6c869d5fd5aa686e6e0a3f20c97f15
+    category: security
+    cwe:
+    - CWE-639
+    owasp:
+    - A1: Injection
+    technology:
+    - html

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libde265-1475c7d2
+  pattern: "if ($PREDFLAG) {\n  $IMG = $CTX->get_image($SHDR->RefPicList[$X][$REFIDX]);\n\
+    }\n"
+  pattern-not: "if ($PREDFLAG) {\n  if ($REFIDX < 0 || $REFIDX >= $MAX_NUM_REF_PICS)\
+    \ {\n    return;\n  }\n  $IMG = $CTX->get_image($SHDR->RefPicList[$X][$REFIDX]);\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'The code is vulnerable to an out-of-bounds array access due to missing
+    bounds checking on the `refIdx` value. This can lead to undefined behavior, crashes,
+    or security vulnerabilities. The fix adds bounds checking to ensure `refIdx` is
+    within valid range before accessing the array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/1475c7d2f0a6dc35c27e18abc4db9679bfd32568
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

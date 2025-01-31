@@ -1,0 +1,33 @@
+rules:
+- id: vuln-runc-9c444070
+  pattern: "func prepareBindMount($M *configs.Mount, $ROOTFS string) error {\n  $STAT,\
+    \ $ERR := os.Stat($M.Source)\n  ...\n}\n"
+  pattern-not: "func prepareBindMount($M *configs.Mount, $ROOTFS string, $MOUNTFD\
+    \ *int) error {\n  $SOURCE := $M.Source\n  if $MOUNTFD != nil {\n    $SOURCE =\
+    \ \"/proc/self/fd/\" + strconv.Itoa(*$MOUNTFD)\n  }\n  $STAT, $ERR := os.Stat($SOURCE)\n\
+    \  ...\n}\n"
+  languages:
+  - go
+  message: 'The code directly uses the mount source path without proper handling in
+    user namespaces,
+
+    which can lead to security vulnerabilities when dealing with bind mounts. The
+    fix introduces
+
+    handling via file descriptors (O_PATH) to safely manage mount sources across namespaces.
+
+    Ensure that mount sources are properly handled using file descriptors when working
+    with
+
+    user namespaces to prevent potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/9c444070ec7bb83995dbc0185da68284da71c554
+    category: security
+    cwe:
+    - CWE-284
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - go

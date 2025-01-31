@@ -1,0 +1,33 @@
+rules:
+- id: vuln-exiv2-97e7905a
+  pattern: 'long $V = parseLong($OS.str(), $OK);
+
+    if ($OK && $V != 0) break;
+
+    '
+  pattern-not: 'long $V = parseLong($OS.str(), $OK);
+
+    if ($OK && $V > 0) break;
+
+    '
+  languages:
+  - cpp
+  message: 'The vulnerability arises from a check that only verifies if a parsed value
+    is non-zero, which can lead to incorrect handling of ISO values. This is dangerous
+    because it may allow invalid or unsafe ISO values to be processed. The fix should
+    ensure that the value is not only non-zero but also greater than zero to avoid
+    potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/97e7905a8b90fcbd5e8c440ad7d55bf8ffe007e5
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

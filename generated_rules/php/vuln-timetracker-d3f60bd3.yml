@@ -1,0 +1,24 @@
+rules:
+- id: vuln-timetracker-d3f60bd3
+  pattern: "if ($date && !ttValidDate($date)) {\n  ...\n}\n"
+  pattern-not: "if ($date && !ttValidDbDateFormatDate($date)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected use of insecure date validation function `ttValidDate`. This
+    function does not properly validate date formats, which can lead to security vulnerabilities
+    such as SQL injection or incorrect date handling. Use `ttValidDbDateFormatDate`
+    instead, which enforces strict date format validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/anuko/timetracker/commit/d3f60bd3e3ea8ff8ec31a596baec6750af601b7c
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

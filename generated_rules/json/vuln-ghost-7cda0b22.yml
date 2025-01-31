@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ghost-7cda0b22
+  pattern: '"version": "5.70.2"
+
+    '
+  pattern-not: '"version": "5.71.0"
+
+    '
+  languages:
+  - json
+  message: 'The version specified in the package.json file is outdated and potentially
+    vulnerable. Using outdated versions can expose the application to known security
+    vulnerabilities. Update the version to the latest secure release (e.g., 5.71.0)
+    to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TryGhost/Ghost/commit/7cda0b22504ef5c120c3a4a2fed16a8cabc01ff6
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - json

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-joplin-feaecf76
+  pattern: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'', ''embed'', ''link'', ''meta'', ''noscript''];
+
+    '
+  pattern-not: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'', ''embed'', ''link'', ''meta'', ''noscript'', ''button'',
+    ''form'', ''input'', ''select'', ''textarea'', ''option'', ''optgroup''];
+
+    '
+  languages:
+  - typescript
+  message: 'The list of disallowed HTML tags is incomplete, potentially allowing dangerous
+    HTML elements like forms and inputs. This can lead to security vulnerabilities
+    such as XSS or CSRF attacks. Update the list to include additional form-related
+    tags like ''button'', ''form'', ''input'', ''select'', ''textarea'', ''option'',
+    and ''optgroup''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/feaecf765368f2c273bea3a9fa641ff0da7e6b26
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-352
+    owasp:
+    - A03:2021-Injection
+    - A07:2021-Identification and Authentication Failures
+    technology:
+    - typescript

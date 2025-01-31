@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mastodon-eeab3560
+  pattern: '$DOMAIN.delete(''/'')
+
+    '
+  pattern-not: '$DOMAIN.delete_suffix(''/'')
+
+    '
+  languages:
+  - ruby
+  message: 'Using `delete(''/'')` instead of `delete_suffix(''/'')` can lead to unintended
+    string modifications, potentially causing security vulnerabilities. The `delete`
+    method removes all occurrences of the specified characters, which can alter the
+    domain in unexpected ways. Use `delete_suffix(''/'')` to safely remove only the
+    trailing slash.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/eeab3560fc0516070b3fb97e089b15ecab1938c8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://ruby-doc.org/core-2.7.0/String.html#method-i-delete
+    - https://ruby-doc.org/core-2.7.0/String.html#method-i-delete_suffix
+    technology:
+    - ruby

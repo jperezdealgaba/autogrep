@@ -1,0 +1,19 @@
+rules:
+- id: vuln-cri-o-db3b399a
+  pattern: 'specgen.SetProcessGID($GID)
+
+    ...
+
+    specgen.SetProcessGID(uint32($SC.RunAsGroup.Value))
+
+    '
+  message: Directly setting GID from RunAsGroup.Value without additional GID assignment
+    may lead to inconsistent security contexts.
+  severity: WARNING
+  languages:
+  - go
+  metadata:
+    source-url: github.com/cri-o/cri-o/commit/db3b399a8d7dabf7f073db73894bee98311d7909
+    category: security
+    technology:
+    - go

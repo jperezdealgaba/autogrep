@@ -1,0 +1,30 @@
+rules:
+- id: vuln-roundcubemail-5ef8e4ad
+  pattern: '($key == ''href'' && preg_match(''!^([a-z][a-z0-9.+-]+:|//|#).+!i'', $value))
+
+    '
+  pattern-not: "($key == 'href' && !preg_match('!^javascript!i', $value)\n  && preg_match('!^([a-z][a-z0-9.+-]+:|//|#).+!i',\
+    \ $value))\n"
+  languages:
+  - php
+  message: 'Detected a potential XSS vulnerability due to insufficient validation
+    of ''href'' attributes.
+
+    The code allows ''javascript:'' URIs which can lead to script injection. To fix
+    this, ensure
+
+    that ''javascript:'' URIs are explicitly blocked in the validation pattern.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/5ef8e4ad9d3ee8689d2b83750aa65395b7cd59ee
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A3:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

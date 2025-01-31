@@ -1,0 +1,36 @@
+rules:
+- id: vuln-phpmyadmin-1dca3865
+  pattern: "if (!empty($_SERVER['REQUEST_URI']) && !empty($_SERVER['HTTP_HOST']))\
+    \ {\n    $link = htmlspecialchars(\n        'https://' .  $_SERVER['HTTP_HOST']\
+    \ . $_SERVER['REQUEST_URI']\n    );\n    $text .= ' ';\n    $text .= PMA_sanitize(\n\
+    \        sprintf(\n            __(\n                'If your server is also configured\
+    \ to accept HTTPS requests '\n                . 'follow [a@%s]this link[/a] to\
+    \ use a secure connection.'\n            ),\n            $link\n        )\n  \
+    \  );\n}\n"
+  pattern-not: "$text .= ' <a href=\"#\" onclick=\"window.location.href = \\'https:\\\
+    ' + window.location.href.substring(window.location.protocol.length);\">';\n$text\
+    \ .= str_replace(\n    array('[a@%s]', '[/a]'),\n    array('', ''),\n    __(\n\
+    \        'If your server is also configured to accept HTTPS requests '\n     \
+    \   . 'follow [a@%s]this link[/a] to use a secure connection.'\n    )\n);\n$text\
+    \ .= '</a>';\n"
+  languages:
+  - php
+  message: 'The code constructs a URL using user-controlled input from $_SERVER[''HTTP_HOST'']
+    and $_SERVER[''REQUEST_URI''] without proper validation, which can lead to Open
+    Redirect vulnerabilities. Attackers can manipulate the Host header to redirect
+    users to malicious sites. Instead, use client-side JavaScript to construct the
+    secure URL or validate the host against a whitelist.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/1dca386505f396f0c2035112a403cc80768a141f
+    category: security
+    cwe:
+    - 'CWE-601: URL Redirection to Untrusted Site (''Open Redirect'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/11-Client-side_Testing/04-Testing_for_Client-side_URL_Redirect
+    technology:
+    - php

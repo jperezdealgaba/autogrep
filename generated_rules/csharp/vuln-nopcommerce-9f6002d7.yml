@@ -1,0 +1,30 @@
+rules:
+- id: vuln-nopcommerce-9f6002d7
+  pattern: '_webHelper.RestartAppDomain();
+
+    return RedirectToAction(...);
+
+    '
+  pattern-not: '_webHelper.RestartAppDomain();
+
+    return View("RestartApplication", ...);
+
+    '
+  languages:
+  - csharp
+  message: 'Directly restarting the application and redirecting without proper timeout
+    handling can lead to race conditions and improper application state. Use a restart
+    timeout and a dedicated restart view to ensure proper application shutdown and
+    restart.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nopSolutions/nopCommerce/commit/9f6002d71f088fd27f247ce0741d05039883b12d
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - csharp

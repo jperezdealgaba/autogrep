@@ -1,0 +1,23 @@
+rules:
+- id: vuln-zoneminder-cb3fc590
+  pattern: 'var reportLogs = true;
+
+    '
+  pattern-not: 'const reportLogs = (ZM_LOG_INJECT !== ''0'' || canEdit["System"]);
+
+    '
+  languages:
+  - javascript
+  message: "Hardcoded boolean flag for logging can lead to security risks by potentially\
+    \ exposing sensitive information. \nThe logging behavior should be dynamically\
+    \ controlled based on security checks or configuration settings.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/cb3fc5907da21a5111ae54128a5d0b49ae755e9b
+    category: security
+    cwe: CWE-489
+    owasp: A03:2021
+    references:
+    - https://cwe.mitre.org/data/definitions/489.html
+    - https://owasp.org/www-project-top-ten/
+    technology: javascript

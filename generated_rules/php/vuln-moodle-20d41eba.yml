@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-20d41eba
+  pattern: "new moodle_url('related_action.php', [\n    'badgeid' => $BADGEID,\n \
+    \   'relatedid' => $RELATEDID,\n    'action' => $ACTION\n])\n"
+  pattern-not: "new moodle_url('related_action.php', [\n    'badgeid' => $BADGEID,\n\
+    \    'relatedid' => $RELATEDID,\n    'sesskey' => sesskey(),\n    'action' =>\
+    \ $ACTION\n])\n"
+  languages:
+  - php
+  message: 'Missing session key (sesskey) in moodle_url construction for related_action.php.
+
+    This is dangerous because it can lead to Cross-Site Request Forgery (CSRF) attacks,
+
+    allowing unauthorized actions to be performed on behalf of the user.
+
+    To fix this, ensure that the `sesskey` parameter is included in the URL parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/20d41ebae4eb28269298504c68db511a05ec4969
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017 - Broken Authentication
+    technology:
+    - php

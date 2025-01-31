@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gdcm-0e99557d
+  pattern: 'return ($YMAX - $YMIN + 1) * ($XMAX - $XMIN + 1) * ($ZMAX - $ZMIN + 1);
+
+    '
+  pattern-not: "const uint64_t $A = $XMAX - $XMIN + 1;\nconst uint64_t $B = $YMAX\
+    \ - $YMIN + 1;\nconst uint64_t $C = $ZMAX - $ZMIN + 1;\nconst uint64_t $tmp =\
+    \ $A * $B;\nif ($tmp != 0 && (std::numeric_limits<size_t>::max() / $tmp) < $C)\
+    \ {\n  return 0;\n}\nreturn $tmp * $C;\n"
+  languages:
+  - cpp
+  message: 'The original code performs a multiplication of three unsigned integers
+    without checking for potential overflow. This can lead to undefined behavior or
+    incorrect results when the product exceeds the maximum value representable by
+    the data type. The fix introduces intermediate variables of type uint64_t and
+    checks for overflow before performing the final multiplication. To fix this vulnerability,
+    ensure that all arithmetic operations are performed with appropriate bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/malaterre/GDCM/commit/0e99557de141f64203628933d54c30c63d155743
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

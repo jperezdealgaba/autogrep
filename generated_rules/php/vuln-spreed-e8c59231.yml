@@ -1,0 +1,26 @@
+rules:
+- id: vuln-spreed-e8c59231
+  pattern: "public function setType(int $newType): bool {\n  ...\n  if ($this->getType()\
+    \ === self::ONE_TO_ONE_CALL) {\n    ...\n  }\n  ...\n}\n"
+  pattern-not: "public function setType(int $newType, bool $allowSwitchingOneToOne\
+    \ = false): bool {\n  ...\n  if (!$allowSwitchingOneToOne && $this->getType()\
+    \ === self::ONE_TO_ONE_CALL) {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The method `setType` allows switching the type of a room even if it is
+    a one-to-one call, which could lead to unexpected behavior or security issues.
+    This was fixed by adding a parameter `$allowSwitchingOneToOne` to control whether
+    switching from a one-to-one call is allowed. To fix this, ensure that the method
+    includes this parameter and checks it before allowing the type change.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/spreed/commit/e8c5923111919e879f771e5c435a7993018f27d4
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A04:2021-Insecure Design
+    technology:
+    - php

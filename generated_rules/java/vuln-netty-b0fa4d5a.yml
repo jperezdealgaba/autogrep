@@ -1,0 +1,18 @@
+rules:
+- id: vuln-netty-b0fa4d5a
+  pattern: "if (!$STREAM.isHeadersReceived()) {\n  ...\n}\n"
+  pattern-not: "boolean $IS_TRAILERS = false;\nif ($STREAM != null) {\n  $IS_TRAILERS\
+    \ = $STREAM.isHeadersReceived();\n}\nif (!$IS_TRAILERS) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Directly checking stream headers without proper state tracking can lead
+    to incorrect handling of HTTP/2 trailers. Use a boolean flag to track the state
+    of headers to ensure proper trailer handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/b0fa4d5aab4215f3c22ce6123dd8dd5f38dc0432
+    category: security
+    cwe: CWE-664
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - java

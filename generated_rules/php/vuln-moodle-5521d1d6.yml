@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-5521d1d6
+  pattern: "if (!empty($options['sortby'])) {\n  if ($options['sortdirection'] !=\
+    \ 'ASC' && $options['sortdirection'] != 'DESC') {\n    $options['sortdirection']\
+    \ = 'ASC';\n  }\n  $sort = $options['sortby'] . ' ' . $options['sortdirection'];\n\
+    }\n"
+  pattern-not: "$sort = get_safe_orderby([\n  'id' => 'id',\n  'title' => 'title',\n\
+    \  'timecreated' => 'timecreated',\n  'timemodified' => 'timemodified',\n  'pageviews'\
+    \ => 'pageviews',\n  'default' => 'title',\n], $options['sortby'], $options['sortdirection'],\
+    \ false);\n"
+  languages:
+  - php
+  message: 'Detected unsafe SQL ORDER BY construction. Directly concatenating user
+    input into SQL queries can lead to SQL injection vulnerabilities. Use a safe order
+    by function like `get_safe_orderby` to validate and sanitize input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/5521d1d6e8bb8bebb76ad8154095f6b18ea26e7f
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

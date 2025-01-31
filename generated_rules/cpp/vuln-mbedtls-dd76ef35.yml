@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mbedtls-dd76ef35
+  pattern: 'uint32_t *MBEDTLS_PRIVATE(rk);
+
+    '
+  pattern-not: 'size_t MBEDTLS_PRIVATE(rk_offset);
+
+    '
+  languages:
+  - cpp
+  message: "Direct use of a pointer for AES round keys can lead to insecure memory\
+    \ handling. \nThis vulnerability can expose sensitive data or cause memory corruption.\
+    \ \nReplace the pointer with a buffer offset to improve security and prevent potential\
+    \ exploits.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Mbed-TLS/mbedtls/commit/dd76ef359df0ffd321de56863ebf82c72c4a75ba
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://tls.mbed.org/tech-updates/security-advisories/mbedtls-security-advisory-2022-01
+    technology:
+    - cpp

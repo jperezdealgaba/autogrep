@@ -1,0 +1,27 @@
+rules:
+- id: vuln-desktop-f9949ee0
+  pattern: 'FolderMan::instance()->editFileLocally($ACCOUNT_DISPLAY_NAME, $FILE_REMOTE_PATH);
+
+    '
+  pattern-not: 'FolderMan::instance()->editFileLocally($ACCOUNT_DISPLAY_NAME, $FILE_REMOTE_PATH,
+    $TOKEN);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `editFileLocally` is called without a token parameter, which
+    can lead to unauthorized file access. This vulnerability allows for local file
+    editing without proper validation of the request. Always include a token parameter
+    to ensure the request is validated by the server.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/desktop/commit/f9949ee0de1b8a42412f528dc1f64e080eb44316
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - cpp

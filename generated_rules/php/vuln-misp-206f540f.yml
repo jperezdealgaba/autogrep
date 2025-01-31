@@ -1,0 +1,36 @@
+rules:
+- id: vuln-misp-206f540f
+  pattern: "$data = array_filter($data, function($paramName) use ($paramArray) {\n\
+    \    return !empty($paramArray[$paramName]);\n}, ARRAY_FILTER_USE_KEY);\n...\n\
+    $this->Controller->set('passedArgs', json_encode($this->Controller->passedArgs));\n"
+  pattern-not: '$data = $this->__massageData($data, $request, $paramArray);
+
+    ...
+
+    $this->Controller->set(''passedArgs'', json_encode($this->Controller->passedArgs));
+
+    return $data;
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability involves directly filtering and setting data without
+    proper encapsulation, which can lead to unintended data exposure or manipulation.
+    This is dangerous because it bypasses potential validation or sanitization steps
+    that could be added in a dedicated method. To fix this, encapsulate the data filtering
+    logic in a private method (e.g., __massageData) and ensure all data processing
+    is centralized and controlled.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/206f540f0275af2dd2a86275abc199df41e72a21
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ffmpeg-4cd1dad9
+  pattern: 'channels = av_get_channel_layout_nb_channels($FRAME->channel_layout);
+
+    '
+  pattern-not: 'channels = $FRAME->channels;
+
+    '
+  languages:
+  - c
+  message: 'The use of `av_get_channel_layout_nb_channels` to determine the number
+    of channels from the channel layout is incorrect and can lead to incorrect channel
+    count calculations. This can result in improper audio processing or memory corruption.
+    Use the `channels` field directly from the frame structure instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/4cd1dad91ae97fe1f0dd534c3f5566787566f137
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://ffmpeg.org/
+    technology:
+    - c

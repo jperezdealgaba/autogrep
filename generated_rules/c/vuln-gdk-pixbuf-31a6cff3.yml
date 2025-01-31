@@ -1,0 +1,41 @@
+rules:
+- id: vuln-gdk-pixbuf-31a6cff3
+  pattern: '$ROWSTRIDE = $WIDTH * 4;
+
+    if ($ROWSTRIDE / 4 != $WIDTH) { ... }
+
+    $BYTES = $HEIGHT * $ROWSTRIDE;
+
+    if ($BYTES / $ROWSTRIDE != $HEIGHT) { ... }
+
+    '
+  pattern-not: 'if ($WIDTH > G_MAXINT / 4) { ... }
+
+    $ROWSTRIDE = $WIDTH * 4;
+
+    if ($HEIGHT > G_MAXINT / $ROWSTRIDE) { ... }
+
+    $BYTES = $HEIGHT * $ROWSTRIDE;
+
+    '
+  languages:
+  - c
+  message: 'Detected an integer overflow vulnerability in image processing code. The
+    original code checks for overflow by dividing back, which is unreliable and can
+    lead to buffer overflows. The fix should check for potential overflow before multiplication
+    by comparing against G_MAXINT divided by the multiplier. This vulnerability could
+    lead to memory corruption and potential remote code execution. Fix by using the
+    pattern shown in the pattern-not section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdk-pixbuf/commit/31a6cff3dfc6944aad4612a9668b8ad39122e48b
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

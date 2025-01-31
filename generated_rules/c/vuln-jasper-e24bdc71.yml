@@ -1,0 +1,29 @@
+rules:
+- id: vuln-jasper-e24bdc71
+  pattern: 'jas_eprintf("box type %s\n", $BOX->info->name);
+
+    '
+  pattern-not: 'jas_eprintf("got box type %s\n", $BOX->info->name);
+
+    '
+  languages:
+  - c
+  message: 'The code prints a box type without proper context, which can lead to confusion
+    in error handling and debugging. This could potentially mask important information
+    or make it harder to diagnose issues. The fix adds the word "got" to provide better
+    context. Always ensure error messages are clear and descriptive to aid in debugging
+    and error handling.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/e24bdc716c3327b067c551bc6cfb97fd2370358d
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - 'A9: Security Logging and Monitoring Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/209.html
+    technology:
+    - c

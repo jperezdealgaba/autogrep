@@ -1,0 +1,21 @@
+rules:
+- id: vuln-ansible-952166f4
+  pattern: "try:\n    shutil.copyfile($IN_PATH, $OUT_PATH)\nexcept shutil.Error:\n\
+    \    ...\nexcept IOError:\n    ...\n"
+  pattern-not: "try:\n    p = self._buffered_exec_command('dd if=$IN_PATH bs=$BUFSIZE',\
+    \ None)\nexcept OSError:\n    ...\nwith open($OUT_PATH, 'wb+') as out_file:\n\
+    \    ...\n"
+  languages:
+  - python
+  message: 'Detected unsafe file transfer using shutil.copyfile(). This can lead to
+    memory exhaustion and security issues when transferring large files. Use buffered
+    file transfer with ''dd'' command instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ansible/ansible/commit/952166f48eb0f5797b75b160fd156bbe1e8fc647
+    category: security
+    cwe: CWE-400
+    owasp: A5:2017-Broken Access Control
+    technology: python

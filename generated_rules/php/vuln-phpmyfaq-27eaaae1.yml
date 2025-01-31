@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpmyfaq-27eaaae1
+  pattern: '!$captcha->checkCaptchaCode($code)
+
+    '
+  pattern-not: '!$captcha->checkCaptchaCode($code ?? '''')
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to null pointer dereference when the `$code` variable
+    is not properly checked for null values before being passed to `checkCaptchaCode`.
+    This can lead to unexpected behavior or crashes. Always ensure that variables
+    that can be null are properly handled, for example by using the null coalescing
+    operator (`??`) to provide a default value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpmyfaq/commit/27eaaae16850694634ac52416a0bd38b35d7330a
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    - https://owasp.org/www-project-top-ten/2021/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/
+    technology:
+    - php

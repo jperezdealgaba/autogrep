@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jasper-0d224608
+  pattern: "if (!($VAR = jas_alloc2($NUMCOMPS, sizeof(uint_fast16_t)))) {\n  ...\n\
+    \  return -1;\n}\n"
+  pattern-not: "if (!($VAR = jas_alloc2($NUMCOMPS, sizeof(jpc_crgcomp_t)))) {\n  ...\n\
+    \  return -1;\n}\n"
+  languages:
+  - c
+  message: 'Incorrect memory allocation size detected. The code allocates memory using
+    `uint_fast16_t` instead of the correct `jpc_crgcomp_t` type, which can lead to
+    buffer overflows or memory corruption. This vulnerability was fixed by changing
+    the `sizeof` argument to `jpc_crgcomp_t`. Always ensure the correct type is used
+    in memory allocations to prevent security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/0d22460816ea58e74a124158fa6cc48efb709a47
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

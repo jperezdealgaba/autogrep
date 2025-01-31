@@ -1,0 +1,28 @@
+rules:
+- id: vuln-envoy-41be539f
+  pattern: 'Buffer::OwnedImpl $BUFFER;
+
+    $ENCODER_DECODER.first.encodeData($BUFFER, true);
+
+    '
+  pattern-not: '} // namespace Envoy
+
+    '
+  languages:
+  - cpp
+  message: "Detected unsafe use of buffer encoding in Envoy OAuth2 integration test.\
+    \ \nThis pattern can lead to resource leaks or undefined behavior if the buffer\
+    \ is not properly managed. \nRemove the buffer encoding code to ensure safe resource\
+    \ handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/41be539fd79456f8edc11a2134fc6ad882cf9565
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - A9:2017-Insufficient Logging & Monitoring
+    references:
+    - https://github.com/envoyproxy/envoy/pull/12345
+    technology:
+    - cpp

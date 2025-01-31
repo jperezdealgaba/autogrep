@@ -1,0 +1,25 @@
+rules:
+- id: vuln-kanboard-7100f6de
+  pattern: "$project_id = $this->taskFinderModel->getProjectId($task_id);\n...\nif\
+    \ ($project_id !== $this->request->getIntegerParam('project_id')) {\n  ...\n}\n"
+  pattern-not: "$task_project_id = $this->taskFinderModel->getProjectId($task_id);\n\
+    ...\nif ($project_id != $task_project_id) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "Detected a potential security vulnerability where project ID validation\
+    \ is incorrectly handled. \nThe code compares a project ID from a task model directly\
+    \ with a request parameter, which can lead to authorization bypass.\nTo fix this,\
+    \ ensure that project IDs are compared with the correct context, such as comparing\
+    \ with the task's project ID instead of the request parameter.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/7100f6de8a1f566e260b3e65312767e4cde112b1
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

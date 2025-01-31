@@ -1,0 +1,28 @@
+rules:
+- id: vuln-node-9aeda47d
+  pattern: "if ($SLASHES && !($PROTO && $HOSTLESS_PROTOCOL.has($LOWER_PROTO))) {\n\
+    \  $REST = $REST.slice(2);\n  $THIS.slashes = true;\n}\n"
+  pattern-not: "if (!($PROTO && $HOSTLESS_PROTOCOL.has($LOWER_PROTO))) {\n  if ($SLASHES)\
+    \ {\n    $REST = $REST.slice(2);\n    $THIS.slashes = true;\n  } else if ($AT)\
+    \ {\n    $REST = $REST.slice(1);\n  }\n}\n"
+  languages:
+  - javascript
+  message: 'URL parsing vulnerability detected. The code fails to properly handle
+    URLs with an ''@'' character, which can lead to incorrect URL resolution. This
+    can be exploited to bypass security checks or manipulate URL parsing behavior.
+    Update the code to handle ''@'' characters correctly by checking for them explicitly
+    before processing the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/9aeda47d9c
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://nodejs.org/api/url.html
+    technology:
+    - javascript

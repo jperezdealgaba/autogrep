@@ -1,0 +1,28 @@
+rules:
+- id: vuln-passenger-40437182
+  pattern: 'inferApplicationInfo($INFO);
+
+    '
+  pattern-not: '#ifdef false
+
+    #endif
+
+    inferApplicationInfo($INFO);
+
+    '
+  languages:
+  - cpp
+  message: "The function `inferApplicationInfo` is called without proper conditional\
+    \ compilation guards. \nThis can lead to unnecessary or insecure execution of\
+    \ the function. \nTo fix this, wrap the call with appropriate preprocessor directives\
+    \ to ensure it is only executed when necessary.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/phusion/passenger/commit/4043718264095cde6623c2cbe8c644541036d7bf
+    category: security
+    cwe:
+    - CWE-489
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - cpp

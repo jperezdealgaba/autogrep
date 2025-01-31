@@ -1,0 +1,31 @@
+rules:
+- id: vuln-timetracker-94fda0cc
+  pattern: "if ($request->isPost() && !$user->isGroupValid($request->getParameter('group')))\
+    \ {\n  header('Location: access_denied.php');\n  exit();\n}\n"
+  pattern-not: "if ($request->isPost()) {\n  $group_id = $request->getParameter('group');\n\
+    \  if (!ttValidInteger($group_id)) {\n    header('Location: access_denied.php');\n\
+    \    exit();\n  }\n  if (!$user->isGroupValid($group_id)) {\n    header('Location:\
+    \ access_denied.php');\n    exit();\n  }\n}\n"
+  languages:
+  - php
+  message: 'Detected potential SQL injection vulnerability due to missing input validation.
+
+    The code directly uses user-supplied input in a group validation check without
+    proper sanitization.
+
+    This could allow attackers to manipulate the group parameter for SQL injection
+    attacks.
+
+    Always validate and sanitize user inputs before using them in database queries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/anuko/timetracker/commit/94fda0cc0c9c20ab98d38ccc75ff040d13dc7f1b
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jasper-5dbe57e4
+  pattern: "if (JAS_CAST(int, $VAR->compno) > $DEC->numcomps) {\n  ...\n}\n"
+  pattern-not: "if (JAS_CAST(int, $VAR->compno) >= $DEC->numcomps) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The comparison operator ''>'' is used instead of ''>='' to check if a
+    component number is within bounds. This can lead to an off-by-one error, potentially
+    causing out-of-bounds access. Replace ''>'' with ''>='' to ensure the boundary
+    check is inclusive and prevents access beyond the valid range.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/5dbe57e4808bea4b83a97e2f4aaf8c91ab6fdecb
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

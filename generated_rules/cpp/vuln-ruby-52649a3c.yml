@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ruby-52649a3c
+  pattern: '#define RUBY_PATCHLEVEL 208
+
+    '
+  pattern-not: '#define RUBY_PATCHLEVEL 209
+
+    '
+  languages:
+  - cpp
+  message: "The RUBY_PATCHLEVEL macro is outdated and may introduce security vulnerabilities.\
+    \ \nUpdating to the latest patch level ensures that known vulnerabilities are\
+    \ patched. \nAlways use the latest patch version to maintain security.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/52649a3ce9b90ddbb88b6946b360ef4335a0ca7b
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-mysql-server-35ffaf10
+  pattern: '$VAR = $EXPR ? TL_READ_NO_INSERT : TL_READ;
+
+    '
+  pattern-not: '$VAR = read_lock_type_for_table($THD, $TABLE);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential unsafe lock type assignment that could lead to replication
+    discrepancies.
+
+    The code directly assigns TL_READ_NO_INSERT or TL_READ based on a condition, which
+    can cause
+
+    inconsistencies between master and slave in statement-based replication. Instead,
+    use the
+
+    read_lock_type_for_table function to determine the appropriate lock type based
+    on the
+
+    binary log format and table category.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/35ffaf10e341e27b1361afbcb76a861f35cfa3c3
+    category: security
+    cwe:
+    - CWE-362
+    owasp: A9:2017-Security Misconfiguration
+    technology:
+    - cpp

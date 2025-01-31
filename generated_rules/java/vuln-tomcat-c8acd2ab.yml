@@ -1,0 +1,23 @@
+rules:
+- id: vuln-tomcat-c8acd2ab
+  pattern: "for (int $I = $EXPR1 + $EXPR2; $I < $EXPR3; $I += $EXPR4) {\n  $STREAM\
+    \ = getStream($I, false);\n  if ($STREAM != null) {\n    $STREAM.closeIfIdle();\n\
+    \  }\n}\n"
+  pattern-not: "for (Entry<Integer,Stream> $ENTRY : $STREAMS.entrySet()) {\n  if ($ENTRY.getKey().intValue()\
+    \ > $MAXSTREAM &&\n      $ENTRY.getKey().intValue() < $NEWMAXSTREAM) {\n    $ENTRY.getValue().closeIfIdle();\n\
+    \  }\n}\n"
+  languages:
+  - java
+  message: Potential integer overflow vulnerability in stream ID calculation. Using
+    a loop with arithmetic operations on stream IDs can lead to overflow issues. Instead,
+    iterate over the stream entries directly to avoid arithmetic operations on stream
+    IDs.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/c8acd2ab7371e39aeca7c306f3b5380f00afe552
+    category: security
+    cwe: CWE-190
+    owasp: A03:2021
+    references:
+    - https://bz.apache.org/bugzilla/show_bug.cgi?id=64467
+    technology: java

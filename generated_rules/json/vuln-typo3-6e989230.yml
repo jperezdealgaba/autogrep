@@ -1,0 +1,25 @@
+rules:
+- id: vuln-typo3-6e989230
+  pattern: '"typo3/html-sanitizer": "^2.1.3"'
+  pattern-not: '"typo3/html-sanitizer": "^2.1.4"'
+  languages:
+  - json
+  message: 'The dependency "typo3/html-sanitizer" version 2.1.3 is vulnerable and
+    should be updated to version 2.1.4 or higher. This vulnerability could lead to
+    security issues such as HTML injection or cross-site scripting (XSS) if the sanitizer
+    does not properly handle malicious input. To fix this, update the dependency to
+    the latest secure version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/6e989230a10a36934c56718f1ec866c2683fe815
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://github.com/TYPO3/typo3/commit/6e989230a10a36934c56718f1ec866c2683fe815
+    technology:
+    - json

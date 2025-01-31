@@ -1,0 +1,29 @@
+rules:
+- id: vuln-django-4dea4883
+  pattern: "class $CLASS(HttpResponse):\n    status_code = $STATUS\n    def __init__(self,\
+    \ redirect_to):\n        super($CLASS, self).__init__()\n        self['Location']\
+    \ = iri_to_uri(redirect_to)\n"
+  pattern-not: "class $CLASS(HttpResponseRedirectBase):\n    status_code = $STATUS\n\
+    \    def __init__(self, redirect_to):\n        super($CLASS, self).__init__()\n\
+    \        parsed = urlparse(redirect_to)\n        if parsed.scheme and parsed.scheme\
+    \ not in self.allowed_schemes:\n            raise SuspiciousOperation(\"Unsafe\
+    \ redirect to URL with scheme '%s'\" % parsed.scheme)\n        self['Location']\
+    \ = iri_to_uri(redirect_to)\n"
+  languages:
+  - python
+  message: 'Detected unsafe redirect in Django HttpResponse class. This can lead to
+    open redirect vulnerabilities by allowing redirects to unsafe schemes like ''data:'',
+    ''mailto:'', or ''file:''. To fix, ensure redirect schemes are validated against
+    a whitelist of allowed schemes (e.g., ''http'', ''https'', ''ftp'') using HttpResponseRedirectBase.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/4dea4883e6c50d75f215a6b9bcbd95273f57c72d
+    category: security
+    cwe: CWE-601
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/request-response/#django.http.HttpResponseRedirect
+    technology:
+    - python

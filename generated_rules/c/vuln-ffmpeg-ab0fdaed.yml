@@ -1,0 +1,21 @@
+rules:
+- id: vuln-ffmpeg-ab0fdaed
+  pattern: "while ($NB_FRAME <= $NB_FRAMES) {\n  ...\n}\n"
+  pattern-not: "while ($NB_FRAME < $NB_FRAMES) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential off-by-one error in a loop condition. Using ''<=''
+    instead of ''<'' can lead to accessing an out-of-bounds element, causing undefined
+    behavior or crashes. Replace ''<='' with ''<'' to ensure the loop terminates correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ffmpeg/ffmpeg/commit/ab0fdaedd1e7224f7e84ea22fcbfaa4ca75a6c06
+    category: security
+    cwe:
+    - 'CWE-193: Off-by-one Error'
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - c

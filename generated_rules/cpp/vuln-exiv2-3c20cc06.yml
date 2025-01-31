@@ -1,0 +1,33 @@
+rules:
+- id: vuln-exiv2-3c20cc06
+  pattern: 'WebPImage::decodeChunks(Exiv2::getULong($DATA + $OFFSET, $ENDIAN) + $VALUE);
+
+    '
+  pattern-not: 'const uint32_t $FILESIZE = Exiv2::getULong($DATA + $OFFSET, $ENDIAN)
+    + $VALUE;
+
+    enforce($FILESIZE <= $IO_SIZE, $ERROR_CODE);
+
+    WebPImage::decodeChunks($FILESIZE);
+
+    '
+  languages:
+  - cpp
+  message: "Detected potential integer overflow vulnerability due to unchecked input\
+    \ size. \nThis can lead to memory corruption or buffer overflow attacks. \nAlways\
+    \ validate the size of input data before processing it by using enforce() or similar\
+    \ checks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/3c20cc06a9ede4e277a9efe94e211c20ceb0ce8d
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp:
+    - A1: Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - cpp

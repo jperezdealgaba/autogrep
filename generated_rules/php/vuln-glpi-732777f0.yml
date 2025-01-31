@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glpi-732777f0
+  pattern: 'fopen(''http://localhost'' . $CFG_GLPI[''root_doc''] . $PATH, ''r'', false,
+    $CONTEXT)
+
+    '
+  pattern-not: 'fopen($PROTOCOL . ''://'' . $_SERVER[''SERVER_NAME''] . $CFG_GLPI[''root_doc'']
+    . $PATH, ''r'', false, $CONTEXT)
+
+    '
+  languages:
+  - php
+  message: "Detected a hardcoded 'localhost' URL in fopen, which can lead to security\
+    \ vulnerabilities. \nAlways use dynamic server information (like $_SERVER['SERVER_NAME'])\
+    \ to ensure proper protocol and hostname handling.\nThis can prevent issues like\
+    \ incorrect protocol usage or bypassing security checks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/732777f030699b2e305f52bdfbb67d2c3de4105c
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - php

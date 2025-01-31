@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-025e0297
+  pattern: "public function check_page_access($page) {\n    if ($this->get_currentpage()\
+    \ != $page) {\n        if ($this->get_navigation_method() == QUIZ_NAVMETHOD_SEQ\
+    \ && $this->get_currentpage() > $page) {\n            return false;\n        }\n\
+    \    }\n    return true;\n}\n"
+  pattern-not: "public function check_page_access(int $page, bool $allownext = true):\
+    \ bool {\n    if ($this->get_navigation_method() != QUIZ_NAVMETHOD_SEQ) {\n  \
+    \      return true;\n    }\n    return $page == -1\n        || $page == $this->get_currentpage()\n\
+    \        || $allownext && ($page == $this->get_currentpage() + 1);\n}\n"
+  languages:
+  - php
+  message: 'The function `check_page_access` does not properly handle sequential navigation
+    in quizzes, allowing users to access pages out of sequence. This can lead to unauthorized
+    access to quiz questions. The function should be updated to include a parameter
+    `$allownext` to control access to the next page and ensure proper sequential navigation
+    checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/025e0297b65e6a8bd61efad0fdf36168c613f918
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

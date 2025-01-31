@@ -1,0 +1,29 @@
+rules:
+- id: vuln-humhub-22348f5d
+  pattern: 'humhub\widgets\RichText::widget([''text'' => $FIELD->getUserValue($USER,
+    false)])
+
+    '
+  pattern-not: 'humhub\widgets\RichText::widget([''text'' => $FIELD->getUserValue($USER,
+    true)])
+
+    '
+  languages:
+  - php
+  message: "Detected potential security vulnerability where user input is not properly\
+    \ sanitized. \nThe method `getUserValue` is being called with the second parameter\
+    \ set to `false`, \nwhich may disable necessary sanitization. This could lead\
+    \ to XSS or other injection attacks. \nAlways ensure proper sanitization by setting\
+    \ the second parameter to `true`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/humhub/humhub/commit/22348f5d0851fd172c2e1c04d13cce310849ae51
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cacti-9a1d2ec4
+  pattern: 'rrdtool_function_graph(get_request_var(''local_graph_id''), '''', $GRAPH_DATA_ARRAY);
+
+    '
+  pattern-not: 'rrdtool_function_graph(get_request_var(''local_graph_id''), '''',
+    $GRAPH_DATA_ARRAY, null, $_SESSION[''sess_user_id'']);
+
+    '
+  languages:
+  - php
+  message: 'The function `rrdtool_function_graph` is called without passing the user
+    session ID, which can lead to unauthorized access or data leakage. This vulnerability
+    occurs because the user context is not properly validated, potentially allowing
+    attackers to manipulate graph data. To fix this, ensure that the user session
+    ID is passed as an argument to the function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/9a1d2ec46d2dde23826c134ca70a0cd3bef43ee7
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

@@ -1,0 +1,35 @@
+rules:
+- id: vuln-openexr-a6408c90
+  pattern: 'Compressor* $COMPRESSOR = newCompressor($HEADER.compression(), $MAXBYTES,
+    $HEADER);
+
+    ...
+
+    int $LINESINBUFFER = numLinesInBuffer($COMPRESSOR);
+
+    ...
+
+    delete $COMPRESSOR;
+
+    '
+  pattern-not: 'int $LINESINBUFFER = numLinesInBuffer($HEADER.compression());
+
+    '
+  languages:
+  - cpp
+  message: 'The code creates a Compressor object to determine the number of scanlines
+    in a buffer, which is then immediately deleted. This is inefficient and unnecessary
+    since the compression type can be accessed directly from the header. This pattern
+    can lead to resource leaks if the delete statement is missed or if an exception
+    is thrown before it is reached. To fix, directly use the compression type from
+    the header instead of creating a Compressor object.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/openexr/openexr/commit/a6408c90339bdf19f89476578d7f936b741be9b2
+    category: performance
+    cwe:
+    - CWE-772
+    technology:
+    - cpp

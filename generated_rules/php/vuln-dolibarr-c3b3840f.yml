@@ -1,0 +1,40 @@
+rules:
+- id: vuln-dolibarr-c3b3840f
+  pattern: '$db->begin();
+
+    ...
+
+    $object->client = $object->client | $soc_origin->client;
+
+    $object->fournisseur = $object->fournisseur | $soc_origin->fournisseur;
+
+    ...
+
+    $result = $object->update($object->id, $user, 0, 1, 1, ''merge'');
+
+    ...
+
+    $db->commit();
+
+    '
+  pattern-not: '$result = $object->mergeCompany($soc_origin_id);
+
+    '
+  languages:
+  - php
+  message: 'The code contains manual company merging logic that should be replaced
+    with the dedicated mergeCompany() method. This manual approach is error-prone
+    and may lead to inconsistent data states. Use the mergeCompany() method instead,
+    which handles all merging operations consistently and safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/c3b3840f080b5ad7ff46c6286b9c3c748a974933
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - php

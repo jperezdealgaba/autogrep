@@ -1,0 +1,16 @@
+rules:
+- id: vuln-pulsar-6274fa01
+  pattern: "if (!$ORIGINAL_SIGNATURE.equals($CURRENT_SIGNATURE)) {\n  ...\n}\n"
+  pattern-not: "if (!MessageDigest.isEqual($ORIGINAL_SIGNATURE.getBytes(), $CURRENT_SIGNATURE.getBytes()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Using String.equals() for cryptographic comparisons is vulnerable to timing
+    attacks. Use MessageDigest.isEqual() for secure comparison of cryptographic values.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/pulsar/commit/6274fa01a75d74d559bb7e514c970f1fc07d15bc
+    category: security
+    cwe: CWE-208
+    owasp: A02:2021 - Cryptographic Failures
+    technology: java

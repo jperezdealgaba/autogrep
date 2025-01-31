@@ -1,0 +1,23 @@
+rules:
+- id: vuln-open-build-service-7cc32c8e
+  pattern: "class $CLASS < Redcarpet::Render::HTML\n  ...\nend\n"
+  pattern-not: "class $CLASS < Redcarpet::Render::Safe\n  ...\nend\n"
+  languages:
+  - ruby
+  message: 'Using `Redcarpet::Render::HTML` can lead to XSS vulnerabilities as it
+    does not automatically escape HTML content. Switch to `Redcarpet::Render::Safe`
+    to ensure proper HTML escaping and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openSUSE/open-build-service/commit/7cc32c8e2ff7290698e101d9a80a9dc29a5500fb
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://github.com/vmg/redcarpet#rendering
+    technology:
+    - ruby

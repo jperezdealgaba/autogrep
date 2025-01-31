@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-6360f87c
+  pattern: '$version = 2018122000.01;
+
+    '
+  pattern-not: '$version = 2018122000.02;
+
+    '
+  languages:
+  - php
+  message: 'The version number in the code is outdated and may indicate a missing
+    security patch. This could leave the application vulnerable to XSS attacks. Update
+    the version to the latest patched version to ensure all security fixes are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/6360f87cdca744a6a71c315853f6d811a3e54e26
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

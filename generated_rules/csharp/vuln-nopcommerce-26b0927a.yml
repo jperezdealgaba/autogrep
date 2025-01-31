@@ -1,0 +1,30 @@
+rules:
+- id: vuln-nopcommerce-26b0927a
+  pattern: 'private static readonly Regex $REGEX = new(@"\[url\=([^\]]+)\]([^\]]+)\[/url\]",
+    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    '
+  pattern-not: 'private static readonly Regex $REGEX = new(@"\[url\=(https?:.+?)\]([^\]]+)\[/url\]",
+    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    '
+  languages:
+  - csharp
+  message: 'The original regex pattern for BBCode URL parsing is too permissive, allowing
+    potentially dangerous input. This can lead to security vulnerabilities such as
+    XSS or phishing attacks. The pattern should be updated to explicitly match URLs
+    starting with ''http:'' or ''https:'' to ensure only valid URLs are processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nopSolutions/nopCommerce/commit/26b0927a1f872e601e7d9b3be1e70b4fc740c23f
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - csharp

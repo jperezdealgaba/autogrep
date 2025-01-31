@@ -1,0 +1,19 @@
+rules:
+- id: vuln-keystone-8735009d
+  pattern: "roles_ref = []\nfor role_id in $METADATA_REF.get('roles', []):\n    roles_ref.append($IDENTITY_API.get_role($CONTEXT,\
+    \ role_id))\n"
+  pattern-not: "roles = $METADATA_REF.get('roles', [])\nif not roles:\n    raise exception.Unauthorized(message='User\
+    \ not valid for tenant.')\nroles_ref = [$IDENTITY_API.get_role($CONTEXT, role_id)\
+    \ for role_id in roles]\n"
+  languages:
+  - python
+  message: "The code initializes roles_ref without checking if roles exist, which\
+    \ can lead to unauthorized access. \nEnsure that roles are validated before processing\
+    \ to prevent unauthorized access.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/8735009dc5b895db265a1cd573f39f4acfca2a19
+    category: security
+    cwe: CWE-863
+    owasp: A01:2021-Broken Access Control
+    technology: python

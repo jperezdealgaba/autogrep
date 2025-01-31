@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cms-c0a37e15
+  pattern: 'return parent::beforeAction($action);
+
+    '
+  pattern-not: "if (!parent::beforeAction($action)) {\n  return false;\n}\nreturn\
+    \ true;\n"
+  languages:
+  - php
+  message: 'Directly returning the result of `parent::beforeAction($action)` can bypass
+    important security checks. This can lead to unauthorized access or other security
+    vulnerabilities. Always check the result of `parent::beforeAction($action)` and
+    return `false` if it fails, otherwise return `true` after performing any additional
+    checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/craftcms/cms/commit/c0a37e15cc925c473e60e27fe64054993b867ac1
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

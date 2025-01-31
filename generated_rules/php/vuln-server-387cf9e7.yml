@@ -1,0 +1,34 @@
+rules:
+- id: vuln-server-387cf9e7
+  pattern: '$principalUri = $node->getOwner();
+
+    $userId = substr($principalUri, 17);
+
+    $this->config->setUserValue($userId, ''dav'', ''generateBirthdayCalendar'', ''yes'');
+
+    $this->birthdayService->syncUser($userId);
+
+    '
+  pattern-not: "$owner = substr($node->getOwner(), 17);\nif($owner !== $this->user->getUID())\
+    \ {\n  $this->server->httpResponse->setStatus(403);\n  return false;\n}\n$this->config->setUserValue($this->user->getUID(),\
+    \ 'dav', 'generateBirthdayCalendar', 'yes');\n$this->birthdayService->syncUser($this->user->getUID());\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to an authorization bypass issue. The original
+    code directly uses the user ID extracted from the principal URI without verifying
+    if the current user is authorized to perform the operation. This could allow unauthorized
+    users to enable birthday calendars for other users. The fix includes a check to
+    ensure the current user matches the owner of the calendar before proceeding. To
+    fix this, always verify user authorization before performing sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/387cf9e7ceea6076ac53dd428c2ef83ce2c77cf0
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

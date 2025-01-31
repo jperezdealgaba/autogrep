@@ -1,0 +1,25 @@
+rules:
+- id: vuln-gdm-dc823512
+  pattern: 'look_for_existing_users_sync($SELF);
+
+    '
+  pattern-not: "if (!look_for_existing_users_sync($SELF)) {\n    exit(EXIT_FAILURE);\n\
+    }\n"
+  languages:
+  - c
+  message: 'The function `look_for_existing_users_sync` is called without checking
+    its return value, which can lead to undefined behavior if the function fails.
+    This vulnerability could allow the system to continue operating in an inconsistent
+    state. To fix this, ensure the return value is checked and handle the failure
+    appropriately, such as exiting with a failure status.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdm/commit/dc8235128c3a1fcd5da8f30ab6839d413d353f28
+    category: security
+    cwe:
+    - CWE-252
+    owasp: A10:2021-Server-Side Request Forgery
+    technology:
+    - c

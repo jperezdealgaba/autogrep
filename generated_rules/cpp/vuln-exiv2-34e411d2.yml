@@ -1,0 +1,24 @@
+rules:
+- id: vuln-exiv2-34e411d2
+  pattern: "switch ($OPTARG) {\n  case 'R':\n    action_ = Action::print;\n    printMode_\
+    \ = pmRecursive;\n    break;\n  ...\n}\n"
+  pattern-not: "switch ($OPTARG) {\n  case 'R':\n    #ifdef NDEBUG\n      std::cerr\
+    \ << progname() << \": \" << _(\"Action not available in Release mode\") << \"\
+    : '\" << optarg << \"'\\n\";\n      rc = 1;\n    #else\n      action_ = Action::print;\n\
+    \      printMode_ = pmRecursive;\n    #endif\n    break;\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "The code lacks proper validation for the 'R' option in Release mode, potentially\
+    \ allowing unintended behavior. \nThis can lead to security issues if the recursive\
+    \ print mode is used inappropriately in production environments. \nAdd a check\
+    \ for NDEBUG to ensure this action is only available in Debug mode.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/34e411d2fc05e557ced8600f56b18b99321d8dc1
+    category: security
+    cwe:
+    - 'CWE-489: Active Debug Code'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - cpp

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-node-7f178663
+  pattern: "int $CLASS::$METHOD(WriteWrap* $VAR, ...) {\n  ...\n}\n"
+  pattern-not: "int $CLASS::$METHOD(std::unique_ptr<WriteWrap>& $VAR, ...) {\n  ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: "Detected unsafe use of raw pointers in DoWrite methods. This can lead\
+    \ to memory management issues such as double-free or use-after-free vulnerabilities.\
+    \ \nThe fix involves using std::unique_ptr to manage the lifetime of WriteWrap\
+    \ objects automatically. \nUpdate the method signature to use std::unique_ptr<WriteWrap>&\
+    \ instead of WriteWrap* and ensure proper usage of .get() or .release() where\
+    \ necessary.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/7f178663ebffc82c9f8a5a1b6bf2da0c263a30ed
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-476
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://en.cppreference.com/w/cpp/memory/unique_ptr
+    technology:
+    - cpp

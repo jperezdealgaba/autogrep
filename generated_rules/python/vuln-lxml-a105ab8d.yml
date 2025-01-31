@@ -1,0 +1,41 @@
+rules:
+- id: vuln-lxml-a105ab8d
+  pattern: '$RE = re.compile($PATTERN, $FLAGS)
+
+    ...
+
+    $RE.sub($REPLACE, $TEXT)
+
+    '
+  pattern-not: '$RE = re.compile($PATTERN, $FLAGS).sub
+
+    ...
+
+    $RE($REPLACE, $TEXT)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure use of regular expression substitution. Directly using
+    the `sub` method from `re.compile` can lead to security vulnerabilities. Use the
+    `sub` method directly on the compiled pattern instead.
+
+    This is dangerous because it can allow malicious content to bypass security checks.
+    Always ensure that the substitution method is securely applied.
+
+    To fix this, modify the code to use the `sub` method directly on the compiled
+    pattern.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lxml/lxml/commit/a105ab8dc262ec6735977c25c13f0bdfcdec72a7
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://lxml.de/security.html
+    technology:
+    - python

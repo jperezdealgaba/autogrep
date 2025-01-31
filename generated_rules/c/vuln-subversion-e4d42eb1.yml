@@ -1,0 +1,26 @@
+rules:
+- id: vuln-subversion-e4d42eb1
+  pattern: '$FUNC($PROPNAME, $VALUE, $RESOURCE->pool);
+
+    '
+  pattern-not: '$FUNC($PROPNAME, $VALUE, $SUBPOOL);
+
+    '
+  languages:
+  - c
+  message: "Detected a potential resource leak due to improper pool management. \n\
+    The code uses the parent pool (`$RESOURCE->pool`) directly for property operations,\
+    \ which can lead to resource exhaustion in scenarios with multiple calls. \nThis\
+    \ vulnerability can cause memory leaks or degraded performance. \nTo fix, create\
+    \ and use a subpool (`svn_pool_create`) for these operations and destroy it (`svn_pool_destroy`)\
+    \ after use.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/subversion/commit/e4d42eb10e29caf907083f188f314c2eebfb8ae1
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

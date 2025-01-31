@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pluck-21ea65a7
+  pattern: '$blockedExtentions = array(''.php'',''php3'',''php4'',''php5'',''php6'',''php7'',''phtml'',''.phtm'',''.pht'',''.ph3'',''.ph4'',''.ph5'',''.asp'',''.cgi'');
+
+    '
+  pattern-not: '$blockedExtentions = array(''.php'',''php3'',''php4'',''php5'',''php6'',''php7'',''phtml'',''.phtm'',''.pht'',''.ph3'',''.ph4'',''.ph5'',''.asp'',''.cgi'',''.phar'');
+
+    '
+  languages:
+  - php
+  message: 'The list of blocked file extensions is missing ''.phar'', which could
+    allow malicious PHAR files to be uploaded and executed. PHAR files can contain
+    PHP code and pose a security risk. Update the blocked extensions list to include
+    ''.phar'' to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/21ea65a77e78049202c03259f24a4c3db7fb075e
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

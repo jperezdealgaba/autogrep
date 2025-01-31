@@ -1,0 +1,31 @@
+rules:
+- id: vuln-espruino-c1043117
+  pattern: 'jsvGetString($VAR, $BUF, sizeof($TYPE) + 1)
+
+    '
+  pattern-not: 'jsvGetStringChars($VAR, 0, $BUF, sizeof($TYPE))
+
+    '
+  languages:
+  - c
+  message: 'Detected use of `jsvGetString` with buffer size calculation including
+    an extra byte for trailing zero. This can lead to buffer overflow vulnerabilities
+    when the buffer size is incorrectly calculated. Use `jsvGetStringChars` instead,
+    which does not add a trailing zero and ensures the buffer size matches the data
+    size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/c1043117262abef28903adbb944c0861da8dd8ec
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

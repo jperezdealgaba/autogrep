@@ -1,0 +1,26 @@
+rules:
+- id: vuln-kimai2-a0e8aa3a
+  pattern: '$this->markdown->toHtml($content, true)
+
+    '
+  pattern-not: '$this->markdown->toHtml($content, false)
+
+    '
+  languages:
+  - php
+  message: 'The second argument in `toHtml` is set to `true`, which enables unsafe
+    HTML rendering. This can lead to XSS vulnerabilities if the input is not properly
+    sanitized. Set the second argument to `false` to disable unsafe HTML rendering
+    and mitigate the risk of XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kevinpapst/kimai2/commit/a0e8aa3a435717187fb12210242dab1b7c97ff3f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-exiv2-43f154f4
+  pattern: 'enforce($LENGTH >= 0, $ERROR);
+
+    enforce($LENGTH <= ($EOT - $SP)/2, $ERROR);
+
+    '
+  pattern-not: 'enforce(0 <= $LENGTH && $LENGTH <= ($EOT - $SP)/2, $ERROR);
+
+    '
+  languages:
+  - cpp
+  message: 'The code contains separate enforce calls for length validation, which
+    can lead to inconsistent checks and bypassing of security constraints. This is
+    dangerous because it can allow invalid or malicious data to pass through unchecked.
+    Consolidate the checks into a single enforce call to ensure both conditions are
+    evaluated together.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/43f154f44b838e6b232193ccbd48e5a2e94bdd35
+    category: security
+    cwe:
+    - CWE-129
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - cpp

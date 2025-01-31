@@ -1,0 +1,24 @@
+rules:
+- id: vuln-ruby-bcc2421b
+  pattern: "ffi_prep_cif(\n  $CIF,\n  NUM2INT($ABI),\n  RARRAY_LENINT($ARGS),\n  INT2FFI_TYPE(NUM2INT($RET_TYPE)),\n\
+    \  $ARG_TYPES\n)\n"
+  pattern-not: "ffi_prep_cif(\n  $CIF,\n  $NABI,\n  $LEN,\n  $RTYPE,\n  $ARG_TYPES\n\
+    )\n"
+  languages:
+  - c
+  message: "The use of `NUM2INT` and `RARRAY_LENINT` directly in `ffi_prep_cif` can\
+    \ lead to integer overflow vulnerabilities. \nThe patch introduces a safer approach\
+    \ by storing the values in variables (`len`, `nabi`, `rtype`) before passing them\
+    \ to `ffi_prep_cif`. \nThis prevents potential integer overflow issues by ensuring\
+    \ proper bounds checking and type conversion.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/bcc2421b4938fc1d9f5f3fb6ef2320571b27af42
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

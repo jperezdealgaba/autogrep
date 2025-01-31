@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ruby-143eb22f
+  pattern: 'GlobPathValue($VAR, $SAFE);
+
+    '
+  pattern-not: "if (!RB_TYPE_P(($VAR), T_STRING)) {\n    FilePathValue($VAR);\n}\n\
+    else {\n    rb_check_safe_obj($VAR);\n    rb_enc_check($VAR, rb_enc_from_encoding(rb_usascii_encoding()));\n\
+    }\n"
+  languages:
+  - c
+  message: "The use of `GlobPathValue` macro without proper safety checks can lead\
+    \ to security vulnerabilities. \nThe macro does not adequately validate the safety\
+    \ and encoding of the input string, which can be exploited to bypass security\
+    \ checks. \nReplace `GlobPathValue` with explicit safety and encoding checks as\
+    \ shown in the fixed version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/143eb22f1877815dd802f7928959c5f93d4c7bb3
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

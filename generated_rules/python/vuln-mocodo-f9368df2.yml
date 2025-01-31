@@ -1,0 +1,21 @@
+rules:
+- id: vuln-mocodo-f9368df2
+  pattern: __version__ = "4.2.6"
+  pattern-not: __version__ = "4.2.7"
+  languages:
+  - python
+  message: Outdated version of Mocodo detected. Using an outdated version can expose
+    the application to known vulnerabilities. Update to the latest version to ensure
+    security.
+  severity: WARNING
+  metadata:
+    source-url: github.com/laowantong/mocodo/commit/f9368df28518b6c4a92fd207c260f1978ec34d6e
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A9_2021-Security_Misconfiguration
+    technology:
+    - python

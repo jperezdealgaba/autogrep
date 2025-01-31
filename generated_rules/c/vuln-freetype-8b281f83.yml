@@ -1,0 +1,25 @@
+rules:
+- id: vuln-freetype-8b281f83
+  pattern: '(void)$FUNC($PARSER, $NUM, $TEMP, $NUM2);
+
+    '
+  pattern-not: "$RESULT = $FUNC($PARSER, $NUM, $TEMP, $NUM2);\nif ($RESULT < $NUM)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function call result is ignored without checking if it meets the required
+    conditions. This can lead to invalid file format processing and potential security
+    vulnerabilities. Always check the return value of functions that parse or process
+    data to ensure they meet expected conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/8b281f83e8516535756f92dbf90940ac44bd45e1
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

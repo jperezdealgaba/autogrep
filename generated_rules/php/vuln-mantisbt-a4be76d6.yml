@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mantisbt-a4be76d6
+  pattern: '$g_view_proj_doc_threshold = ANYBODY;
+
+    '
+  pattern-not: '$g_view_proj_doc_threshold = VIEWER;
+
+    '
+  languages:
+  - php
+  message: 'Setting the project document view threshold to ANYBODY allows any user
+    to download attachments from private projects, regardless of their membership
+    status. This can lead to unauthorized access to sensitive information. Change
+    the threshold to VIEWER or a more restrictive setting to ensure only authorized
+    users can access project documents.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/a4be76d6e5c4939545d84712c79d3f8f4a108c4f
+    category: security
+    cwe:
+    - 'CWE-284: Improper Access Control'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

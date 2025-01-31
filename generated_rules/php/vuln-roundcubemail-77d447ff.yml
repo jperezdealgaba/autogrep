@@ -1,0 +1,27 @@
+rules:
+- id: vuln-roundcubemail-77d447ff
+  pattern: 'if (rcube_utils::request_header(''X-Roundcube-Request'') == $sess_tok)
+    {...}
+
+    '
+  pattern-not: 'if (rcube_utils::request_header(''X-Roundcube-Request'') === $sess_tok)
+    {...}
+
+    '
+  languages:
+  - php
+  message: 'Using loose equality (==) instead of strict equality (===) can lead to
+    type juggling vulnerabilities, potentially allowing attackers to bypass security
+    checks. Always use strict equality (===) for security-sensitive comparisons.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/77d447ff7cff5c9126117ad1ddd3c5d9bbe8dd31
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - php

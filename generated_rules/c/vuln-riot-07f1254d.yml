@@ -1,0 +1,24 @@
+rules:
+- id: vuln-riot-07f1254d
+  pattern: "if (($P[1] != '\\0') && ($P[2] != '\\0') && ($P[1] == '/') && ($P[2] ==\
+    \ '/')) {\n  ...\n}\n"
+  pattern-not: "if ((($URI_END - $P) > 2) && ($P[1] == '/') && ($P[2] == '/')) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds memory access vulnerability. The code
+    checks if certain characters are ''/'' without first ensuring the string is long
+    enough. This could lead to reading beyond the end of the string. Fix by adding
+    a length check before accessing the characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/RIOT-OS/RIOT/commit/07f1254d8537497552e7dce80364aaead9266bbe
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

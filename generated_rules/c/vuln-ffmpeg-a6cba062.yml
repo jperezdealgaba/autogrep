@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ffmpeg-a6cba062
+  pattern: '$VAR += ff_subtitles_next_line($VAR);
+
+    '
+  pattern-not: "$INC = ff_subtitles_next_line($VAR);\nif (!$INC)\n    break;\n$VAR\
+    \ += $INC;\n"
+  languages:
+  - c
+  message: 'The code directly increments a pointer with the result of `ff_subtitles_next_line`
+    without checking if the result is zero. This can lead to an infinite loop if `ff_subtitles_next_line`
+    returns zero. The fix involves checking the result of `ff_subtitles_next_line`
+    before incrementing the pointer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/a6cba062051f345e8ebfdff34aba071ed73d923f
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/835.html
+    technology:
+    - c

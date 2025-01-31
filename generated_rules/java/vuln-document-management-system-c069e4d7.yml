@@ -1,0 +1,22 @@
+rules:
+- id: vuln-document-management-system-c069e4d7
+  pattern: "File $TMPFILE = File.createTempFile($PREFIX, $SUFFIX);\nif (!$TMPFILE.delete())\n\
+    \  throw new IOException();\nif (!$TMPFILE.mkdir())\n  throw new IOException();\n\
+    return $TMPFILE;\n"
+  pattern-not: 'return Files.createTempDirectory($PREFIX).toFile();
+
+    '
+  languages:
+  - java
+  message: 'Insecure temporary directory creation detected. Using File.createTempFile()
+    followed by delete() and mkdir() can lead to race conditions and security vulnerabilities.
+    Use Files.createTempDirectory() instead, which is atomic and secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openkm/document-management-system/commit/c069e4d73ab8864345c25119d8459495f45453e1
+    category: security
+    cwe: CWE-377
+    owasp: A9:2017-Insecure Components
+    technology: java

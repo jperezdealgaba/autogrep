@@ -1,0 +1,31 @@
+rules:
+- id: vuln-pluck-a4c3759d
+  pattern: '$seoname = latinOnlyInput(save_page($title, $_POST[''content''], $_POST[''hidden''],
+    ..., $_GET[''page'']));
+
+    '
+  pattern-not: '$seoname = latinOnlyInput(save_page($title, $_POST[''content''], $hiddenposted,
+    ..., $_GET[''page'']));
+
+    '
+  languages:
+  - php
+  message: 'Direct use of $_POST[''hidden''] in save_page function can lead to security
+    vulnerabilities. This can allow attackers to manipulate hidden field values directly,
+    potentially bypassing security checks. Always sanitize and validate user inputs
+    before using them in critical functions. Use a separate variable to store and
+    validate the input before passing it to the function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/a4c3759d87a23769ebdfd8c268b9e936923cd921
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

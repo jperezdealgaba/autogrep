@@ -1,0 +1,36 @@
+rules:
+- id: vuln-xen-c65ea16d
+  pattern: '$VAR mfn_return;
+
+    ...
+
+    mfn_return = $FUNC($ARG1, $ARG2, $ARG3, $ARG4, 0, NULL, NULL);
+
+    ...
+
+    ASSERT(!p2m_is_valid($T) || $MFN + $I == mfn_x(mfn_return));
+
+    '
+  pattern-not: "for ( $I = 0; $I < (1UL << $ORDER); )\n{\n    unsigned int $CUR_ORDER;\n\
+    \    mfn_t mfn_return = $FUNC($ARG1, $ARG2, $ARG3, $ARG4, 0, &$CUR_ORDER, NULL);\n\
+    \    if ( p2m_is_valid($T) && (!mfn_valid(_mfn($MFN)) || $MFN + $I != mfn_x(mfn_return))\
+    \ )\n        return -EILSEQ;\n    $I += (1UL << $CUR_ORDER) - (($GFN + $I) & ((1UL\
+    \ << $CUR_ORDER) - 1));\n}\n"
+  languages:
+  - c
+  message: 'This code contains a potential vulnerability where the validation of memory
+    frame numbers (MFNs) is not properly handled in a loop. The original code only
+    performs an assertion check, which may be optimized out in release builds, leading
+    to potential security issues. The fixed version properly validates MFNs within
+    a loop and returns an error if any inconsistency is detected. To fix this, ensure
+    that MFN validation is performed in a loop and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/xen-project/xen/commit/c65ea16dbcafbe4fe21693b18f8c2a3c5d14600e
+    category: security
+    cwe:
+    - CWE-617
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-joplin-49c1c9aa
+  pattern: '"@react-native-community/datetimepicker": "7.5.0"'
+  pattern-not: '"@react-native-community/datetimepicker": "7.6.0"'
+  languages:
+  - json
+  message: 'The version of @react-native-community/datetimepicker is outdated and
+    may contain security vulnerabilities. Using outdated dependencies can expose the
+    application to known exploits. Upgrade to version 7.6.0 or later to mitigate these
+    risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/49c1c9aa652aff50560ab5f46c9bcdfccbac6409
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://github.com/react-native-datetimepicker/datetimepicker/releases
+    technology:
+    - json

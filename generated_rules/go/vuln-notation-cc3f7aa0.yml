@@ -1,0 +1,27 @@
+rules:
+- id: vuln-notation-cc3f7aa0
+  pattern: 'Version = "v1.0.0-rc.5"
+
+    '
+  pattern-not: 'Version = "v1.0.0-rc.6"
+
+    '
+  languages:
+  - go
+  message: 'Detected an outdated version of the notation tool. Using outdated versions
+    can lead to security vulnerabilities and missing critical updates. Update to the
+    latest version to ensure security and stability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/notaryproject/notation/commit/cc3f7aa06b600a689af5274daa7c06fb3e55e69e
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/notaryproject/notation/releases
+    technology:
+    - go

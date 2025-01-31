@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpmyadmin-cd097656
+  pattern: 'printf(__(''Taking you to %s.''), htmlspecialchars($_REQUEST[''url'']))
+
+    '
+  pattern-not: 'echo __(''Taking you to the target site.'');
+
+    '
+  languages:
+  - php
+  message: 'The code directly outputs the value of $_REQUEST[''url''] after escaping
+    it with htmlspecialchars, which can still lead to XSS if the escaping is insufficient
+    or bypassed. This is dangerous because it allows attackers to inject malicious
+    content into the output. To fix this, avoid displaying user-controlled input directly
+    in the output. Instead, use a generic message without including the user input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/cd097656758f981f80fb9029c7d6b4294582b706
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-sqlite-bf48ce49
+  pattern: '$EXPR->op==TK_COLUMN && IsVirtual($EXPR->y.pTab)
+
+    '
+  pattern-not: 'sqlite3ExprIsVtabRef($EXPR)
+
+    '
+  languages:
+  - c
+  message: 'Detected direct usage of column and virtual table checks instead of using
+    the `sqlite3ExprIsVtabRef` function. This can lead to inconsistent checks and
+    potential security vulnerabilities. Always use the provided function `sqlite3ExprIsVtabRef`
+    to ensure consistent and secure handling of virtual table references.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sqlite/sqlite/commit/bf48ce49f7c25e5d4524de9fdc5c0d505218d06d
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.sqlite.org/security.html
+    technology:
+    - c

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-xen-1cfbd256
+  pattern: "static int rm_child_entry(struct node *node, size_t off, size_t len)\n\
+    {\n    if (!recovery)\n        return off;\n\n    if (remove_child_entry(NULL,\
+    \ node, off))\n        log(\"check_store: child entry could not be removed from\
+    \ '%s'\",\n            node->name);\n\n    return off - len - 1;\n}\n"
+  pattern-not: "static int check_store_step(const void *ctx, struct connection *conn,\n\
+    \                            struct node *node, void *arg)\n{\n    struct hashtable\
+    \ *reachable = arg;\n\n    if (hashtable_search(reachable, (void *)node->name))\
+    \ {\n        log(\"check_store: '%s' is duplicated!\", node->name);\n        return\
+    \ recovery ? WALK_TREE_RM_CHILDENTRY\n                       : WALK_TREE_SKIP_CHILDREN;\n\
+    \    }\n\n    if (!remember_string(reachable, node->name))\n        return WALK_TREE_ERROR_STOP;\n\
+    \n    return WALK_TREE_OK;\n}\n"
+  languages:
+  - c
+  message: 'The function `rm_child_entry` in Xenstore''s core logic was removed due
+    to potential vulnerabilities in handling child entries. The function did not properly
+    handle error conditions and could lead to inconsistent state in the Xenstore database.
+    The updated version uses a more robust approach with `check_store_step` and `check_store_enoent`
+    functions, which properly handle error conditions and recovery. To fix this issue,
+    ensure that error handling is consistent and that child entries are properly managed
+    using the updated approach.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/xen-project/xen/commit/1cfbd2567b68e3e021a963d6f45f6adfa359c8d4
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

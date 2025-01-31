@@ -1,0 +1,30 @@
+rules:
+- id: vuln-netty-89c241e3
+  pattern: "boolean multipleContentLengths = $CONTENT_LENGTH_FIELDS.size() > 1 ||\
+    \ $CONTENT_LENGTH_FIELDS.get(0).indexOf($COMMA) >= 0;\nif (multipleContentLengths\
+    \ && $MESSAGE.protocolVersion() == $HTTP_VERSION) {\n  ...\n}\n"
+  pattern-not: '$CONTENT_LENGTH = HttpUtil.normalizeAndGetContentLength($CONTENT_LENGTH_FIELDS,
+    $IS_HTTP10_OR_EARLIER, $ALLOW_DUPLICATE_CONTENT_LENGTHS);
+
+    '
+  languages:
+  - java
+  message: 'Multiple Content-Length headers or duplicate values in a single Content-Length
+    header can lead to HTTP request smuggling or response splitting attacks. The vulnerability
+    occurs when the HTTP message parser fails to properly validate and normalize Content-Length
+    headers, allowing attackers to manipulate message boundaries. Use HttpUtil.normalizeAndGetContentLength()
+    to properly validate and normalize Content-Length headers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/89c241e3b1795ff257af4ad6eadc616cb2fb3dc4
+    category: security
+    cwe:
+    - CWE-444
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.3.2
+    - https://github.com/squid-cache/squid/security/advisories/GHSA-qf3v-rc95-96j5
+    technology:
+    - java

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-microweber-0dede688
+  pattern: '$cleanStrings = MwHtmlSanitizerReference::MW_NOT_ALLOWED_ATTRIBUTES;
+
+    '
+  pattern-not: '$cleanStrings = MwHtmlSanitizerReference::getNotAllowedAttributes();
+
+    '
+  languages:
+  - php
+  message: 'The code directly accesses `MW_NOT_ALLOWED_ATTRIBUTES` instead of using
+    the `getNotAllowedAttributes()` method, which includes additional security attributes.
+    This could lead to incomplete XSS protection. Always use the `getNotAllowedAttributes()`
+    method to ensure all potentially dangerous attributes are sanitized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/0dede6886c6df3d1f31c4f4e3ba1ab4a336fbf79
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

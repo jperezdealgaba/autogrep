@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openjpeg-0bc90e40
+  pattern: 'fscanf($F, "PG%[ \t]%c%c%[ \t+-]%d%[ \t]%d%[ \t]%d", ...);
+
+    '
+  pattern-not: 'fscanf($F, "PG%31[ \t]%c%c%31[ \t+-]%d%31[ \t]%d%31[ \t]%d", ...);
+
+    '
+  languages:
+  - c
+  message: "Detected use of fscanf with unbounded format specifiers, which can lead\
+    \ to buffer overflows. \nThe patch limits the width of the format specifiers to\
+    \ 31 characters to prevent potential overflows. \nAlways use bounded format specifiers\
+    \ in fscanf to avoid security vulnerabilities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/0bc90e4062a5f9258c91eca018c019b179066c62
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

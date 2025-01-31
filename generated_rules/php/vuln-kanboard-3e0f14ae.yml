@@ -1,0 +1,25 @@
+rules:
+- id: vuln-kanboard-3e0f14ae
+  pattern: '$this->getComment()
+
+    '
+  pattern-not: '$this->getComment($task)
+
+    '
+  languages:
+  - php
+  message: 'Detected a missing task ID validation in comment retrieval. This can lead
+    to unauthorized access to comments. Ensure that the task ID is validated against
+    the comment''s task ID to prevent access to unrelated comments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/3e0f14ae2b0b5a44bd038a472f17eac75f538524
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

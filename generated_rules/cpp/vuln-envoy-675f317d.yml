@@ -1,0 +1,30 @@
+rules:
+- id: vuln-envoy-675f317d
+  pattern: 'const Api::SysCallSizeResult $RESULT = Api::OsSysCallsSingleton::get().recvmsg($FD,
+    &$HDR, 0);
+
+    '
+  pattern-not: 'const Api::SysCallSizeResult $RESULT = Api::OsSysCallsSingleton::get().recvmsg($FD,
+    &$HDR, $MSG_TRUNC);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of recvmsg() without MSG_TRUNC flag, which can lead to undetected
+    truncated UDP packets. Truncated packets should be explicitly checked and dropped
+    to prevent processing of incomplete data. Use MSG_TRUNC flag to detect truncated
+    packets and handle them appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/675f317d5805a1b32b2dfcc8db1e41747bd143ef
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://man7.org/linux/man-pages/man2/recvmsg.2.html
+    technology:
+    - cpp

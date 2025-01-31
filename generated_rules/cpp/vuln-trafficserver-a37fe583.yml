@@ -1,0 +1,28 @@
+rules:
+- id: vuln-trafficserver-a37fe583
+  pattern: "if ($S->method == HTTP_WKSIDX_GET || ($S->http_config_param->cache_post_method\
+    \ == 1 && $S->method == HTTP_WKSIDX_POST) || $S->api_resp_cacheable == true) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($S->method == HTTP_WKSIDX_GET || $S->api_resp_cacheable == true)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The code allows caching of POST requests when `cache_post_method` is enabled,
+    which can lead to inappropriate caching of non-idempotent requests. This violates
+    RFC 7234, section 4.4, which states that cache entries should only be invalidated
+    for non-error responses to safe methods. To fix this, remove the condition that
+    allows caching of POST requests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/a37fe583fb9838b414b262d71f6594c97161a67e
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc7234#section-4.4
+    technology:
+    - cpp

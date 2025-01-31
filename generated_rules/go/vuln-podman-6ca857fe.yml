@@ -1,0 +1,28 @@
+rules:
+- id: vuln-podman-6ca857fe
+  pattern: '$X, $ERR := archive.Tar($SOURCE, $COMPRESSION)
+
+    '
+  pattern-not: '$X, $ERR := chrootarchive.Tar($SOURCE, $OPTIONS, $CHROOT)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of insecure `archive.Tar` function which does not chroot
+    the archive process. This can lead to path traversal vulnerabilities where files
+    outside the intended directory can be included in the tarball. Use `chrootarchive.Tar`
+    instead to properly chroot the archive process and prevent path traversal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containers/podman/commit/6ca857feb07a5fdc96fd947afef03916291673d8
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/containers/storage/pull/123
+    technology:
+    - go

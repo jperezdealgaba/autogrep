@@ -1,0 +1,26 @@
+rules:
+- id: vuln-node-e3950d1a
+  pattern: "if ($PARSER->method != HTTP_GET) {\n  ...\n}\n"
+  pattern-not: "if (!IsAllowedHost(HeaderValue($STATE, \"Host\")) ||\n    $PARSER->method\
+    \ != HTTP_GET) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The code fails to validate the ''Host'' header in HTTP GET requests, which
+    can lead to security vulnerabilities such as DNS rebinding attacks. An attacker
+    could exploit this to bypass security restrictions by providing a malicious host.
+    The fix adds validation using the IsAllowedHost function to ensure the host is
+    either localhost, an IP address, or empty.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/e3950d1a402b80e4098a40aacddd6a104da0cfa9
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://en.wikipedia.org/wiki/DNS_rebinding
+    technology:
+    - cpp

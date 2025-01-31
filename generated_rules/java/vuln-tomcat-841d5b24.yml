@@ -1,0 +1,22 @@
+rules:
+- id: vuln-tomcat-841d5b24
+  pattern: 'private boolean enableCmdLineArguments = true;
+
+    '
+  pattern-not: 'private boolean enableCmdLineArguments = false;
+
+    '
+  languages:
+  - java
+  message: CGI command line arguments are enabled, which can lead to command injection
+    vulnerabilities. Set enableCmdLineArguments to false to disable this feature.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/841d5b24c6950e0510688a5597cde9ae1f094a0d
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - java

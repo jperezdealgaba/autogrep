@@ -1,0 +1,31 @@
+rules:
+- id: vuln-libdwarf-code-82d8e007
+  pattern: 'Dwarf_Unsigned _dwarf_length_of_cu_header(Dwarf_Debug, Dwarf_Unsigned
+    offset, Dwarf_Bool dinfo);
+
+    '
+  pattern-not: 'int _dwarf_length_of_cu_header(Dwarf_Debug dbg, Dwarf_Unsigned offset,
+    Dwarf_Bool is_info, Dwarf_Unsigned *area_length_out, Dwarf_Error *error);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `_dwarf_length_of_cu_header` is vulnerable due to missing
+    validation of input parameters and lack of error handling. This can lead to undefined
+    behavior or security issues when processing malformed input. The fix includes
+    adding proper parameter validation and error handling. Update the function signature
+    to include error handling and additional output parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/82d8e007851805af0dcaaff41f49a2d48473334b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

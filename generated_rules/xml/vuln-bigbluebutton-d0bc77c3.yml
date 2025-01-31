@@ -1,0 +1,25 @@
+rules:
+- id: vuln-bigbluebutton-d0bc77c3
+  pattern: '<constructor-arg index="0" value="stun:stun.freeswitch.org"/>
+
+    '
+  pattern-not: '<constructor-arg index="0" value="stun:stun.l.google.com:19302"/>
+
+    '
+  languages:
+  - xml
+  message: 'The STUN server configuration uses an insecure or outdated STUN server
+    (stun.freeswitch.org). This could lead to unreliable or insecure communication.
+    Update the STUN server to a trusted and secure endpoint like stun.l.google.com:19302.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bigbluebutton/bigbluebutton/commit/d0bc77c3dbd858295004f15d7a57ec35e6b203d6
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - xml

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mantisbt-221cf323
+  pattern: 'echo '' pattern="'' . $t_cf_regex . ''"'';
+
+    '
+  pattern-not: 'echo '' pattern="'' . string_attribute($t_cf_regex) . ''"'';
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped output in pattern attribute, which can lead to XSS\
+    \ vulnerabilities. \nThe value of `$t_cf_regex` is directly embedded into HTML\
+    \ without proper escaping, \nallowing an attacker to inject malicious code. \n\
+    Fix this by using `string_attribute()` to sanitize the input before output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/221cf323f16a9738a5b27aaba94758f11281d85c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-kanboard-b79b18ef
+  pattern: '$values[''id''] = $this->userSession->getId();
+
+    '
+  pattern-not: "$values = array(\n    'id' => $this->userSession->getId(),\n    ...\n\
+    );\n"
+  languages:
+  - php
+  message: 'Direct assignment to the ''id'' field in the `$values` array without proper
+    validation or sanitization can lead to security vulnerabilities, such as unauthorized
+    access or data manipulation. Ensure that all fields in the `$values` array are
+    explicitly defined and validated to prevent potential security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/b79b18efd7a1a8b591753a4eddd473f88d55b7df
+    category: security
+    cwe:
+    - 'CWE-284: Improper Access Control'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

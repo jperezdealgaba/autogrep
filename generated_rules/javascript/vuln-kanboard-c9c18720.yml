@@ -1,0 +1,21 @@
+rules:
+- id: vuln-kanboard-c9c18720
+  pattern: "function onPaste($EVENT) {\n    ...\n    if ($EVENT.clipboardData && $EVENT.clipboardData.items)\
+    \ {\n        ...\n    } else {\n        setTimeout($FUNC, 100);\n    }\n}\n"
+  pattern-not: "function onPaste($EVENT) {\n    if ($EVENT.clipboardData && $EVENT.clipboardData.items)\
+    \ {\n        ...\n    }\n}\n"
+  languages:
+  - javascript
+  message: 'Insecure clipboard handling detected. The code falls back to setTimeout
+    without proper validation when clipboardData.items is not available, which could
+    lead to security issues. Remove the setTimeout fallback and ensure clipboard data
+    is properly validated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/c9c187206700030c43493b80fd599b4d096cb713
+    category: security
+    cwe: CWE-200
+    owasp: A03:2021 - Injection
+    technology: javascript

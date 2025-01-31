@@ -1,0 +1,32 @@
+rules:
+- id: vuln-zoneminder-9fee64b6
+  pattern: '$userLangFile = $prefix.''lang/''.$user[''Language''].''.php'';
+
+    '
+  pattern-not: '$userLangFile = $prefix.''lang/''.preg_replace(''/[^[:alnum:]_]+/'',
+    '''', $user[''Language'']).''.php'';
+
+    '
+  languages:
+  - php
+  message: 'Detected unsanitized language file path construction, which can lead to
+    directory traversal or file inclusion vulnerabilities. The user-controlled input
+    `$user[''Language'']` is directly concatenated into a file path without proper
+    sanitization. This allows an attacker to manipulate the path and potentially access
+    unauthorized files. To fix this, use `preg_replace` to sanitize the input, allowing
+    only alphanumeric characters and underscores.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/9fee64b62fbdff5bf5ece1d617f1f53c7b1967cb
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

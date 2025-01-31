@@ -1,0 +1,21 @@
+rules:
+- id: vuln-wekan-ba336de7
+  pattern: 'const $CHAIN_LINES = $SETTINGS_GET(''LDAP_CA_CERT'').split(''\n'');
+
+    '
+  pattern-not: 'const $CHAIN_LINES = $SETTINGS_GET(''LDAP_CA_CERT'').replace(/\\n/g,''\n'').split(''\n'');
+
+    '
+  languages:
+  - javascript
+  message: Improper handling of certificate chain lines in LDAP_CA_CERT. The certificate
+    chain may contain escaped newlines (\n) which need to be properly converted to
+    actual newlines before splitting. This could lead to improper certificate validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wekan/wekan/commit/ba336de74baf42bfa4be5375c42775d08739e793
+    category: security
+    cwe: CWE-295
+    owasp: A02:2021-Cryptographic Failures
+    technology:
+    - javascript

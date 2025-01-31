@@ -1,0 +1,24 @@
+rules:
+- id: vuln-ffmpeg-3e2b7450
+  pattern: "if ($S->bit_depth == 1) {\n  ...\n}\n"
+  pattern-not: "if ($S->bit_depth == 1 && $S->bits_per_pixel == 1) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where a conditional check only verifies
+    `bit_depth` without ensuring `bits_per_pixel` is also correct. This can lead to
+    incorrect handling of PNG images, potentially causing crashes or security issues.
+    Always check both `bit_depth` and `bits_per_pixel` when handling PNG image data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/3e2b745020c2dbf0201fe7df3dad9e7e0b2e1bb6
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

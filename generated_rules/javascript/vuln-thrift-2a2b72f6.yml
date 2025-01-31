@@ -1,0 +1,22 @@
+rules:
+- id: vuln-thrift-2a2b72f6
+  pattern: 'var $FILENAME = path.join($BASEDIR, $URI);
+
+    '
+  pattern-not: "var $FILENAME = path.resolve(path.join($BASEDIR, $URI));\nif ($FILENAME.indexOf($BASEDIR)\
+    \ != 0) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Path traversal vulnerability detected. Using `path.join` without `path.resolve`
+    and path validation can allow attackers to escape the base directory. Always resolve
+    the path and validate that it starts with the expected base directory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/thrift/commit/2a2b72f6c8aef200ecee4984f011e06052288ff2
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    technology:
+    - javascript

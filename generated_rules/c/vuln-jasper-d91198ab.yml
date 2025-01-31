@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jasper-d91198ab
+  pattern: '$DEC->numtiles = $DEC->numhtiles * $DEC->numvtiles;
+
+    '
+  pattern-not: "if (!jas_safe_size_mul($DEC->numhtiles, $DEC->numvtiles, &$SIZE))\
+    \ {\n  return -1;\n}\n$DEC->numtiles = $SIZE;\n"
+  languages:
+  - c
+  message: 'Detected unsafe multiplication of integers without overflow check. This
+    can lead to integer overflow vulnerabilities, potentially causing memory corruption
+    or unexpected behavior. Use `jas_safe_size_mul` or similar safe arithmetic functions
+    to ensure the multiplication does not overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/d91198abd00fc435a397fe6bad906a4c1748e9cf
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

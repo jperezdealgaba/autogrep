@@ -1,0 +1,25 @@
+rules:
+- id: vuln-openemr-347ad614
+  pattern: '$output->Text(_PC_ADD_CAT . $newname . ''.'')
+
+    '
+  pattern-not: '$output->Text(_PC_ADD_CAT . text($newname) . ''.'')
+
+    '
+  languages:
+  - php
+  message: 'Detected potential XSS vulnerability due to unescaped user input in text
+    output. This can allow attackers to inject malicious scripts. Use the `text()`
+    function to properly escape user input before outputting it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/347ad614507183035d188ba14427bc162419778c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

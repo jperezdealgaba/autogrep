@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-58e8ad85
+  pattern: 'unserialize(base64_decode($VAR))
+
+    '
+  pattern-not: 'unserialize_object(base64_decode($VAR))
+
+    '
+  languages:
+  - php
+  message: 'Unsafe use of `unserialize` on base64-decoded data detected. This can
+    lead to PHP object injection vulnerabilities, allowing attackers to execute arbitrary
+    code or manipulate application behavior. Replace `unserialize` with the safer
+    `unserialize_object` function to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/58e8ad852f9e75c8158e5bee02c273383f7d9865
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php

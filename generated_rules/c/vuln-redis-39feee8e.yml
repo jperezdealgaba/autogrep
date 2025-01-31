@@ -1,0 +1,28 @@
+rules:
+- id: vuln-redis-39feee8e
+  pattern: 'robj *$O = lookupKeyWriteOrReply($C, $C->argv[1], shared.null[$C->resp]);
+
+    '
+  pattern-not: 'robj *$O = lookupKeyWriteOrReply($C, $C->argv[1], $HASCOUNT ? shared.nullarray[$C->resp]
+    : shared.null[$C->resp]);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where the response type is not correctly
+    handled based on the presence of a count parameter. This could lead to incorrect
+    or unsafe behavior in the Redis list operations. The fix involves using a conditional
+    check to determine the appropriate response type (nullarray or null) based on
+    whether a count parameter is present.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/39feee8e3a6fee885aee60672a9d9de0dfd08896c
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

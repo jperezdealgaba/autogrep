@@ -1,0 +1,29 @@
+rules:
+- id: vuln-misp-158c8b2f
+  pattern: 'in_array($VAR1, $VAR2)
+
+    '
+  pattern-not: 'in_array($VAR1, $VAR2, true)
+
+    '
+  languages:
+  - php
+  message: 'The use of `in_array()` without the strict comparison flag can lead to
+    type juggling vulnerabilities. This can cause unexpected behavior when comparing
+    values of different types, potentially allowing attackers to bypass security checks.
+    Always use the strict comparison flag (`true` as the third parameter) to ensure
+    type safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/158c8b2f788b75e0d26e9249a75e1be291e59d4b
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.in-array.php
+    technology:
+    - php

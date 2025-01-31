@@ -1,0 +1,29 @@
+rules:
+- id: vuln-contiki-ng-6e21dd29
+  pattern: 'char $VARNAME[INDEX_NAME_LENGTH];
+
+    '
+  pattern-not: 'char $VARNAME[INDEX_NAME_LENGTH + 1];
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially dangerous buffer declaration that does not account
+    for the null terminator.
+
+    This can lead to buffer overflows when the string is used, as the null terminator
+    will be written outside the allocated buffer.
+
+    To fix this, ensure the buffer size includes space for the null terminator by
+    adding +1 to the length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/6e21dd2955642818a31f5f32c7ae2f78c7f9dd0a
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    technology:
+    - c

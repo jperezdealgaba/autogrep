@@ -1,0 +1,31 @@
+rules:
+- id: vuln-openexr-ae6d2038
+  pattern: 'i.insert($NAME, Slice($TYPE, (char*)&$CHANNELS[-$DX], $SIZEOF, 0, $CHANNEL.xSampling,
+    $CHANNEL.ySampling));
+
+    '
+  pattern-not: 'i.insert($NAME, Slice($TYPE, (char*)&$CHANNELS[-$DX / $CHANNEL.xSampling],
+    $SIZEOF, 0, $CHANNEL.xSampling, $CHANNEL.ySampling));
+
+    '
+  languages:
+  - cpp
+  message: 'The code contains a potential buffer overflow vulnerability due to incorrect
+    pointer arithmetic in the Slice function. The original code does not account for
+    the channel sampling rate when calculating the offset, which could lead to accessing
+    memory outside the intended bounds. This can cause undefined behavior, crashes,
+    or even security vulnerabilities. To fix this, ensure that the offset calculation
+    includes the channel sampling rate by dividing the delta (dx or dwx) by the xSampling
+    value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/ae6d203892cc9311917a7f4f05354ef792b3e58e
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

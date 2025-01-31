@@ -1,0 +1,29 @@
+rules:
+- id: vuln-cacti-96d793f3
+  pattern: 'header(''Location: '' . get_current_page() . ''?filename=&header=false'');
+
+    '
+  pattern-not: 'header(''Location: '' . get_current_page() . ''?filename='' . $logbase);
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability involves a missing or incorrect filename parameter in
+    the Location header, which can lead to improper redirection or information disclosure.
+    This is dangerous because it can allow attackers to manipulate the redirection
+    or access unintended resources. To fix this, ensure that the filename parameter
+    is properly set using a validated base name of the log file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/96d793f33ebf16c0b12e1ec779d7debb87990cdd
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/601.html
+    technology:
+    - php

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-exiv2-1f1715c0
+  pattern: 'assert($TC.get());
+
+    $TC->setStart($P);
+
+    $OBJECT->addChild($TC);
+
+    '
+  pattern-not: "if ($TC.get()) {\n    $TC->setStart($P);\n    $OBJECT->addChild($TC);\n\
+    } else {\n    $WARNING << $MSG;\n}\n"
+  languages:
+  - cpp
+  message: 'Assertion used without proper null check can lead to undefined behavior
+    when the pointer is null.
+
+    This is dangerous because it can cause the application to crash or behave unpredictably.
+
+    Fix by replacing the assertion with a proper null check and handle the null case
+    appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/1f1715c086d8dcdf5165b19164af9aee7aa12e98
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

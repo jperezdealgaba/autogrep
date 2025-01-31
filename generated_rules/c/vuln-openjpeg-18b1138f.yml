@@ -1,0 +1,31 @@
+rules:
+- id: vuln-openjpeg-18b1138f
+  pattern: '$TCP_POC->compno1 = $PARAMETERS->POC[$NUM_POCS_TILE].compno1;
+
+    '
+  pattern-not: '$TCP_POC->compno1 = opj_uint_min($PARAMETERS->POC[$NUM_POCS_TILE].compno1,
+    $IMAGE->numcomps);
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns a value from `POC[numpocs_tile].compno1` to
+    `tcp_poc->compno1` without checking if it exceeds the number of components in
+    the image. This can lead to out-of-bounds access and potential memory corruption.
+    The fix involves using `opj_uint_min` to ensure the value does not exceed `image->numcomps`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/18b1138fbe3bb0ae4aa2bf1369f9430a8ec6fa00
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-netty-1543218d
+  pattern: 'ByteBuf $BUFFER = $CTX.alloc().heapBuffer($SIZE << 1);
+
+    '
+  pattern-not: 'ByteBuf $BUFFER = prepareDecompressBuffer($CTX, null, $SIZE << 1);
+
+    '
+  languages:
+  - java
+  message: Direct allocation of decompression buffers without size limits can lead
+    to resource exhaustion. Use prepareDecompressBuffer with maxAllocation to enforce
+    size constraints.
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/1543218d3e7afcb33a90b728b14370395a3deca0
+    category: security
+    cwe:
+    - CWE-400
+    owasp: 'A1: Injection'
+    technology:
+    - java

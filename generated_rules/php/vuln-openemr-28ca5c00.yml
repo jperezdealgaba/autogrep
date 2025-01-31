@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openemr-28ca5c00
+  pattern: "private function testPasswordLength(&$pwd)\n{\n    ...\n}\n"
+  pattern-not: "private function testMaximumPasswordLength(&$pwd)\n{\n    ...\n}\n"
+  languages:
+  - php
+  message: 'The function `testPasswordLength` does not enforce a maximum password
+    length, which can lead to security vulnerabilities when using hashing algorithms
+    like BCRYPT that truncate passwords beyond 72 characters. This can give the false
+    impression that the entire password is being used for authentication when it is
+    not. The vulnerability was fixed by splitting the function into `testMinimumPasswordLength`
+    and `testMaximumPasswordLength` to properly enforce both constraints.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/28ca5c008d4a408b60001a67dfd3e0915f9181e0
+    category: security
+    cwe:
+    - CWE-521
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    - https://cwe.mitre.org/data/definitions/521.html
+    technology:
+    - php

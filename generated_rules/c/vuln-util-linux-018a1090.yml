@@ -1,0 +1,24 @@
+rules:
+- id: vuln-util-linux-018a1090
+  pattern: "$P = (char *) endswith($FS->target, $SUFFIX);\nif ($P && *$P)\n    *$P\
+    \ = '\\0';\n"
+  pattern-not: "$P = (char *) endswith($FS->target, PATH_DELETED_SUFFIX);\nif ($P\
+    \ && *$P)\n    *$P = '\\0';\n"
+  languages:
+  - c
+  message: "Detected unsafe string manipulation that removes a suffix without proper\
+    \ validation. \nThis can lead to security vulnerabilities if the suffix is not\
+    \ correctly identified, \npotentially allowing path traversal or other exploits.\
+    \ Ensure that the suffix is \nvalidated and handled securely.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/018a10907fa9885093f6d87401556932c2d8bd2b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-node-576038fb
+  pattern: 'if ($INVALID_PATH_REGEX.test($PATH))
+
+    '
+  pattern-not: "if ($REVERT_CVE_2018_12116) {\n  if ($PATH.length <= 39) {\n    $INVALID_PATH\
+    \ = isInvalidPath($PATH);\n  } else {\n    $INVALID_PATH = /[\\u0000-\\u0020]/.test($PATH);\n\
+    \  }\n} else {\n  $INVALID_PATH = $INVALID_PATH_REGEX.test($PATH);\n}\nif ($INVALID_PATH)\n"
+  languages:
+  - javascript
+  message: Insecure path validation detected. The previous implementation using a
+    single regex test was vulnerable to certain path manipulation attacks. Use the
+    updated validation logic that checks for control characters and spaces separately
+    for different path lengths.
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/576038fb611b7da94877360892653471d0f4eaab
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12116
+    technology:
+    - javascript

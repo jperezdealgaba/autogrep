@@ -1,0 +1,30 @@
+rules:
+- id: vuln-clients-8e09b6d6
+  pattern: "if ($USER_VERIFICATION && !(await $PASSWORD_REPROMPT_SERVICE.showPasswordPrompt()))\
+    \ {\n  $BROWSER_FIDO2_USER_INTERFACE_SESSION.abortPopout($SESSION_ID);\n  return\
+    \ false;\n}\n"
+  pattern-not: '// We are bypassing user verification pending implementation of PIN
+    and biometric support.
+
+    '
+  languages:
+  - typescript
+  message: 'Detected a bypass of user verification in the authentication process.
+    This can lead to unauthorized access as it skips critical security checks. Ensure
+    user verification is properly implemented, especially for sensitive operations
+    like password management. Consider implementing PIN or biometric support for secure
+    user verification.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bitwarden/clients/commit/8e09b6d66bdc7ff83d78de2bf4317c0d824172fe
+    category: security
+    cwe:
+    - 'CWE-287: Improper Authentication'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - typescript

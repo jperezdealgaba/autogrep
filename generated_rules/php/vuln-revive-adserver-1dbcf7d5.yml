@@ -1,0 +1,31 @@
+rules:
+- id: vuln-revive-adserver-1dbcf7d5
+  pattern: '$jsDest = addcslashes(addcslashes($dest, "\0..\37\"\\"), "''\\");
+
+    '
+  pattern-not: '$jsDest = addcslashes(addcslashes($dest, "\0..\37/\"\\"), "''\\");
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable due to insufficient escaping in the `addcslashes`
+    function. The original pattern does not escape the forward slash (`/`), which
+    can lead to security issues such as XSS (Cross-Site Scripting) when the output
+    is used in JavaScript contexts. The fix includes escaping the forward slash to
+    prevent such vulnerabilities. To fix this, ensure all necessary characters, including
+    the forward slash, are properly escaped.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/1dbcf7d50
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

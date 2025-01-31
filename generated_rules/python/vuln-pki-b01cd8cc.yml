@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pki-b01cd8cc
+  pattern: 'logging.FileHandler($FILENAME, ''w'')
+
+    '
+  pattern-not: 'logging.FileHandler($FILENAME)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure file handling in logging configuration. Using ''w''
+    mode in FileHandler can overwrite files without setting proper permissions, potentially
+    leading to security issues. Instead, create the file with appropriate permissions
+    before using FileHandler in append mode.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dogtagpki/pki/commit/b01cd8cc7d3e391e69ed2c8161f7e15fa84553e6
+    category: security
+    cwe: CWE-276
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://docs.python.org/3/library/logging.handlers.html#filehandler
+    technology:
+    - python

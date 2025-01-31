@@ -1,0 +1,26 @@
+rules:
+- id: vuln-roundcubemail-5b7e9a2c
+  pattern: 'rcmail::get_uids()
+
+    '
+  pattern-not: 'rcmail::get_uids($VAR, ...)
+
+    '
+  languages:
+  - php
+  message: 'The use of `rcmail::get_uids()` without arguments can lead to security
+    vulnerabilities by not properly validating or restricting message IDs. This can
+    be exploited to manipulate or access unauthorized messages. Always pass validated
+    message IDs as arguments to `rcmail::get_uids()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/5b7e9a2c960eb4fd2364921297020a5dcd2d7dbc
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

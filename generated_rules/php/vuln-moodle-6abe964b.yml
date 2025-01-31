@@ -1,0 +1,24 @@
+rules:
+- id: vuln-moodle-6abe964b
+  pattern: '$extrainfo[] = $summary->user->$extrafield;
+
+    '
+  pattern-not: '$extrainfo[] = s($summary->user->$extrafield);
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to missing output sanitization.\
+    \ \nDirectly assigning user-controlled data to output without sanitization can\
+    \ lead to Cross-Site Scripting (XSS) attacks. \nUse the `s()` function to sanitize\
+    \ the output before rendering it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/6abe964bbac41b5e40a81b40962f7044b0dc201e
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

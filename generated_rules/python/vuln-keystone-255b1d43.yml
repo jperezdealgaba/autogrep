@@ -1,0 +1,23 @@
+rules:
+- id: vuln-keystone-255b1d43
+  pattern: "if cms.is_ans1_token($TOKEN_ID):\n    $DATA = json.loads(cms.cms_verify(cms.token_to_cms($TOKEN_ID),\n\
+    \                                      $CERTFILE,\n                          \
+    \            $CA_CERTS))\n    $DATA['access']['token']['user'] = $DATA['access']['user']\n\
+    \    $DATA['access']['token']['metadata'] = $DATA['access']['metadata']\n    if\
+    \ $BELONGS_TO:\n        assert $DATA['access']['token']['tenant']['id'] == $BELONGS_TO\n\
+    \    $TOKEN_REF = $DATA['access']['token']\n"
+  pattern-not: "$DATA = $TOKEN_API.get_token(context=$CONTEXT, token_id=$TOKEN_ID)\n\
+    if $BELONGS_TO:\n    if (not $DATA.get('tenant') or $DATA['tenant'].get('id')\
+    \ != $BELONGS_TO):\n        raise exception.Unauthorized()\n"
+  languages:
+  - python
+  message: Detected insecure token validation using assert statements. This can lead
+    to security bypass vulnerabilities. Use proper exception handling and validation
+    checks instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/255b1d43500f5d98ec73a0056525b492b14fec05
+    category: security
+    cwe: CWE-703
+    owasp: A10:2021-Security Misconfiguration
+    technology: python

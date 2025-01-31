@@ -1,0 +1,22 @@
+rules:
+- id: vuln-podman-7ef3981a
+  pattern: '$NET, $ERR = common.NetFlagsToNetOptions($CMD)
+
+    '
+  pattern-not: '$NET, $ERR = common.NetFlagsToNetOptions($CMD, $NETNS_FROM_CONFIG)
+
+    '
+  languages:
+  - go
+  message: "The function `NetFlagsToNetOptions` should be called with the `netnsFromConfig`\
+    \ parameter to ensure proper network flag parsing. \nMissing this parameter can\
+    \ lead to incorrect network configuration handling, potentially causing security\
+    \ issues or misconfigurations.\nAlways pass the `netnsFromConfig` parameter to\
+    \ `NetFlagsToNetOptions`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/containers/podman/commit/7ef3981abe2412727840a2886489a08c03a05299
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: 'OWASP Top 10 2021: A03:2021 - Injection'
+    technology: go

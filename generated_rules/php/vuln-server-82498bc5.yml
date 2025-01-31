@@ -1,0 +1,29 @@
+rules:
+- id: vuln-server-82498bc5
+  pattern: '$freeSpace = (int)((INF > 0) ? INF : PHP_INT_MAX);
+
+    '
+  pattern-not: '$freeSpace = (INF > 0) ? INF : PHP_INT_MAX;
+
+    '
+  languages:
+  - php
+  message: 'The code casts the result of a ternary operation to an integer, which
+    can lead to incorrect handling of infinite values. This is dangerous because it
+    can cause unexpected behavior when dealing with large or infinite values, potentially
+    leading to security issues or incorrect calculations. The fix removes the unnecessary
+    cast to ensure proper handling of INF and PHP_INT_MAX.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/nextcloud/server/commit/82498bc50f176c84bbf62f02b3fc843daef3e844
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://bugs.php.net/bug.php?id=69188
+    technology:
+    - php

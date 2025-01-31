@@ -1,0 +1,40 @@
+rules:
+- id: vuln-exiv2-d9fd4c42
+  pattern: '$IO.read($BUF, $COUNT);
+
+    ...
+
+    $IO.seek($OFFSET, $POS);
+
+    '
+  pattern-not: 'readOrThrow($IO, $BUF, $COUNT, $ERR);
+
+    ...
+
+    seekOrThrow($IO, $OFFSET, $POS, $ERR);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe use of BasicIo::read() and BasicIo::seek() without proper
+    error checking.
+
+    This can lead to unhandled errors, corrupted data, or security vulnerabilities
+    if the operations fail.
+
+    Use the readOrThrow() and seekOrThrow() helper functions to ensure proper error
+    handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/d9fd4c4272df172ae89c0a9c41341adc75ebba86
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - cpp

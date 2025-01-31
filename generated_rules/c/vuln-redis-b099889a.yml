@@ -1,0 +1,27 @@
+rules:
+- id: vuln-redis-b099889a
+  pattern: '$VAR = callReplyCreate($PROTO, $CTX);
+
+    '
+  pattern-not: '$VAR = callReplyCreate($PROTO, $ERROR_LIST, $CTX);
+
+    '
+  languages:
+  - c
+  message: 'The function `callReplyCreate` is missing the `deferred_error_list` parameter,
+    which can lead to unhandled error propagation and potential memory leaks. This
+    vulnerability can cause incorrect error handling and statistics in Redis. To fix
+    this, ensure that the `deferred_error_list` parameter is passed to `callReplyCreate`
+    and properly managed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/b099889a3a6dccf5243135f0611b8cdb11cab7b8
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-664
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

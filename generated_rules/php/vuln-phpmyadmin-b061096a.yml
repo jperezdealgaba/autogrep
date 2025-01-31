@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyadmin-b061096a
+  pattern: 'urldecode($VAR)
+
+    '
+  pattern-not: 'htmlspecialchars($VAR)
+
+    '
+  languages:
+  - php
+  message: "The use of `urldecode` on untrusted input can lead to SQL injection or\
+    \ XSS vulnerabilities. \nThe patch replaces `urldecode` with `htmlspecialchars`\
+    \ to properly escape the input and prevent these vulnerabilities. \nAlways sanitize\
+    \ and validate user inputs before using them in SQL queries or HTML output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b061096abd992801fbbd805ef6ff74e627528780
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

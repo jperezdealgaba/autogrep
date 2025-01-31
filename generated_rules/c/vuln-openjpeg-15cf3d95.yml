@@ -1,0 +1,28 @@
+rules:
+- id: vuln-openjpeg-15cf3d95
+  pattern: '$L_DATA_SIZE = 26 + (OPJ_UINT32)(($X1 - $X0) * ...);
+
+    '
+  pattern-not: '$L_DATA_SIZE = 28 + (OPJ_UINT32)(($X1 - $X0) * ...);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the size calculation for data
+    allocation is incorrect, leading to potential buffer overflows or underflows.
+    The original code used a constant value of 26, which was insufficient and could
+    result in memory corruption. The fix changes this value to 28 to ensure proper
+    allocation. To fix this, update the constant value to 28 in the size calculation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/15cf3d95814dc931ca0ecb132f81cb152e051bae
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp: 'A1: Injection'
+    references:
+    - https://github.com/uclouvain/openjpeg/issues/1283
+    technology:
+    - c

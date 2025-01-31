@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mongo-e4338fa6
+  pattern: '*tightnessOut = getInequalityPredicateTightness($DATAELT, $INDEX);
+
+    '
+  pattern-not: '*tightnessOut = getInequalityPredicateTightness($INTERVAL, $DATAELT,
+    $INDEX);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `getInequalityPredicateTightness` was called with incorrect
+    parameters, potentially leading to incorrect query results. The vulnerability
+    occurs when the function is called with only two arguments instead of the required
+    three, which includes the `Interval` parameter. This can cause incorrect bounds
+    calculation, especially for null values. Always ensure that the `Interval` parameter
+    is passed to the function to maintain correct query behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mongodb/mongo/commit/e4338fa6e876e61e47f68e7f573ead7bcfbd06fc
+    category: correctness
+    cwe: 'CWE-628: Function Call with Incorrect Number of Arguments'
+    technology:
+    - cpp

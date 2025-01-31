@@ -1,0 +1,25 @@
+rules:
+- id: vuln-netty-39cafcb0
+  pattern: "if ($CH == ':' || Character.isWhitespace($CH)) {\n  ...\n}\n"
+  pattern-not: "if ($CH == ':' || (!isDecodingRequest() && Character.isWhitespace($CH)))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Incorrect handling of whitespace between header field-name and colon in
+    HTTP headers. This can lead to security vulnerabilities in request routing and
+    response handling. According to RFC 7230, servers MUST reject any request containing
+    whitespace between a header field-name and colon with a 400 (Bad Request) response.
+    Proxies MUST remove such whitespace before forwarding responses. Ensure proper
+    validation of HTTP headers.
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/39cafcb05c99f2aa9fce7e6597664c9ed6a63a95
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.2.4
+    technology:
+    - java

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-passenger-5483b329
+  pattern: 'makeDirTree($PATH, $PERMS);
+
+    '
+  pattern-not: "if (mkdir($PATH, parseModeString($PERMS)) == -1) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected insecure directory creation using `makeDirTree` without proper
+    existence and type checks. This can lead to race conditions where an attacker
+    could create a directory just before the application does, potentially leading
+    to privilege escalation or unauthorized access. Use `mkdir` with proper error
+    handling and existence checks to ensure the directory is created securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phusion/passenger/commit/5483b3292cc2af1c83033eaaadec20dba4dcfd9b
+    category: security
+    cwe:
+    - CWE-362
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - cpp

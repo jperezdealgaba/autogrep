@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libgd-318ebd33
+  pattern: "if ($VAR == 257) {\n  ...\n}\n"
+  pattern-not: "if ($VAR >= 256 || $VAR < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a specific value (257) as a transparent index without
+    validating if it''s within the palette bounds. This can lead to out-of-bounds
+    access or incorrect image rendering. Ensure the transparent index is within the
+    valid range (0 to 255) by checking if it''s greater than or equal to 256 or less
+    than 0.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/318ebd33c8beaf51ec62e4e69d9b1ca892c61ecb
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

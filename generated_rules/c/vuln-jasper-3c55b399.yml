@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jasper-3c55b399
+  pattern: 'jas_malloc($SIZE * sizeof($TYPE))
+
+    '
+  pattern-not: 'jas_alloc2($NUM_ELEMENTS, sizeof($TYPE))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe memory allocation using `jas_malloc` with direct multiplication
+    of size and type size. This can lead to integer overflow vulnerabilities. Use
+    `jas_alloc2` instead, which includes overflow checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/3c55b399c36ef46befcb21e4ebc4799367f89684
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-kimai2-b833e1ce
+  pattern: "public function createAction($REQUEST, $PROJECT_REPOSITORY, $ACTIVITY_REPOSITORY)\
+    \ {\n  ...\n  return $this->create($REQUEST, $TEMPLATE, $PROJECT_REPOSITORY, $ACTIVITY_REPOSITORY);\n\
+    \  ...\n}\n"
+  pattern-not: "public function createAction($REQUEST, $PROJECT_REPOSITORY, $ACTIVITY_REPOSITORY,\
+    \ $TAG_REPOSITORY) {\n  ...\n  return $this->create($REQUEST, $TEMPLATE, $PROJECT_REPOSITORY,\
+    \ $ACTIVITY_REPOSITORY, $TAG_REPOSITORY);\n  ...\n}\n"
+  languages:
+  - php
+  message: "The `createAction` method is missing the `TagRepository` parameter, which\
+    \ could lead to security issues when handling tags.\nThis vulnerability could\
+    \ allow unauthorized tag manipulation or injection. \nAdd the `TagRepository`\
+    \ parameter to ensure proper tag handling and validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/kevinpapst/kimai2/commit/b833e1ce27ef9edbc77d1f94fc70ab608f4cdbb7
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-dolibarr-7ade4e37
+  pattern: '$statut=GETPOST("statut",''alpha'')
+
+    '
+  pattern-not: '$statut=GETPOST("statut",''intcomma'')
+
+    '
+  languages:
+  - php
+  message: 'The use of ''alpha'' type in GETPOST function can lead to security vulnerabilities
+    as it does not properly sanitize input. This can allow for injection attacks or
+    unexpected behavior. Use ''intcomma'' or another appropriate sanitization type
+    to ensure the input is properly validated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/7ade4e37f24d6859987bb9f6232f604325633fdd
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

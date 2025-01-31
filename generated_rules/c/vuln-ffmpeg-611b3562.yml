@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ffmpeg-611b3562
+  pattern: "$STRUCT->remaining = $FUNC1($CID);\nif ($STRUCT->remaining <= 0) {\n \
+    \   $STRUCT->remaining = $FUNC2($CID, $W, $H);\n    if ($STRUCT->remaining <=\
+    \ 0)\n        return $STRUCT->remaining;\n}\n"
+  pattern-not: "$VAR = $FUNC1($CID);\nif ($VAR <= 0) {\n    $VAR = $FUNC2($CID, $W,\
+    \ $H);\n    if ($VAR <= 0)\n        continue;\n}\n$STRUCT->remaining = $VAR;\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where a negative value is directly
+    returned from a function call without proper handling. This can lead to incorrect
+    error handling and potential security issues. The fix involves assigning the result
+    to a local variable first and properly handling the error condition before assigning
+    it to the structure field.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/611b35627488a8d0763e75c25ee0875c5b7987dd
+    category: security
+    cwe:
+    - CWE-754
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/754.html
+    technology:
+    - c

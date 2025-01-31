@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libdwarf-code-faf99408
+  pattern: 'dwarfstring_append_printf_s($VAR, $FORMAT, (char *) $VAR2->fi_file_name);
+
+    '
+  pattern-not: 'dwarfstring_append_printf_s($VAR, $FORMAT, $VAR2->fi_file_name ? (char
+    *) $VAR2->fi_file_name : "<no file name>");
+
+    '
+  languages:
+  - c
+  message: 'The code does not handle the case where `fi_file_name` is null, which
+    can occur in DWARF5 with unknown format codes or corrupt object files. This can
+    lead to null pointer dereference vulnerabilities. Always check for null pointers
+    before dereferencing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/faf99408e3f9f706fc3809dd400e831f989778d3
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

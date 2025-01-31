@@ -1,0 +1,27 @@
+rules:
+- id: vuln-trafficserver-46383b46
+  pattern: 'return $CACHE_READ_VC ? ($CACHE_READ_VC->get_volume_number()) : -1;
+
+    '
+  pattern-not: "if ($CACHE_READ_VC) {\n  return $CACHE_READ_VC->get_volume_number();\n\
+    } else if ($CACHE_WRITE_VC) {\n  return $CACHE_WRITE_VC->get_volume_number();\n\
+    }\nreturn -1;\n"
+  languages:
+  - cpp
+  message: 'The code returns the volume number only if `cache_read_vc` is non-null,
+    potentially missing the volume number from `cache_write_vc`. This can lead to
+    incomplete or incorrect cache information being used. The fix ensures that the
+    volume number is retrieved from either `cache_read_vc` or `cache_write_vc`, providing
+    more accurate cache information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/46383b46445874ac1e9710f9ed2bc574964e2a5b
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - cpp

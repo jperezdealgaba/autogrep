@@ -1,0 +1,18 @@
+rules:
+- id: vuln-django-1abcf3a8
+  pattern: "def fix_IE_for_attach($REQUEST, $RESPONSE):\n    ...\n    $USERAGENT =\
+    \ $REQUEST.META.get('HTTP_USER_AGENT', '').upper()\n    if 'MSIE' not in $USERAGENT\
+    \ and 'CHROMEFRAME' not in $USERAGENT:\n        return $RESPONSE\n    ...\n"
+  pattern-not: "def fix_IE_for_attach($REQUEST, $RESPONSE):\n    ...\n"
+  languages:
+  - python
+  message: The function 'fix_IE_for_attach' has been removed due to security concerns.
+    It manipulated cache headers based on user agent, which could lead to improper
+    caching behavior. Avoid implementing browser-specific cache handling logic.
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/1abcf3a808b35abae5d425ed4d44cb6e886dc769
+    category: security
+    cwe: CWE-113
+    owasp: A6:2017-Security Misconfiguration
+    technology: python

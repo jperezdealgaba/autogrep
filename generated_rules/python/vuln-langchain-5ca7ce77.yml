@@ -1,0 +1,25 @@
+rules:
+- id: vuln-langchain-5ca7ce77
+  pattern: '$PYTHON_EXECUTOR = PythonREPL()
+
+    ...
+
+    $CODE = $T[9:-4]
+
+    $PYTHON_EXECUTOR.run($CODE)
+
+    '
+  pattern-not: "$LOCAL_DICT = {\"pi\": math.pi, \"e\": math.e}\nnumexpr.evaluate(\n\
+    \  $EXPRESSION.strip(),\n  global_dict={},\n  local_dict=$LOCAL_DICT,\n)\n"
+  languages:
+  - python
+  message: "Detected unsafe execution of Python code using PythonREPL. This can lead\
+    \ to arbitrary code execution vulnerabilities. \nThe code should use numexpr.evaluate()\
+    \ with restricted globals and predefined locals instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/langchain-ai/langchain/commit/5ca7ce77cd536991d04f476e420446a3b21d2a7b
+    category: security
+    cwe: CWE-94
+    owasp: A03:2021-Injection
+    technology: python

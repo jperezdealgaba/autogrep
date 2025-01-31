@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libsixel-fb329124
+  pattern: 'error_diffuse($DATA, $POS + $WIDTH * $Y + $X, $DEPTH, $ERROR, $NUMERATOR,
+    $DENOMINATOR)
+
+    '
+  pattern-not: 'error_diffuse($DATA, $POS + $WIDTH * $Y + $X, $DEPTH, $ERROR, $NUMERATOR,
+    $DENOMINATOR, $AREA)
+
+    '
+  languages:
+  - c
+  message: "Detected a call to error_diffuse without the required area parameter.\
+    \ This can lead to out-of-bounds access vulnerabilities. \nThe vulnerability was\
+    \ fixed by adding an area parameter to the function call, which is used to validate\
+    \ the position. \nAlways include the area parameter to ensure bounds checking\
+    \ is performed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libsixel/libsixel/commit/fb329124fd4bce693d3fc57447b0b40f62d9f090
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

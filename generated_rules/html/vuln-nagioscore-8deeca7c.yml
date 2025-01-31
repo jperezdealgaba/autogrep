@@ -1,0 +1,27 @@
+rules:
+- id: vuln-nagioscore-8deeca7c
+  pattern: "<div class=\"form-group\">\n  <label>URL for JSON CGIs</label>\n  <input\
+    \ type=\"text\" class=\"form-control\" ng-model=\"params.cgiurl\" placeholder=\"\
+    ...\" ui-event=\"{ blur : 'onBlurCgiurl($event)' }\">\n</div>\n"
+  pattern-not: "<div class=\"form-group\" id=\"cgiurlDiv\">\n  <label>URL for JSON\
+    \ CGIs</label>\n  <input type=\"text\" class=\"form-control\" ng-model=\"params.cgiurl\"\
+    \ placeholder=\"...\" ui-event=\"{ blur : 'onBlurCgiurl($event)' }\">\n</div>\n"
+  languages:
+  - html
+  message: 'The input field for the JSON CGI URL is vulnerable to potential security
+    issues due to missing input validation and sanitization. This could lead to XSS
+    or other injection attacks. Ensure that the input field is properly validated
+    and sanitized, and consider adding a unique ID to the div for better identification
+    and control.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NagiosEnterprises/nagioscore/commit/8deeca7cad3df1143ad9c351d107b5c0a6c61213
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - html

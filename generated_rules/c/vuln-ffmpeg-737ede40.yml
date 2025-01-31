@@ -1,0 +1,22 @@
+rules:
+- id: vuln-ffmpeg-737ede40
+  pattern: "if ($LINK->w < $MIN_WIDTH || $LINK->h < $MIN_HEIGHT) {\n  ...\n}\n"
+  pattern-not: "if (AV_CEIL_RSHIFT($LINK->w, $CSP->log2_chroma_w) < $MIN_WIDTH ||\
+    \ AV_CEIL_RSHIFT($LINK->h, $CSP->log2_chroma_h) < $MIN_HEIGHT) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly checks the width and height of the video without considering
+    the chroma subsampling, which could lead to incorrect handling of video frames.
+    This can cause security vulnerabilities or crashes when processing videos with
+    certain formats. Always use AV_CEIL_RSHIFT to account for chroma subsampling when
+    checking video dimensions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/737ede405b11a37fdd61d19cf25df296a0cb0b75
+    category: security
+    cwe:
+    - CWE-20
+    technology:
+    - c

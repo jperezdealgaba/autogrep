@@ -1,0 +1,20 @@
+rules:
+- id: vuln-pillow-93b22b84
+  pattern: "for $VAR in [\"fli_overrun.bin\", \"sgi_overrun.bin\", \"pcx_overrun.bin\"\
+    ]:\n    ...\n"
+  pattern-not: "for $VAR in [\n    \"fli_overrun.bin\",\n    \"sgi_overrun.bin\",\n\
+    \    \"pcx_overrun.bin\",\n    \"pcx_overrun2.bin\",\n]:\n    ...\n"
+  languages:
+  - python
+  message: "Detected incomplete test coverage for file handling vulnerabilities. \n\
+    This could lead to undetected buffer overrun issues in image processing.\nEnsure\
+    \ all relevant test cases are included in the test suite.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/93b22b846e0269ee9594ff71a72bec02d2bea8fd
+    category: security
+    cwe: CWE-120
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology: python

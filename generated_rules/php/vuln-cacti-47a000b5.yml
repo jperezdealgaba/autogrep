@@ -1,0 +1,23 @@
+rules:
+- id: vuln-cacti-47a000b5
+  pattern: '$outstr .= "\t\t\t\t" . $report[''name''] . PHP_EOL;
+
+    '
+  pattern-not: '$outstr .= "\t\t\t\t" . html_escape($report[''name'']) . PHP_EOL;
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped output of `$report['name']` which can lead to Cross-Site\
+    \ Scripting (XSS) vulnerabilities. \nAlways use proper escaping functions like\
+    \ `html_escape()` when outputting user-controlled data to prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/47a000b5aba4af16967e249b25f25397506e3464
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

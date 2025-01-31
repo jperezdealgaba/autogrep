@@ -1,0 +1,27 @@
+rules:
+- id: vuln-streamlit-3a639859
+  pattern: 'return super().validate_absolute_path($ROOT, $ABSOLUTE_PATH)
+
+    '
+  pattern-not: '$RET_VAL = super().validate_absolute_path($ROOT, $ABSOLUTE_PATH)
+
+    return $RET_VAL
+
+    '
+  languages:
+  - python
+  message: 'Detected direct return of `validate_absolute_path` result without validation.
+    This can lead to security vulnerabilities such as directory traversal attacks.
+    Always validate the path before returning it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/streamlit/streamlit/commit/3a639859cfdfba2187c81897d44a3e33825eb0a3
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - python

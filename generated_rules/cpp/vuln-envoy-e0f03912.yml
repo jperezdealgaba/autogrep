@@ -1,0 +1,34 @@
+rules:
+- id: vuln-envoy-e0f03912
+  pattern: 'uint64_t $GRPC_TIMEOUT;
+
+    std::string $GRPC_TIMEOUT_STRING($HEADER_GRPC_TIMEOUT_ENTRY->value().getStringView());
+
+    const char* $UNIT = StringUtil::strtoull($GRPC_TIMEOUT_STRING.c_str(), $GRPC_TIMEOUT);
+
+    '
+  pattern-not: "int64_t $GRPC_TIMEOUT;\nabsl::string_view $TIMEOUT_ENTRY = $HEADER_GRPC_TIMEOUT_ENTRY->value().getStringView();\n\
+    if ($TIMEOUT_ENTRY.empty()) {\n  return absl::nullopt;\n}\nif (absl::SimpleAtoi($TIMEOUT_ENTRY.substr(0,\
+    \ $TIMEOUT_ENTRY.size() - 1), &$GRPC_TIMEOUT) &&\n    $GRPC_TIMEOUT >= 0 && static_cast<uint64_t>($GRPC_TIMEOUT)\
+    \ <= MAX_GRPC_TIMEOUT_VALUE) {\n  const char $UNIT = $TIMEOUT_ENTRY[$TIMEOUT_ENTRY.size()\
+    \ - 1];\n"
+  languages:
+  - cpp
+  message: 'The code uses `StringUtil::strtoull` to parse gRPC timeout values without
+    proper validation, which can lead to integer overflow or undefined behavior. This
+    vulnerability was fixed by switching to `absl::SimpleAtoi` and adding proper bounds
+    checking. Ensure that gRPC timeout values are validated against a maximum limit
+    and use safer parsing methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/e0f03912df27fd6a30c045b7a814e426afb16a79
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md#requests
+    technology:
+    - cpp

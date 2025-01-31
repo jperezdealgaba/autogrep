@@ -1,0 +1,30 @@
+rules:
+- id: vuln-spreed-04300bbe
+  pattern: '<version>13.0.6</version>
+
+    '
+  pattern-not: '<version>13.0.7</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version specified in the XML file is outdated and may contain security
+    vulnerabilities.
+
+    Using an outdated version can expose the application to known security risks.
+
+    Update the version to the latest secure version to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/spreed/commit/04300bbed0e87ff3420b5d752bbc48e2c15f35e9
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - xml

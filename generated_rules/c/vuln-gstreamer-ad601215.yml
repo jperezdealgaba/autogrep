@@ -1,0 +1,46 @@
+rules:
+- id: vuln-gstreamer-ad601215
+  pattern: '$SIZE = *$SIZE_OUT;
+
+    ...
+
+    $NEW_SIZE = $SIZE;
+
+    ...
+
+    $STREAM.avail_out += 4096;
+
+    '
+  pattern-not: '$SIZE = *$SIZE_OUT;
+
+    ...
+
+    $NEW_SIZE = $SIZE;
+
+    ...
+
+    g_assert($NEW_SIZE - $STREAM.total_out <= G_MAXUINT);
+
+    $STREAM.avail_out = $NEW_SIZE - $STREAM.total_out;
+
+    '
+  languages:
+  - c
+  message: 'The code fails to properly check for integer overflow when calculating
+    the size of decompressed data, which can lead to memory corruption or out-of-bounds
+    writes. This vulnerability can be exploited to cause denial of service or potentially
+    execute arbitrary code. Always validate the size of decompressed data against
+    maximum allowed values and ensure proper bounds checking when manipulating stream
+    buffers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GStreamer/gstreamer/commit/ad6012159acf18c6b5c0f4edf037e8c9a2dbc966
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

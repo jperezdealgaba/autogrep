@@ -1,0 +1,28 @@
+rules:
+- id: vuln-feh-ae56ce24
+  pattern: 'execlp("wget", "wget", "-N", "-O", $TMPNAME, $URL, $QUIET, (char *) NULL);
+
+    '
+  pattern-not: 'execlp("wget", "wget", "--cache=off", "-O", $TMPNAME, $URL, $QUIET,
+    NULL);
+
+    '
+  languages:
+  - c
+  message: 'The use of the ''-N'' flag with wget can lead to unsafe file operations
+    by relying on server-provided timestamps, which can be manipulated. This can result
+    in the overwriting of files with potentially malicious content. The vulnerability
+    was fixed by removing the ''-N'' flag and using ''--cache=off'' instead, which
+    ensures that the file is always downloaded fresh without relying on server timestamps.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/derf/feh/commit/ae56ce24b10767800b1715e7e68b41c7d3571b4c
+    category: security
+    cwe:
+    - CWE-494
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - c

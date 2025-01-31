@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zoneminder-4602cd04
+  pattern: '$fid = validInt($_REQUEST[''filter''][''Id'']);
+
+    '
+  pattern-not: '$fid = $_REQUEST[''filter''][''Id''] = validInt($_REQUEST[''filter''][''Id'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsanitized usage of $_REQUEST[''filter''][''Id''] which can
+    lead to security vulnerabilities. The value is sanitized but not reassigned back
+    to $_REQUEST[''filter''][''Id''], leaving it vulnerable to further usage. To fix
+    this, ensure the sanitized value is reassigned back to $_REQUEST[''filter''][''Id'']
+    before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/4602cd0470a3b90b18bcc44b3c86d963872d1ba0
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/Injection_Flaws
+    technology:
+    - php

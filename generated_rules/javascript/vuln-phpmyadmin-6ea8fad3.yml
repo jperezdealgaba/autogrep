@@ -1,0 +1,25 @@
+rules:
+- id: vuln-phpmyadmin-6ea8fad3
+  pattern: 'var $QUESTION = $(''<div/>'').text($CURR_ROW.children(''td'').children(''.drop_sql'').html());
+
+    '
+  pattern-not: 'var $QUESTION = $(''<div/>'').text($CURR_ROW.children(''td'').children(''.drop_sql'').text());
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability due to use of .html() instead of .text().\
+    \ \nUsing .html() can lead to script injection if the content is not properly\
+    \ sanitized. \nUse .text() to safely extract text content without interpreting\
+    \ HTML tags.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/6ea8fad3f999bfdf79eb6fe31309592bca54d611
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - javascript

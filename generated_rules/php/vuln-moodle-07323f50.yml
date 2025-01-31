@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-07323f50
+  pattern: 'preg_split(''/(<[^>]*>)/i'', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+    '
+  pattern-not: 'preg_split(''/(<[^<|>]*>)/i'', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+    '
+  languages:
+  - php
+  message: 'The use of a regular expression that matches any angle-bracketed content
+    without properly handling nested tags can lead to incorrect parsing of HTML content.
+    This can result in security vulnerabilities such as XSS if the parsed content
+    is rendered in a web page. The fixed version uses a more precise regex pattern
+    that correctly handles nested tags.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/07323f50ffc71f8ba1b2914ec8947451e32a61c1
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

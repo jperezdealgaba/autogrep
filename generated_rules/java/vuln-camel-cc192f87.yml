@@ -1,0 +1,19 @@
+rules:
+- id: vuln-camel-cc192f87
+  pattern: "if ($BODY instanceof InputStream) {\n    return new StreamSource((InputStream)$BODY);\n\
+    }\n"
+  pattern-not: "if ($BODY instanceof InputStream) {\n    $SANITIZED = sanitizeInputStream((InputStream)$BODY);\n\
+    \    return new StreamSource($SANITIZED);\n}\n"
+  languages:
+  - java
+  message: Potential XXE vulnerability detected. Directly using InputStream in StreamSource
+    can lead to XML External Entity (XXE) attacks. Sanitize the input stream before
+    processing.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/camel/commit/cc192f87b7c4a43c6cff0646486384c9946e2ac9
+    category: security
+    cwe: CWE-611
+    owasp: A4:2017-XML External Entities (XXE)
+    references: https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+    technology: java

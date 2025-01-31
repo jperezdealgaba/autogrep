@@ -1,0 +1,27 @@
+rules:
+- id: vuln-geoserver-5d6af2f8
+  pattern: "if (!uploadedFile.renameTo(newUploadedFile)) {\n    String errorMessage\
+    \ = \"Error renaming zip file from \" + oldFileName + \" -> \" + newUploadedFile.name();\n\
+    \    ...\n}\n"
+  pattern-not: "if (uploadedFile.getType() != Resource.Type.RESOURCE\n    || newUploadedFile.getType()\
+    \ == Resource.Type.DIRECTORY\n    || (!external && !uploadedFile.renameTo(newUploadedFile)))\
+    \ {\n    ...\n} else if (external) {\n    try {\n        Resources.copy(uploadedFile,\
+    \ newUploadedFile);\n    } catch (Exception e) {\n        throw new RestException(errorMessage,\
+    \ HttpStatus.INTERNAL_SERVER_ERROR, e);\n    }\n}\n"
+  languages:
+  - java
+  message: Insecure file handling detected. The code attempts to rename files without
+    proper validation of file types or external upload conditions. This could lead
+    to security vulnerabilities such as directory traversal or unauthorized file manipulation.
+    Ensure proper validation of file types and use secure copy operations for external
+    uploads.
+  severity: ERROR
+  metadata:
+    source-url: github.com/geoserver/geoserver/commit/5d6af2f8ba9ad7dffae59575504a867159698772
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp: A1:2017-Injection
+    technology:
+    - java

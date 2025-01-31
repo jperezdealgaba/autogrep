@@ -1,0 +1,37 @@
+rules:
+- id: vuln-ruby-1c2ef610
+  pattern: 'res = rb_str_new5($STR, 0, RSTRING_LEN($STR)+$N*$FLEN/$FCLEN+2);
+
+    ...
+
+    memcpy($P, RSTRING_PTR($STR), RSTRING_LEN($STR));
+
+    '
+  pattern-not: 'res = rb_str_new5($STR, 0, $LEN);
+
+    ...
+
+    memcpy($P, RSTRING_PTR($STR), $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects potential integer overflow vulnerabilities in string
+    operations. The original code calculates a size without proper bounds checking,
+    which can lead to overflow. The fix includes proper bounds checking and uses separate
+    variables to avoid overflow. To fix this, always validate the size calculations
+    and ensure they do not exceed the maximum allowable value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/1c2ef610358af33f9ded3086aa2d70aac03dcac5
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

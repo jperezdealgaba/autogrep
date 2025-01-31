@@ -1,0 +1,28 @@
+rules:
+- id: vuln-dolibarr-acfaec68
+  pattern: 'if ($numrows == 0) dolibarr_set_const($db, "DATABASE_PWD_ENCRYPTED", "1",
+    ''chaine'', 0, '''', $conf->entity);
+
+    '
+  pattern-not: "if ($numrows == 0) {\n    dolibarr_set_const($db, \"DATABASE_PWD_ENCRYPTED\"\
+    , \"1\", 'chaine', 0, '', $conf->entity);\n    dolibarr_set_const($db, \"MAIN_SECURITY_SALT\"\
+    , dol_print_date(dol_now(), 'dayhourlog'), 'chaine', 0, '', 0);\n    dolibarr_set_const($db,\
+    \ \"MAIN_SECURITY_HASH_ALGO\", 'sha1md5', 'chaine', 0, '', 0);\n}\n"
+  languages:
+  - php
+  message: 'Insecure password encryption setup detected. The code enables password
+    encryption without setting a security salt or hash algorithm, which weakens the
+    security of stored passwords. To fix this, ensure that both a security salt and
+    a secure hash algorithm (e.g., ''sha1md5'') are set when enabling password encryption.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/acfaec684d71bcd85635ce8efecc43d8afd9b5b1
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A02-Cryptographic Failures
+    technology:
+    - php

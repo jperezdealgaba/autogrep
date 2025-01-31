@@ -1,0 +1,23 @@
+rules:
+- id: vuln-joplin-57d750bc
+  pattern: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'']
+
+    '
+  pattern-not: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'', ''embed'']
+
+    '
+  languages:
+  - javascript
+  message: Incomplete list of disallowed HTML tags. Missing 'embed' tag which can
+    lead to security vulnerabilities. Update the list to include 'embed' to prevent
+    potential XSS attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/57d750bc9aeb0f98d53ed4b924458b54984c15ff
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references: https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)
+    technology: javascript

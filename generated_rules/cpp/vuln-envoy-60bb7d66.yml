@@ -1,0 +1,24 @@
+rules:
+- id: vuln-envoy-60bb7d66
+  pattern: "if ($HEADERS.Host() == nullptr) {\n  ...\n}\nif ($HEADERS.Path() == nullptr)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($HEADERS.Host() == nullptr) {\n  return nullptr;\n}\nif ($HEADERS.Path()\
+    \ == nullptr) {\n  return false;\n}\n"
+  languages:
+  - cpp
+  message: 'Missing proper handling of Host and Path headers in HTTP requests can
+    lead to routing issues or security vulnerabilities. Ensure that all required headers
+    are properly validated before processing requests. The patch adds checks to return
+    early when these headers are missing, preventing potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/60bb7d662b26a4e25391c34a6f2c62f722a70196
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - cpp

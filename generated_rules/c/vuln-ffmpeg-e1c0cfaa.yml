@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ffmpeg-e1c0cfaa
+  pattern: "$STRUCT->bppcount = $COUNT;\nif ($COUNT > 4) {\n    ...\n}\n"
+  pattern-not: "if ($COUNT > 4U) {\n    ...\n}\n$STRUCT->bppcount = $COUNT;\nif ($STRUCT->bpp\
+    \ > 64U) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code assigns a value to `bppcount` without first validating if `bpp`
+    exceeds a safe limit (64U in the fixed version). This could lead to integer overflow
+    or other undefined behavior if `bpp` is too large. The fix includes a validation
+    check for `bpp` before assigning `bppcount`, ensuring that the value is within
+    a safe range. Always validate input values before using them in calculations or
+    assignments to prevent potential security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/e1c0cfaa419aa5d320540d5a1b3f8fd9b82ab7e5
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

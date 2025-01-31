@@ -1,0 +1,28 @@
+rules:
+- id: vuln-revive-adserver-38223a84
+  pattern: "if ($sent) {\n  $this->displayMessage($GLOBALS['strNotifyPageMessage']);\n\
+    } else {\n  $this->displayRecoveryRequestForm($GLOBALS['strPwdRecEmailNotFound']);\n\
+    }\n"
+  pattern-not: '$this->displayMessage($GLOBALS[''strNotifyPageMessage'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected a vulnerability where the code discloses whether an email address
+    exists in the system. This can be exploited by attackers to enumerate valid email
+    addresses. To fix this, always display the same message regardless of whether
+    the email was found or not, to avoid information disclosure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/38223a841190bebd7a137c7bed84fbbcb2b0c2a5
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A03_2021-Sensitive_Data_Exposure
+    technology:
+    - php

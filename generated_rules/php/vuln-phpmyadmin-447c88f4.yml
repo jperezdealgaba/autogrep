@@ -1,0 +1,25 @@
+rules:
+- id: vuln-phpmyadmin-447c88f4
+  pattern: 'PMA_fatalError($MSG);
+
+    '
+  pattern-not: 'die($MSG);
+
+    '
+  languages:
+  - php
+  message: "Detected use of PMA_fatalError which may not properly terminate the script.\
+    \ \nThis can lead to incomplete error handling and potential security vulnerabilities.\
+    \ \nUse 'die()' instead to ensure the script terminates immediately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/447c88f4884fe30a25d38c331c31d820a19f8c93
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://www.php.net/manual/en/function.die.php
+    technology:
+    - php

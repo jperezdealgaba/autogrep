@@ -1,0 +1,37 @@
+rules:
+- id: vuln-zoneminder-61f6a92c
+  pattern: '$Event = new Event($_REQUEST[''eid'']);
+
+    ...
+
+    echo ''Downloading event '' . $_REQUEST[''eid''] . '' Resulting file should be
+    approximately '' . human_filesize($Event->DiskSpace());
+
+    '
+  pattern-not: "if (!empty($_REQUEST['eid'])) {\n  $Event = new Event($_REQUEST['eid']);\n\
+    \  if (!$Event->Id) {\n    Error('Invalid event id');\n    return;\n  }\n}\n...\n\
+    echo 'Downloading event ' . $Event->Id . '. Resulting file should be approximately\
+    \ ' . human_filesize($Event->DiskSpace());\n"
+  languages:
+  - php
+  message: 'The code directly uses user-controlled input from $_REQUEST[''eid''] without
+    validation, which can lead to security vulnerabilities such as SQL injection or
+    object injection. An attacker can manipulate the ''eid'' parameter to execute
+    malicious code or access unauthorized data. To fix this, validate the ''eid''
+    parameter before using it and ensure the event ID exists in the database.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/61f6a92cc050f3db831f04c3c19f8f2d52cbe08e
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-502
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    - https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data
+    technology:
+    - php

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-xen-af4a5eca
+  pattern: "if ( !paging_mode_log_dirty($D) )\n{\n    $RC = paging_log_dirty_enable($D,\
+    \ $LOG_GLOBAL);\n    if ( $RC )\n        goto $LABEL;\n}\n"
+  pattern-not: 'domain_pause($D);
+
+    p2m_enable_hardware_log_dirty($D);
+
+    domain_unpause($D);
+
+    '
+  languages:
+  - c
+  message: 'The code directly calls paging_log_dirty_enable without proper domain
+    pausing, which can lead to race conditions and inconsistent state. This vulnerability
+    can cause data corruption or security issues in the Xen hypervisor. The fix involves
+    pausing the domain before enabling hardware log dirty and unpausing afterward
+    to ensure atomicity.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/af4a5eca8f8774b4b3e6c684ca416368e90ce453
+    category: security
+    cwe:
+    - 'CWE-367: Time-of-check Time-of-use (TOCTOU) Race Condition'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://xenbits.xen.org/docs/unstable/hypercall/
+    technology:
+    - c

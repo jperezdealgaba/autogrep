@@ -1,0 +1,25 @@
+rules:
+- id: vuln-phpmyadmin-c6dd6b56
+  pattern: 'var params = getJSConfirmCommonParam($THIS);
+
+    '
+  pattern-not: 'var params = getJSConfirmCommonParam($THIS, $LINK.getPostData());
+
+    '
+  languages:
+  - javascript
+  message: 'Incomplete parameter passing in getJSConfirmCommonParam detected. This
+    can lead to security issues by omitting necessary POST data. Always include the
+    post data parameter when calling getJSConfirmCommonParam.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/c6dd6b56e236a3aff953cee4135ecaa67130e641
+    category: security
+    cwe: CWE-471
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - javascript

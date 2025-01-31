@@ -1,0 +1,26 @@
+rules:
+- id: vuln-revive-adserver-2f868414
+  pattern: 'htmlspecialchars($VAR)
+
+    '
+  pattern-not: 'htmlspecialchars($VAR, ENT_QUOTES)
+
+    '
+  languages:
+  - php
+  message: "The use of `htmlspecialchars` without the `ENT_QUOTES` flag can lead to\
+    \ XSS vulnerabilities. \nThis is dangerous because it does not escape single quotes,\
+    \ which can be exploited in certain contexts. \nAlways use `htmlspecialchars`\
+    \ with the `ENT_QUOTES` flag to ensure both single and double quotes are escaped.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/2f868414
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://www.php.net/manual/en/function.htmlspecialchars.php
+    technology:
+    - php

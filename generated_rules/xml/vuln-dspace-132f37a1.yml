@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dspace-132f37a1
+  pattern: '<version>5.5-SNAPSHOT</version>
+
+    '
+  pattern-not: '<version>5.5</version>
+
+    '
+  languages:
+  - xml
+  message: 'Detected use of a SNAPSHOT version in a Maven POM file. Using SNAPSHOT
+    versions in production can lead to unpredictable behavior as they are development
+    builds that can change frequently. Replace SNAPSHOT versions with stable release
+    versions to ensure consistency and reliability.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/DSpace/DSpace/commit/132f37a10ae651725b5750796a8f53ae67664337
+    category: security
+    cwe: 'CWE-664: Improper Control of a Resource Through its Lifetime'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://maven.apache.org/guides/getting-started/index.html#What_is_a_SNAPSHOT_version
+    technology:
+    - xml
+    - maven

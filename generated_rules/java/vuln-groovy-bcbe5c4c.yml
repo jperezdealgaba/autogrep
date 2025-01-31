@@ -1,0 +1,39 @@
+rules:
+- id: vuln-groovy-bcbe5c4c
+  pattern: "final int MAXTRIES = 3;\nint accessDeniedCounter = 0;\nFile tempFile=null;\n\
+    for (int i=0; i<MAXTRIES; i++) {\n    try {\n        tempFile = File.createTempFile($PREFIX,\
+    \ $SUFFIX);\n        tempFile.delete();\n        tempFile.mkdirs();\n        break;\n\
+    \    } catch (IOException ioe) {\n        if (ioe.getMessage().startsWith(\"Access\
+    \ is denied\")) {\n            accessDeniedCounter++;\n            try {\n   \
+    \             Thread.sleep(100);\n            } catch (InterruptedException ignore)\
+    \ {\n            }\n        }\n        if (i == MAXTRIES - 1) {\n            if\
+    \ (accessDeniedCounter == MAXTRIES) {\n                String msg = \"Access is\
+    \ denied.\\nWe tried \" + accessDeniedCounter +\n                        \" times\
+    \ to create a temporary directory and failed each time.\" +\n                \
+    \        \" If you are on Windows, you are possibly victim to\" +\n          \
+    \              \" http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6325169.\"\
+    \ +\n                        \" This is not a bug in Groovy.\";\n            \
+    \    throw new IOException(msg);\n            } else {\n                throw\
+    \ ioe;\n            }\n        }\n    }\n}\nreturn tempFile;\n"
+  pattern-not: 'Path tempPath = Files.createTempDirectory($PREFIX);
+
+    return tempPath.toFile();
+
+    '
+  languages:
+  - java
+  message: Insecure temporary file creation detected. The code uses File.createTempFile
+    followed by delete and mkdirs, which is prone to race conditions and access issues.
+    Use the more secure Files.createTempDirectory API instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/groovy/commit/bcbe5c4c76db83736166530647c024ac1e47ef28
+    category: security
+    cwe:
+    - CWE-377
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6325169
+    technology:
+    - java

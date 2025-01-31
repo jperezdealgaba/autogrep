@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openexr-94108237
+  pattern: 'containerImage: aswfstaging/ci-base:2019
+
+    '
+  pattern-not: 'containerImage: aswfstaging/ci-openexr:2019.0
+
+    '
+  languages:
+  - yaml
+  message: "The container image 'aswfstaging/ci-base:2019' is outdated and potentially\
+    \ insecure. \nUsing outdated container images can expose the build environment\
+    \ to known vulnerabilities. \nUpdate the container image to 'aswfstaging/ci-openexr:2019.0'\
+    \ to mitigate this risk.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/941082379a49a1aecafe2b9e84f3403314d910a9
+    category: security
+    cwe:
+    - 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - yaml

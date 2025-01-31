@@ -1,0 +1,28 @@
+rules:
+- id: vuln-roundcubemail-acf633c7
+  pattern: 'return $tag == ''a'' && $attr == ''href'';
+
+    '
+  pattern-not: 'return ($tag == ''a'' || $tag == ''area'') && $attr == ''href'';
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to XSS attacks because it does not properly validate
+    the ''href'' attribute for ''area'' tags. This can allow attackers to inject malicious
+    scripts via ''data:'', ''vbscript:'', or ''javascript:'' URLs. To fix this, ensure
+    that both ''a'' and ''area'' tags are checked for the ''href'' attribute.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/acf633c73bc8df9a5036bc52d7568f4213ab73c7
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A3:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/XSS/
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mysql-server-3bd5589e
+  pattern: "#if defined(HAVE_OPENSSL) && !defined(EMBEDDED_LIBRARY)\n  if ($OPT_USE_SSL)\n\
+    \  {\n    mysql_ssl_set($MYSQL, $OPT_SSL_KEY, $OPT_SSL_CERT, $OPT_SSL_CA,\n  \
+    \                $OPT_SSL_CAPATH, $OPT_SSL_CIPHER);\n    mysql_options($MYSQL,\
+    \ MYSQL_OPT_SSL_CRL, $OPT_SSL_CRL);\n    mysql_options($MYSQL, MYSQL_OPT_SSL_CRLPATH,\
+    \ $OPT_SSL_CRLPATH);\n  }\n  mysql_options($MYSQL, MYSQL_OPT_SSL_VERIFY_SERVER_CERT,\n\
+    \                (char*) &$OPT_SSL_VERIFY_SERVER_CERT);\n#endif\n"
+  pattern-not: 'SSL_SET_OPTIONS($MYSQL);
+
+    '
+  languages:
+  - cpp
+  message: 'The SSL configuration is being handled directly in multiple places instead
+    of using the centralized SSL_SET_OPTIONS macro. This can lead to inconsistencies
+    and security vulnerabilities. Use the SSL_SET_OPTIONS macro to ensure consistent
+    SSL configuration across the codebase.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/3bd5589e1a5a93f9c224badf983cd65c45215390
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - cpp

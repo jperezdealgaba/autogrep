@@ -1,0 +1,26 @@
+rules:
+- id: vuln-zoneminder-decf3e30
+  pattern: 'std::string $VAR = $EXPR.first;
+
+    '
+  pattern-not: 'std::string $VAR = zmDbEscapeString($EXPR.first);
+
+    '
+  languages:
+  - cpp
+  message: "Detected potential SQL injection vulnerability due to unescaped user input.\
+    \ \nDirectly assigning user input to a string variable without proper escaping\
+    \ can lead to SQL injection attacks. \nUse `zmDbEscapeString` to sanitize the\
+    \ input before using it in database queries.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/decf3e307bdadc0a96ffb151d19f4a4605a7cc71
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - cpp

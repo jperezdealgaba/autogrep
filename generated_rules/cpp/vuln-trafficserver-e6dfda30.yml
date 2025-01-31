@@ -1,0 +1,27 @@
+rules:
+- id: vuln-trafficserver-e6dfda30
+  pattern: "if ($METHOD_WKSIDX != -1) {\n  ...\n}\n"
+  pattern-not: "if ($METHOD_WKSIDX >= 0 && $METHOD_WKSIDX < $HTTP_WKSIDX_METHODS_CNT)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected an unsafe boundary check for method_wksidx. The original check
+    only verifies that the index is not -1, but does not ensure it is within valid
+    bounds. This can lead to out-of-bounds access vulnerabilities. To fix this, ensure
+    the index is within the valid range by checking both the lower and upper bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/e6dfda305acf85250861ecfa14a7bd6bb2fad5c3
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - cpp

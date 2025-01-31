@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libgd-e65415d9
+  pattern: 'gdImageDestroy($IM);
+
+    return NULL;
+
+    '
+  pattern-not: 'goto fail;
+
+    '
+  languages:
+  - c
+  message: 'Directly destroying an image and returning NULL without proper cleanup
+    can lead to resource leaks and undefined behavior. This pattern was fixed by using
+    a ''goto fail'' statement to ensure consistent cleanup paths. To fix this, ensure
+    all error paths use a consistent cleanup mechanism like ''goto fail'' to properly
+    release resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/e65415d91c57ba8d5d90ec9e22a95ae2416c62f9
+    category: security
+    cwe:
+    - CWE-404
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

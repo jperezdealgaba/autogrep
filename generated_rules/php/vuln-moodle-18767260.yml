@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-18767260
+  pattern: 'print_r($OBJECT);
+
+    '
+  pattern-not: 'echo s(print_r($OBJECT, true));
+
+    '
+  languages:
+  - php
+  message: 'Directly using `print_r()` without proper memory handling can lead to
+    memory exhaustion when handling large objects. This vulnerability can cause the
+    application to crash or become unresponsive. The fix involves raising the memory
+    limit and ensuring the output is properly sanitized using `s()` before being echoed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/187672608ec96659e07f2461b3b83634debd16cb
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

@@ -1,0 +1,17 @@
+rules:
+- id: vuln-netty-41d3d61a
+  pattern: "$UNCOMPRESSED = $CTX.alloc().buffer($BLOCK_LENGTH);\n...\nif (!$SUCCESS)\
+    \ {\n    $UNCOMPRESSED.release();\n}\n"
+  pattern-not: "$UNCOMPRESSED = $CTX.alloc().buffer($BLOCK_LENGTH);\n...\nif ($UNCOMPRESSED\
+    \ != null) {\n    $UNCOMPRESSED.release();\n}\n"
+  languages:
+  - java
+  message: Potential resource leak due to incorrect buffer release logic. Ensure buffers
+    are properly released in all code paths.
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/41d3d61a61608f2223bb364955ab2045dd5e4020
+    category: security
+    cwe: CWE-772
+    owasp: A9
+    technology: java

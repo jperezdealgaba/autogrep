@@ -1,0 +1,23 @@
+rules:
+- id: vuln-nagioscore-b1a92a3b
+  pattern: "if (!strcmp($BUF, \"help\")) {\n  ...\n}\n"
+  pattern-not: "if ($BUF == NULL || !strcmp($BUF, \"help\")) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing NULL check before using strcmp() function. This can lead to NULL
+    pointer dereference vulnerabilities, causing crashes or potential security issues.
+    Always check if the pointer is NULL before using it in string comparison functions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NagiosEnterprises/nagioscore/commit/b1a92a3b52d292ccb601e77a0b29cb1e67ac9d76
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

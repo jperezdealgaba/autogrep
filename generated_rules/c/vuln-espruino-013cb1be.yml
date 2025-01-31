@@ -1,0 +1,27 @@
+rules:
+- id: vuln-espruino-013cb1be
+  pattern: 'char $FILENAME[6] = ".bootX";
+
+    '
+  pattern-not: 'char $FILENAME[7] = ".bootX";
+
+    '
+  languages:
+  - c
+  message: 'The array `$FILENAME` is declared with insufficient size to hold the string
+    ".bootX" and the null terminator. This can lead to buffer overflow vulnerabilities.
+    Increase the array size to 7 to accommodate the string and the null terminator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/013cb1be964e4ca06b5246d72467130a9abd7f10
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - c

@@ -1,0 +1,50 @@
+rules:
+- id: vuln-trafficserver-15a4345b
+  pattern: "int64_t r = 0;\nint64_t toread = INT_MAX;\nint64_t rattempted = 0, total_read\
+    \ = 0;\nint niov = 0;\nIOVec tiovec[NET_MAX_IOV];\nif (toread) {\n  IOBufferBlock\
+    \ *b = this->handShakeBuffer->first_write_block();\n  do {\n    niov = 0;\n  \
+    \  rattempted = 0;\n    while (b && niov < NET_MAX_IOV) {\n      int64_t a = b->write_avail();\n\
+    \      if (a > 0) {\n        tiovec[niov].iov_base = b->_end;\n        int64_t\
+    \ togo = toread - total_read - rattempted;\n        if (a > togo) a = togo;\n\
+    \        tiovec[niov].iov_len = a;\n        rattempted += a;\n        niov++;\n\
+    \        if (a >= togo) break;\n      }\n      b = b->next;\n    }\n    if (niov\
+    \ > 0) {\n      r = socketManager.readv(this->con.fd, &tiovec[0], niov);\n   \
+    \   NET_INCREMENT_DYN_STAT(net_calls_to_read_stat);\n      total_read += rattempted;\n\
+    \    } else {\n      r = 0;\n      break;\n    }\n  } while (rattempted && r ==\
+    \ rattempted && total_read < toread);\n  if (total_read != rattempted) {\n   \
+    \ if (r <= 0) r = total_read - rattempted;\n    else r = total_read - rattempted\
+    \ + r;\n  }\n  if (r <= 0) {\n    if (r == -EAGAIN || r == -ENOTCONN) {\n    \
+    \  NET_INCREMENT_DYN_STAT(net_calls_to_read_nodata_stat);\n    }\n    return r;\n\
+    \  }\n  NET_SUM_DYN_STAT(net_read_bytes_stat, r);\n  this->handShakeBuffer->fill(r);\n\
+    }\n"
+  pattern-not: "int64_t r = 0;\nint64_t total_read = 0;\nint64_t rattempted = 0;\n\
+    char *buffer = 0;\nint buf_len;\nIOBufferBlock *b = this->handShakeBuffer->first_write_block();\n\
+    rattempted = b->write_avail();\nwhile (rattempted) {\n  buffer = b->_end;\n  buf_len\
+    \ = rattempted;\n  b = b->next;\n  r = socketManager.read(this->con.fd, buffer,\
+    \ buf_len);\n  NET_INCREMENT_DYN_STAT(net_calls_to_read_stat);\n  total_read +=\
+    \ rattempted;\n  if (r != rattempted || !b) break;\n  rattempted = b->write_avail();\n\
+    }\nif (r != rattempted) {\n  if (r <= 0) r = total_read - rattempted;\n  else\
+    \ r = total_read - rattempted + r;\n}\nNET_SUM_DYN_STAT(net_read_bytes_stat, r);\n\
+    if (r > 0) {\n  this->handShakeBuffer->fill(r);\n}\n"
+  languages:
+  - cpp
+  message: 'The code uses a potentially unsafe readv operation with a fixed INT_MAX
+    value for toread, which can lead to excessive memory allocation and potential
+    buffer overflow. The patch replaces this with a safer, iterative read operation
+    that processes data in manageable chunks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/15a4345bb017c56b1a35a43353ca4990d60b5c9b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-126
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/126.html
+    technology:
+    - cpp

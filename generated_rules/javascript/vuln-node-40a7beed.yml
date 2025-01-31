@@ -1,0 +1,32 @@
+rules:
+- id: vuln-node-40a7beed
+  pattern: '_fill(createUnsafeBuffer($SIZE), $FILL, $ENCODING)
+
+    '
+  pattern-not: 'const $BUF = createUnsafeBuffer($SIZE);
+
+    _fill($BUF, $FILL, 0, $BUF.length, $ENCODING)
+
+    '
+  languages:
+  - javascript
+  message: 'Potential buffer overflow vulnerability due to unsafe buffer filling.
+
+    The original code directly passes the buffer to _fill without specifying the range,
+
+    which can lead to incorrect buffer manipulation. Always specify the start and
+    end
+
+    indices when filling buffers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/40a7beeddac9b9ec9ef5b49157daaf8470648b08
+    category: security
+    cwe: CWE-120
+    owasp: A1
+    references:
+    - https://nodejs.org/api/buffer.html#buffer_buf_fill_value_offset_end_encoding
+    technology:
+    - javascript

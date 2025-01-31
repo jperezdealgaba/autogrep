@@ -1,0 +1,32 @@
+rules:
+- id: vuln-trafficserver-0c9aaafc
+  pattern: 'reval_state_path = os.path.join(ts.Variables.RUNTIMEDIR, $PATH)
+
+    '
+  pattern-not: 'reval_state_path = os.path.join(Test.Variables.RUNTIMEDIR, $PATH)
+
+    ts.chownForATSProcess(reval_state_path)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure file path handling in Traffic Server test script. The
+    original code creates a file path using `ts.Variables.RUNTIMEDIR` without proper
+    ownership handling, which could lead to permission issues or security vulnerabilities.
+    The fix involves using `Test.Variables.RUNTIMEDIR` and explicitly setting ownership
+    with `ts.chownForATSProcess`. Always ensure file ownership is properly managed
+    when creating files in runtime directories.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/0c9aaafcd41f15e68634012fdef32c7885dce5e1
+    category: security
+    cwe:
+    - CWE-732
+    owasp:
+    - A05:2021-Security Misconfiguration
+    references:
+    - https://docs.python.org/3/library/os.path.html#os.path.join
+    technology:
+    - python

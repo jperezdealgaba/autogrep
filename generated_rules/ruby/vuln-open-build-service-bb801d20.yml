@@ -1,0 +1,29 @@
+rules:
+- id: vuln-open-build-service-bb801d20
+  pattern: "def $TEST_NAME\n  $LOGIN\n  $ADD(project: $PROJECT, package: $PACKAGE,\
+    \ name: $NAME, value: $VALUE)\n  $DELETE(project: $PROJECT, package: $PACKAGE,\
+    \ name: $NAME)\nend\n"
+  pattern-not: "def $TEST_NAME\n  $LOGIN\n  $ADD(project: $PROJECT, package: $PACKAGE,\
+    \ name: $NAME, value: $VALUE)\n  $DELETE(project: $PROJECT, package: $PACKAGE,\
+    \ name: $NAME)\n  $ASSERT\nend\n"
+  languages:
+  - ruby
+  message: 'The test case lacks assertions to verify the deletion of attributes, which
+    could lead to undetected failures in the attribute management functionality. This
+    is dangerous because it may result in incomplete or incorrect test coverage, potentially
+    allowing bugs to go unnoticed. To fix this, add assertions to verify that the
+    attributes are correctly deleted.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/openSUSE/open-build-service/commit/bb801d206e9b154f182e2379c281d90368d899bf
+    category: testing
+    cwe:
+    - 'CWE-489: Active Debug Code'
+    owasp:
+    - 'OWASP-OTG-INFO-001: Reviewing Code for Leaked Information'
+    references:
+    - https://owasp.org/www-project-web-security-testing-guide/
+    technology:
+    - ruby

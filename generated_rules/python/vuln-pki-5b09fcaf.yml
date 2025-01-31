@@ -1,0 +1,24 @@
+rules:
+- id: vuln-pki-5b09fcaf
+  pattern: "$CMD = [$NAME + '-user-add']\n...\nif $PASSWORD:\n  $CMD.append('--password')\n\
+    \  $CMD.append($PASSWORD)\n"
+  pattern-not: "$CMD = [$NAME + '-user-add']\n...\nif $PASSWORD and not $PASSWORD_FILE:\n\
+    \  $PASSWORD_FILE = os.path.join($TMPDIR, 'password.txt')\n  with open($PASSWORD_FILE,\
+    \ 'w') as $F:\n    $F.write($PASSWORD)\n  $CMD.append('--password-file')\n  $CMD.append($PASSWORD_FILE)\n"
+  languages:
+  - python
+  message: 'Detected insecure handling of passwords in command-line arguments. Passing
+    passwords directly in command-line arguments can expose them to other users via
+    process listings. Use a password file with appropriate permissions instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dogtagpki/pki/commit/5b09fcaff11d33010469e695ef365a91c91674b5
+    category: security
+    cwe: CWE-214
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/214.html
+    technology:
+    - python

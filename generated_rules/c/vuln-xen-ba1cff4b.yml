@@ -1,0 +1,30 @@
+rules:
+- id: vuln-xen-ba1cff4b
+  pattern: "struct hashtable * $HT = create_hashtable($SIZE, $HASH_FN, $KEYS_EQUAL_FN);\n\
+    ...\nif (hashtable_search($HT, $CHILDNAME)) {\n  log(\"check_store: '%s' is duplicated!\"\
+    , $CHILDNAME);\n  $I = rm_child_entry($NODE, $I, $CHILDLEN);\n} else {\n  if (!remember_string($HT,\
+    \ $CHILDNAME)) {\n    log(\"check_store: ENOMEM\");\n    talloc_free($CHILDNODE);\n\
+    \    talloc_free($CHILDNAME);\n    $RET = ENOMEM;\n    break;\n  }\n  $RET = check_store_($CHILDNAME,\
+    \ $REACHABLE);\n}\n...\nhashtable_destroy($HT, 0);\n"
+  pattern-not: "if (hashtable_search($REACHABLE, $CHILDNAME)) {\n  log(\"check_store:\
+    \ '%s' is duplicated!\", $CHILDNAME);\n  $I = rm_child_entry($NODE, $I, $CHILDLEN);\n\
+    \  goto next;\n}\n...\n$RET = check_store_($CHILDNAME, $REACHABLE);\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability in the Xenstore component where child
+    nodes are checked for duplicates using a local hashtable instead of the global
+    reachable hashtable. This could lead to inconsistent state and potential security
+    issues. The fix involves using the global reachable hashtable for consistency
+    checks and removing the local hashtable usage.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/ba1cff4b1be983ea7ec55a994a3adc8b40903800
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

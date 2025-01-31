@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openemr-1b495b0b
+  pattern: '$v_database = 256;
+
+    '
+  pattern-not: '$v_database = 257;
+
+    '
+  languages:
+  - php
+  message: 'The version number in the database variable is outdated and could lead
+    to compatibility issues or security vulnerabilities. Ensure the version number
+    is updated to the latest stable version to maintain security and functionality.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/1b495b0b3cd16daf1e5f085145d9e19dea479c7f
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

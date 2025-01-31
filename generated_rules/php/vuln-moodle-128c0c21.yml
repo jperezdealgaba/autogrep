@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-128c0c21
+  pattern: '$component = $helper->render($component);
+
+    '
+  pattern-not: '$component = $helper->render($component, ...);
+
+    '
+  languages:
+  - php
+  message: 'The use of `$helper->render($component)` without additional arguments
+    can lead to potential security vulnerabilities, such as XSS, due to improper handling
+    of user-supplied input. Ensure that any user input is properly sanitized or validated
+    before rendering.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/128c0c21607a71f411611a0104b2a8c858dd6fca
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

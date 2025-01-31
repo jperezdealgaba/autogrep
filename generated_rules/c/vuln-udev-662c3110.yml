@@ -1,0 +1,25 @@
+rules:
+- id: vuln-udev-662c3110
+  pattern: 'char $VAR[(len * 3) + 1];
+
+    '
+  pattern-not: 'char $VAR[(len * 4) + 1];
+
+    '
+  languages:
+  - c
+  message: 'Insufficient buffer size allocation detected. The buffer is allocated
+    with a size of (len * 3) + 1, which may lead to buffer overflow vulnerabilities.
+    Increase the buffer size to (len * 4) + 1 to ensure sufficient space is allocated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mfwitten/udev/commit/662c3110803bd8c1aedacc36788e6fd028944314
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-opensips-7cab422e
+  pattern: "$NUMBER = $NUMBER * 10 + ($EXPR) - '0';\nif ($NUMBER < 0) {\n  ...\n}\n"
+  pattern-not: "if ($NUMBER > 214748363) {\n  ...\n}\n$NUMBER = $NUMBER * 10 + ($EXPR)\
+    \ - '0';\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability. The code performs
+    arithmetic operations without proper bounds checking, which can lead to undefined
+    behavior. To fix this, add a check before the arithmetic operation to ensure the
+    value does not exceed safe limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSIPS/opensips/commit/7cab422e2fc648f910abba34f3f0dbb3ae171ff5
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mastodon-94893cf2
+  pattern: 'HTTP.use(:auto_inflate).use(normalize_uri: { normalizer: $URI_NORMALIZER
+    }).follow(max_hops: 3)
+
+    '
+  pattern-not: 'HTTP.use(:auto_inflate).follow(max_hops: 3)
+
+    '
+  languages:
+  - ruby
+  message: 'The code uses a custom URI normalizer which can lead to incorrect URL
+    normalization and potential security issues such as URL redirection or improper
+    request handling. This vulnerability arises from overly-eager decoding of percent-encoded
+    characters in the URI. To fix this, use the built-in normalization provided by
+    Addressable::URI.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/94893cf24fc95b32cc7a756262acbe008c20a9d2
+    category: security
+    cwe:
+    - CWE-177
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/sporkmonger/addressable/issues/366
+    technology:
+    - ruby

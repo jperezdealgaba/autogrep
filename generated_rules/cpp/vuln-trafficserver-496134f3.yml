@@ -1,0 +1,27 @@
+rules:
+- id: vuln-trafficserver-496134f3
+  pattern: 'TSError("[%s] Invalid configuration variable ''%s''", $PLUGIN_NAME, $KEY.c_str());
+
+    '
+  pattern-not: 'TSWarning("[%s] Invalid configuration variable ''%s''", $PLUGIN_NAME,
+    $KEY.c_str());
+
+    '
+  languages:
+  - cpp
+  message: 'The use of TSError for reporting invalid configuration variables can lead
+    to unnecessary severity in error handling. This can cause the application to terminate
+    or behave unexpectedly. Use TSWarning instead to properly handle invalid configuration
+    variables without causing severe disruptions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/496134f331268ccdba6a0712617f777d08a3be12
+    category: security
+    cwe:
+    - CWE-391
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - cpp

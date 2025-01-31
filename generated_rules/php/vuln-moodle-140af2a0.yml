@@ -1,0 +1,24 @@
+rules:
+- id: vuln-moodle-140af2a0
+  pattern: '$VAR->username = $creator->username;
+
+    '
+  pattern-not: '$VAR->username = fullname($creator);
+
+    '
+  languages:
+  - php
+  message: "Directly assigning `username` from a user object can expose sensitive\
+    \ information. \nUse `fullname($creator)` instead to ensure proper formatting\
+    \ and security.\nThis vulnerability can lead to information disclosure or improper\
+    \ handling of user data.\nFix: Replace `$creator->username` with `fullname($creator)`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/140af2a0f0a4598bf568b9ae182cb81eb583edeb
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - php

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-glpi-e9d95584
+  pattern: "if (is_null($this->fields[$VAR]) || !Session::haveRight('personalization',\
+    \ UPDATE)) {\n  ...\n}\n"
+  pattern-not: "if (is_null($this->fields[$VAR])) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code combines a null check with a permission check in a single condition,
+    which can lead to incorrect permission validation. This is dangerous because it
+    may allow unauthorized access if the null check fails. To fix this, separate the
+    null check and permission check into distinct conditions to ensure proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/e9d955844cf19018512633ca822d186843903b86
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

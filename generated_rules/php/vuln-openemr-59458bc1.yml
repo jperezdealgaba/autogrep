@@ -1,0 +1,32 @@
+rules:
+- id: vuln-openemr-59458bc1
+  pattern: 'echo json_encode($VAR);
+
+    '
+  pattern-not: 'echo text(json_encode($VAR));
+
+    '
+  languages:
+  - php
+  message: 'Directly outputting JSON encoded data without proper escaping can lead
+    to XSS vulnerabilities.
+
+    This is dangerous because it allows attackers to inject malicious scripts into
+    the output.
+
+    To fix this, use a proper escaping function like `text()` before outputting the
+    JSON encoded data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/59458bc15ab0cb556c521de9d5187167d6f88945
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

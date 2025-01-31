@@ -1,0 +1,26 @@
+rules:
+- id: vuln-redis-5674b005
+  pattern: "int $AUTH_REQUIRED = (!(DefaultUser->flags & USER_FLAG_NOPASS) ||\n  \
+    \                    (DefaultUser->flags & USER_FLAG_DISABLED)) &&\n         \
+    \           !$C->authenticated;\nif ($AUTH_REQUIRED) {\n    ...\n}\n"
+  pattern-not: "if (authRequired($C)) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Insecure authentication check detected. The authentication logic is duplicated
+    and may lead to inconsistencies. Use the centralized `authRequired` function instead
+    to ensure consistent authentication checks across the codebase. This vulnerability
+    could allow unauthenticated access to sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/5674b0057ff2903d43eaff802017eddf37c360f8
+    category: security
+    cwe:
+    - 'CWE-287: Improper Authentication'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://redis.io/topics/security
+    technology:
+    - c

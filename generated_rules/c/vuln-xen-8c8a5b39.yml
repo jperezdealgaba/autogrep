@@ -1,0 +1,38 @@
+rules:
+- id: vuln-xen-8c8a5b39
+  pattern: "static void delete_node_single(struct connection *conn, struct node *node)\n\
+    {\n    TDB_DATA key;\n\n    if (access_node(conn, node, NODE_ACCESS_DELETE, &key))\n\
+    \        return;\n\n    if (do_tdb_delete(conn, &key, &node->acc) != 0) {\n  \
+    \      corrupt(conn, \"Could not delete '%s'\", node->name);\n        return;\n\
+    \    }\n\n    domain_entry_dec(conn, node);\n}\n"
+  pattern-not: "static int delnode_sub(const void *ctx, struct connection *conn,\n\
+    \                      struct node *node, void *arg)\n{\n    const char *root\
+    \ = arg;\n    bool watch_exact;\n    int ret;\n    TDB_DATA key;\n\n    ret =\
+    \ access_node(conn, node, NODE_ACCESS_DELETE, &key);\n    if (ret > 0)\n     \
+    \   return WALK_TREE_SUCCESS_STOP;\n\n    if (!ret && do_tdb_delete(conn, &key,\
+    \ &node->acc))\n        return WALK_TREE_SUCCESS_STOP;\n\n    watch_exact = strcmp(root,\
+    \ node->name);\n    domain_entry_dec(conn, node);\n\n    return WALK_TREE_RM_CHILDENTRY;\n\
+    }\n"
+  languages:
+  - c
+  message: 'The `delete_node_single` function in the Xenstore code does not handle
+    errors properly when deleting nodes, which can lead to inconsistent states. The
+    function silently returns on errors without propagating the error code, making
+    it difficult to detect and handle failures correctly. This can result in resource
+    leaks, data corruption, or inconsistent states in the Xenstore tree. The issue
+    was fixed by refactoring the code to properly handle and propagate error codes,
+    ensuring that errors are detected and handled appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/8c8a5b3905d4bd6d2646ddaf00a424bde62289ef
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology:
+    - c

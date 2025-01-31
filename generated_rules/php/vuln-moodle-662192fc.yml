@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moodle-662192fc
+  pattern: "if ($this->coursemodule->effectivegroupmode == SEPARATEGROUPS && !user_can_view_profile($USER,\
+    \ $course)) {\n  ...\n}\n"
+  pattern-not: "if (!groups_user_groups_visible($course, $user->id, $this->coursemodule))\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'In Moodle, the previous group visibility check was insufficient and could
+    allow unauthorized access to user profiles. The code previously checked only if
+    the user could view the profile, which did not properly account for group visibility
+    in courses with separate groups. This could lead to information disclosure. The
+    fix replaces this check with `groups_user_groups_visible()`, which properly handles
+    group visibility. To fix this, always use `groups_user_groups_visible()` when
+    checking group visibility in Moodle.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/662192fcecdefdaae79f55db96bd64dbcdeef85b
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/Groups
+    technology:
+    - php

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-django-90363e38
+  pattern: 'final_attrs = {''href'': mark_safe($URL)}
+
+    '
+  pattern-not: 'final_attrs = {''href'': smart_urlquote($URL)}
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe use of `mark_safe` with URLs, which can lead to XSS vulnerabilities.\
+    \ \nThe `mark_safe` function marks the URL as safe HTML, bypassing Django's escaping\
+    \ mechanisms. \nUse `smart_urlquote` instead to properly escape URLs.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/90363e388c61874add3f3557ee654a996ec75d78
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.safestring.mark_safe
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.http.urlquote
+    technology:
+    - python

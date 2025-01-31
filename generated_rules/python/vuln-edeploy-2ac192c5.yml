@@ -1,0 +1,24 @@
+rules:
+- id: vuln-edeploy-2ac192c5
+  pattern: '$DEST_DIR = $CFG_DIR + $FORM.getvalue(''session'') + ''/'' + $DIRNAME
+
+    '
+  pattern-not: '$DEST_DIR = $CFG_DIR + os.path.basename($FORM.getvalue(''session''))
+    + ''/'' + $DIRNAME
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe path concatenation using user-controlled input without\
+    \ proper sanitization. \nThis can lead to directory traversal attacks. \nUse `os.path.basename()`\
+    \ to sanitize user input before using it in file paths.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redhat-cip/edeploy/commit/2ac192c5342316a7b82a86c7240a9ee29c83bd9d
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

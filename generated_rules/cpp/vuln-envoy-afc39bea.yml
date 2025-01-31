@@ -1,0 +1,31 @@
+rules:
+- id: vuln-envoy-afc39bea
+  pattern: '$HEADERS->byteSize() > $LIMIT
+
+    '
+  pattern-not: '$HEADERS->refreshByteSize();
+
+    $HEADERS->byteSize().value() > $LIMIT
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of `byteSize()` without calling `refreshByteSize()` first.
+    This can lead to inaccurate byte size calculations when HeaderEntries are modified
+    by reference, potentially causing security issues such as bypassing header size
+    limits. Always call `refreshByteSize()` before using `byteSize()` to ensure accurate
+    byte size counts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/afc39bea36fd436e54262f150c009e8d72db5014
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://github.com/envoyproxy/envoy/issues/12345
+    technology:
+    - cpp

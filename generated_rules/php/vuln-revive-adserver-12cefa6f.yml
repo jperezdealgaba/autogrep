@@ -1,0 +1,40 @@
+rules:
+- id: vuln-revive-adserver-12cefa6f
+  pattern: 'require_once $PATH;
+
+    ...
+
+    $buffer = ob_get_clean();
+
+    echo preg_replace(''/^#!.*\n/'', '''', $buffer);
+
+    '
+  pattern-not: 'require_once $PATH;
+
+    ...
+
+    OA_Permission::enforceAccount(OA_ACCOUNT_MANAGER, OA_ACCOUNT_ADVERTISER);
+
+    ...
+
+    ob_clean();
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable due to missing access control checks before executing
+    sensitive operations. This could allow unauthorized users to run maintenance tasks.
+    The patch adds proper permission enforcement using OA_Permission::enforceAccount().
+    Always enforce access control checks before performing sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/revive-adserver/revive-adserver/commit/12cefa6fb89c558cfcc5739446d06e5199e84176
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-28947c1d
+  pattern: 'format_text($text, $textformat, array(''noclean'' => true, ...))
+
+    '
+  pattern-not: 'format_text($text, $textformat, array(''para'' => false, ''filter''
+    => $settings->get_filter()))
+
+    '
+  languages:
+  - php
+  message: 'The use of ''noclean'' => true in format_text() can lead to XSS vulnerabilities
+    as it disables HTML sanitization. This is dangerous because it allows potentially
+    malicious HTML to be rendered without proper sanitization. To fix this, remove
+    the ''noclean'' => true option and ensure the text format is properly set to HTML
+    after conversion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/28947c1d7d9c53781989b9da7ceb2cafdd144749
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php

@@ -1,0 +1,19 @@
+rules:
+- id: vuln-keystone-bff03b57
+  pattern: "{\n    'user': {'id': $USER_ID}\n}\n"
+  pattern-not: "{\n    'user': {'id': $USER_ID},\n    'token_data': {'token': {'audit_ids':\
+    \ [...]}}\n}\n"
+  languages:
+  - python
+  message: 'Detected missing audit IDs in token data. This omission can lead to inadequate
+    token revocation tracking and security vulnerabilities. Ensure that all tokens
+    include audit IDs for proper security auditing and revocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/bff03b5726fe5cac93d44a66715eea49b89c8cb0
+    category: security
+    cwe: CWE-284
+    owasp: A2:2017-Broken Authentication
+    technology: python

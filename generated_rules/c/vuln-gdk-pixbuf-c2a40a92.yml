@@ -1,0 +1,32 @@
+rules:
+- id: vuln-gdk-pixbuf-c2a40a92
+  pattern: '$CONTEXT->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, $CINFO->output_components
+    == 4 ? TRUE : FALSE, 8, ...);
+
+    '
+  pattern-not: "if ($CINFO->output_components == 3) {\n  $HAS_ALPHA = FALSE;\n} else\
+    \ if ($CINFO->output_components == 4) {\n  $HAS_ALPHA = TRUE;\n} else {\n  g_set_error($ERROR,\
+    \ $GDK_PIXBUF_ERROR, $GDK_PIXBUF_ERROR_CORRUPT_IMAGE, _(\"Unsupported number of\
+    \ color components (%d)\"), $CINFO->output_components);\n  $RETVAL = FALSE;\n\
+    \  goto $OUT;\n}\n$CONTEXT->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, $HAS_ALPHA,\
+    \ 8, ...);\n"
+  languages:
+  - c
+  message: 'The code directly uses the output_components value to determine the alpha
+    channel without proper validation. This can lead to undefined behavior or security
+    vulnerabilities when processing images with unsupported numbers of color components.
+    Always validate the number of components before using them to create a pixbuf.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdk-pixbuf/commit/c2a40a92fe3df4111ed9da51fe3368c079b86926
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

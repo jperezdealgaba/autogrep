@@ -1,0 +1,29 @@
+rules:
+- id: vuln-ffmpeg-23ccf3ca
+  pattern: 'sscanf($IN, "%127[^<>]>%n", $BUFFER, $LENP)
+
+    '
+  pattern-not: 'scantag($IN, $BUFFER, $LENP)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of sscanf with a fixed-width format specifier, which can
+    lead to buffer overflows if the input exceeds the specified length. This vulnerability
+    was addressed in FFmpeg by replacing sscanf with a safer custom function (scantag)
+    that explicitly checks the input length. Use bounded string operations or custom
+    parsing functions to safely handle input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/23ccf3cabb4baf6e8af4b1af3fcc59c904736f21
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

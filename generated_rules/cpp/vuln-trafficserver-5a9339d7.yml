@@ -1,0 +1,28 @@
+rules:
+- id: vuln-trafficserver-5a9339d7
+  pattern: 'char $VAR[$LEN * 2];
+
+    '
+  pattern-not: 'char $VAR[$LEN * 3 + 1];
+
+    '
+  languages:
+  - cpp
+  message: 'Potential buffer overflow vulnerability detected. The array size calculation
+    may be insufficient, leading to buffer overflows when storing expanded data. Ensure
+    the array size accounts for the maximum possible expansion and includes space
+    for a null terminator. The fix typically involves increasing the multiplier and
+    adding space for the null terminator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/5a9339d7bc65e1c2d8d2a0fc80bb051daf3cdb0b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-131
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

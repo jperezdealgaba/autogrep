@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tomcat-90ec9675
+  pattern: "if (log.isDebugEnabled()) {\n    log.debug(\"Unexpected message: \" +\
+    \ $TYPE);\n}\ncontinue;\n"
+  pattern-not: "if (log.isDebugEnabled()) {\n    log.debug(\"Unexpected message: \"\
+    \ + $TYPE);\n}\nerror = true;\nbreak;\n"
+  languages:
+  - java
+  message: 'Unhandled unexpected message in AJP processor. This can lead to security
+    vulnerabilities
+
+    if unread body packets are not properly swallowed. The fix involves setting an
+    error flag
+
+    and breaking out of the loop instead of continuing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/90ec9675fa080e22df5f9e3e7019a19eb2faec14
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017 - Security Misconfiguration
+    technology:
+    - java

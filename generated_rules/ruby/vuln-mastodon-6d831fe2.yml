@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mastodon-6d831fe2
+  pattern: 'return unless !$STATUS.nil? && $STATUS.account_id == $ACCOUNT.id && !$ACCOUNT.pinned?($STATUS)
+
+    '
+  pattern-not: 'return unless !$STATUS.nil? && $STATUS.account_id == $ACCOUNT.id &&
+    !$ACCOUNT.pinned?($STATUS) && $STATUS.distributable?
+
+    '
+  languages:
+  - ruby
+  message: 'The code is missing a check for `status.distributable?` which could allow
+    unauthorized or invalid statuses to be processed. This can lead to security vulnerabilities
+    where inappropriate content might be distributed. Always ensure that statuses
+    are distributable before processing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/6d831fe274011acd2da25c40237a6c3ec6988add
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - ruby

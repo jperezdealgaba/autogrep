@@ -1,0 +1,21 @@
+rules:
+- id: vuln-caldera-b478416d
+  pattern: "def $FUNC(...):\n    ...\n    file_svc = BaseService.get_service('file_svc')\n\
+    \    for $PLUGIN in os.listdir('plugins'):\n        if await file_svc.walk_file_path(os.path.join('plugins',\
+    \ $PLUGIN, 'data', ''), '%s.yml' % $ID):\n            return $PLUGIN\n    return\
+    \ None\n"
+  pattern-not: "def $FUNC(...):\n    ...\n    return self.plugin\n"
+  languages:
+  - python
+  message: "Detected insecure plugin path resolution using direct filesystem access.\
+    \ This can lead to path traversal or incorrect plugin resolution. \nUse the fixed\
+    \ version that relies on the plugin field instead of filesystem access.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mitre/caldera/commit/b478416d0f83ec244f42b5e7de9c822162ebfc8f
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology: python

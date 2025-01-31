@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-48e03792
+  pattern: "if ($user1->id != $USER->id && (!empty($user2) && $user2->id != $USER->id)\
+    \ && !has_capability('moodle/site:readallmessages', $context)) {\n  ...\n}\n"
+  pattern-not: "if ($user1->id != $USER->id\n    && (empty($user2) || $user2->id !=\
+    \ $USER->id)\n    && !has_capability('moodle/site:readallmessages', $context))\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a logic flaw in message access control. The original condition
+    incorrectly checks for the existence of $user2 before verifying if the current
+    user is involved in the conversation. This could allow unauthorized access to
+    messages. The fix ensures proper validation by first checking if $user2 is empty
+    or if the current user is not involved in the conversation. Always validate user
+    permissions carefully when handling sensitive data like messages.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/48e03792ca8faa2d781f9ef74606f3b3f0d3baec
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-e94113a8
+  pattern: '$DB->get_record_select(''user'', "id = ?", array($M), ''id,firstname,lastname,idnumber,email,mailformat,lastaccess,
+    lang'')
+
+    '
+  pattern-not: '$DB->get_record_select(''user'', "id = ?", array($M), ''id,firstname,lastname,idnumber,email,mailformat,lastaccess,
+    lang, maildisplay'')
+
+    '
+  languages:
+  - php
+  message: 'The query does not include the ''maildisplay'' field, which is necessary
+    to properly handle email visibility settings. This can lead to unintended exposure
+    of email addresses. Always include the ''maildisplay'' field when querying user
+    email information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/e94113a859015a4a80b9397957b8fc4044e2951f
+    category: security
+    cwe: 'CWE-200: Exposure of Sensitive Information to an Unauthorized Actor'
+    owasp: A03:2021 - Sensitive Data Exposure
+    references: https://docs.moodle.org/dev/User_table
+    technology:
+    - php

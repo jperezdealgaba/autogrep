@@ -1,0 +1,32 @@
+rules:
+- id: vuln-moodle-d76e211b
+  pattern: '$version = 2023100900.01;
+
+    $release = ''4.4dev (Build: 20231013)'';
+
+    '
+  pattern-not: '$version = 2023102000.00;
+
+    $release = ''4.4dev (Build: 20231020)'';
+
+    '
+  languages:
+  - php
+  message: 'The version and release strings in the Moodle configuration are outdated.
+    Using outdated versions can expose the application to known vulnerabilities and
+    security risks. Update to the latest version to ensure all security patches are
+    applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/d76e211be6ae65fe3982ad97f3fe5c879a7b2daa
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://moodle.org/security/
+    technology:
+    - php

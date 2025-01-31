@@ -1,0 +1,37 @@
+rules:
+- id: vuln-camel-e9eb2fde
+  pattern: 'private boolean allowTemplateFromHeader;
+
+    ...
+
+    return allowTemplateFromHeader;
+
+    ...
+
+    this.allowTemplateFromHeader = allowTemplateFromHeader;
+
+    ...
+
+    endpoint.getConfiguration().setAllowTemplateFromHeader(allowTemplateFromHeader);
+
+    '
+  pattern-not: 'return configuration.isAllowTemplateFromHeader();
+
+    configuration.setAllowTemplateFromHeader(allowTemplateFromHeader);
+
+    '
+  languages:
+  - java
+  message: 'Direct access to and modification of the `allowTemplateFromHeader` field
+    without proper configuration handling can lead to inconsistent state management
+    and potential security vulnerabilities. Use the configuration object to manage
+    this setting instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/camel/commit/e9eb2fdea3cd298c7176fd003b6e9b114ae74dbf
+    category: security
+    cwe: CWE-665
+    owasp: A6:2017-Security Misconfiguration
+    technology: java

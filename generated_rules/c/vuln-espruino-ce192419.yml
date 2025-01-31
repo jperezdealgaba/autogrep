@@ -1,0 +1,22 @@
+rules:
+- id: vuln-espruino-ce192419
+  pattern: "while (*$S && $L<$LEN) {\n  ...\n}\n"
+  pattern-not: "while ($S[$L] && $L<$LEN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses pointer dereferencing (*s) in a loop condition, which can
+    lead to out-of-bounds access if the pointer is incremented incorrectly. This is
+    dangerous because it can cause memory corruption or crashes. Use array indexing
+    (s[l]) instead to ensure bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/ce1924193862d58cb43d3d4d9dada710a8361b89
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

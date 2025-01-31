@@ -1,0 +1,23 @@
+rules:
+- id: vuln-rust-8fd946c6
+  pattern: "function convertHTMLToPlaintext($HTML) {\n    var $X = document.createElement(\"\
+    div\");\n    $X.innerHTML = $HTML.replace('<code>', '`').replace('</code>', '`');\n\
+    \    return $X.innerText;\n}\n"
+  pattern-not: "function convertHTMLToPlaintext($HTML) {\n    var $X = document.createElement(\"\
+    div\");\n    $X.innerHTML = $HTML.replace(/<code>/g, '`').replace(/<\\/code>/g,\
+    \ '`');\n    return $X.innerText;\n}\n"
+  languages:
+  - javascript
+  message: Potential XSS vulnerability in HTML to plaintext conversion. The current
+    implementation only replaces the first occurrence of `<code>` tags, which can
+    lead to incomplete sanitization. Use global regex replacements to handle all occurrences.
+  severity: ERROR
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/8fd946c63a6c3aae9788bd459d278cb2efa77099
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

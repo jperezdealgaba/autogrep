@@ -1,0 +1,29 @@
+rules:
+- id: vuln-openexr-e7c26f6e
+  pattern: 'int $NBYTES = $EXPR1 * $EXPR2 / $EXPR3;
+
+    '
+  pattern-not: 'size_t $NBYTES = size_t($EXPR1) * size_t($EXPR2) / size_t($EXPR3);
+
+    '
+  languages:
+  - cpp
+  message: 'Integer overflow vulnerability due to unsafe arithmetic operations. When
+    calculating the number of bytes, using ''int'' can lead to overflow if the result
+    exceeds the maximum value of ''int''. This can cause memory corruption or buffer
+    overflows. Use ''size_t'' and cast the operands to ''size_t'' to ensure safe arithmetic
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/e7c26f6ef5bf7ae8ea21ecf19963186cd1391720
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

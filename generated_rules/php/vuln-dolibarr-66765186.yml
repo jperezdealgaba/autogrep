@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dolibarr-66765186
+  pattern: 'preg_match(''/<.*onmouseover/si'', $VAR)
+
+    '
+  pattern-not: 'preg_match(''/<.*onmouse/si'', $VAR)
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential XSS vulnerability due to insufficient validation
+    of `onmouseover` event handlers in HTML content. This can allow attackers to inject
+    malicious JavaScript code, leading to cross-site scripting (XSS) attacks. To fix
+    this, ensure that all event handlers are properly sanitized or use a broader pattern
+    to catch all variations of mouse-related event handlers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/667651860d1417329488cf123069ca700e8acdae
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

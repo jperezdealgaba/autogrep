@@ -1,0 +1,21 @@
+rules:
+- id: vuln-clients-ae29d0d9
+  pattern: '"version": "2023.9.2"'
+  pattern-not: '"version": "2023.10.0"'
+  languages:
+  - json
+  message: Detected outdated version number in JSON files. Using outdated versions
+    can lead to security vulnerabilities and compatibility issues. Update to the latest
+    version.
+  severity: ERROR
+  metadata:
+    source-url: github.com/bitwarden/clients/commit/ae29d0d947638fd24333a7cec6df52ddedfcab6c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - json

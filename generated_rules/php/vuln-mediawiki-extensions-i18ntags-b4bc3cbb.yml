@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mediawiki-extensions-i18ntags-b4bc3cbb
+  pattern: "public static function $FUNC( $data, $params, $parser ) {\n  ...\n  return\
+    \ $VAR;\n}\n"
+  pattern-not: "public static function $FUNC( $data, $params, $parser, $frame ) {\n\
+    \  ...\n  $text = $VAR;\n  return $parser->recursiveTagParse( $text, $frame );\n\
+    }\n"
+  languages:
+  - php
+  message: 'Directly returning unparsed text from functions like formatNumber, grammar,
+    plural, and linktrail can lead to security vulnerabilities. The text should be
+    parsed using recursiveTagParse to ensure proper handling of embedded tags and
+    prevent potential injection attacks. Always pass the text through recursiveTagParse
+    with the frame parameter before returning it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki-extensions-I18nTags/commit/b4bc3cbbb099eab50cf2b544cf577116f1867b94
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.mediawiki.org/wiki/Manual:Tag_extensions#Handling_parameters
+    technology:
+    - php

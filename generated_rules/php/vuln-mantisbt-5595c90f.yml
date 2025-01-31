@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mantisbt-5595c90f
+  pattern: "function file_can_view_or_download($p_action, $p_bug_id, $p_uploader_user_id)\
+    \ {\n  ...\n  $t_can_access = access_has_bug_level($t_access_global, $p_bug_id);\n\
+    \  ...\n}\n"
+  pattern-not: "function file_can_view_or_download($p_action, $p_bug_id, $p_uploader_user_id,\
+    \ $p_bugnote_id = null) {\n  if ($p_bugnote_id === null) {\n    $t_can_access\
+    \ = access_has_bug_level($t_access_global, $p_bug_id);\n  } else {\n    $t_can_access\
+    \ = access_has_bugnote_level($t_access_global, $p_bugnote_id);\n  }\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The function `file_can_view_or_download` does not properly handle bugnote-level
+    access checks, which could lead to unauthorized access to bugnote attachments.
+    This vulnerability occurs because the function only checks access at the bug level,
+    ignoring the bugnote context. To fix this, add a `$p_bugnote_id` parameter and
+    implement appropriate access checks for both bug and bugnote levels.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/5595c90f11c48164331a20bb9c66098980516e93
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

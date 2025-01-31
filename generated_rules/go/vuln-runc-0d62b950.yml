@@ -1,0 +1,33 @@
+rules:
+- id: vuln-runc-0d62b950
+  pattern: "utils.WithProcfd($ROOT, $DEST, func($PROCFD string) error {\n  if err\
+    \ := mount($SOURCE, $DEST, $PROCFD, \"cgroup2\", $FLAGS, $DATA); err != nil {\n\
+    \    if errors.Is(err, unix.EPERM) || errors.Is(err, unix.EBUSY) {\n      $SRC\
+    \ = $UNIFIEDMOUNTPOINT\n      if $CGROUPNS && $CGROUP2PATH != \"\" {\n       \
+    \ $SRC = $CGROUP2PATH\n      }\n      err = mount($SRC, $DEST, $PROCFD, \"\",\
+    \ $FLAGS|unix.MS_BIND, \"\")\n      if $ROOTLESSCGROUPS && errors.Is(err, unix.ENOENT)\
+    \ {\n        err = nil\n      }\n    }\n    return err\n  }\n  return nil\n})\n"
+  pattern-not: "utils.WithProcfd($ROOT, $DEST, func($PROCFD string) error {\n  return\
+    \ mount($SOURCE, $DEST, $PROCFD, \"cgroup2\", $FLAGS, $DATA)\n})\n"
+  languages:
+  - go
+  message: 'Detected a vulnerable mount handling pattern in cgroup2 mounting logic.
+    The original code attempts to handle EPERM and EBUSY errors by falling back to
+    a bind mount, but this can lead to incorrect behavior in certain namespaces. The
+    fixed version properly handles these cases by separating the error handling logic
+    and using a more structured approach to fallback mounting. This vulnerability
+    could lead to incorrect container isolation or security bypasses in certain namespace
+    configurations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/0d62b950e60f6980b54fe3bafd9a9c608dc1df17
+    category: security
+    cwe:
+    - CWE-284
+    owasp: 'A6: Security Misconfiguration'
+    references:
+    - https://github.com/opencontainers/runc/issues/2158
+    technology:
+    - go

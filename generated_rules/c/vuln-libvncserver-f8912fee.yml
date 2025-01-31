@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libvncserver-f8912fee
+  pattern: CloseUndoneFileTransfer($CL, $RTCP)
+  pattern-not: CloseUndoneFileDownload($CL, $RTCP)
+  languages:
+  - c
+  message: 'The function CloseUndoneFileTransfer is deprecated and has been replaced
+    by CloseUndoneFileUpload and CloseUndoneFileDownload. Using the deprecated function
+    can lead to incomplete file transfers and potential security vulnerabilities.
+    Replace CloseUndoneFileTransfer with the appropriate function based on the context
+    (upload or download).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/f8912fee5a58fb3975eda2589f6d4686f0c1ae68
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/LibVNC/libvncserver/commit/f8912fee5a58fb3975eda2589f6d4686f0c1ae68
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tomcat-910bc38c
+  pattern: '$ARRAY[$INDEX] = ($VAR == null || $VAR.length() == 0) ? $DEFAULT : $VAR
+
+    '
+  pattern-not: "if ($VAR == null || $VAR.length() == 0) {\n    $ARRAY[$INDEX] = $DEFAULT;\n\
+    } else {\n    $ARRAY[$INDEX] = RequestUtil.filter($VAR);\n}\n"
+  languages:
+  - java
+  message: 'Potential unvalidated input vulnerability. Directly assigning user input
+    to an array without proper sanitization can lead to security issues such as XSS
+    or command injection. Use RequestUtil.filter() to sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/910bc38c4188d9aab6195591c4d1314a06b546d9
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - java

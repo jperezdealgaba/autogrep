@@ -1,0 +1,31 @@
+rules:
+- id: vuln-kanboard-b6703688
+  pattern: '$this->projectUserRoleModel->addUser($values[''project_id''], $values[''user_id''],
+    $values[''role''])
+
+    '
+  pattern-not: '$this->projectUserRoleModel->addUser($project[''id''], $values[''user_id''],
+    $values[''role''])
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential CSRF vulnerability where the project_id is taken
+    from user input ($values[''project_id'']) instead of a trusted source ($project[''id'']).
+    This could allow an attacker to manipulate the project ID and perform unauthorized
+    actions. Ensure that the project ID is always taken from a trusted source and
+    validate CSRF tokens using $this->checkCSRFForm().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/b6703688aac8187f5ea4d4d704fc7afeeffeafa7
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

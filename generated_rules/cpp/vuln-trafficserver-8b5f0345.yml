@@ -1,0 +1,27 @@
+rules:
+- id: vuln-trafficserver-8b5f0345
+  pattern: '$STRUCT->internal_msg_buffer_index = 0;
+
+    $STRUCT->internal_msg_buffer_size = $EXPR * 2;
+
+    '
+  pattern-not: '$STRUCT->internal_msg_buffer_size = $EXPR * 2;
+
+    '
+  languages:
+  - cpp
+  message: "Detected redundant and potentially dangerous assignment of `internal_msg_buffer_index`.\
+    \ \nThis can lead to inconsistent state management and potential memory corruption.\
+    \ \nRemove the redundant assignment to ensure proper buffer management.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/8b5f0345dade6b2822d9b52c8ad12e63011a5c12
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - cpp

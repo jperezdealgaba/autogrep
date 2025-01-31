@@ -1,0 +1,24 @@
+rules:
+- id: vuln-tomcat-1bbc650c
+  pattern: 'void headersEnd(int $STREAMID) throws ConnectionException;
+
+    '
+  pattern-not: 'void headersEnd(int $STREAMID) throws Http2Exception;
+
+    '
+  languages:
+  - java
+  message: Incorrect exception type used in headersEnd method. Using ConnectionException
+    instead of Http2Exception can lead to improper error handling in HTTP/2 streams.
+    Replace ConnectionException with Http2Exception to ensure proper error handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/1bbc650cbc3f08d85a1ec6d803c47ae53a84f3bb
+    category: security
+    cwe:
+    - CWE-755
+    owasp: A06:2021 - Vulnerable and Outdated Components
+    references:
+    - https://httpwg.org/specs/rfc7540.html#StreamErrorHandler
+    technology:
+    - java

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-libgd-53110871
+  pattern: "if($VAR == 0) {\n  ...\n}\n"
+  pattern-not: "if($VAR <= 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential integer comparison vulnerability where only equality\
+    \ to zero is checked. \nThis can lead to incorrect behavior when dealing with\
+    \ negative values. \nThe fix is to use '<= 0' to properly handle all non-positive\
+    \ values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/53110871935244816bbb9d131da0bccff734bfe9
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

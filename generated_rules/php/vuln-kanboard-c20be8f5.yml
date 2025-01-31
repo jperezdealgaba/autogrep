@@ -1,0 +1,26 @@
+rules:
+- id: vuln-kanboard-c20be8f5
+  pattern: "if ($valid && $this->taskProjectMoveModel->moveToProject($task['id'],\
+    \ $values['project_id'], ...)) {\n    ...\n}\n"
+  pattern-not: "if ($valid) {\n    if (! $this->projectPermissionModel->isUserAllowed($values['project_id'],\
+    \ $this->userSession->getId())) {\n        throw new AccessForbiddenException();\n\
+    \    }\n    if ($this->taskProjectMoveModel->moveToProject($task['id'], $values['project_id'],\
+    \ ...)) {\n        ...\n    }\n}\n"
+  languages:
+  - php
+  message: 'Missing access control check before performing project move operation.
+    This vulnerability allows unauthorized users to move tasks between projects. Add
+    a permission check using `isUserAllowed` before performing the move operation
+    to ensure proper authorization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kanboard/kanboard/commit/c20be8f5fa26e54005a90c645e80b11481a65053
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

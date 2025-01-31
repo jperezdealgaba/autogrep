@@ -1,0 +1,25 @@
+rules:
+- id: vuln-phpmyadmin-133a77fa
+  pattern: 'echo gettype($VAR) . '' '' . $VAR;
+
+    '
+  pattern-not: 'echo gettype($VAR) . '' '' . htmlspecialchars($VAR);
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of a variable, which can lead to Cross-Site
+    Scripting (XSS) vulnerabilities. The variable content should be properly escaped
+    using `htmlspecialchars()` before being output to prevent malicious script injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/133a77fac7d31a38703db2099a90c1b49de62e37
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

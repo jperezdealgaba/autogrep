@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ghost-690fbf3f
+  pattern: '"@tryghost/zip": "1.1.34"'
+  pattern-not: '"@tryghost/zip": "1.1.37"'
+  languages:
+  - json
+  message: 'Detected a vulnerable version of @tryghost/zip package (1.1.34). This
+    version may contain security issues that have been fixed in later versions. Upgrade
+    to version 1.1.37 or later to mitigate potential security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TryGhost/Ghost/commit/690fbf3f7302ff3f77159c0795928bdd20f41205
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities
+    technology:
+    - json

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-freetype-45a3c76b
+  pattern: '$STREAM->pos + $COUNT > $STREAM->size
+
+    '
+  pattern-not: '$STREAM->size - $STREAM->pos < $COUNT
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects integer overflow vulnerabilities caused by unsafe
+    addition in bounds checking.
+
+    The original code adds `stream->pos` and `count` directly, which can overflow,
+    leading to incorrect bounds checking.
+
+    The fixed version subtracts `stream->pos` from `stream->size`, which is safer
+    and prevents integer overflow.
+
+    To fix this, replace the addition-based check with a subtraction-based check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/45a3c76b547511fa9d97aca34b150a0663257375
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - c

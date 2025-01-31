@@ -1,0 +1,33 @@
+rules:
+- id: vuln-ffmpeg-e07ac727
+  pattern: '$STRIDE = FFALIGN($WIDTH * 3, 16);
+
+    $ALIGNED_HEIGHT = FFALIGN($HEIGHT, 16);
+
+    '
+  pattern-not: '$STRIDE = FFALIGN($WIDTH + 15, 16) * 3;
+
+    $ALIGNED_HEIGHT = $HEIGHT + 15;
+
+    '
+  languages:
+  - c
+  message: 'The original code calculates the stride and aligned height using FFALIGN
+    with fixed alignment values, which can lead to incorrect buffer size calculations
+    and potential buffer overflows. This is dangerous because it may result in memory
+    corruption or crashes. The fix adjusts the calculations to ensure proper alignment
+    and buffer sizes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/e07ac727c1cc9eed39e7f9117c97006f719864bd
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

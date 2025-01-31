@@ -1,0 +1,22 @@
+rules:
+- id: vuln-node-1780bbc3
+  pattern: "if ($OPTIONS.rejectUnauthorized) {\n  ...\n}\n"
+  pattern-not: "if ($OPTIONS.rejectUnauthorized !== false) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'The `rejectUnauthorized` property check is vulnerable when explicitly
+    set to `undefined`. This can cause the default value (`true`) to fail, potentially
+    allowing unauthorized connections. Always explicitly check if `rejectUnauthorized`
+    is `false` to ensure secure TLS connections.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/1780bbc3291357f7c3370892eb311fc7a62afe8d
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - javascript

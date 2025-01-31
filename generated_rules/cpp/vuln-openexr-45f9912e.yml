@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openexr-45f9912e
+  pattern: '$IN.setFrameBuffer(&$P[0][0] - $DW.min.$X - $DW.min.$Y * $W, ...);
+
+    '
+  pattern-not: '$IN.setFrameBuffer(&$P[0][0] - intptr_t($DW.min.$X) - intptr_t($DW.min.$Y)
+    * intptr_t($W), ...);
+
+    '
+  languages:
+  - cpp
+  message: "Detected potential integer overflow vulnerability due to unsafe arithmetic\
+    \ operations in frame buffer calculations. \nThis can lead to memory corruption\
+    \ or incorrect memory access. \nFix by casting operands to `intptr_t` before performing\
+    \ arithmetic operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/45f9912e6cfa0617ec2054d96d1e1e73fad4a62a
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

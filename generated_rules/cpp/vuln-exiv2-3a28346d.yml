@@ -1,0 +1,26 @@
+rules:
+- id: vuln-exiv2-3a28346d
+  pattern: '$IO->read($BUF, $SIZE)
+
+    '
+  pattern-not: '$IO->readOrThrow($BUF.data(), $BUF.size(), $ERROR_CODE)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe `read` operation without error handling. This can lead
+    to corrupted metadata or undefined behavior if the read operation fails. Replace
+    with `readOrThrow` to ensure proper error handling and prevent potential security
+    issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/3a28346db5ae1735a8728fe3491b0aecc1dbf387
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

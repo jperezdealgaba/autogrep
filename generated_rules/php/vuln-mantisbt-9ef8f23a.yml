@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mantisbt-9ef8f23a
+  pattern: '$t_strings[] = $t_val;
+
+    '
+  pattern-not: '$t_strings[] = string_attribute($t_val);
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped variable being added to an array. This can lead to
+    Cross-Site Scripting (XSS) vulnerabilities if the array is later used in output.
+    Always use the `string_attribute` function to properly escape user input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/9ef8f23a8119221d010251112b1255630a46d903
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cpython-b43496c0
+  pattern: "if util.abstract_sockets_supported:\n    return f\"\\0listener-{os.getpid()}-{next(_mmap_counter)}\"\
+    \n"
+  pattern-not: "if util.abstract_sockets_supported:\n    return f\"\\0listener-{os.getpid()}-{next(_mmap_counter)}\"\
+    \n"
+  languages:
+  - python
+  message: 'Detected potential vulnerability in abstract socket handling. The use
+    of abstract sockets without proper validation can lead to security issues, especially
+    in portable applications where the address size might be limited. Ensure proper
+    handling of socket addresses to avoid potential buffer overflows or address truncation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/b43496c01a554cf41ae654a0379efae18609ad39
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-121
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/multiprocessing.html#multiprocessing.connection
+    technology:
+    - python

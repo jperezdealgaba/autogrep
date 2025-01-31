@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-38ca8793
+  pattern: '$row[] = $VAR->summary;
+
+    '
+  pattern-not: '$row[] = format_text($VAR->summary, $VAR->summaryformat);
+
+    '
+  languages:
+  - php
+  message: "Detected unformatted text output which can lead to XSS vulnerabilities.\
+    \ \nThe summary text should be properly formatted using `format_text` to ensure\
+    \ it is sanitized and safe for output. \nThis is dangerous because it allows for\
+    \ potential injection of malicious scripts or HTML.\nFix by wrapping the summary\
+    \ in `format_text` with the appropriate format parameter.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/38ca8793b6faa6c35176537c8015cc4e76ce73f5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

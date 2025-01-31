@@ -1,0 +1,32 @@
+rules:
+- id: vuln-cxf-8f4799b5
+  pattern: "Collection<Attachment> $ATTS = $INMESSAGE.getAttachments();\nif ($ATTS\
+    \ != null) {\n  for (Attachment $A : $ATTS) {\n    if ($A.getDataHandler().getDataSource()\
+    \ instanceof AttachmentDataSource) {\n      try {\n        ((AttachmentDataSource)$A.getDataHandler().getDataSource()).cache($INMESSAGE);\n\
+    \      } catch (IOException $E) {\n        throw new Fault($E);\n      }\n   \
+    \ }\n  }\n}\nDelegatingInputStream $IN = $INMESSAGE.getContent(DelegatingInputStream.class);\n\
+    if ($IN != null) {\n  $IN.cacheInput();\n}\n"
+  pattern-not: "Object $O = $INMESSAGE.get(\"cxf.io.cacheinput\");\nDelegatingInputStream\
+    \ $IN = $INMESSAGE.getContent(DelegatingInputStream.class);\nif (MessageUtils.isTrue($O))\
+    \ {\n  Collection<Attachment> $ATTS = $INMESSAGE.getAttachments();\n  if ($ATTS\
+    \ != null) {\n    for (Attachment $A : $ATTS) {\n      if ($A.getDataHandler().getDataSource()\
+    \ instanceof AttachmentDataSource) {\n        try {\n          ((AttachmentDataSource)$A.getDataHandler().getDataSource()).cache($INMESSAGE);\n\
+    \        } catch (IOException $E) {\n          throw new Fault($E);\n        }\n\
+    \      }\n    }\n  }\n  if ($IN != null) {\n    $IN.cacheInput();\n  }\n} else\
+    \ if ($IN != null) {\n  try {\n    IOUtils.consume($IN, 16 * 1024 * 1024);\n \
+    \ } catch (IOException $IOE) {\n  }\n}\n"
+  languages:
+  - java
+  message: Potential security issue due to missing input caching check. Ensure input
+    is properly cached by checking 'cxf.io.cacheinput' before processing attachments
+    and input streams.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/8f4799b5bc5ed0fe62d6e018c45d960e3652373e
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - java

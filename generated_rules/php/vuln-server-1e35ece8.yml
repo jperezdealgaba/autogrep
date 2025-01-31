@@ -1,0 +1,34 @@
+rules:
+- id: vuln-server-1e35ece8
+  pattern: '$update = $stored[''password''] !== $event->getPassword();
+
+    ...
+
+    $update = $stored[''user''] !== $event->getLoginName();
+
+    '
+  pattern-not: '$update = isset($stored[''password'']) && $stored[''password''] !==
+    $event->getPassword();
+
+    ...
+
+    $update = isset($stored[''user'']) && $stored[''user''] !== $event->getLoginName();
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential undefined index access vulnerability. Accessing array
+    keys without checking their existence can lead to PHP notices and unexpected behavior.
+    This can be exploited to cause information disclosure or application crashes.
+    Always use `isset()` to check if an array key exists before accessing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/1e35ece8e59ed31c0ae7a578aced99d257e97e67
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - php

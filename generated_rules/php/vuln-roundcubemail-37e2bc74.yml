@@ -1,0 +1,31 @@
+rules:
+- id: vuln-roundcubemail-37e2bc74
+  pattern: 'return rcube_utils::idn_to_utf8($VAR);
+
+    '
+  pattern-not: '$VAR = rcube_utils::idn_to_utf8($VAR);
+
+    return html::quote($VAR);
+
+    '
+  languages:
+  - php
+  message: 'The code directly returns the result of `rcube_utils::idn_to_utf8` without
+    proper HTML escaping, which can lead to Cross-Site Scripting (XSS) vulnerabilities.
+    Always escape user-controlled data before outputting it to HTML. The fix involves
+    using `html::quote` to properly escape the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/37e2bc745723ef6322f0f785aefd0b9313a40f19
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

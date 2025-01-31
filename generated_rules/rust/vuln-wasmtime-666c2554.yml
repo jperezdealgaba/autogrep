@@ -1,0 +1,34 @@
+rules:
+- id: vuln-wasmtime-666c2554
+  pattern: "let mut $SAFEPOINT_IDX = 0;\n...\nif $SAFEPOINT_IDX < $SAFEPOINT_INSNS.len()\n\
+    \    && $SAFEPOINT_INSNS[$SAFEPOINT_IDX] == $IIX\n{\n    if $SAFEPOINT_SLOTS[$SAFEPOINT_IDX].len()\
+    \ > 0 {\n        let $STACK_MAP = $ABI.spillslots_to_stack_map(\n            &$SAFEPOINT_SLOTS[$SAFEPOINT_IDX][..],\n\
+    \            &$STATE,\n        );\n        $STATE.pre_safepoint($STACK_MAP);\n\
+    \    }\n    $SAFEPOINT_IDX += 1;\n}\n"
+  pattern-not: "let mut $SAFEPOINT_INDICES: $HASHMAP_TYPE = $HASHMAP_DEFAULT;\n...\n\
+    if let Some($SAFEPOINT_IDX) = $SAFEPOINT_INDICES.get(&$IIX) {\n    let $STACK_MAP\
+    \ = $ABI\n        .spillslots_to_stack_map(&$SAFEPOINT_SLOTS[*$SAFEPOINT_IDX][..],\
+    \ &$STATE);\n    $STATE.pre_safepoint($STACK_MAP);\n}\n"
+  languages:
+  - rust
+  message: 'Detected unsafe safepoint index management in Rust code. The original
+    code uses a simple incrementing index to track safepoints, which can lead to incorrect
+    behavior when instructions are emitted out of order. This could cause incorrect
+    stack map generation and potential memory safety issues. The fix uses a hashmap
+    to properly map instruction indices to their corresponding safepoint indices,
+    ensuring correct ordering regardless of instruction emission sequence.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bytecodealliance/wasmtime/commit/666c2554ea0e1728c35aa41178cf235920db888a
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - rust

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-riot-3c7fd0cd
+  pattern: "int $FUNC(const unsigned char *$VAR, ...) {\n  ...\n  unsigned char $VAR2\
+    \ = $EXPR;\n  ...\n}\n"
+  pattern-not: "int $FUNC(const uint8_t *$VAR, ...) {\n  ...\n  uint8_t $VAR2 = $EXPR;\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: "The use of `unsigned char` for binary data handling is discouraged as\
+    \ it can lead to portability and type safety issues. \nThe patch replaces `unsigned\
+    \ char` with `uint8_t` to ensure consistent behavior across different platforms.\
+    \ \nReplace `unsigned char` with `uint8_t` for handling binary data.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/RIOT-OS/RIOT/commit/3c7fd0cdc93c1a1be1ccdc394b5bd8d8aef7a303
+    category: security
+    cwe:
+    - CWE-704
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.cppreference.com/w/c/types/integer
+    technology:
+    - c

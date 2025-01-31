@@ -1,0 +1,29 @@
+rules:
+- id: vuln-rust-f97769a2
+  pattern: "pub(super) fn drop_remaining(&mut self) {\n    unsafe {\n        ptr::drop_in_place(self.as_mut_slice());\n\
+    \    }\n    self.ptr = self.end;\n}\n"
+  pattern-not: "pub(super) fn forget_allocation_drop_remaining(&mut self) {\n    let\
+    \ remaining = self.as_raw_mut_slice();\n    unsafe {\n        ptr::drop_in_place(remaining);\n\
+    \    }\n}\n"
+  languages:
+  - rust
+  message: 'The original `drop_remaining` function drops elements and updates the
+    pointer but does not properly handle memory allocation. This can lead to memory
+    leaks or undefined behavior if the allocation is not properly managed. The fix
+    combines dropping elements and relinquishing the backing allocation in a single
+    operation, ensuring proper memory management. Use `forget_allocation_drop_remaining`
+    instead to handle both operations safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/f97769a2b7bc5a6b3d8f7140613cf26352f2b518
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-908
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://doc.rust-lang.org/std/vec/struct.IntoIter.html
+    technology:
+    - rust

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-passenger-fd3717a3
+  pattern: 'syscalls::open($PATH.c_str(), $FLAGS)
+
+    '
+  pattern-not: 'syscalls::openat($DIRFD, $FILENAME, $FLAGS | O_NOFOLLOW)
+
+    '
+  languages:
+  - cpp
+  message: "Detected unsafe file opening using syscalls::open without O_NOFOLLOW flag.\
+    \ \nThis can lead to symlink attacks where an attacker can manipulate the \nfilesystem\
+    \ to point to unintended files. Use syscalls::openat with \nO_NOFOLLOW flag to\
+    \ safely open files relative to a directory file descriptor.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/phusion/passenger/commit/fd3717a3cd357aa0e80e1e81d4dc94a1eaf928f1
+    category: security
+    cwe:
+    - CWE-59
+    - CWE-362
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://man7.org/linux/man-pages/man2/open.2.html
+    - https://man7.org/linux/man-pages/man2/openat.2.html
+    technology:
+    - cpp

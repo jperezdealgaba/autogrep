@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mysql-server-3d8134d2
+  pattern: "if (($RC = stmt_command($MYSQL, $COM_STMT_CLOSE, $BUFF, $SIZE, $STMT)))\
+    \ {\n  set_stmt_errmsg($STMT, &$MYSQL->net);\n}\n"
+  pattern-not: '$RC = stmt_command($MYSQL, $COM_STMT_CLOSE, $BUFF, $SIZE, $STMT);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerable code pattern handles errors by setting a statement error
+    message without considering that the error might have already been set by the
+    `stmt_command` function. This could lead to inconsistent error handling and potential
+    memory leaks. The fix removes the redundant error handling and relies on the caller
+    to check for errors using `mysql_error()` or `mysql_errno()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mysql/mysql-server/commit/3d8134d2c9b74bc8883ffe2ef59c168361223837
+    category: security
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp:
+    - 'A10: Server-Side Request Forgery (SSRF)'
+    technology:
+    - c

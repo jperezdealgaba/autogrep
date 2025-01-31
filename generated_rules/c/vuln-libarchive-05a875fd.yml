@@ -1,0 +1,19 @@
+rules:
+- id: vuln-libarchive-05a875fd
+  pattern: "if (wstrcmp($START, $FLAG_WNAME) == 0) {\n  ...\n}\n"
+  pattern-not: "if (wcscmp($START, $FLAG_WNAME) == 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "The code uses a custom `wstrcmp` function which may have incorrect behavior.\
+    \ \nThis can lead to improper string comparison and potential security vulnerabilities.\
+    \ \nReplace `wstrcmp` with the standard `wcscmp` function to ensure correct string\
+    \ comparison.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libarchive/libarchive/commit/05a875fdb876e7a2f56a2937f756927cbed919e0
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

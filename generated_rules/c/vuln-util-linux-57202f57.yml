@@ -1,0 +1,27 @@
+rules:
+- id: vuln-util-linux-57202f57
+  pattern: "char *$USER_ID = NULL;\nsize_t $SZ;\nuid_t $UID;\nchar $UIDSTR[sizeof(stringify_value(ULONG_MAX))];\n\
+    ...\nif (mnt_optstr_get_option($OPTSTR, \"user_id\", &$USER_ID, &$SZ) != 0)\n\
+    \  return 0;\n...\nsnprintf($UIDSTR, sizeof($UIDSTR), \"%lu\", (unsigned long)\
+    \ $UID);\nreturn strncmp($USER_ID, $UIDSTR, $SZ) == 0;\n"
+  pattern-not: "uid_t $UID, $ENTRY_UID;\n...\nif (mnt_optstr_get_uid($OPTSTR, \"user_id\"\
+    , &$ENTRY_UID) != 0)\n  return 0;\n...\nreturn $UID == $ENTRY_UID;\n"
+  languages:
+  - c
+  message: 'Detected a vulnerable pattern in user ID comparison. The original code
+    uses string comparison for user IDs, which can lead to incorrect comparisons and
+    potential security issues. The fixed version uses direct uid_t comparison for
+    accuracy and safety. Replace string-based comparison with direct uid_t comparison
+    using mnt_optstr_get_uid().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/57202f5713afa2af20ffbb6ab5331481d0396f8d
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

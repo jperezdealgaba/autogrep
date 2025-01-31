@@ -1,0 +1,20 @@
+rules:
+- id: vuln-tomcat-6982cfed
+  pattern: '$CLAZZ = getParentClassLoader().loadClass($SERVLETCLASS);
+
+    '
+  pattern-not: '$CLAZZ = getParent().getLoader().getClassLoader().loadClass($SERVLETCLASS);
+
+    '
+  languages:
+  - java
+  message: "Direct use of `getParentClassLoader()` can lead to class loading issues\
+    \ and security vulnerabilities. \nUse `getParent().getLoader().getClassLoader()`\
+    \ instead to ensure proper class loading context.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/6982cfed93255c72031cec4d2567b8b8558be9c5
+    category: security
+    cwe: CWE-471
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    technology: java

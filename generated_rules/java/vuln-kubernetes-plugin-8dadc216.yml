@@ -1,0 +1,21 @@
+rules:
+- id: vuln-kubernetes-plugin-8dadc216
+  pattern: "public static String substituteEnv($S) {\n    return replaceMacro($S,\
+    \ System.getenv());\n}\n"
+  pattern-not: "public static String substituteEnv($S) {\n    return SUBSTITUTE_ENV\
+    \ ? replaceMacro($S, System.getenv()) : $S;\n}\n"
+  languages:
+  - java
+  message: Potential insecure environment variable substitution detected. The method
+    `substituteEnv` directly substitutes environment variables without any guard,
+    which can lead to security vulnerabilities. Use a guard condition to control when
+    substitution should occur.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/kubernetes-plugin/commit/8dadc2168b108eb45c68037fa941d2594da46d79
+    category: security
+    cwe: CWE-200
+    owasp: A01:2021-Broken Access Control
+    references: https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - java

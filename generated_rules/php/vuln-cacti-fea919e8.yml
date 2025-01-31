@@ -1,0 +1,30 @@
+rules:
+- id: vuln-cacti-fea919e8
+  pattern: '$VAR = $PATH . ''/user_'' . session_id() . $SUFFIX;
+
+    '
+  pattern-not: '$VAR = $PATH . ''/user_'' . hash(''sha256'', session_id()) . $SUFFIX;
+
+    '
+  languages:
+  - php
+  message: 'The use of `session_id()` directly in file paths can lead to security
+    vulnerabilities, such as session hijacking or path traversal attacks. The session
+    ID should be hashed before being used in file paths to prevent these risks. Replace
+    `session_id()` with `hash(''sha256'', session_id())` to secure the code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/fea919e8fe05bb730c802054661fd3a7ec029784
+    category: security
+    cwe:
+    - CWE-384
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

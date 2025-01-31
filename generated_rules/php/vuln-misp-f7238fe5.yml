@@ -1,0 +1,27 @@
+rules:
+- id: vuln-misp-f7238fe5
+  pattern: '$CONTROLLER->set(''referer'', $CONTROLLER->referer())
+
+    '
+  pattern-not: '$CONTROLLER->set(''referer'', $CONTROLLER->referer([''action'' =>
+    ''view'', $MODEL->id], true))
+
+    '
+  languages:
+  - php
+  message: 'The use of `referer()` without specifying the action and model ID can
+    lead to security vulnerabilities such as open redirects or improper access control.
+    This can allow attackers to manipulate the referer URL, potentially leading to
+    phishing attacks or unauthorized access. To fix this, always specify the action
+    and model ID when setting the referer, ensuring that the URL is properly controlled
+    and validated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/f7238fe5e71ac065daa43c8607d02f8ac682f18f
+    category: security
+    cwe: CWE-601
+    owasp: 'A1: Injection'
+    technology:
+    - php

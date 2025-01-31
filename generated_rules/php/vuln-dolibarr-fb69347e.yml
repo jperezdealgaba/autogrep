@@ -1,0 +1,33 @@
+rules:
+- id: vuln-dolibarr-fb69347e
+  pattern: "if ($key !== 'action' && $key !== 'password' && !is_array($value)) {\n\
+    \    $qs .= '&'.$key.'='.urlencode($value);\n}\n"
+  pattern-not: "$key = preg_replace('/[^a-z0-9_\\-\\[\\]]/i', '', $key);\nif (in_array($key,\
+    \ array('action', 'massaction', 'password'))) {\n    continue;\n}\nif (!is_array($value))\
+    \ {\n    if ($value !== '') {\n        $qs .= '&'.$key.'='.urlencode($value);\n\
+    \    }\n} else {\n    foreach ($value as $value2) {\n        if (($value2 !==\
+    \ '') && (!is_array($value2))) {\n            $qs .= '&'.$key.'[]='.urlencode($value2);\n\
+    \        }\n    }\n}\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to potential security issues due to insufficient
+    input validation of the `$key` variable. This could allow an attacker to inject
+    malicious data into the query string. The fix involves sanitizing the `$key` variable
+    using a regular expression and adding additional checks for `massaction` and empty
+    values. Always validate and sanitize input data before using it in query strings
+    to prevent injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/fb69347ea7a9507477b4c8d043f76dc4d119beba
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

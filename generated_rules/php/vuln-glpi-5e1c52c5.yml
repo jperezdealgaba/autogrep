@@ -1,0 +1,26 @@
+rules:
+- id: vuln-glpi-5e1c52c5
+  pattern: 'header("Content-Type: text/html; charset=UTF-8");
+
+    '
+  pattern-not: 'header("Content-Type: application/json; charset=UTF-8");
+
+    '
+  languages:
+  - php
+  message: 'Detected incorrect Content-Type header in AJAX responses. Using "text/html"
+    instead of "application/json" can lead to security vulnerabilities, such as XSS,
+    when the response is interpreted as HTML instead of JSON. Always use "application/json"
+    for JSON responses to ensure proper content type handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/5e1c52c5e8a30ceb4e9572964da7ed89ddfb1aaf
+    category: security
+    cwe:
+    - 'CWE-116: Improper Encoding or Escaping of Output'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php

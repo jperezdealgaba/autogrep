@@ -1,0 +1,20 @@
+rules:
+- id: vuln-phpmyadmin-86073d53
+  pattern: '$(''#rep'').html($CONTENT)
+
+    '
+  pattern-not: '$(''#rep'').text($CONTENT)
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability detected. Using .html() with untrusted data
+    can lead to XSS attacks. Use .text() instead to safely insert text content.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/86073d532aed656550cb731aa5b4288b126ae7a6
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

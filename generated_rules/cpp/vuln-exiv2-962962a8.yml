@@ -1,0 +1,37 @@
+rules:
+- id: vuln-exiv2-962962a8
+  pattern: 'byte* $BYTES = new byte[$SIZE];
+
+    ...
+
+    IptcData::printStructure($OUT, $BYTES, $SIZE, $DEPTH);
+
+    ...
+
+    delete[] $BYTES;
+
+    '
+  pattern-not: 'std::vector<byte> $BYTES($SIZE);
+
+    ...
+
+    IptcData::printStructure($OUT, makeSliceUntil(&$BYTES[0], $READ_BYTES), $DEPTH);
+
+    '
+  languages:
+  - cpp
+  message: "Detected unsafe manual memory management when reading IPTC data. \nThis\
+    \ can lead to memory leaks or undefined behavior if exceptions are thrown. \n\
+    Use std::vector or Slice to manage memory safely and avoid manual allocation/deletion.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/962962a8e9885ccbca28f624492f1427152a0695
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-789
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.cppreference.com/w/cpp/container/vector
+    technology:
+    - cpp

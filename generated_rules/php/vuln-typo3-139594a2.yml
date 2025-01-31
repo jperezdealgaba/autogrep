@@ -1,0 +1,33 @@
+rules:
+- id: vuln-typo3-139594a2
+  pattern: '$previousValueOfEntityLoader = libxml_disable_entity_loader(...);
+
+    ...
+
+    libxml_disable_entity_loader($previousValueOfEntityLoader);
+
+    '
+  pattern-not: "$previousValueOfEntityLoader = null;\nif (PHP_MAJOR_VERSION < 8) {\n\
+    \    $previousValueOfEntityLoader = libxml_disable_entity_loader(...);\n}\n...\n\
+    if (PHP_MAJOR_VERSION < 8) {\n    libxml_disable_entity_loader($previousValueOfEntityLoader);\n\
+    }\n"
+  languages:
+  - php
+  message: 'The use of `libxml_disable_entity_loader` without checking the PHP version
+    can lead to XML External Entity (XXE) vulnerabilities in PHP 8 and above, where
+    the function is deprecated. This can allow attackers to read arbitrary files or
+    perform server-side request forgery (SSRF) attacks. To fix this, check the PHP
+    version before calling `libxml_disable_entity_loader` and only execute it if the
+    PHP version is less than 8.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/139594a296726ccd31d54329b255c009454caab2
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    technology:
+    - php

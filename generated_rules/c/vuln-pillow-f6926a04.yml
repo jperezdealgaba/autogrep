@@ -1,0 +1,25 @@
+rules:
+- id: vuln-pillow-f6926a04
+  pattern: "if ($DATA + $OFFSET > $PTR + $BYTES) {\n  ...\n  return -1;\n}\n"
+  pattern-not: 'ERR_IF_DATA_OOB($OFFSET)
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds read vulnerability. This occurs when
+    data is read without proper bounds checking, which can lead to memory corruption
+    or information disclosure. The fix involves using a macro `ERR_IF_DATA_OOB` to
+    ensure bounds checking is consistently applied. Always validate data offsets before
+    accessing memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/f6926a041b4b544fd2ced3752542afb6c8c19405
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

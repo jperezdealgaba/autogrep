@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openemr-4963fe49
+  pattern: '$logsql .= "where id=".$rec ." And patient_id=".$audit[''patient_id''];
+
+    '
+  pattern-not: '$logsql .= "where id=''" . add_escape_custom($rec) . "'' And patient_id=''"
+    . add_escape_custom($audit[''patient_id'']) . "''";
+
+    '
+  languages:
+  - php
+  message: "Detected SQL query concatenation without proper escaping, leading to SQL\
+    \ injection vulnerability. \nThis is dangerous as it allows attackers to manipulate\
+    \ the database. \nUse parameterized queries or escape functions like `add_escape_custom()`\
+    \ to prevent SQL injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/4963fe4932a0a4e1e982642226174e9931d09541
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

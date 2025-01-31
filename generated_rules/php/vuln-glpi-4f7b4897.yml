@@ -1,0 +1,27 @@
+rules:
+- id: vuln-glpi-4f7b4897
+  pattern: '$TRACK->update([...]);
+
+    '
+  pattern-not: '$INPUT = array_merge($TRACK->fields, [...]);
+
+    $TRACK->update($INPUT);
+
+    '
+  languages:
+  - php
+  message: "Directly updating an object's fields without merging with existing fields\
+    \ can lead to data loss or security issues. \nThe vulnerability occurs when new\
+    \ data overwrites existing fields entirely, potentially losing important information.\
+    \ \nTo fix this, always merge the new data with the existing fields using array_merge\
+    \ before updating.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/4f7b4897c85dae2b7b4c9887f0c74f17fb605864
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

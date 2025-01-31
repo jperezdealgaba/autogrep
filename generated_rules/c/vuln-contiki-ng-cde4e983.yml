@@ -1,0 +1,33 @@
+rules:
+- id: vuln-contiki-ng-cde4e983
+  pattern: "if((UIP_TCP_BUF->tcpoffset & 0xf0) > 0x50) {\n  for($C = 0; $C < ((UIP_TCP_BUF->tcpoffset\
+    \ >> 4) - 5) << 2 ;) {\n    $OPT = uip_buf[UIP_IPTCPH_LEN + $C];\n    if($OPT\
+    \ == TCP_OPT_END) {\n      break;\n    } else if($OPT == TCP_OPT_NOOP) {\n   \
+    \   ++$C;\n    } else if($OPT == TCP_OPT_MSS &&\n              uip_buf[UIP_IPTCPH_LEN\
+    \ + 1 + $C] == TCP_OPT_MSS_LEN) {\n      $TMP16 = (uip_buf[UIP_IPTCPH_LEN + 2\
+    \ + $C] << 8) |\n               uip_buf[UIP_IPTCPH_LEN + 3 + $C];\n      $CONN->initialmss\
+    \ = $CONN->mss = $TMP16 > UIP_TCP_MSS ? UIP_TCP_MSS : $TMP16;\n      break;\n\
+    \    } else {\n      if(uip_buf[UIP_IPTCPH_LEN + 1 + $C] == 0) {\n        break;\n\
+    \      }\n      $C += uip_buf[UIP_IPTCPH_LEN + 1 + $C];\n    }\n  }\n}\n"
+  pattern-not: 'process_tcp_options($CONN);
+
+    '
+  languages:
+  - c
+  message: 'The code directly processes TCP options without proper bounds checking,
+    which can lead to buffer overflows. The vulnerability arises from insufficient
+    validation of TCP option lengths and offsets. The patch refactors this code into
+    a separate function with proper bounds checking. Always validate TCP option lengths
+    and offsets before processing to prevent potential buffer overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/cde4e98398a2f5b994972c8459342af3ba93b98e
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

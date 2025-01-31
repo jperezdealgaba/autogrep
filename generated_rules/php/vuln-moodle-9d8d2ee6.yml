@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-9d8d2ee6
+  pattern: '$CFG->wwwroot
+
+    '
+  pattern-not: '$CFG->httpswwwroot
+
+    '
+  languages:
+  - php
+  message: 'The use of `$CFG->wwwroot` instead of `$CFG->httpswwwroot` can lead to
+    insecure HTTP connections, exposing sensitive data to potential attackers. Always
+    use `$CFG->httpswwwroot` to ensure HTTPS is enforced for secure communication.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/9d8d2ee6192e8b7ebb6713bd6215e06f94e2a9f7
+    category: security
+    cwe:
+    - 'CWE-319: Cleartext Transmission of Sensitive Information'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

@@ -1,0 +1,19 @@
+rules:
+- id: vuln-lxml-a3eacbc0
+  pattern: __version__ = "4.6.4"
+  pattern-not: __version__ = "4.6.5"
+  languages:
+  - python
+  message: Detected outdated lxml version 4.6.4. This version may contain security
+    vulnerabilities. Upgrade to version 4.6.5 or later to mitigate potential risks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/lxml/lxml/commit/a3eacbc0dcf1de1c822ec29fb7d090a4b1712a9c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://lxml.de/security.html
+    technology:
+    - python

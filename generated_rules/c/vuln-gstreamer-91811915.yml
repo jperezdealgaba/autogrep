@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gstreamer-91811915
+  pattern: "gsize $SIZE;\n...\nif ($BLOCKSIZE == 0 || $SIZE < $BLOCKSIZE) {\n  break;\n\
+    }\n"
+  pattern-not: "gsize $SIZE;\n...\nif ($BLOCKSIZE == 0 || $SIZE < $BLOCKSIZE) {\n\
+    \  GST_ERROR_OBJECT($ELEMENT, \"Too small wavpack buffer\");\n  gst_buffer_unmap($BUF,\
+    \ $MAP);\n  return GST_FLOW_ERROR;\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer underflow vulnerability due to insufficient
+    size validation.
+
+    The code breaks without proper error handling when the buffer size is too small,
+
+    which could lead to undefined behavior or crashes. Always validate buffer sizes
+
+    and handle errors appropriately by returning an error flow and cleaning up resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GStreamer/gstreamer/commit/9181191511f9c0be6a89c98b311f49d66bd46dc3
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer'
+    technology:
+    - c

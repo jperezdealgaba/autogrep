@@ -1,0 +1,30 @@
+rules:
+- id: vuln-misp-afbe08d2
+  pattern: '$params[''order''] = isset($options[''order'']) ? $options[''order'']
+    : [];
+
+    '
+  pattern-not: "$params['order'] = [];\nif (!empty($options['order'])) {\n    $options['order']\
+    \ = $this->findOrder(\n        $options['order'],\n        'Attribute',\n    \
+    \    ['id', 'event_id', 'object_id', 'type', 'category', 'value', 'distribution',\
+    \ 'timestamp', 'object_relation']\n    );\n}\n"
+  languages:
+  - php
+  message: 'The code directly assigns the ''order'' parameter from user input without
+    proper validation or sanitization. This can lead to security vulnerabilities such
+    as SQL injection or unauthorized data access. Ensure that the ''order'' parameter
+    is validated and sanitized using a predefined list of allowed fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/afbe08d256d609eee5195c5b0003cfb723ae7af1
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

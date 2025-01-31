@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyadmin-b6ca92cc
+  pattern: "if (isset($_REQUEST['pma_password'])) {\n  ...\n}\n"
+  pattern-not: "if (isset($_REQUEST['pma_password']) && strlen($_REQUEST['pma_password'])\
+    \ > 256) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code checks for the existence of ''pma_password'' in the request but
+    does not validate its length. This can lead to security vulnerabilities such as
+    denial of service (DoS) attacks through excessively large inputs or potential
+    buffer overflows. Always validate the length of user inputs to prevent such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b6ca92cc75c8a16001425be7881e73430bcc35b8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - php

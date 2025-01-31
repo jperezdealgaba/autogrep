@@ -1,0 +1,28 @@
+rules:
+- id: vuln-discourse-a9f2c6db
+  pattern: '$TAGS = SiteSetting.tagging_enabled ? $TOPIC.tags : []
+
+    '
+  pattern-not: '$TAGS = SiteSetting.tagging_enabled ? $TOPIC.tags.visible($GUARDIAN)
+    : []
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unguarded access to tags without visibility checks. This can
+    expose restricted tags to unauthorized users. Always use the `visible` scope with
+    a guardian to ensure proper tag visibility checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/a9f2c6db64e7d78b8e0f55e7bd77c5fe3459b831
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    - A04:2021-Insecure Design
+    technology:
+    - ruby

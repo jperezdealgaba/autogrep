@@ -1,0 +1,33 @@
+rules:
+- id: vuln-openemr-285fb234
+  pattern: '$form_status .= $FUNC(...) . "...<br />";
+
+    echo nl2br($form_status);
+
+    '
+  pattern-not: '$form_status .= $FUNC(...) . "...||br-placeholder||";
+
+    echo brCustomPlaceholder(text($form_status));
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe use of `nl2br` with unfiltered HTML content. This can
+    lead to XSS vulnerabilities if the content contains user-controlled input. The
+    patch replaces `nl2br` with a custom function `brCustomPlaceholder` and sanitizes
+    the output using `text()` and `attr()` functions. To fix this, ensure all user-controlled
+    content is properly sanitized before being output to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/285fb234bd27ea4c46a29f2797edda7f38f1d8db
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

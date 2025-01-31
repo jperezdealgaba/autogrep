@@ -1,0 +1,30 @@
+rules:
+- id: vuln-moodle-0f75e1e6
+  pattern: '$overridestable = new override_permissions_table_advanced($context, $roleid,
+    false);
+
+    '
+  pattern-not: '$safeoverridesonly = true;
+
+    $overridestable = new override_permissions_table_advanced($context, $roleid, $safeoverridesonly);
+
+    '
+  languages:
+  - php
+  message: 'The code directly passes `false` to the `override_permissions_table_advanced`
+    constructor, which can lead to unsafe permission overrides. This can allow users
+    to override permissions in a way that could compromise security. Instead, set
+    a variable like `$safeoverridesonly` to `true` and pass it to the constructor
+    to ensure only safe overrides are allowed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/0f75e1e6272db0303abc8e27362e5c3a1344b82f
+    category: security
+    cwe: 'CWE-863: Incorrect Authorization'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control
+    technology:
+    - php

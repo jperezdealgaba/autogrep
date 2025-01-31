@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ffmpeg-73472053
+  pattern: '*data_size = (uint8_t*)out - (uint8_t*)data;
+
+    '
+  pattern-not: '*data_size = out_size;
+
+    '
+  languages:
+  - c
+  message: 'The code directly calculates the size of the output buffer without validating
+    if the buffer is large enough to hold the data. This can lead to buffer overflow
+    vulnerabilities if the output buffer is smaller than the calculated size. To fix
+    this, ensure the output buffer size is validated before writing data to it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/73472053516f82b7d273a3d42c583f894077a191
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

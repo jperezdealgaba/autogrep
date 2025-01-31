@@ -1,0 +1,32 @@
+rules:
+- id: vuln-libdwarf-code-99e77c38
+  pattern: '#ifdef HAVE_INTTYPES_H
+
+    #include <inttypes.h>
+
+    #endif /* HAVE_INTTYPES_H */
+
+    '
+  pattern-not: '#include <inttypes.h>
+
+    '
+  languages:
+  - c
+  message: 'Detected conditional inclusion of inttypes.h based on HAVE_INTTYPES_H
+    macro.
+
+    This can lead to portability issues and potential undefined behavior if inttypes.h
+    is not included when needed.
+
+    Remove the conditional inclusion and always include inttypes.h directly to ensure
+    consistent behavior.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/99e77c3894877a1dd80b82808d8309eded4e5599
+    category: portability
+    cwe:
+    - CWE-758
+    technology:
+    - c

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-cxf-5ac22a44
+  pattern: "if ($VALUE instanceof String) {\n  ...\n}\n"
+  pattern-not: "if ($VALUE instanceof String && ((String)$VALUE).contains(\"\\\\/\"\
+    )) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Insufficient validation of JSON strings can lead to parsing errors or security
+    vulnerabilities. Ensure proper validation of JSON strings, especially for special
+    characters.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/5ac22a447d4d141b849e2b49f1a73db1576adc43
+    category: security
+    cwe: CWE-20
+    owasp: A8:2017-Insecure Deserialization
+    references: https://cwe.mitre.org/data/definitions/20.html
+    technology: java

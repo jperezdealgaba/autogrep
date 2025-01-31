@@ -1,0 +1,22 @@
+rules:
+- id: vuln-tomcat-ee627412
+  pattern: '$WRAPPER.getServlet() == null
+
+    '
+  pattern-not: '$WRAPPER.servletSecurityAnnotationScan()
+
+    '
+  languages:
+  - java
+  message: Missing security annotation scan for servlet. This can lead to security
+    vulnerabilities as security annotations may not be properly processed. Ensure
+    `servletSecurityAnnotationScan()` is called after loading the servlet.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/ee627412570268df47a075f5d4dc5f7debf39fad
+    category: security
+    cwe: CWE-693
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://tomcat.apache.org/tomcat-8.5-doc/servletapi/javax/servlet/annotation/ServletSecurity.html
+    technology: java

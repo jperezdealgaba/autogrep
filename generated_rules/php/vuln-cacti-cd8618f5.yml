@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cacti-cd8618f5
+  pattern: 'json_decode(file_get_contents($CONFIG[''input_whitelist'']))
+
+    '
+  pattern-not: 'json_decode(file_get_contents($CONFIG[''input_whitelist'']), true)
+
+    '
+  languages:
+  - php
+  message: 'The function `json_decode` is being used without the second parameter
+    `true`, which means it will decode JSON objects as PHP objects instead of associative
+    arrays. This can lead to potential security issues, especially when dealing with
+    untrusted input, as it may allow for object injection or unexpected behavior.
+    Always use `json_decode` with the second parameter set to `true` to ensure JSON
+    objects are decoded as associative arrays.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/cd8618f5fdabdf7307d70ba684c1cc7009c573dc
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php

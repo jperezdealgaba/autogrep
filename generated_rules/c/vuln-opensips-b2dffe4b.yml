@@ -1,0 +1,29 @@
+rules:
+- id: vuln-opensips-b2dffe4b
+  pattern: 'uri->host.s="";
+
+    uri->host.len=0;
+
+    '
+  pattern-not: '/* keep the service name as host part */
+
+    '
+  languages:
+  - c
+  message: 'The code sets the host part of a URI to an empty string and length to
+    0, which can lead to issues in code that expects a valid host part. This was fixed
+    by keeping the service name as the host part instead of setting it to an empty
+    string. To fix this, ensure the host part is properly initialized with a valid
+    value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSIPS/opensips/commit/b2dffe4b5cd81182c9c8eabb6c96aac96c7acfe3
+    category: security
+    cwe:
+    - 'CWE-170: Improper Null Termination'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

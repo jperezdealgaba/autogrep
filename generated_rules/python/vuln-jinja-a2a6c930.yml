@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jinja-a2a6c930
+  pattern: '$CALLABLE.__name__ != ''format''
+
+    '
+  pattern-not: '$CALLABLE.__name__ not in (''format'', ''format_map'')
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe string formatting that does not account for 'format_map'.\
+    \ \nThis could allow bypassing security restrictions in sandboxed environments.\
+    \ \nEnsure to check for both 'format' and 'format_map' when validating callable\
+    \ names.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pallets/jinja/commit/a2a6c930bcca591a25d2b316fcfd2d6793897b26
+    category: security
+    cwe: CWE-470
+    owasp: A03:2021-Injection
+    references:
+    - https://jinja.palletsprojects.com/en/3.0.x/sandbox/
+    technology:
+    - python

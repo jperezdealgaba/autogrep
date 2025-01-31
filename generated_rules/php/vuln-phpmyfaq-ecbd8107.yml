@@ -1,0 +1,25 @@
+rules:
+- id: vuln-phpmyfaq-ecbd8107
+  pattern: 'Filter::filterInput($_, $_, FILTER_UNSAFE_RAW)
+
+    '
+  pattern-not: 'Filter::filterInput($_, $_, FILTER_SANITIZE_SPECIAL_CHARS)
+
+    '
+  languages:
+  - php
+  message: "Detected use of FILTER_UNSAFE_RAW in input filtering, which can lead to\
+    \ XSS vulnerabilities. \nAlways use FILTER_SANITIZE_SPECIAL_CHARS or other appropriate\
+    \ sanitization filters to prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpmyfaq/commit/ecbd8107fe954b6be95dab315862d1caa0b94efa
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://www.php.net/manual/en/filter.filters.sanitize.php
+    technology:
+    - php

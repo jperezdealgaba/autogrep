@@ -1,0 +1,26 @@
+rules:
+- id: vuln-zoneminder-4e16ae6d
+  pattern: '$GLOBALS[''csrf''][''defer''] = false;
+
+    '
+  pattern-not: '$GLOBALS[''csrf''][''defer''] = true;
+
+    '
+  languages:
+  - php
+  message: 'The CSRF protection mechanism is disabled by setting `$GLOBALS[''csrf''][''defer'']`
+    to `false`. This can allow attackers to bypass CSRF protection, leading to potential
+    unauthorized actions being performed on behalf of users. To fix this, ensure that
+    `$GLOBALS[''csrf''][''defer'']` is set to `true` to enable CSRF protection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ZoneMinder/zoneminder/commit/4e16ae6d19d82603b79cf39b8fdb37da4425f678
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php

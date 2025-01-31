@@ -1,0 +1,26 @@
+rules:
+- id: vuln-desktop-b1ddd0e4
+  pattern: "bool $CLASS::certificateError(const QWebEngineCertificateError &$CERT_ERROR)\
+    \ {\n    if ($CERT_ERROR.error() == QWebEngineCertificateError::CertificateAuthorityInvalid\
+    \ &&\n        $CERT_ERROR.url().host() == $ROOT_URL.host()) {\n        return\
+    \ true;\n    }\n    ...\n}\n"
+  pattern-not: "bool $CLASS::certificateError(const QWebEngineCertificateError &$CERT_ERROR)\
+    \ {\n    ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potential security vulnerability where certificate errors are
+    being ignored based on host matching. This can lead to Man-in-the-Middle (MITM)
+    attacks by accepting invalid certificates. Always validate certificates properly
+    and do not bypass certificate errors based solely on host matching.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/desktop/commit/b1ddd0e491b2af0ed040e658d8bcde2a7a61c9fc
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - cpp

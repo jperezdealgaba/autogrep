@@ -1,0 +1,34 @@
+rules:
+- id: vuln-envoy-b2ffdd89
+  pattern: 'size_t $OFF = $DNS_NAME.length() - $PATTERN_LEN + 1;
+
+    return $DNS_NAME.compare($OFF, $PATTERN_LEN - 1, $PATTERN + 1) == 0;
+
+    '
+  pattern-not: "const size_t $OFF = $DNS_NAME.length() - $PATTERN_LEN + 1;\nif (Runtime::runtimeFeatureEnabled(\"\
+    envoy.reloadable_features.fix_wildcard_matching\")) {\n  return $DNS_NAME.substr(0,\
+    \ $OFF).find('.') == std::string::npos &&\n         $DNS_NAME.compare($OFF, $PATTERN_LEN\
+    \ - 1, $PATTERN + 1) == 0;\n} else {\n  return $DNS_NAME.compare($OFF, $PATTERN_LEN\
+    \ - 1, $PATTERN + 1) == 0;\n}\n"
+  languages:
+  - cpp
+  message: 'Detected insecure DNS wildcard matching that could allow domain spoofing.
+    The vulnerable code compares DNS names without properly validating wildcard patterns,
+    which could lead to false positives in domain matching. This can be exploited
+    to bypass security checks. The fix includes additional validation to ensure proper
+    wildcard matching by checking for the presence of dots in the domain name. Always
+    use the updated version with proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/b2ffdd89c21163ddf9907af572927214578321d3
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

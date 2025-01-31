@@ -1,0 +1,30 @@
+rules:
+- id: vuln-moodle-263f78b8
+  pattern: 'require_login($COURSE);
+
+    '
+  pattern-not: 'require_login($COURSE, true, $CM);
+
+    require_capability(''mod/lti:view'', $CONTEXT);
+
+    '
+  languages:
+  - php
+  message: 'Insecure authentication check detected. The code only verifies login status
+    without checking module context or required capabilities. This can lead to unauthorized
+    access to protected resources. Add context and capability checks as shown in the
+    fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/263f78b8b804fe7dbcd6ffadcadad2c94a0093f7
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/Access_API
+    technology:
+    - php

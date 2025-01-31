@@ -1,0 +1,28 @@
+rules:
+- id: vuln-redis-9f63e75a
+  pattern: 'getnum($FMT, $DF)
+
+    '
+  pattern-not: 'getnum($L, $FMT, $DF)
+
+    '
+  languages:
+  - c
+  message: 'Detected a call to `getnum` without the `lua_State` parameter, which can
+    lead to integer overflow vulnerabilities. This is dangerous because it can cause
+    undefined behavior, crashes, or security exploits. Always include the `lua_State`
+    parameter to enable proper error handling for integer overflow checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/9f63e75a07e73f40fec72ef83545f6e7f0438e90
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

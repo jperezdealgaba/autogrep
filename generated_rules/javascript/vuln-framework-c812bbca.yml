@@ -1,0 +1,18 @@
+rules:
+- id: vuln-framework-c812bbca
+  pattern: "if ((/__proto__|constructor|prototype/).test($VAR))\n  throw new Error('Prototype\
+    \ pollution');\n"
+  pattern-not: "if ((/__proto__|constructor|prototype|eval/).test($VAR))\n  throw\
+    \ new Error('Potential vulnerability');\n"
+  languages:
+  - javascript
+  message: Incomplete protection against prototype pollution. The regular expression
+    check should include 'eval' to prevent potential vulnerabilities.
+  severity: ERROR
+  metadata:
+    source-url: github.com/totaljs/framework/commit/c812bbcab8981797d3a1b9993fc42dad3d246f04
+    category: security
+    cwe: CWE-471
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

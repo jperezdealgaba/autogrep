@@ -1,0 +1,29 @@
+rules:
+- id: vuln-ffmpeg-27f8d386
+  pattern: 'int $VAR = (unsigned) $IX >= $WIDTH - $W || (unsigned) $IY >= $HEIGHT
+    - $H;
+
+    '
+  pattern-not: 'int $VAR = (unsigned) $IX >= $WIDTH - $W || $WIDTH < $W || (unsigned)
+    $IY >= $HEIGHT - $H || $HEIGHT < $H;
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where bounds checking is incomplete,
+    potentially leading to out-of-bounds memory access. The original code fails to
+    check if the width or height values are smaller than the required dimensions,
+    which could result in security issues such as buffer overflows. To fix this, ensure
+    that both the width and height are validated against the required dimensions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/27f8d386829689c346ff0cef00d3af57b9fb8903
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - c

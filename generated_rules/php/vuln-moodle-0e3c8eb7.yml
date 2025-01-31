@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-0e3c8eb7
+  pattern: '$PAGE->set_heading(fullname($USER));
+
+    '
+  pattern-not: '$PAGE->set_heading(fullname($USER));
+
+    $PAGE->set_heading(fullname($USER));
+
+    '
+  languages:
+  - php
+  message: 'The code sets the page heading using `fullname($USER)` twice, which is
+    redundant and could lead to unintended behavior or security issues. This redundancy
+    should be removed to ensure clarity and maintainability of the code.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/moodle/moodle/commit/0e3c8eb740e1e49a62a5f452cda7e06258712bbf
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - php

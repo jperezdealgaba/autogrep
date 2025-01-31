@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pdns-90ae17e1
+  pattern: 'const bool $VAR = setQNameMinimization(true);
+
+    '
+  pattern-not: 'const bool $VAR = setQNameMinimization(!getQMFallbackMode());
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly sets QName Minimization to true without considering
+    the fallback mode. This could lead to inconsistent behavior and potential security
+    issues in DNS query processing. Use `setQNameMinimization(!getQMFallbackMode())`
+    to ensure the correct mode is set based on the fallback state.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/PowerDNS/pdns/commit/90ae17e1101c660309609fbc43b8d36dfca9c99e
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - cpp

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-xen-c17d4913
+  pattern: "if (!$WATCH->node || !$WATCH->token) {\n  ...\n}\n"
+  pattern-not: "if (!$WATCH->node || !$WATCH->token ||\n    domain_memory_add_chk($CONN->id,\
+    \ strlen($VEC[0]) + strlen($VEC[1]))) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code does not check for memory allocation using `domain_memory_add_chk`
+    before processing watch events, which could lead to memory exhaustion or denial
+    of service. This vulnerability was fixed by adding memory checks before processing
+    watch events. Always ensure memory allocation checks are in place when handling
+    potentially large or unbounded data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/c17d49134aef23c8d017a64e5e36c626779bf863
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/770.html
+    technology:
+    - c

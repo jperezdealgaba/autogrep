@@ -1,0 +1,23 @@
+rules:
+- id: vuln-tomcat-e2d5a040
+  pattern: '$SOCKET.socket().close();
+
+    '
+  pattern-not: "if ($CONDITION) {\n    $SOCKET.socket().close();\n}\n"
+  languages:
+  - java
+  message: 'Direct socket closure without proper condition checks can lead to resource
+    leaks or unexpected behavior. Always ensure proper conditional checks before closing
+    sockets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/e2d5a040b962a904db5264b3cb3282c6b05f823c
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - java

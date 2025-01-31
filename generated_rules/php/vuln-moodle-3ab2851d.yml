@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moodle-3ab2851d
+  pattern: 'str_pad(decbin($VAR), 32, "0", "STR_PAD_LEFT")
+
+    '
+  pattern-not: 'str_pad(decbin($VAR), 32, "0", STR_PAD_LEFT)
+
+    '
+  languages:
+  - php
+  message: 'The function `str_pad` is being used with a string parameter for the padding
+    type instead of the constant `STR_PAD_LEFT`. This can lead to unexpected behavior
+    or errors if the string is not recognized as a valid padding type. Always use
+    the constant `STR_PAD_LEFT` to ensure correct and consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/3ab2851d2a59721445945d0706c58092e07e861e
+    category: security
+    cwe:
+    - CWE-628
+    owasp:
+    - A9:2021-Security Misconfiguration
+    technology:
+    - php

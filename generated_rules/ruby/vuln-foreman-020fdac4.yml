@@ -1,0 +1,29 @@
+rules:
+- id: vuln-foreman-020fdac4
+  pattern: "begin\n  return $CLASS.classify.constantize\nrescue NameError\n  return\
+    \ nil\nend\n"
+  pattern-not: '$KLASS = $CLASS.classify.constantize
+
+    return Host::Managed if $KLASS == Host
+
+    $KLASS
+
+    '
+  languages:
+  - ruby
+  message: 'The code directly returns a constantized class without proper validation,
+    which can lead to security issues if the class is not properly authorized. This
+    can allow unauthorized access to resources. Use explicit class validation and
+    authorization checks, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/020fdac4abc50fa410fc7ad3255f68d871c651ad
+    category: security
+    cwe:
+    - 284
+    owasp:
+    - A01
+    technology:
+    - ruby

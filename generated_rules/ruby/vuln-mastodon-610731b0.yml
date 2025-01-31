@@ -1,0 +1,31 @@
+rules:
+- id: vuln-mastodon-610731b0
+  pattern: "$URL = Addressable::URI.parse($ENTITY[:url]).to_s\n$REL = $WITH_REL_ME\
+    \ ? ($DEFAULT_REL + %w(me)) : $DEFAULT_REL\n$PREFIX = $URL.match($URL_PREFIX_REGEX).to_s\n\
+    $DISPLAY_URL = $URL[$PREFIX.length, 30]\n$SUFFIX = $URL[$PREFIX.length + 30..-1]\n\
+    $CUTOFF = $URL[$PREFIX.length..-1].length > 30\n<<~HTML.squish\n  <a href=\"#{h($URL)}\"\
+    \ target=\"_blank\" rel=\"#{$REL.join(' ')}\" translate=\"no\"><span class=\"\
+    invisible\">#{h($PREFIX)}</span><span class=\"#{$CUTOFF ? 'ellipsis' : ''}\">#{h($DISPLAY_URL)}</span><span\
+    \ class=\"invisible\">#{h($SUFFIX)}</span></a>\nHTML\n"
+  pattern-not: 'TextFormatter.shortened_link($ENTITY[:url], rel_me: $WITH_REL_ME)
+
+    '
+  languages:
+  - ruby
+  message: 'Direct URL parsing and HTML generation without proper validation can lead
+    to security vulnerabilities such as XSS. Use the `TextFormatter.shortened_link`
+    method to safely handle URLs and generate HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/610731b03dfcadd887078cb0399f4e514aa1931c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - ruby

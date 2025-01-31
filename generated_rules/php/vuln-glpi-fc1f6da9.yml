@@ -1,0 +1,30 @@
+rules:
+- id: vuln-glpi-fc1f6da9
+  pattern: 'echo "<input type=''hidden'' name=''itemtype'' value=\"" . $_GET[''itemtype'']
+    . "\">";
+
+    '
+  pattern-not: 'echo "<input type=''hidden'' name=''itemtype'' value=\"" . htmlspecialchars($_GET[''itemtype''])
+    . "\">";
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of $_GET[''itemtype''] in HTML context. This
+    can lead to XSS vulnerabilities if the input is not properly sanitized. Always
+    use htmlspecialchars() to escape user input before outputting it in HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/fc1f6da9d158933b870ff374ed3a50ae98dcef4a
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://www.php.net/manual/en/function.htmlspecialchars.php
+    technology:
+    - php

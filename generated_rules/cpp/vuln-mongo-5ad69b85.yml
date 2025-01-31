@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mongo-5ad69b85
+  pattern: '$CURSOR->readAndAdvance<LittleEndian<$TYPE>>().getValue()
+
+    '
+  pattern-not: '_readWithChecking<LittleEndian<$TYPE>>($CURSOR)
+
+    '
+  languages:
+  - cpp
+  message: 'Directly calling readAndAdvance without checking the status can lead to
+    unhandled errors and potential vulnerabilities. Use a wrapper function like _readWithChecking
+    to validate the status before accessing the value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mongodb/mongo/commit/5ad69b851801edadbfde8fdf271f4ba7c21170b5
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Security Logging and Monitoring Failures
+    technology:
+    - cpp

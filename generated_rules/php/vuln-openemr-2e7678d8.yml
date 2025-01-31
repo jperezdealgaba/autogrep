@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openemr-2e7678d8
+  pattern: '$mimetype = $_FILES[''file''][''type''][$key];
+
+    '
+  pattern-not: "if (empty($mimetype)) {\n    $mimetype = mime_content_type($_FILES['file']['tmp_name'][$key]);\n\
+    }\nif (empty($mimetype)) {\n    $error = xl(\"Unable to discover mimetype, so\
+    \ did not upload \" . $_FILES['file']['tmp_name'][$key]) . \".\\n\";\n    continue;\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code directly assigns the MIME type from the uploaded file''s ''type''
+    field without validation, which can be easily spoofed. This can lead to the execution
+    of malicious files if the MIME type is not properly verified. To fix this, use
+    `mime_content_type` to validate the MIME type from the file''s content and ensure
+    it is not empty before proceeding with the upload.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/2e7678d812df167ea3c0756382408b670e8aa51f
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-roundcubemail-786aa072
+  pattern: '$t .= '' style='' . $quot . $style . $quot;
+
+    '
+  pattern-not: '$t .= '' style="'' . str_replace(''"'', ''&quot;'', $style) . ''"'';
+
+    '
+  languages:
+  - php
+  message: "Unescaped double quotes in style attributes can lead to XSS vulnerabilities.\
+    \ \nThe code directly concatenates style attributes without proper escaping, allowing\
+    \ attackers to inject malicious scripts. \nTo fix this, use `str_replace` to escape\
+    \ double quotes with `&quot;` before including the style attribute in the HTML\
+    \ output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/786aa0725e28976bed5037814e01c44c90a551f5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

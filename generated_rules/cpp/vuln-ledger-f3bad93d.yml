@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ledger-f3bad93d
+  pattern: "if ($POST->has_flags($POST_DEFERRED))\n  $POST->account->add_deferred_post($ID(),\
+    \ $POST);\nelse\n  ...\n"
+  pattern-not: "if ($POST->has_flags($POST_DEFERRED)) {\n  if (!$POST->$AMOUNT.is_null())\n\
+    \      $POST->account->add_deferred_post($ID(), $POST);\n} else {\n}\n"
+  languages:
+  - cpp
+  message: 'Missing null check for amount before adding deferred post. This can lead
+    to processing of invalid or null amounts, potentially causing financial discrepancies
+    or undefined behavior. Always validate the amount before adding a deferred post.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ledger/ledger/commit/f3bad93db256db07b6cb831d4d24f47543f57e4a
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-trafficserver-60e0a8ce
+  pattern: "int64_t $WRITE = $CONSUMER_N;\nif ($WRITE != INT64_MAX) {\n  $WRITE -=\
+    \ $SKIP_BYTES;\n}\nif ($DO_CHUNKING == true) {\n  $WRITE = INT64_MAX;\n}\n"
+  pattern-not: "int64_t $WRITE = $CONSUMER_N;\nif (!$ALIVE) {\n  $WRITE = final_consumer_bytes_to_write($P,\
+    \ $C);\n} else {\n  if ($WRITE != INT64_MAX) {\n    $WRITE -= $SKIP_BYTES;\n \
+    \ }\n  if ($DO_CHUNKING == true) {\n    $WRITE = INT64_MAX;\n  }\n}\n"
+  languages:
+  - cpp
+  message: 'The code contains a vulnerability where the amount of data to write is
+    not properly adjusted when the producer is not alive. This can lead to incorrect
+    data handling and potential security issues. The fix involves using the `final_consumer_bytes_to_write`
+    function to correctly calculate the amount of data to write when the producer
+    is not alive.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/60e0a8ce23d390b851873e020483d6f75e857158
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/682.html
+    technology:
+    - cpp

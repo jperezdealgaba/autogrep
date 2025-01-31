@@ -1,0 +1,29 @@
+rules:
+- id: vuln-freetype-cee5d593
+  pattern: 'unsigned long $VAR = $OLDSIZE + ($OLDSIZE >> 1) + 4;
+
+    '
+  pattern-not: 'unsigned long $VAR = $OLDSIZE + ($OLDSIZE >> 1) + 5;
+
+    '
+  languages:
+  - c
+  message: 'This rule detects an incorrect buffer size calculation that could lead
+    to buffer overflow vulnerabilities. The original calculation uses `oldsize + (oldsize
+    >> 1) + 4`, which might not allocate enough space in certain scenarios. The fix
+    changes the constant to `5` to ensure sufficient buffer size. This vulnerability
+    is dangerous because it could allow attackers to overwrite adjacent memory, potentially
+    leading to arbitrary code execution. To fix this, ensure the buffer size calculation
+    includes an appropriate safety margin.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/freetype/freetype/commit/cee5d593582801f65c5e127d9de9ca24ebcdc747
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

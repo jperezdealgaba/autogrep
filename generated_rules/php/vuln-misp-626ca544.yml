@@ -1,0 +1,30 @@
+rules:
+- id: vuln-misp-626ca544
+  pattern: 'throw new MethodNotAllowedException(''No template with the provided ID
+    exists, or you are not authorised to see it.'');
+
+    '
+  pattern-not: 'throw new MethodNotAllowedException(__(''No template with the provided
+    ID exists, or you are not authorised to see it.''));
+
+    '
+  languages:
+  - php
+  message: 'Detected a potentially insecure exception message that does not use the
+    translation function `__()`. This can lead to information disclosure or inconsistent
+    user experience in multilingual applications. Always use the translation function
+    for exception messages to ensure proper localization and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/626ca544ffb5604ea01bb291f69811668b6b5631
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - php

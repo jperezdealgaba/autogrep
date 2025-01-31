@@ -1,0 +1,28 @@
+rules:
+- id: vuln-atutor-af519cfb
+  pattern: "if($_SERVER['HTTP_REFERER'] != $_SERVER['PHP_SELF']){\n    $referer_script\
+    \ = preg_replace('#'.$_base_href.'#', '', $_SERVER['HTTP_REFERER']);\n    if(!in_array($_pages[$referer_script],\
+    \ $_pages)){\n        echo \"not a valid referer\";\n        exit;\n    }\n}\n"
+  pattern-not: 'check_referer();
+
+    '
+  languages:
+  - php
+  message: 'The code directly checks the HTTP Referer header without proper validation,
+    which can lead to CSRF vulnerabilities. Attackers can manipulate the Referer header
+    to bypass security checks. Use the centralized `check_referer()` function to ensure
+    proper validation and prevent CSRF attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/atutor/ATutor/commit/af519cfb56da7312eecbb5812484fcbce08e4419
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

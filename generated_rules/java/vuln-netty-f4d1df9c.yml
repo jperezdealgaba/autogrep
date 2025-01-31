@@ -1,0 +1,27 @@
+rules:
+- id: vuln-netty-f4d1df9c
+  pattern: 'throw new IllegalArgumentException("Both ''Content-Length: " + $CONTENT_LENGTH
+    + "'' and ''Transfer-Encoding: chunked'' found");
+
+    '
+  pattern-not: 'handleTransferEncodingChunkedWithContentLength($MESSAGE);
+
+    '
+  languages:
+  - java
+  message: 'Potential HTTP request smuggling vulnerability detected. Messages with
+    both ''Transfer-Encoding: chunked'' and ''Content-Length'' headers should be handled
+    appropriately, typically by removing the Content-Length header. Failure to do
+    so could allow request smuggling or response splitting attacks.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/f4d1df9c5785d0cb8bdf430ddb813215c824d9bb
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.3.3
+    technology:
+    - java

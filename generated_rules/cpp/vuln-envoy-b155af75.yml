@@ -1,0 +1,25 @@
+rules:
+- id: vuln-envoy-b155af75
+  pattern: "bool $FUNC() const {\n  return $STRING.find('\\0') == std::string::npos;\n\
+    }\n"
+  pattern-not: "bool $FUNC() const {\n  return validHeaderString($STRING);\n}\n"
+  languages:
+  - cpp
+  message: 'Detected use of direct string search for NULL characters in HTTP headers.
+    This is insufficient as it only checks for NULL characters and not other invalid
+    characters like CR or LF. Use the `validHeaderString` function to properly validate
+    HTTP headers, which checks for NULL, CR, and LF characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/b155af75fad7861e941b5939dc001abf581c9203
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.2.6
+    technology:
+    - cpp

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mastodon-5554ff2a
+  pattern: 'validates_with BlacklistedEmailValidator, on: :create
+
+    '
+  pattern-not: 'validates_with BlacklistedEmailValidator, if: -> { !confirmed? }
+
+    '
+  languages:
+  - ruby
+  message: "The validation for blacklisted emails is incorrectly scoped to only run\
+    \ on user creation. \nThis can allow malicious actors to bypass email blacklist\
+    \ checks after initial creation. \nThe validation should be conditional on the\
+    \ user not being confirmed instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/5554ff2a1d6f451d63d03f4eb0a740d8c91455de
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

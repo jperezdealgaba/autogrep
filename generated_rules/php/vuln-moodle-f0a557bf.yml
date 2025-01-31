@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moodle-f0a557bf
+  pattern: '$roles[$guestrole->id] = $guestrole;
+
+    $roleoptions = role_fix_names($roles, $context, ROLENAME_ALIAS, true);
+
+    '
+  pattern-not: "$rolesviewable = get_viewable_roles($context);\n$roleoptions = array_intersect_key($rolesviewable,\
+    \ $roles) + [\n    $guestrole->id => role_get_name($guestrole, $context),\n];\n"
+  languages:
+  - php
+  message: 'The code directly assigns guest roles without verifying if they are viewable
+    in the current context, potentially exposing sensitive role information. This
+    can lead to information disclosure vulnerabilities. Use `get_viewable_roles` to
+    filter roles based on the context and ensure only appropriate roles are displayed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/f0a557bffbdb450648d0e4cedb391d14d8a0a253
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

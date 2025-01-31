@@ -1,0 +1,19 @@
+rules:
+- id: vuln-tomcat-6d66e99e
+  pattern: "if (!$FILE.getCanonicalPath().startsWith($BASE.getCanonicalPath())) {\n\
+    \    ...\n}\n"
+  pattern-not: "if (!$FILE.getCanonicalFile().toPath().startsWith($BASE.getCanonicalFile().toPath()))\
+    \ {\n    ...\n}\n"
+  languages:
+  - java
+  message: Potential path traversal vulnerability. Using getCanonicalPath() for path
+    comparison is unsafe. Use getCanonicalFile().toPath() instead to ensure proper
+    path comparison.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/6d66e99ef85da93e4d2c2a536ca51aa3418bfaf4
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    technology:
+    - java

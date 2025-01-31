@@ -1,0 +1,24 @@
+rules:
+- id: vuln-glpi-b9236228
+  pattern: "$params = [\n    ...,\n    'bypass_rights' => $VAR,\n    ...\n];\n"
+  pattern-not: "$params = [\n    ...,\n    'check_view_rights' => $VAR,\n    ...\n\
+    ];\n"
+  languages:
+  - php
+  message: 'The use of ''bypass_rights'' parameter is deprecated and can lead to security
+    vulnerabilities by bypassing session rights checks. Replace it with ''check_view_rights''
+    to ensure proper access control.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/b9236228cfee3ced71bdb6f84bcee7657bbac27b
+    category: security
+    cwe:
+    - CWE-284
+    - CWE-285
+    owasp:
+    - A01:2021
+    - A04:2021
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-foreman-87697568
+  pattern: '$WIDGET = $USER.widgets.where("id = #{$ID}").first
+
+    '
+  pattern-not: '$WIDGET = $USER.widgets.where(:id => $ID).first
+
+    '
+  languages:
+  - ruby
+  message: 'Detected SQL injection vulnerability. Using string interpolation in SQL
+    queries can lead to SQL injection attacks. Always use parameterized queries or
+    ActiveRecord''s safe query methods to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/8769756840f31d808a2d2d93f0992291cce9ea22
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://guides.rubyonrails.org/security.html#sql-injection
+    technology:
+    - ruby

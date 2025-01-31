@@ -1,0 +1,28 @@
+rules:
+- id: vuln-podman-b87bac36
+  pattern: 'timeout_in: 25m
+
+    '
+  pattern-not: 'timeout_in: 30m
+
+    '
+  languages:
+  - yaml
+  message: 'The timeout_in value is set to 25 minutes, which may be insufficient for
+    certain operations, leading to potential timeouts and incomplete builds. Increasing
+    the timeout to 30 minutes or more ensures that operations have adequate time to
+    complete successfully.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/containers/podman/commit/b87bac369e4eb321c56fbeda1901ffb1105ac61b
+    category: reliability
+    cwe:
+    - CWE-400
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - yaml

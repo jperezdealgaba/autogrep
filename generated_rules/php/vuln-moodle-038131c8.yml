@@ -1,0 +1,28 @@
+rules:
+- id: vuln-moodle-038131c8
+  pattern: '$querystring .= ''&amp;''.$VAR.''=''.$VAL;
+
+    '
+  pattern-not: '$querystring .= ''&''.$VAR.''=''.$VAL;
+
+    '
+  languages:
+  - php
+  message: 'The use of ''&amp;'' instead of ''&'' in query string construction can
+    lead to incorrect URL encoding, potentially causing security issues such as parameter
+    injection. Always use ''&'' for query string separation and ensure proper URL
+    encoding of parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/038131c8b5614f18c14d964dc53b6960ae6c30d8
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.urlencode.php
+    technology:
+    - php

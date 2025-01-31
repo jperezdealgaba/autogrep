@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jasper-d42b2388
+  pattern: "if (!(image = jas_image_decode($INSTREAM, $FMTID, 0))) {\n  ...\n}\n"
+  pattern-not: "if (!(image = jas_image_decode($INSTREAM, $FMTID, $OPTSTR))) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability is caused by passing a hardcoded value of 0 as the options
+    string to jas_image_decode. This can lead to improper handling of image decoding
+    options, potentially resulting in security issues such as buffer overflows or
+    improper memory access. The fix involves passing a properly constructed options
+    string (optstr) to the function. Always validate and sanitize input parameters
+    when dealing with image decoding operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/d42b2388f7f8e0332c846675133acea151fc557a
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

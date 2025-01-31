@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openjpeg-e5285319
+  pattern: 'fscanf($F, "PG%[ \t]%c%c%[ \t+-]%d%[ \t]%d%[ \t]%d", ...)
+
+    '
+  pattern-not: 'fscanf($F, "PG%31[ \t]%c%c%31[ \t+-]%d%31[ \t]%d%31[ \t]%d", ...)
+
+    '
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability in fscanf due to missing\
+    \ field width specifiers. \nThis can lead to buffer overflow attacks by allowing\
+    \ input larger than the allocated buffer size. \nAlways specify a maximum field\
+    \ width in the format string to prevent buffer overflows.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/e5285319229a5d77bf316bb0d3a6cbd3cb8666d9
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

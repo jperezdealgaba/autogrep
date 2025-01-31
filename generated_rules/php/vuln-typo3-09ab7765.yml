@@ -1,0 +1,26 @@
+rules:
+- id: vuln-typo3-09ab7765
+  pattern: '$hash = md5(rand());
+
+    '
+  pattern-not: '$hash = md5(t3lib_div::generateRandomBytes(64));
+
+    '
+  languages:
+  - php
+  message: 'Using `md5(rand())` for generating cryptographic hashes is insecure because
+    `rand()` produces predictable values, making the hash susceptible to brute-force
+    attacks. Use a cryptographically secure random number generator like `t3lib_div::generateRandomBytes()`
+    instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/09ab77653161f23e266470a5984d4d5e64588355
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - php

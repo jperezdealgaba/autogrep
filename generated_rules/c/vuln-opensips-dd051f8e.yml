@@ -1,0 +1,22 @@
+rules:
+- id: vuln-opensips-dd051f8e
+  pattern: "while (*(--$TMP) == ' ') {\n  ...\n}\n"
+  pattern-not: "while ($TMP > $LMP->u.value && *(--$TMP) == ' ') {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential out-of-bounds memory access vulnerability. \nThe\
+    \ code decrements a pointer without checking if it remains within valid bounds,\
+    \ which could lead to undefined behavior or memory corruption. \nAlways ensure\
+    \ pointer bounds are checked before dereferencing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSIPS/opensips/commit/dd051f8ed5ae3347fb1d556ced3c97822c9d8450
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

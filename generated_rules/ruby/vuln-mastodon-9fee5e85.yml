@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mastodon-9fee5e85
+  pattern: 'stub_request(:get, $URL).to_return(status: $STATUS, body: $BODY)
+
+    '
+  pattern-not: 'stub_request(:get, $URL).to_return(status: $STATUS, body: $BODY, headers:
+    { ''Content-Type'': ''application/activity+json'' })
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a missing Content-Type header validation in HTTP responses. This
+    can lead to processing of untrusted data as ActivityPub content, potentially enabling
+    content spoofing or injection attacks. Always validate the Content-Type header
+    to ensure it matches ''application/activity+json'' or properly validated ''application/ld+json''
+    with the correct profile.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/9fee5e852669e26f970e278021302e1a203fc022
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.w3.org/TR/activitypub/
+    technology:
+    - ruby

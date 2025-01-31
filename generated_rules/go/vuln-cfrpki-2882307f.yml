@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cfrpki-2882307f
+  pattern: '$MIN, $MAX := GetRangeIP($IPNET)
+
+    '
+  pattern-not: "$ERR, $MIN, $MAX := GetRangeIP($IPNET)\nif $ERR != nil {\n    ...\n\
+    }\n"
+  languages:
+  - go
+  message: "Detected a potential out-of-bounds read vulnerability due to missing error\
+    \ handling in GetRangeIP function. \nThe function now returns an error to handle\
+    \ invalid IP address masks, which must be checked to prevent security issues.\n\
+    Always check the returned error and handle it appropriately to avoid undefined\
+    \ behavior.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudflare/cfrpki/commit/2882307febd66801de97b2a2ce4d93fe58132005
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - go

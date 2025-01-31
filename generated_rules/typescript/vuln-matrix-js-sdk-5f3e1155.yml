@@ -1,0 +1,35 @@
+rules:
+- id: vuln-matrix-js-sdk-5f3e1155
+  pattern: 'const $PARENT_EVENT_ID = $EVENT.getAssociatedId()!;
+
+    const $PARENT_EVENT = $THIS.findEventById($PARENT_EVENT_ID) ?? $EVENTS?.find(($E)
+    => $E.getId() === $PARENT_EVENT_ID);
+
+    '
+  pattern-not: "const $PARENT_EVENT_ID = $EVENT.getAssociatedId();\nlet $PARENT_EVENT:\
+    \ $TYPE | undefined;\nif ($PARENT_EVENT_ID) {\n    $PARENT_EVENT = $THIS.findEventById($PARENT_EVENT_ID)\
+    \ ?? $EVENTS?.find(($E) => $E.getId() === $PARENT_EVENT_ID);\n}\n"
+  languages:
+  - typescript
+  message: 'Potential null reference vulnerability detected. The code assumes `getAssociatedId()`
+    always returns a non-null value by using the non-null assertion operator (!),
+    which can lead to runtime errors if the value is actually null. Always check for
+    null values before using them in potentially unsafe operations.
+
+    To fix this, remove the non-null assertion operator and add a null check before
+    using the variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/matrix-org/matrix-js-sdk/commit/5f3e115545e17c23f4bfdd813fac334cedea7a3d
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - typescript

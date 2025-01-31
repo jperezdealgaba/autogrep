@@ -1,0 +1,27 @@
+rules:
+- id: vuln-netty-185f8b27
+  pattern: 'File $FILE = File.createTempFile($PREFIX, $SUFFIX, $DIRECTORY);
+
+    $FILE.setReadable(false, false);
+
+    $FILE.setReadable(true, true);
+
+    '
+  pattern-not: "File $FILE = File.createTempFile($PREFIX, $SUFFIX, $DIRECTORY);\n\
+    if (!$FILE.setReadable(false, false)) {\n    throw new IOException(\"Failed to\
+    \ set permissions on temporary file \" + $FILE);\n}\nif (!$FILE.setReadable(true,\
+    \ true)) {\n    throw new IOException(\"Failed to set permissions on temporary\
+    \ file \" + $FILE);\n}\n"
+  languages:
+  - java
+  message: Insecure temporary file permissions detected. The code does not properly
+    handle failures when setting file permissions, which could lead to unauthorized
+    access. Ensure that file permission changes are checked and throw an IOException
+    if they fail.
+  severity: ERROR
+  metadata:
+    source-url: github.com/netty/netty/commit/185f8b2756a36aaa4f973f1a2a025e7d981823f1
+    category: security
+    cwe: 'CWE-276: Incorrect Default Permissions'
+    owasp: A05:2021 - Security Misconfiguration
+    technology: java

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-podman-0282f98b
+  pattern: 'cmd := []string{"dd", ...}
+
+    '
+  pattern-not: 'cmd := []string{"/bin/dd", ...}
+
+    '
+  languages:
+  - go
+  message: 'Using ''dd'' without an absolute path can lead to command injection or
+    execution of unintended binaries if the PATH is compromised. Always use absolute
+    paths for system commands to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containers/podman/commit/0282f98b3cabad5ff873dc7c391151854f1501b7
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - go

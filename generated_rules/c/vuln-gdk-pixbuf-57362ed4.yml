@@ -1,0 +1,33 @@
+rules:
+- id: vuln-gdk-pixbuf-57362ed4
+  pattern: 'g_warning("Could not thumbnail ''%s'': %s", $FILENAME, $ERROR->message);
+
+    g_error_free($ERROR);
+
+    '
+  pattern-not: "g_warning(\"Could not thumbnail '%s': %s\", $FILENAME,\n         \
+    \ $ERROR ? $ERROR->message : \"Thumbnailer failed without returning an error\"\
+    );\ng_clear_error(&$ERROR);\n"
+  languages:
+  - c
+  message: 'Detected unsafe error handling in GDK-Pixbuf thumbnailer. The original
+    code directly accesses the error message without checking if the error pointer
+    is NULL, which could lead to a NULL pointer dereference. Additionally, g_error_free()
+    is used instead of g_clear_error(), which doesn''t properly clear the error pointer.
+    This could result in use-after-free vulnerabilities or memory leaks. To fix this,
+    always check if the error pointer is NULL before accessing its message field and
+    use g_clear_error() instead of g_error_free() to properly clear the error.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gdk-pixbuf/commit/57362ed4c1f37c05723e25e136327e262f32d35f
+    category: security
+    cwe:
+    - 'CWE-476: NULL Pointer Dereference'
+    - 'CWE-416: Use After Free'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://developer.gnome.org/glib/stable/glib-Error-Reporting.html
+    technology:
+    - c

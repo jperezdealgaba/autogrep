@@ -1,0 +1,20 @@
+rules:
+- id: vuln-nautobot-1ce8e5c6
+  pattern: "class Meta:\n  model = $MODEL\n  ...\n"
+  pattern-not: "class Meta($BASE_CLASS.Meta):\n  ...\n"
+  languages:
+  - python
+  message: 'Detected insecure Meta class definition without proper inheritance. This
+    can lead to exposure of sensitive fields in API responses. Ensure the Meta class
+    inherits from the base serializer''s Meta class to properly handle fields and
+    exclusions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nautobot/nautobot/commit/1ce8e5c658a075c29554d517cd453675e5d40d71
+    category: security
+    cwe: CWE-200
+    owasp: A3:2017-Sensitive Data Exposure
+    technology:
+    - python

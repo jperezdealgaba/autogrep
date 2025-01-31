@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mastodon-30658924
+  pattern: 'ruby: circleci/ruby@1.4.0
+
+    '
+  pattern-not: 'ruby: circleci/ruby@1.4.1
+
+    '
+  languages:
+  - yaml
+  message: 'Detected use of an outdated Ruby image version (1.4.0) in CircleCI configuration.
+    This version may contain security vulnerabilities that have been patched in later
+    versions. Upgrade to version 1.4.1 or higher to mitigate potential risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/30658924a80434e6a2bceb61267b911ea8d37898
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://circleci.com/developer/images/image/cimg/ruby
+    technology:
+    - yaml

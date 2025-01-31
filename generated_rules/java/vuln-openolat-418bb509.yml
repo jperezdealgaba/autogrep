@@ -1,0 +1,22 @@
+rules:
+- id: vuln-openolat-418bb509
+  pattern: 'new FileSelection($UREQ, $PATH)
+
+    '
+  pattern-not: 'new FileSelection($UREQ, $CONTAINER, $PATH)
+
+    '
+  languages:
+  - java
+  message: Insecure file selection pattern detected. The FileSelection constructor
+    should include a VFSContainer parameter to ensure proper file validation. This
+    can lead to unauthorized file access if not properly validated.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenOLAT/OpenOLAT/commit/418bb509ffcb0e25ab4390563c6c47f0458583eb
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: java

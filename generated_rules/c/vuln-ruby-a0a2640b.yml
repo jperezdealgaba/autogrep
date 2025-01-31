@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ruby-a0a2640b
+  pattern: StringValue($VAR)
+  pattern-not: StringValueCStr($VAR)
+  languages:
+  - c
+  message: 'The use of `StringValue` instead of `StringValueCStr` can lead to potential
+    security vulnerabilities.
+
+    `StringValue` does not ensure that the string is null-terminated, which can cause
+    buffer overflows or undefined behavior.
+
+    Replace `StringValue` with `StringValueCStr` to ensure the string is properly
+    null-terminated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/a0a2640b398cffd351f87d3f6243103add66575b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

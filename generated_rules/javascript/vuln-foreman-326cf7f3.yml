@@ -1,0 +1,27 @@
+rules:
+- id: vuln-foreman-326cf7f3
+  pattern: '$.cookie($NAME, $VALUE)
+
+    '
+  pattern-not: '$.cookie($NAME, $VALUE, { secure: location.protocol === ''https:''
+    })
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure cookie setting detected. Cookies should be marked as secure when
+    transmitted over HTTPS to prevent them from being sent over unencrypted connections,
+    which could lead to session hijacking or other security issues. Always set the
+    ''secure'' flag for cookies when using HTTPS.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/326cf7f38139b1c6c8b8e5774d06ee0160909d6a
+    category: security
+    cwe: CWE-614
+    owasp: A03:2021 - Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - javascript

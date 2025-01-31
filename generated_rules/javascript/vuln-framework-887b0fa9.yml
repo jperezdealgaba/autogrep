@@ -1,0 +1,21 @@
+rules:
+- id: vuln-framework-887b0fa9
+  pattern: "if ((/__proto__|constructor|prototype|eval/).test($VAR)) {\n  ...\n}\n"
+  pattern-not: "if ((/__proto__|constructor|prototype|eval|function|\\*|\\+|;|\\s|\\\
+    (|\\)|!/).test($VAR)) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Insecure validation of path parameters detected. The original validation
+    only checked for a limited set of dangerous keywords, which could allow injection
+    attacks. The patch expands the validation to include additional dangerous patterns.
+    Use the updated regex pattern to prevent potential security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/totaljs/framework/commit/887b0fa9e162ef7a2dd9cec20a5ca122726373b3
+    category: security
+    cwe: CWE-94
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

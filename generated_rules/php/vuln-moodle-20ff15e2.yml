@@ -1,0 +1,23 @@
+rules:
+- id: vuln-moodle-20ff15e2
+  pattern: "if (!has_capability('moodle/rating:view', $context)) {\n  ...\n}\n"
+  pattern-not: "if (!has_capability('moodle/rating:view', $context) ||\n    !component_callback($component,\
+    \ 'rating_can_see_item_ratings', array($params), true)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "The code is missing a check to verify if the user can see ratings for\
+    \ a specific item. This can lead to unauthorized access to rating information.\
+    \ \nTo fix this, ensure that the code calls `component_callback` to verify visibility\
+    \ rights for the specific item being rated.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/20ff15e22b4f0abebe1ab5fbfd1d681c88765e2a
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/Rating_API
+    technology:
+    - php

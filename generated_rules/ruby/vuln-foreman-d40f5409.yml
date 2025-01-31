@@ -1,0 +1,28 @@
+rules:
+- id: vuln-foreman-d40f5409
+  pattern: 'format.html { render :text => "<pre>#{ $DATA.to_yaml }</pre>" }
+
+    '
+  pattern-not: 'format.html { render :text => "<pre>#{ ERB::Util.html_escape($DATA.to_yaml)
+    }</pre>" }
+
+    '
+  languages:
+  - ruby
+  message: "Detected potential XSS vulnerability due to unescaped YAML output in HTML\
+    \ rendering. \nThis is dangerous because it allows injection of malicious scripts\
+    \ into the page. \nFix by using ERB::Util.html_escape to properly escape the YAML\
+    \ output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/d40f5409ac36c1eab7b8a5ccf3d91cc6db90ce70
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://guides.rubyonrails.org/security.html#cross-site-scripting-xss
+    technology:
+    - ruby

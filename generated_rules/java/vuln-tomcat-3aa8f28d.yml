@@ -1,0 +1,19 @@
+rules:
+- id: vuln-tomcat-3aa8f28d
+  pattern: 'new File($DIRECTORY(), $FILENAME)
+
+    '
+  pattern-not: "new File($STORAGE_DIR, $FILENAME)\nif (!$FILE.getCanonicalPath().startsWith($STORAGE_DIR.getCanonicalPath()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Potential path traversal vulnerability. File paths should be validated
+    to ensure they are within the intended directory to prevent unauthorized access.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/3aa8f28db7efb311cdd1b6fe15a9cd3b167a2222
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    technology:
+    - java

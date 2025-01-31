@@ -1,0 +1,24 @@
+rules:
+- id: vuln-spreed-12b8adaf
+  pattern: '$this->room = $this->manager->getRoomByToken($token);
+
+    '
+  pattern-not: '$this->room = $this->manager->getRoomForUserByToken($token, $this->userId);
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure room access without user validation. This can allow
+    unauthorized access to rooms. Always include user identity when accessing rooms
+    to ensure proper authorization. Use getRoomForUserByToken() with user ID instead
+    of getRoomByToken().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/spreed/commit/12b8adaff5e9f3dca4df0b24a20d316c8b66e27e
+    category: security
+    cwe: 'CWE-284: Improper Access Control'
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - php

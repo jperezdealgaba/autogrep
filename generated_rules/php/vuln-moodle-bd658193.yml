@@ -1,0 +1,32 @@
+rules:
+- id: vuln-moodle-bd658193
+  pattern: "$instance = repository::get_instance($VAR);\nif ($instance->readonly)\
+    \ {\n    throw new repository_exception('readonlyinstance', 'repository');\n}\
+    \ else if (!$instance->can_be_edited_by_user()) {\n    throw new repository_exception('nopermissiontoaccess',\
+    \ 'repository');\n}\n"
+  pattern-not: "if (!empty($instance)) {\n    if ($instance->instance->contextid !=\
+    \ $context->id) {\n        print_error('invalidcontext');\n    }\n    if ($instance->readonly)\
+    \ {\n        throw new repository_exception('readonlyinstance', 'repository');\n\
+    \    } else if (!$instance->can_be_edited_by_user()) {\n        throw new repository_exception('nopermissiontoaccess',\
+    \ 'repository');\n    }\n}\n"
+  languages:
+  - php
+  message: 'The code directly accesses and modifies repository instances without proper
+    context validation, which can lead to unauthorized access or modification. The
+    patch adds necessary context checks to ensure the operation is performed in the
+    correct context and by an authorized user. Always validate the context and user
+    permissions before performing operations on repository instances.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/bd6581935d5e4f3138b7e1029fe17af4e306db60
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/Security_guidelines
+    technology:
+    - php

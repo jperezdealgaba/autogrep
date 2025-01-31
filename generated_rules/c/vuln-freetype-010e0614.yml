@@ -1,0 +1,25 @@
+rules:
+- id: vuln-freetype-010e0614
+  pattern: 'cf2_stack_init($MEMORY, $ERROR)
+
+    '
+  pattern-not: 'cf2_stack_init($MEMORY, $ERROR, $STACK_SIZE)
+
+    '
+  languages:
+  - c
+  message: 'The stack initialization is missing a stack size parameter, which can
+    lead to stack overflow vulnerabilities. Always specify the stack size to ensure
+    proper memory allocation and bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/010e0614f2effe058855aacfc3e61c71e1cb5739
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

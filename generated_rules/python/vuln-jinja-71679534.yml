@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jinja-71679534
+  pattern: "\" \".join(\n    f'{escape($KEY)}=\"{escape($VALUE)}\"'\n    for $KEY,\
+    \ $VALUE in $DICT.items()\n    if $VALUE is not None and not isinstance($VALUE,\
+    \ $UNDEFINED)\n)\n"
+  pattern-not: "$ITEMS = []\nfor $KEY, $VALUE in $DICT.items():\n    if $VALUE is\
+    \ None or isinstance($VALUE, $UNDEFINED):\n        continue\n    if $SPACE_RE.search($KEY)\
+    \ is not None:\n        raise ValueError(f\"Spaces are not allowed in attributes:\
+    \ '{$KEY}'\")\n    $ITEMS.append(f'{escape($KEY)}=\"{escape($VALUE)}\"')\n\" \"\
+    .join($ITEMS)\n"
+  languages:
+  - python
+  message: 'Detected unsafe XML attribute generation without space validation in keys.
+
+    This can lead to XSS vulnerabilities if keys contain malicious content.
+
+    Add space validation to prevent unsafe attribute keys.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pallets/jinja/commit/716795349a41d4983a9a4771f7d883c96ea17be7
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    technology: python

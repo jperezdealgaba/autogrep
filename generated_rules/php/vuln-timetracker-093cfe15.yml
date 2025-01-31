@@ -1,0 +1,30 @@
+rules:
+- id: vuln-timetracker-093cfe15
+  pattern: '$FIELD->setTitle($TABLE->getValueAt($ROW,$COLUMN)[''note'']);
+
+    '
+  pattern-not: '$FIELD->setTitle(htmlspecialchars($TABLE->getValueAt($ROW,$COLUMN)[''note'']));
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses user input in the `setTitle` method without proper
+    escaping, which can lead to Cross-Site Scripting (XSS) vulnerabilities. This is
+    dangerous because it allows attackers to inject malicious scripts into the application,
+    potentially compromising user data or session information. To fix this, always
+    use `htmlspecialchars` to escape user input before using it in HTML contexts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/anuko/timetracker/commit/093cfe158099704ffd4a1624be217f9935e914eb
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://www.php.net/manual/en/function.htmlspecialchars.php
+    technology:
+    - php

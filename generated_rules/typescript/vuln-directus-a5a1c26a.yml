@@ -1,0 +1,23 @@
+rules:
+- id: vuln-directus-a5a1c26a
+  pattern: "const $VERSION = __DIRECTUS_VERSION__;\n...\nconsole.info(`%c\U0001F430\
+    \ Starting Directus v${$VERSION}...`, 'color:Green');\n"
+  pattern-not: "console.info(`%c\U0001F430 Starting Directus...`, 'color:Green');\n"
+  languages:
+  - typescript
+  message: 'Detected direct usage of `__DIRECTUS_VERSION__` in console output, which
+    can expose sensitive version information. This could be exploited by attackers
+    to target specific vulnerabilities in the exposed version. Instead, avoid logging
+    version information directly in production environments.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/directus/directus/commit/a5a1c26ac48795ed3212a4c51b9523588aff4fa0
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - typescript

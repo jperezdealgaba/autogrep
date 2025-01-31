@@ -1,0 +1,23 @@
+rules:
+- id: vuln-nats-server-fa5b7afc
+  pattern: "if len($TRUSTED_OPERATORS) == 0 && $NUM_ACCOUNTS == 2 && $NO_AUTH_USER\
+    \ == _EMPTY_ {\n  ...\n}\n"
+  pattern-not: "if len($TRUSTED_OPERATORS) == 0 && $NUM_ACCOUNTS == 2 && $NO_AUTH_USER\
+    \ == _EMPTY_ && !$OPTS.authBlockDefined {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Missing check for authBlockDefined in authorization logic. This can lead
+    to unauthorized access when no authorization block is defined. Always check authBlockDefined
+    to ensure proper authorization handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nats-io/nats-server/commit/fa5b7afcb64e7e887e49afdd032358802b5c4478
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - go

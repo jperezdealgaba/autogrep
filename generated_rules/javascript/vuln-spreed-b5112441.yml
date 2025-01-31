@@ -1,0 +1,21 @@
+rules:
+- id: vuln-spreed-b5112441
+  pattern: 'startedWithMedia = $VALUE
+
+    '
+  pattern-not: 'startedWithMedia = undefined
+
+    '
+  languages:
+  - javascript
+  message: Inconsistent state management of 'startedWithMedia' variable. This can
+    lead to undefined behavior in WebRTC sessions. Ensure the variable is properly
+    initialized and managed.
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/spreed/commit/b5112441b3f69228a1726df2008fd496dfc94152
+    category: security
+    cwe: CWE-664
+    owasp: A12:2021
+    technology:
+    - javascript

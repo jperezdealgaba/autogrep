@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ffmpeg-cca95285
+  pattern: '$FRAME->nb_samples = MPA_FRAME_SIZE;
+
+    '
+  pattern-not: '$FRAME->nb_samples = $FRAMES * MPA_FRAME_SIZE;
+
+    '
+  languages:
+  - c
+  message: 'The code incorrectly sets the number of samples in a frame to a fixed
+    value (MPA_FRAME_SIZE) without considering the actual number of frames. This can
+    lead to incorrect buffer sizes and potential memory corruption or out-of-bounds
+    access. The fix involves multiplying MPA_FRAME_SIZE by the number of frames (s->frames).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/cca9528524c7a4b91451f4322bd50849af5d057e
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Broken Access Control'
+    technology:
+    - c

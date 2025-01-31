@@ -1,0 +1,23 @@
+rules:
+- id: vuln-timetracker-8a7367d7
+  pattern: "if($request->getParameter('sorting_changed')) {\n  ...\n}\n"
+  pattern-not: "if($err->no() && $request->getParameter('sorting_changed')) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code directly uses user input without proper error checking, which
+    can lead to unexpected behavior or security vulnerabilities. Always validate or
+    check for errors before processing user input. Add a condition to check for errors
+    (`$err->no()`) before proceeding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/anuko/timetracker/commit/8a7367d7f77ea697c090f5ca4e19669181cc7bcf
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

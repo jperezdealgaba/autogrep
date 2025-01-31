@@ -1,0 +1,24 @@
+rules:
+- id: vuln-mantisbt-f21b56fa
+  pattern: 'echo ''<a href="permalink_page.php?url='' . urlencode(filter_get_url($VAR))
+    . ''">'';
+
+    '
+  pattern-not: 'echo ''<a href="permalink_page.php?url='' . $VAR . ''">'';
+
+    '
+  languages:
+  - php
+  message: "This code generates a URL without CSRF protection, making it vulnerable\
+    \ to Cross-Site Request Forgery (CSRF) attacks. \nAn attacker could trick a user\
+    \ into performing unwanted actions by crafting a malicious link. \nTo fix this,\
+    \ ensure CSRF tokens are included in the URL using form_security_param().\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/f21b56fa9060dbae9438b0d0dfb21dff090c1dd2
+    category: security
+    cwe:
+    - 352
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - php

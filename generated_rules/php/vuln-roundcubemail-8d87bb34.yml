@@ -1,0 +1,31 @@
+rules:
+- id: vuln-roundcubemail-8d87bb34
+  pattern: '$args[''status''] = file_exists($args[''path'']);
+
+    '
+  pattern-not: '$args[''status''] = $this->verify_path($args[''path'']) && file_exists($args[''path'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure file path validation. The code directly uses file_exists()
+    without verifying if the path is within the allowed directory. This can lead to
+    path traversal attacks, allowing access to sensitive files like /etc/passwd. Always
+    verify the path is within the expected directory using a method like verify_path()
+    before performing file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/8d87bb34f3c6103ab81e5342d8b3d297832d178a
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-23
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/23.html
+    technology:
+    - php

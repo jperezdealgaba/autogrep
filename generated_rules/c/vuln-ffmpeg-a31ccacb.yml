@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ffmpeg-a31ccacb
+  pattern: 'float $BUFFER[1024];
+
+    '
+  pattern-not: 'float $BUFFER[$SIZE * 2];
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe fixed-size buffer declaration. This can
+    lead to buffer overflow vulnerabilities if the buffer size is not properly validated.
+    The patch introduced a size check and used a defined constant for buffer size.
+    Always validate buffer sizes and use constants or dynamic allocation where appropriate.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/a31ccacb1a9b2abc0e140a812fb0ffca6f7c2591
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

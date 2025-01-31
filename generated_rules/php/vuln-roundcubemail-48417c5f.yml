@@ -1,0 +1,23 @@
+rules:
+- id: vuln-roundcubemail-48417c5f
+  pattern: '$homedir = $this->rc->config->get(''enigma_pgp_homedir'', INSTALL_PATH
+    . ''plugins/enigma/home'');
+
+    '
+  pattern-not: '$homedir = $this->rc->config->get(''enigma_pgp_homedir'');
+
+    '
+  languages:
+  - php
+  message: "Detected a potentially insecure default configuration for the PGP homedir.\
+    \ \nUsing a hardcoded default value can lead to security issues if the directory\
+    \ \nis not properly secured or accessible. Instead, rely on the configuration\
+    \ \nsystem to provide the homedir path without a default value.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/48417c5fc9f6eb4b90500c09596606d489c700b5
+    category: security
+    cwe: 'CWE-547: Use of Hard-coded, Security-relevant Constants'
+    owasp: 'A9: Security Misconfiguration'
+    technology:
+    - php

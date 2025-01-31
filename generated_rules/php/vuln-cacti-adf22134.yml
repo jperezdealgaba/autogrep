@@ -1,0 +1,34 @@
+rules:
+- id: vuln-cacti-adf22134
+  pattern: 'unserialize(stripslashes($VAR))
+
+    '
+  pattern-not: 'preg_match(''/^a:[0-9]+:{/'', $VAR) && !preg_match(''/(^|;|{|})O:\+?[0-9]+:"/'',
+    $VAR)
+
+    ...
+
+    unserialize($VAR)
+
+    '
+  languages:
+  - php
+  message: 'Unsafe deserialization detected. The code directly deserializes user input
+    without proper validation, which can lead to object injection vulnerabilities.
+    An attacker could craft malicious serialized data to execute arbitrary code. Always
+    validate the serialized string format before deserialization, as shown in the
+    patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/adf221344359f5b02b8aed43dfb6b33ae5d708c8
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A08:2021 - Software and Data Integrity Failures
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization
+    technology:
+    - php

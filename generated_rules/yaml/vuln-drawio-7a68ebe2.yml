@@ -1,0 +1,25 @@
+rules:
+- id: vuln-drawio-7a68ebe2
+  pattern: "paths:\n  - $VAR\n"
+  pattern-not: "paths:\n  - VERSION\n"
+  languages:
+  - yaml
+  message: 'The vulnerability involves missing or incorrect path specifications in
+    the workflow configuration, which can lead to incomplete or incorrect builds.
+    This is dangerous because it may result in deploying untested or outdated code.
+    To fix this, ensure that the correct paths are specified in the workflow configuration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jgraph/drawio/commit/7a68ebe22a64fe722704e9c4527791209fee2034
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - yaml

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-guarddog-98af5c8c
+  pattern: 'tarfile.open($PATH).extractall($DIR)
+
+    '
+  pattern-not: 'tarsafe.open($PATH).extractall($DIR)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe use of tarfile.open() which can lead to path traversal
+    or arbitrary file overwrite vulnerabilities. Use tarsafe.open() instead to safely
+    extract tar files.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DataDog/guarddog/commit/98af5c8c1e9c15fa888c900252e76116b0ec25d1
+    category: security
+    cwe: CWE-22
+    owasp: A5:2017-Broken Access Control
+    references:
+    - https://docs.python.org/3/library/tarfile.html
+    - https://github.com/DataDog/guarddog/commit/98af5c8c1e9c15fa888c900252e76116b0ec25d1
+    technology:
+    - python

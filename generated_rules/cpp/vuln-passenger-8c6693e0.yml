@@ -1,0 +1,27 @@
+rules:
+- id: vuln-passenger-8c6693e0
+  pattern: "ProcessPtr negotiateSpawn(NegotiationDetails &details) {\n    ...\n  \
+    \  return handleSpawnResponse(details);\n    ...\n}\n"
+  pattern-not: "ProcessPtr negotiateSpawn(const SpawnPreparationInfo &preparation,\
+    \ NegotiationDetails &details) {\n    ...\n    return handleSpawnResponse(preparation,\
+    \ details);\n    ...\n}\n"
+  languages:
+  - cpp
+  message: 'The function `negotiateSpawn` calls `handleSpawnResponse` without passing
+    the `SpawnPreparationInfo` object, which is required for validating the socket
+    address. This can lead to security vulnerabilities where the socket address is
+    not properly validated, potentially allowing unauthorized access or incorrect
+    socket usage. Always pass the `SpawnPreparationInfo` object to ensure proper validation
+    of socket addresses.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phusion/passenger/commit/8c6693e0818772c345c979840d28312c2edd4ba4
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

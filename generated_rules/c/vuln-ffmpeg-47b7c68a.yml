@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ffmpeg-47b7c68a
+  pattern: "if ($AVCTX->extradata_size >= 16) {\n  ...\n} else if ($AVCTX->extradata_size\
+    \ == 8) {\n  ...\n}\n"
+  pattern-not: "if (!$C->pro && $AVCTX->extradata_size >= 16) {\n  ...\n} else if\
+    \ ($C->pro && $AVCTX->extradata_size == 8) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks the extradata_size without considering the ''pro'' flag,
+    which could lead to incorrect processing of video data. This vulnerability could
+    potentially cause crashes or unexpected behavior when handling specific video
+    formats. To fix this, ensure that the ''pro'' flag is checked before processing
+    extradata_size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/47b7c68ae54560e2308bdb6be4fb076c73b93081
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    technology:
+    - c

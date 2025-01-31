@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ezpublish-kernel-957e67a0
+  pattern: 'assign: ~
+
+    '
+  pattern-not: 'assign: { MemberOf: true, Role: true }
+
+    '
+  languages:
+  - yaml
+  message: 'The ''assign'' field is set to null (~), which can lead to security vulnerabilities
+    by not enforcing proper role and membership limitations. This can allow unauthorized
+    access to sensitive resources. To fix this, explicitly define the ''assign'' field
+    with ''MemberOf'' and ''Role'' set to true.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ezsystems/ezpublish-kernel/commit/957e67a08af2b3265753f9763943e8225ed779ab
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - yaml

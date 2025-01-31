@@ -1,0 +1,25 @@
+rules:
+- id: vuln-redis-6d9f8e24
+  pattern: "if (getClientTypeByName($VAR) == -1) {\n    ...\n}\n"
+  pattern-not: "if (getClientTypeByName($VAR) == -1 || getClientTypeByName($VAR) ==\
+    \ CLIENT_TYPE_MASTER) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Unrecognized client limit class vulnerability detected. The code fails
+    to handle the ''master'' client type, which has no buffer limits. This can lead
+    to security issues by not properly enforcing client limits. To fix, ensure the
+    condition checks for both invalid client types and the ''master'' type.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/6d9f8e2462fc2c426d48c941edeb78e5df7d2977
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://github.com/redis/redis/commit/6d9f8e2462fc2c426d48c941edeb78e5df7d2977
+    technology:
+    - c

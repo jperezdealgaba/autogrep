@@ -1,0 +1,45 @@
+rules:
+- id: vuln-ffmpeg-27a99e2c
+  pattern: 'int $XD_SIZE = 0;
+
+    ...
+
+    $XD_SIZE += $LEN;
+
+    ...
+
+    ff_alloc_extradata($ST->codecpar, $CONST + $XD_SIZE + $XD_SIZE / 255);
+
+    '
+  pattern-not: 'int $XD_SIZE = 1;
+
+    ...
+
+    $XD_SIZE += $LEN + 1 + $LEN / 255;
+
+    ...
+
+    ff_alloc_extradata($ST->codecpar, $XD_SIZE);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the size calculation for extra
+    data is incorrect, potentially leading to buffer overflows or memory corruption.
+    The original code miscalculates the size by not accounting for additional bytes
+    needed for encoding, which can result in insufficient buffer allocation. The fix
+    ensures proper size calculation by adding necessary padding. To fix, update the
+    size calculation logic to include the correct padding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FFmpeg/FFmpeg/commit/27a99e2c7d450fef15594671eef4465c8a166bd7
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp: 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - c

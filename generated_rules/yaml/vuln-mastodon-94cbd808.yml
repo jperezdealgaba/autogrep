@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mastodon-94cbd808
+  pattern: 'Max: 368
+
+    '
+  pattern-not: 'Max: 375
+
+    '
+  languages:
+  - yaml
+  message: 'The value for ''Max'' in the YAML configuration is set too low, which
+    could lead to performance or security issues. Increase the value to 375 to mitigate
+    potential risks.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/94cbd808b5b3e7999c7e77dc724b7e8c9dd2bdec
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - yaml

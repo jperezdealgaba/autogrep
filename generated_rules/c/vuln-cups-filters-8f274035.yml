@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cups-filters-8f274035
+  pattern: '$RETVAL = system($CMDLINE) >> 8;
+
+    '
+  pattern-not: "$PID = fork();\nif ($PID == 0) {\n  $RETVAL = execv($BACKEND_PATH,\
+    \ $BACKEND_ARGV);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected use of `system()` with command line construction, which can lead
+    to command injection vulnerabilities. The patch replaces `system()` with `fork()`
+    and `execv()` to safely execute the backend without shell interpretation. Use
+    the safer approach to prevent command injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenPrinting/cups-filters/commit/8f274035756c04efeb77eb654e9d4c4447287d65
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - c

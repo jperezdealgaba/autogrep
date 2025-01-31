@@ -1,0 +1,27 @@
+rules:
+- id: vuln-freetype-8d22746c
+  pattern: '$VAR = $MASK->end_point;
+
+    '
+  pattern-not: "$VAR = $MASK->end_point > $GLYPH->num_points\n          ? $GLYPH->num_points\n\
+    \          : $MASK->end_point;\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs due to a lack of bounds checking when assigning
+    `mask->end_point` to a variable. This can lead to out-of-bounds access if `mask->end_point`
+    exceeds the actual number of points in the glyph. To fix this, ensure that `mask->end_point`
+    is within the bounds of `glyph->num_points` by using a conditional check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/8d22746c9e5af80ff4304aef440986403a5072e2
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

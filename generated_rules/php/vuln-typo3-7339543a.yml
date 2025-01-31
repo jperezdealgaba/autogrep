@@ -1,0 +1,27 @@
+rules:
+- id: vuln-typo3-7339543a
+  pattern: '$fullElement[] = ''<input type="text" class="form-control" disabled="disabled"
+    value="'' . $shortenedPlaceholder . ''" />'';
+
+    '
+  pattern-not: '$fullElement[] = ''<input type="text" class="form-control" disabled="disabled"
+    value="'' . htmlspecialchars($shortenedPlaceholder) . ''" />'';
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped user input in HTML attribute value, which can lead
+    to Cross-Site Scripting (XSS) vulnerabilities. Always use htmlspecialchars() to
+    escape user input before embedding it in HTML to prevent malicious script execution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/7339543a0f703221b5477c47dd2514c325b23d6b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

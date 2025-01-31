@@ -1,0 +1,28 @@
+rules:
+- id: vuln-eonweb-de8e206c
+  pattern: '$lang = mysqli_result(sqlrequest($database_eonweb,"select user_language
+    from users where user_id=''".$_COOKIE[''user_id'']."''"),0);
+
+    '
+  pattern-not: "$idUser =$_COOKIE['user_id'];\n$conn = connexionDB($database_eonweb);\n\
+    $stmt = $conn->prepare(\"SELECT user_language from users where user_id= :idUser\"\
+    );\n$stmt->bindParam(':idUser', $idUser);\n$stmt->execute();\n$result = $stmt->fetch();\
+    \ \n$lang=$result[\"user_language\"];\n$stmt=null;\n$conn=null;\n"
+  languages:
+  - php
+  message: 'Detected SQL injection vulnerability due to direct concatenation of user
+    input into SQL query. This is dangerous as it allows attackers to manipulate the
+    SQL query, potentially leading to unauthorized data access or modification. Use
+    prepared statements with parameterized queries to prevent SQL injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/EyesOfNetworkCommunity/eonweb/commit/de8e206ca7d56171e524554fec33161184e7bb8f
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jasper-a712a204
+  pattern: "if (!jas_safe_size_mul($DEC->numhtiles, $DEC->numvtiles, &$SIZE)) {\n\
+    \  ...\n}\n"
+  pattern-not: "if (!jas_safe_size_mul($DEC->numhtiles, $DEC->numvtiles, &$SIZE) ||\n\
+    \  $SIZE > INT_MAX) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected unsafe multiplication of tile dimensions without checking for\
+    \ integer overflow.\nThis can lead to buffer overflows or other memory corruption\
+    \ issues. \nAlways validate that the result of the multiplication does not exceed\
+    \ INT_MAX.\nThe fix includes adding assertions to ensure positive tile dimensions\
+    \ and checking the result against INT_MAX.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/a712a2041085e7cd5f2b153e1532ac2a2954ffaa
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

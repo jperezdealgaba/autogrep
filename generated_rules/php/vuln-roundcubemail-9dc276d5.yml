@@ -1,0 +1,29 @@
+rules:
+- id: vuln-roundcubemail-9dc276d5
+  pattern: 'preg_replace(''/(^|[\n\s;])page:[^;]+;*/im'', '''', $styles)
+
+    '
+  pattern-not: 'preg_replace(''/((^|[\n\s;])page:)[^;]+;*/im'', ''\\1 unset;'', $styles)
+
+    '
+  languages:
+  - php
+  message: 'The pattern replacement for ''page:'' CSS property is vulnerable to XSS
+    attacks as it does not properly handle the ''page:'' property, potentially allowing
+    injection of malicious content. The fix replaces the ''page:'' property with ''unset''
+    to prevent XSS. Always ensure that CSS properties are properly sanitized to prevent
+    injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/9dc276d5f26042db02754fa1bac6fbd683c6d596
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bigbluebutton-535f2d66
+  pattern: '`?presFilename=${encodeURIComponent($CURRENT_PRESENTATION.name)}`
+
+    '
+  pattern-not: '`?presFilename=${encodeURIComponent($PRESENTATION_FILE_NAME)}`
+
+    '
+  languages:
+  - javascript
+  message: 'Potential security vulnerability detected where the presentation filename
+    is constructed without proper concatenation of the ID and file extension. This
+    could lead to incorrect or insecure file handling. Use a properly constructed
+    filename that includes both the ID and the correct file extension.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bigbluebutton/bigbluebutton/commit/535f2d665af254805a28d680ec7dc52e9e358281
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - javascript

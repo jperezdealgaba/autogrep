@@ -1,0 +1,20 @@
+rules:
+- id: vuln-cpython-9fe7655c
+  pattern: "with self.assertRaises(ValueError):\n    subprocess.check_call($CMD, extra_groups=[])\n"
+  pattern-not: "with self.assertRaises(ValueError):\n    subprocess.check_call($CMD,\
+    \ extra_groups=[$GROUP])\n"
+  languages:
+  - python
+  message: Detected potentially unsafe subprocess call with empty extra_groups. This
+    can lead to unexpected behavior or security issues. Ensure proper group validation
+    is in place.
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/9fe7655c6ce0b8e9adc229daf681b6d30e6b1610
+    category: security
+    cwe: CWE-284
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://docs.python.org/3/library/subprocess.html
+    technology:
+    - python

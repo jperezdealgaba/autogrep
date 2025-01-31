@@ -1,0 +1,27 @@
+rules:
+- id: vuln-microweber-955471c2
+  pattern: "if ($option['option_key'] == 'website_head') {\n    $cleanFromXss = false;\n\
+    }\nif ($option['option_key'] == 'website_footer') {\n    $cleanFromXss = false;\n\
+    }\n"
+  pattern-not: "foreach ($this->whitelistedGroupKeys as $group => $keys) {\n    if\
+    \ ($option['option_group'] == $group) {\n        foreach ($keys as $key) {\n \
+    \           if ($option['option_key'] == $key) {\n                $cleanFromXss\
+    \ = false;\n                break;\n            }\n        }\n    }\n}\n"
+  languages:
+  - php
+  message: 'Detected a hardcoded XSS bypass check for specific option keys without
+    proper whitelisting. This can lead to security vulnerabilities by allowing XSS
+    in other contexts. Use a whitelisted group of keys to manage XSS bypass rules
+    more securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/955471c27e671c49e4b012e3b120b004082ac3f7
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

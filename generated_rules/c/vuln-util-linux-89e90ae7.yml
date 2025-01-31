@@ -1,0 +1,26 @@
+rules:
+- id: vuln-util-linux-89e90ae7
+  pattern: "strchr($VALUE + 1, '\"');\nif (!$END) {\n  ...\n}\n"
+  pattern-not: "char *$P = $END = $VALUE + 1;\nwhile (*$P) {\n  if (*$P == '\\\\')\
+    \ {\n    $P++;\n    *$END = *$P;\n  } else {\n    *$END = *$P;\n    if (*$P ==\
+    \ '\"')\n      break;\n  }\n  $P++;\n  $END++;\n}\nif (*$END != '\"') {\n  $END\
+    \ = ++$P;\n}\n"
+  languages:
+  - c
+  message: 'The code uses `strchr` to find the end of a quoted string without properly
+    handling escaped quotes. This can lead to incorrect parsing of strings containing
+    escaped quotes, potentially causing security vulnerabilities such as injection
+    attacks. The fix involves iterating through the string and properly handling escaped
+    quotes by converting them to their unescaped form.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/89e90ae7b2826110ea28c1c0eb8e7c56c3907bdc
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

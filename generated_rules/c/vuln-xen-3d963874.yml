@@ -1,0 +1,26 @@
+rules:
+- id: vuln-xen-3d963874
+  pattern: "if (cpu_data[smp_processor_id()].pfr64.csv2)\n  return true;\n"
+  pattern-not: "if (cpu_data[smp_processor_id()].pfr64.csv2)\n  return 0;\n"
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect return value when checking for
+    the presence of the CSV2 feature in the processor. The original code returns `true`
+    when the CSV2 feature is present, which can lead to incorrect handling of the
+    hardened vector installation. This could result in security vulnerabilities due
+    to improper vector handling. The fix involves returning `0` instead of `true`
+    to ensure the correct behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xen-project/xen/commit/3d963874461b3001e33f3ff90e285670f04d16c4
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/754.html
+    technology:
+    - c

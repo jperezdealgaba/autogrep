@@ -1,0 +1,27 @@
+rules:
+- id: vuln-envoy-7ca28ff7
+  pattern: "const uint32_t total = $FIELD.size() + $VALUE.size() + $HEADERS.byteSize();\n\
+    if (total > ($MAX_HEADERS_KB * 1024)) {\n  ...\n  throw CodecProtocolException($ERROR_MESSAGE);\n\
+    }\n"
+  pattern-not: "void checkMaxHeadersSize() {\n  const uint32_t total = getHeadersSize();\n\
+    \  if (total > (max_headers_kb_ * 1024)) {\n    ...\n    throw CodecProtocolException(...);\n\
+    \  }\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly calculates and checks the header size without using
+    the `checkMaxHeadersSize()` method, which could lead to inconsistent header size
+    validation. This could potentially allow oversized headers to bypass size checks,
+    leading to resource exhaustion or denial of service. Always use the centralized
+    `checkMaxHeadersSize()` method to ensure consistent header size validation across
+    the codebase.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/envoyproxy/envoy/commit/7ca28ff7d46454ae930e193d97b7d08156b1ba59
+    category: security
+    cwe:
+    - CWE-770
+    owasp: A1:2017-Injection
+    technology:
+    - cpp

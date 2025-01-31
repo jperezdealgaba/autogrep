@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gstreamer-f6722775
+  pattern: "for ($I = 0; $SESSION_ID[$I] != '\\0'; $I++) {\n  ...\n}\n"
+  pattern-not: "for ($I = 0; $I < $MAXLEN && $SESSION_ID[$I] != '\\0'; $I++) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to missing bounds
+    checking
+
+    in a loop that iterates over a string. This can lead to out-of-bounds memory access
+
+    if the string is not null-terminated or exceeds expected length. To fix this,
+    add
+
+    a length check in the loop condition to ensure the loop does not exceed the maximum
+
+    allowed length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GStreamer/gstreamer/commit/f672277509705c4034bc92a141eefee4524d15aa
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c
