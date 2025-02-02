@@ -1,0 +1,23 @@
+rules:
+- id: vuln-url-parse-53b1794e
+  pattern: 'if (!extracted.slashes) instructions[2] = [/(.*)/, ''pathname''];
+
+    '
+  pattern-not: 'if (!extracted.slashes) instructions[3] = [/(.*)/, ''pathname''];
+
+    '
+  languages:
+  - javascript
+  message: 'Incorrect array index used in URL pathname instructions. This can lead
+    to incorrect URL parsing and potential security vulnerabilities. The correct index
+    should be 3 instead of 2 to properly handle pathnames.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/unshiftio/url-parse/commit/53b1794e54d0711ceb52505e0f74145270570d5a
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

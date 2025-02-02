@@ -1,0 +1,25 @@
+rules:
+- id: vuln-zip4j-597b31af
+  pattern: "if ($LOCAL_FILE_HEADER.isDataDescriptorExists() && $COMPRESSION_METHOD.equals($ZIP4J_UTIL.getCompressionMethod($LOCAL_FILE_HEADER)))\
+    \ {\n  return;\n}\n"
+  pattern-not: "if (getLocalFileHeader().isDataDescriptorExists() && CompressionMethod.DEFLATE.equals(Zip4jUtil.getCompressionMethod(getLocalFileHeader())))\
+    \ {\n  return;\n}\n"
+  languages:
+  - java
+  message: 'Skipping content verification when using Deflate compression with a data
+    descriptor can lead to AES MAC byte corruption.
+
+    This occurs because the exact size of the compressed data is unknown, potentially
+    causing more data to be read than necessary.
+
+    To fix this, ensure content verification is performed or handle the data descriptor
+    case appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/srikanth-lingala/zip4j/commit/597b31afb473a40e8252de5b5def1876bab198d3
+    category: security
+    cwe: CWE-354
+    owasp: A6:2017-Security Misconfiguration
+    technology: java

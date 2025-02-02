@@ -1,0 +1,32 @@
+rules:
+- id: vuln-serendipity-e2a665e1
+  pattern: '$data[''print_DIRECTORY_CREATED''] = sprintf(DIRECTORY_CREATED, $serendipity[''POST''][''name'']);
+
+    '
+  pattern-not: '$data[''print_DIRECTORY_CREATED''] = sprintf(DIRECTORY_CREATED, $new_dir);
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses user input from `$serendipity[''POST''][''name'']`
+    without proper validation or sanitization, which can lead to directory traversal
+    or other injection vulnerabilities. This is dangerous because it allows attackers
+    to manipulate the directory creation process, potentially leading to unauthorized
+    access or data corruption. To fix this, use a validated and sanitized variable
+    like `$new_dir` instead of directly using user input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/s9y/Serendipity/commit/e2a665e13b7de82a71c9bbb77575d15131b722be
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zziplib-0c0c9256
+  pattern: 'perror($ARG);
+
+    '
+  pattern-not: 'fprintf(stderr, "%s: %s\n", $ARG, zzip_strerror($ERROR));
+
+    '
+  languages:
+  - c
+  message: 'Using `perror` to report errors can lead to insufficient error information
+    being logged, especially in the context of ZIP file handling. This can make debugging
+    and security analysis more difficult. The fix replaces `perror` with `fprintf(stderr,
+    ...)` which provides more detailed error information. Always ensure that error
+    messages include sufficient context for debugging and security analysis.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/0c0c9256b0903f664bca25dd8d924211f81e01d3
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - 'A9: Security Logging and Monitoring Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/209.html
+    technology:
+    - c

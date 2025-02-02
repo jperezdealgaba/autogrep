@@ -1,0 +1,22 @@
+rules:
+- id: vuln-vyper-55e18f6d
+  pattern: "dst = IRnode.from_list(\n    context.new_internal_variable(ret_typ),\n\
+    \    typ=ret_typ,\n    location=MEMORY,\n    annotation=\"concat destination\"\
+    ,\n)\n"
+  pattern-not: 'dst = IRnode.from_list(buf, typ=ret_typ, location=MEMORY, annotation="concat
+    destination")
+
+    '
+  languages:
+  - python
+  message: Potential vulnerability in buffer handling during concatenation. The original
+    code does not account for the full buffer size, which could lead to memory corruption
+    or unexpected behavior. The fix ensures proper buffer size allocation by adding
+    32 bytes to the maximum length.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/55e18f6d128b2da8986adbbcccf1cd59a4b9ad6f
+    category: security
+    cwe: CWE-120
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    technology: python

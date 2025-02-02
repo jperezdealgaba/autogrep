@@ -1,0 +1,24 @@
+rules:
+- id: vuln-struts-1736b56d
+  pattern: '$OBJ.addIfExists($KEY, $VALUE, false)
+
+    '
+  pattern-not: '$OBJ.addIfExists($KEY, $VALUE)
+
+    '
+  languages:
+  - java
+  message: 'Detected a potential security vulnerability where a boolean parameter
+    is being passed to `addIfExists`. This could lead to improper handling of values
+    and potential security issues. The boolean parameter has been removed in the fixed
+    version to ensure proper value handling. Remove the boolean parameter to mitigate
+    the vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/1736b56db702c6639a6d5ae1146dba5a262e3344
+    category: security
+    cwe: CWE-20
+    owasp: A06:2021 - Vulnerable and Outdated Components
+    technology: java

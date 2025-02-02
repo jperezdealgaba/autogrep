@@ -1,0 +1,30 @@
+rules:
+- id: vuln-memos-8101a5e0
+  pattern: "func CORSMiddleware() echo.MiddlewareFunc {\n    ...\n    w.Header().Set(\"\
+    Access-Control-Allow-Origin\", $ORIGIN)\n    ...\n}\n"
+  pattern-not: "func CORSMiddleware($ORIGINS) echo.MiddlewareFunc {\n    ...\n   \
+    \ requestOrigin := r.Header.Get(\"Origin\")\n    if len($ORIGINS) == 0 {\n   \
+    \     w.Header().Set(\"Access-Control-Allow-Origin\", requestOrigin)\n    } else\
+    \ {\n        for _, origin := range $ORIGINS {\n            if origin == requestOrigin\
+    \ {\n                w.Header().Set(\"Access-Control-Allow-Origin\", origin)\n\
+    \                break\n            }\n        }\n    }\n    ...\n}\n"
+  languages:
+  - go
+  message: 'Detected a CORS middleware that allows any origin without validation.
+    This can lead to security vulnerabilities by enabling cross-origin requests from
+    untrusted domains. To fix this, implement origin validation by checking against
+    a list of allowed origins.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/8101a5e0b162044c16385bee4f12a4a653d050b9
+    category: security
+    cwe:
+    - CWE-942
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Security_Misconfiguration
+    technology:
+    - go

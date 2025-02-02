@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cimg-4f184f89
+  pattern: '(size_t)$SIZEX * $SIZEY * $SIZEZ * $SIZEC
+
+    '
+  pattern-not: '_safe_size($SIZEX, $SIZEY, $SIZEZ, $SIZEC)
+
+    '
+  languages:
+  - cpp
+  message: "Detected an unsafe multiplication of dimensions that could lead to a size_t\
+    \ overflow. \nThis vulnerability occurs when multiplying unsigned integers without\
+    \ checking for overflow, \nwhich can lead to memory corruption or security issues.\
+    \ \nUse the _safe_size function to ensure proper overflow checking.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dtschump/CImg/commit/4f184f89f9ab6785a6c90fd238dbaa6d901d3505
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

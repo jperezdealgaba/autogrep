@@ -1,0 +1,23 @@
+rules:
+- id: vuln-moby-a79fabbf
+  pattern: 'strings.ToLower($HEADER.Get("Transfer-Encoding")) == "chunked"
+
+    '
+  pattern-not: 'strings.EqualFold($HEADER.Get("Transfer-Encoding"), "chunked")
+
+    '
+  languages:
+  - go
+  message: "Using `strings.ToLower` for case-insensitive string comparison is inefficient\
+    \ and less safe. \nPrefer `strings.EqualFold` for case-insensitive comparisons\
+    \ as it is more efficient and handles Unicode correctly.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/moby/moby/commit/a79fabbfe84117696a19671f4aa88b82d0f64fc1
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - go

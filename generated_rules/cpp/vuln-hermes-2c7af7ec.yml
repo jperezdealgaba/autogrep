@@ -1,0 +1,28 @@
+rules:
+- id: vuln-hermes-2c7af7ec
+  pattern: 'const uint32_t *$VAR = (const uint32_t *)$TABLESTART + $UINTVAL - $OP4;
+
+    '
+  pattern-not: 'const int32_t *$VAR = (const int32_t *)$TABLESTART + $UINTVAL - $OP4;
+
+    '
+  languages:
+  - cpp
+  message: 'Using unsigned integers for pointer arithmetic in switch statements can
+    lead to incorrect branching due to overflow or underflow. This is dangerous because
+    it can cause unexpected program behavior or security vulnerabilities. Use signed
+    integers instead to handle both forward and backward branching correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebook/hermes/commit/2c7af7ec481ceffd0d14ce2d7c045e475fd71dc6
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

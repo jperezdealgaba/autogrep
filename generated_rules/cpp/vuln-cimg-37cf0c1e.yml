@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cimg-37cf0c1e
+  pattern: 'const ulongT $FSIZ = $FILE ? (ulongT)cimg_max_file_size : (ulongT)cimg::fsize($FILENAME);
+
+    '
+  pattern-not: 'const ulongT $FSIZ = $FILE ? (ulongT)cimg_max_buf_size : (ulongT)cimg::fsize($FILENAME);
+
+    '
+  languages:
+  - cpp
+  message: 'The use of `cimg_max_file_size` instead of `cimg_max_buf_size` can lead
+    to buffer overflow vulnerabilities. This is dangerous because it allows the allocation
+    of memory beyond the intended limits, potentially leading to crashes or security
+    exploits. Replace `cimg_max_file_size` with `cimg_max_buf_size` to enforce the
+    correct buffer size limit.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dtschump/CImg/commit/37cf0c1e5eeafb5b759c1a36423eb3dae27dbee8
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - cpp

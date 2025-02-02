@@ -1,0 +1,30 @@
+rules:
+- id: vuln-magmi-git-dde71de5
+  pattern: 'if (!$this->_hasDB) return ($this->user == ''magmi'' && $this->pass ==
+    ''magmi'');
+
+    '
+  pattern-not: "if(!$this->_hasDB) {\n    die(\"Please create magmi.ini file in magmi/conf\
+    \ directory , by copying & editing magmi.ini.default file and filling appropriate\
+    \ values\");\n}\n"
+  languages:
+  - php
+  message: 'Hardcoded credentials detected in authentication check. This is dangerous
+    as it allows unauthorized access if the default credentials are not changed. The
+    vulnerability was fixed by removing the hardcoded credentials and requiring proper
+    configuration. Ensure that credentials are not hardcoded and are properly managed
+    through secure configuration files.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dweeves/magmi-git/commit/dde71de5cfd505fe78e5caf21d6531b61450a16f
+    category: security
+    cwe:
+    - 798
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

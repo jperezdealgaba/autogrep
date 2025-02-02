@@ -1,0 +1,20 @@
+rules:
+- id: vuln-library-642f5974
+  pattern: Session::flush()
+  pattern-not: Session::invalidate()
+  languages:
+  - php
+  message: "Using `Session::flush()` instead of `Session::invalidate()` can lead to\
+    \ session fixation attacks. \n`flush()` only removes the session data but keeps\
+    \ the session ID, while `invalidate()` destroys the session entirely, including\
+    \ the session ID. \nTo fix this, replace `Session::flush()` with `Session::invalidate()`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/octobercms/library/commit/642f597489e6f644d4bd9a0c267e864cabead024
+    category: security
+    cwe:
+    - CWE-384
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

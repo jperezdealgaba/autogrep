@@ -1,0 +1,23 @@
+rules:
+- id: vuln-notebook-79fc76e8
+  pattern: "{\n  ...,\n  \"google-caja\": \"5669\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"webpack\": \"^5.46.0\",\n  \"webpack-cli\": \"^4.7.2\"\
+    ,\n  ...\n}\n"
+  languages:
+  - json
+  message: "Outdated or insecure dependencies detected in JSON configuration files.\
+    \ \nThe 'google-caja' library is outdated and may contain vulnerabilities. \n\
+    Update dependencies to include secure versions of 'webpack' and 'webpack-cli'\
+    \ \nto mitigate potential security risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jupyter/notebook/commit/79fc76e890a8ec42f73a3d009e44ef84c14ef0d5
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - json

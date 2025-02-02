@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gravity-0e0ac575
+  pattern: '$X = mem_alloc($SIZE);
+
+    '
+  pattern-not: '$X = mem_alloc(NULL, $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe memory allocation using mem_alloc without passing NULL
+    as the first argument. This can lead to memory management issues and potential
+    vulnerabilities. Always pass NULL as the first argument to mem_alloc to ensure
+    proper memory allocation and error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/0e0ac575718d5e429ba0747f552545b5c22489ae
+    category: security
+    cwe:
+    - 'CWE-789: Uncontrolled Memory Allocation'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

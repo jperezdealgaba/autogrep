@@ -1,0 +1,30 @@
+rules:
+- id: vuln-curl-2766262a
+  pattern: 'result = ($LINE[3] == '' '') ? TRUE : FALSE;
+
+    '
+  pattern-not: 'result = ($LINE[3] == '' '' || $LEN == 5) ? TRUE : FALSE;
+
+    '
+  languages:
+  - c
+  message: 'The code checks for a command response in SMTP protocol but does not account
+    for servers that only send the response code without additional text. This can
+    lead to incorrect handling of server responses, potentially causing security issues
+    or unexpected behavior. The fix includes checking for a response code of length
+    5, which is valid according to RFC-4954. Update the condition to handle both cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/2766262a68688c1dd8143f9c4be84b46c408b70a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc4954
+    - https://tools.ietf.org/html/rfc5321
+    technology:
+    - c

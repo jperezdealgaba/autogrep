@@ -1,0 +1,19 @@
+rules:
+- id: vuln-guava-acf29b38
+  pattern: "if (\"amd64\".equals($ARCH) || \"aarch64\".equals($ARCH)) {\n  ...\n}\n"
+  pattern-not: "if (\"amd64\".equals($ARCH)) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Unsafe platform check detected. The use of Unsafe.getLong() should be restricted
+    to platforms that are specifically known to work, such as amd64. Including aarch64
+    in the platform check can lead to unsafe behavior on 32-bit Android systems.
+  severity: ERROR
+  metadata:
+    source-url: github.com/google/guava/commit/acf29b389bc9ff8701f69d05b30e9d899bc10e35
+    category: security
+    cwe:
+    - CWE-250
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - java

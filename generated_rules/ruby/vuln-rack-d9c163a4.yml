@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rack-d9c163a4
+  pattern: '$CONTENT_TYPE.split($SPLIT_PATTERN, 2).first.tap &:downcase!
+
+    '
+  pattern-not: "if $TYPE = $CONTENT_TYPE.split($SPLIT_PATTERN, 2).first\n  $TYPE.rstrip!\n\
+    \  $TYPE.downcase!\n  $TYPE\nend\n"
+  languages:
+  - ruby
+  message: 'The use of `tap` with `downcase!` on a potentially nil value can lead
+    to a NoMethodError. This is dangerous because it can cause the application to
+    crash when processing malformed content types. Instead, explicitly check for nil
+    and handle the string manipulation safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/d9c163a443b8cadf4711d84bd2c58cb9ef89cf49
+    category: security
+    cwe:
+    - 476
+    owasp:
+    - A10
+    references:
+    - https://github.com/rack/rack/commit/d9c163a443b8cadf4711d84bd2c58cb9ef89cf49
+    technology:
+    - ruby

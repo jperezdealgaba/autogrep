@@ -1,0 +1,27 @@
+rules:
+- id: vuln-easymon-7dff6038
+  pattern: 'VERSION = "1.5"
+
+    '
+  pattern-not: 'VERSION = "1.4.1"
+
+    '
+  languages:
+  - ruby
+  message: 'The version number in this file is incorrect and may lead to compatibility
+    or security issues. Ensure the version is correctly updated to maintain compatibility
+    with dependencies and to avoid potential security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/basecamp/easymon/commit/7dff6038c40741ec59f2493a2ec406c0c1ed8928
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

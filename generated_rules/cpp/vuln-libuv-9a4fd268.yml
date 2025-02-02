@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libuv-9a4fd268
+  pattern: "union {\n  CRITICAL_SECTION cs;\n  uv_mutex_t unused;\n} read_lock_;\n\
+    union {\n  HANDLE sem;\n  uv_mutex_t unused;\n} write_lock_;\n"
+  pattern-not: 'CRITICAL_SECTION num_readers_lock_;
+
+    HANDLE write_semaphore_;
+
+    '
+  languages:
+  - cpp
+  message: "The use of unions for synchronization primitives can lead to undefined\
+    \ behavior and race conditions. \nThe patch replaces these unions with dedicated\
+    \ synchronization primitives to ensure thread safety. \nReplace the unions with\
+    \ specific synchronization mechanisms like `CRITICAL_SECTION` and `HANDLE` for\
+    \ semaphores.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libuv/libuv/commit/9a4fd2689de8d40aad8e7ad3fb3108431167dd88
+    category: security
+    cwe:
+    - CWE-362
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://docs.microsoft.com/en-us/windows/win32/sync/synchronization-functions
+    technology:
+    - cpp

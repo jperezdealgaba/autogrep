@@ -1,0 +1,22 @@
+rules:
+- id: vuln-suricata-17dfd59b
+  pattern: "for ($I = $N - 1; $I; $I--) {\n  ...\n}\n"
+  pattern-not: "for ($I = $N - 1; $I >= 0; $I--) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potential off-by-one error in a loop condition. The loop uses
+    a size_t variable and decrements it, but the condition `i` could lead to an infinite
+    loop when `i` becomes negative. This can cause undefined behavior or crashes.
+    Fix by changing the condition to `i >= 0` and use `ssize_t` for the loop variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/17dfd59bc31a21e103e2f1216443cd1418398aa9
+    category: security
+    cwe:
+    - CWE-193
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - cpp

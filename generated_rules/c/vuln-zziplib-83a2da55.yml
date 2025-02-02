@@ -1,0 +1,23 @@
+rules:
+- id: vuln-zziplib-83a2da55
+  pattern: 'if ($ERRNO != EISDIR) $DONE = EXIT_ERRORS;
+
+    '
+  pattern-not: "if ($ERRNO != EISDIR) {\n    $DBG(\"can not open output file %i %s\"\
+    , $ERRNO, strerror($ERRNO));\n    $DONE = EXIT_ERRORS;\n}\n"
+  languages:
+  - c
+  message: "The patch fixes a vulnerability where error handling was incomplete. \n\
+    The original code sets an error flag without logging the error, which can make\
+    \ debugging difficult and hide potential security issues. \nThe fix adds logging\
+    \ to ensure that errors are properly reported. \nAlways log errors when handling\
+    \ file operations to improve security and maintainability.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/83a2da55922f67e07f22048ac9671a44cc0d35c4
+    category: security
+    cwe:
+    - CWE-755
+    owasp: A9:2017-Insufficient Logging & Monitoring
+    technology:
+    - c

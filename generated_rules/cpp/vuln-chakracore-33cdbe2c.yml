@@ -1,24 +1,20 @@
 rules:
 - id: vuln-chakracore-33cdbe2c
-  pattern: 'paramScope->SetMustInstantiate(!pnodeFnc->sxFnc.IsBodyAndParamScopeMerged());
+  pattern: '$SCOPE->SetMustInstantiate(!$FUNC->sxFnc.IsBodyAndParamScopeMerged());
 
     '
-  pattern-not-inside: "if (!pnodeFnc->sxFnc.IsBodyAndParamScopeMerged())\n{\n    ...\n\
-    \    paramScope->SetMustInstantiate(...);\n    ...\n}\n"
+  pattern-not: "if (!$FUNC->sxFnc.IsBodyAndParamScopeMerged())\n{\n    if ($FUNCINFO->frameObjRegister\
+    \ != $NOREGISTER)\n    {\n        $SCOPE->SetMustInstantiate(true);\n    }\n \
+    \   else\n    {\n        $SCOPE->SetMustInstantiate($SCOPE->GetHasOwnLocalInClosure());\n\
+    \    }\n}\n"
   languages:
   - cpp
-  message: 'Unconditional parameter scope instantiation vulnerability in ChakraCore.
-    The code
-
-    directly sets MustInstantiate without proper validation of scope merging status
-
-    and frame object registers, which could lead to incorrect closure handling or
-
-    scope instantiation errors. Add conditional checks for IsBodyAndParamScopeMerged()
-
-    status and validate frameObjRegister/local closure ownership before setting
-
-    MustInstantiate.
+  message: 'The vulnerability involves unconditionally setting the `MustInstantiate`
+    flag for a parameter scope without first checking if the function''s frame object
+    register is valid. This can lead to incorrect instantiation of scopes, potentially
+    causing memory corruption or unexpected behavior. The fix adds a conditional check
+    to ensure the flag is only set when appropriate, preventing these issues. Always
+    validate the frame object register before setting the `MustInstantiate` flag.
 
     '
   severity: ERROR
@@ -26,8 +22,10 @@ rules:
     source-url: github.com/Microsoft/ChakraCore/commit/33cdbe2c582cfa09242aca3876c4f0d300685cb9
     category: security
     cwe:
-    - 'CWE-665: Improper Initialization'
+    - CWE-119
     owasp:
-    - 'A04: Insecure Design'
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
     technology:
     - cpp

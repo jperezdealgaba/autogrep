@@ -1,0 +1,29 @@
+rules:
+- id: vuln-nokogiri-b2c28099
+  pattern: 'DEFAULT_XML = RECOVER
+
+    '
+  pattern-not: 'DEFAULT_XML = RECOVER | NONET
+
+    '
+  languages:
+  - ruby
+  message: 'The DEFAULT_XML constant is set to RECOVER without the NONET flag, which
+    can allow network access during XML parsing. This is dangerous because it can
+    lead to XML External Entity (XXE) attacks, where an attacker can exploit the XML
+    parser to access local or remote resources. To fix this, ensure that the NONET
+    flag is included to disable network access during parsing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sparklemotion/nokogiri/commit/b2c28099ecb736d2fac4446fb062cfa20dd81d6f
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+    technology:
+    - ruby

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-notebook-694ed72f
+  pattern: 'self.set_header(''Content-Security-Policy'', $POLICY)
+
+    '
+  pattern-not: "@property\ndef content_security_policy(self):\n  return super($CLASS,\
+    \ self).content_security_policy + $EXTENSION\n"
+  languages:
+  - python
+  message: "Detected direct setting of Content-Security-Policy header without proper\
+    \ inheritance. \nThis can lead to incomplete or insecure CSP policies. \nInstead,\
+    \ use a property that inherits and extends the parent class's CSP policy.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jupyter/notebook/commit/694ed72fb4a80ccae6b352811f5dd2277e6889b8
+    category: security
+    cwe: CWE-693
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+    technology:
+    - python

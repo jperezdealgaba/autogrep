@@ -1,0 +1,27 @@
+rules:
+- id: vuln-anything-llm-1b35bcbe
+  pattern: 'const { success } = await User.update($USERID, $UPDATES);
+
+    '
+  pattern-not: 'const { user: success } = await User._update($USERID, $UPDATES);
+
+    '
+  languages:
+  - javascript
+  message: 'Detected use of insecure User.update method which does not validate or
+    sanitize input fields. This can lead to unauthorized modifications of sensitive
+    user data. Use the _update method with proper validation and sanitization instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mintplex-labs/anything-llm/commit/1b35bcbeab10b77e6dbd263cceecf1b965a40789
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - javascript

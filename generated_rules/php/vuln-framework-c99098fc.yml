@@ -1,0 +1,28 @@
+rules:
+- id: vuln-framework-c99098fc
+  pattern: '$this->contextual[$concrete][$abstract] = $implementation;
+
+    '
+  pattern-not: '$this->contextual[$concrete][$this->getAlias($abstract)] = $implementation;
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses the abstract binding without resolving its alias,
+    which can lead to incorrect contextual bindings. This can cause unexpected behavior
+    when aliases are used. Always resolve aliases using `getAlias()` to ensure correct
+    binding resolution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laravel/framework/commit/c99098fc85c9633db578f70fba454184609c515d
+    category: security
+    cwe:
+    - CWE-670
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://laravel.com/docs/container
+    technology:
+    - php

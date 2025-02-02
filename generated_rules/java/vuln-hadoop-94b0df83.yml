@@ -1,0 +1,18 @@
+rules:
+- id: vuln-hadoop-94b0df83
+  pattern: "if (!$FUNC($SERVLET_CONTEXT, $REQUEST) && !$FUNC2($SERVLET_CONTEXT, $REQUEST,\
+    \ $RESPONSE)) {\n  ...\n}\n"
+  pattern-not: "if (!$FUNC2(getServletContext(), $REQUEST, $RESPONSE)) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Insecure authorization check detected. The check for static user and none
+    auth type was removed as it could bypass security in non-security environments.
+    Ensure proper authorization checks are in place.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/hadoop/commit/94b0df839d36cf5d5e927b3642566c67d0689474
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    technology: java

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libuv-0f2d7e78
+  pattern: "if ($D < $DE)\n  *$D++ = '\\0';\n"
+  pattern-not: "if ($D >= $DE)\n  return $ERROR;\n*$D++ = '\\0';\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer underwrite vulnerability. The original code
+    conditionally writes a null terminator without checking if the destination pointer
+    is within bounds, which could lead to memory corruption. The fix ensures that
+    the destination pointer is within bounds before performing the write.
+
+    This is dangerous because it could allow an attacker to corrupt memory or cause
+    a crash. Always validate buffer boundaries before writing to memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libuv/libuv/commit/0f2d7e784a256b54b2385043438848047bc2a629
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

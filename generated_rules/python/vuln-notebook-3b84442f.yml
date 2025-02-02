@@ -1,0 +1,25 @@
+rules:
+- id: vuln-notebook-3b84442f
+  pattern: 'version_info = ($MAJOR, $MINOR, $PATCH, ''.dev0'')
+
+    '
+  pattern-not: 'version_info = ($MAJOR, $MINOR, $PATCH)
+
+    '
+  languages:
+  - python
+  message: 'Detected a development version string with ''.dev0'' suffix in version_info.
+    This can lead to unintended behavior in production environments as it indicates
+    a development version. Use a stable version number without the ''.dev0'' suffix.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/jupyter/notebook/commit/3b84442f214e28296f0affd79699ca26f44790c1
+    category: security
+    cwe: CWE-440
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://semver.org/
+    technology:
+    - python

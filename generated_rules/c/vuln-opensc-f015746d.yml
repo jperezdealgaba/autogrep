@@ -1,0 +1,28 @@
+rules:
+- id: vuln-opensc-f015746d
+  pattern: "*$TNAME = malloc($SIZE);\nif (*$TNAME == NULL) {\n  ...\n}\n$FUNC($CARD,\
+    \ $OFFSET, (unsigned char *)*$TNAME, $SIZE, $FLAGS);\n...\nfree(*$TNAME);\n...\n\
+    if ((*$TNAME)[$R-1] != '\\0') {\n  (*$TNAME)[$R-1] = '\\0';\n}\n"
+  pattern-not: "$NAME = malloc($SIZE);\nif ($NAME == NULL) {\n  ...\n}\n$FUNC($CARD,\
+    \ $OFFSET, (unsigned char *)$NAME, $SIZE, $FLAGS);\n...\nfree($NAME);\n...\nif\
+    \ ($NAME[$R-1] != '\\0') {\n  $NAME[$R-1] = '\\0';\n}\n*$TNAME = $NAME;\n"
+  languages:
+  - c
+  message: "Directly using a double-pointer in memory allocation and manipulation\
+    \ can lead to unsafe memory access and potential vulnerabilities. \nThe original\
+    \ code dereferences the pointer multiple times, which can cause issues if the\
+    \ memory allocation fails or if the pointer is used incorrectly.\nTo fix this,\
+    \ allocate memory to a local pointer first, perform all necessary operations,\
+    \ and then assign it to the double-pointer.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/OpenSC/OpenSC/commit/f015746d
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

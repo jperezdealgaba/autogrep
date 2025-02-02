@@ -1,0 +1,27 @@
+rules:
+- id: vuln-clamav-4842733e
+  pattern: '$VAR = $SZH->items;
+
+    '
+  pattern-not: '$VAR = $SZH->items - 1;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability arises from directly using the `items` field of a structure
+    without subtracting 1, which can lead to incorrect array indexing and potential
+    out-of-bounds access. This is dangerous because it can cause memory corruption,
+    crashes, or even arbitrary code execution. To fix this, ensure that `items - 1`
+    is used when accessing the array to properly account for zero-based indexing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/4842733eb3f09be61caeed83778bb6679141dbc5
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

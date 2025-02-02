@@ -1,0 +1,19 @@
+rules:
+- id: vuln-spring-framework-c1878467
+  pattern: "return (context.getCarrier() != null) ?\n        KeyValue.of(LowCardinalityKeyNames.METHOD,\
+    \ context.getCarrier().getMethod()) :\n        METHOD_UNKNOWN;\n"
+  pattern-not: "if (context.getCarrier() != null) {\n    String httpMethod = context.getCarrier().getMethod();\n\
+    \    if (HTTP_METHODS.contains(httpMethod)) {\n        return KeyValue.of(LowCardinalityKeyNames.METHOD,\
+    \ httpMethod);\n    }\n}\nreturn METHOD_UNKNOWN;\n"
+  languages:
+  - java
+  message: 'Potential security issue: HTTP method validation is missing. Unvalidated
+    HTTP methods can lead to unexpected behavior or security vulnerabilities. Validate
+    HTTP methods against a predefined set of allowed methods.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/spring-projects/spring-framework/commit/c18784678df489d06a70e54fcddb5e3821d4b00c
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology: java

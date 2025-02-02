@@ -1,0 +1,22 @@
+rules:
+- id: vuln-moddable-dbd3a5f4
+  pattern: "if ($PARSER->errorCount == 0)\n  $FUNC($PARSER->root, $CODER);\n"
+  pattern-not: "if ($PARSER->errorCount == 0) {\n  mxTryParser($PARSER) {\n    $FUNC($PARSER->root,\
+    \ $CODER);\n  }\n  mxCatchParser($PARSER) {\n  }\n}\n"
+  languages:
+  - c
+  message: 'Vulnerable code pattern detected where error handling is not properly
+    wrapped in try-catch blocks. This can lead to unhandled exceptions and potential
+    crashes. The code should be wrapped in mxTryParser/mxCatchParser blocks to ensure
+    proper error handling and resource cleanup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/dbd3a5f4e52d3baa2f823e67274c2e8a9b31fb88
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

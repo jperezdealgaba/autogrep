@@ -1,0 +1,30 @@
+rules:
+- id: vuln-suricata-9ba89a31
+  pattern: "if (SCMemcmp(\"SSH-\", $LINE_PTR, 4) != 0) {\n  ...\n}\n"
+  pattern-not: "if ($LINE_LEN >= 4 && SCMemcmp(\"SSH-\", $LINE_PTR, 4) != 0) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to missing length
+    check before using SCMemcmp.
+
+    This can lead to undefined behavior if the input is shorter than the compared
+    length.
+
+    Always verify the length of the input before performing memory comparison operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/9ba89a31efc89ec5cb72326dbcb9166b098f3ea0
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

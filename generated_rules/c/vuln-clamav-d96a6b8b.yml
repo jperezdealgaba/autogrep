@@ -1,0 +1,29 @@
+rules:
+- id: vuln-clamav-d96a6b8b
+  pattern: "static int $FUNC(xmlTextReaderPtr $READER, long * $VALUE) {\n  ...\n \
+    \ *$VALUE = atol((const char *)$NUMSTR);\n  if (*$VALUE < 0) {\n    ...\n  }\n\
+    \  ...\n}\n"
+  pattern-not: "static int $FUNC(xmlTextReaderPtr $READER, size_t * $VALUE) {\n  ssize_t\
+    \ $NUMVAL;\n  ...\n  $NUMVAL = atol((const char *)$NUMSTR);\n  if ($NUMVAL < 0)\
+    \ {\n    *$VALUE = $NUMVAL;\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function uses a `long` type to store the result of `atol`, which can
+    lead to integer overflow or incorrect handling of negative values. This can cause
+    unexpected behavior or security vulnerabilities. Use `ssize_t` to store the result
+    of `atol` and check for negative values before assigning to the output parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/d96a6b8bcc7439fa7e3876207aa0a8e79c8451b6
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

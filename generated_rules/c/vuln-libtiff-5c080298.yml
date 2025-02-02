@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libtiff-5c080298
+  pattern: '(void) TIFFGetField($IN, TIFFTAG_PLANARCONFIG, &$VAR);
+
+    '
+  pattern-not: '(void) TIFFGetFieldDefaulted($IN, TIFFTAG_PLANARCONFIG, &$VAR);
+
+    '
+  languages:
+  - c
+  message: 'The function TIFFGetField is used without a default value check, which
+    can lead to undefined behavior if the field is not present. This vulnerability
+    can cause the application to crash or behave unexpectedly. Use TIFFGetFieldDefaulted
+    instead to ensure a default value is provided when the field is missing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/5c080298d59efa53264d7248bbe3a04660db6ef7
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

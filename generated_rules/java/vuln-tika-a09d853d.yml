@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tika-a09d853d
+  pattern: 'new File($DIR, FilenameUtils.normalize($NAME))
+
+    '
+  pattern-not: 'new File($DIR, $UUID + "-" + $NAME)
+
+    '
+  languages:
+  - java
+  message: Potential file path traversal vulnerability. Ensure file names are properly
+    normalized and unique to prevent overwriting or malicious file access. Use UUIDs
+    to generate unique file names when necessary.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/a09d853dbed712f644e274b497cce254f3189d57
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-59
+    owasp:
+    - A1:2017-Injection
+    - A5:2017-Broken Access Control
+    technology:
+    - java

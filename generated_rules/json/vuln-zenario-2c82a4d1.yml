@@ -1,0 +1,23 @@
+rules:
+- id: vuln-zenario-2c82a4d1
+  pattern: "{\n  ...,\n  \"version\": \"8.8.52729\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"8.8.53370\",\n  ...\n}\n"
+  languages:
+  - json
+  message: 'The package version ''8.8.52729'' contains a known vulnerability. Using
+    outdated versions can expose the application to security risks. Upgrade to version
+    ''8.8.53370'' or later to mitigate this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TribalSystems/Zenario/commit/2c82a4d126c8446106347ef603b157f2d4175fd1
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities
+    technology:
+    - json

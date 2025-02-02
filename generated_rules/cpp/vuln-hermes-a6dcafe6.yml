@@ -1,0 +1,30 @@
+rules:
+- id: vuln-hermes-a6dcafe6
+  pattern: 'return $X.roundToDouble($Y);
+
+    '
+  pattern-not: 'double $VAL = $X.roundToDouble($Y);
+
+    return std::isnan($VAL) ? std::numeric_limits<double>::quiet_NaN() : $VAL;
+
+    '
+  languages:
+  - cpp
+  message: 'Directly returning the result of `roundToDouble` without checking for
+    NaN can lead to undefined behavior. The function `roundToDouble` may return NaN,
+    which should be handled explicitly to ensure safe conversion. The fix involves
+    checking for NaN and returning a safe value in such cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebook/hermes/commit/a6dcafe6ded8e61658b40f5699878cd19a481f80
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://en.cppreference.com/w/cpp/numeric/math/isnan
+    technology:
+    - cpp

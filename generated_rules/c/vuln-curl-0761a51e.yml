@@ -1,0 +1,26 @@
+rules:
+- id: vuln-curl-0761a51e
+  pattern: 'Curl_add_buffer($BUF, ":", 1)
+
+    '
+  pattern-not: 'Curl_add_buffer($BUF, ": ", 2)
+
+    '
+  languages:
+  - c
+  message: "Detected incorrect use of single character delimiter in Curl_add_buffer.\
+    \ \nUsing \":\" without a trailing space can lead to malformed HTTP headers. \n\
+    This might cause issues with HTTP/2 header parsing and potential security vulnerabilities.\
+    \ \nAlways use \": \" (colon followed by space) as the delimiter for HTTP headers.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/0761a51ee0551ad9e523cbdba24ce00d22fff9c1
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc7540#section-8.1.2
+    technology:
+    - c

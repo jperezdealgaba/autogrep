@@ -1,0 +1,29 @@
+rules:
+- id: vuln-smarty-c9dbe1d0
+  pattern: "while (true) {\n  ...\n  throw new SmartyException(sprintf('Smarty Security:\
+    \ not trusted file path \\'%s\\' ',$filepath));\n}\n"
+  pattern-not: "if (!preg_match('#[\\\\\\\\/][.][.][\\\\\\\\/]#',$directory)) {\n\
+    \  while (true) {\n    break;\n  }\n  throw new SmartyException(sprintf('Smarty\
+    \ Security: not trusted file path \\'%s\\' ',$filepath));\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential path traversal vulnerability due to insufficient
+    validation of file paths.
+
+    The code allows potentially untrusted file paths without proper validation, which
+    could lead to unauthorized access to files.
+
+    To fix this, ensure that file paths are validated using a regex pattern to prevent
+    directory traversal attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/smarty-php/smarty/commit/c9dbe1d08c081912d02bd851d1d1b6388f6133d1
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

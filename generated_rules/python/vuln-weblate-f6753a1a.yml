@@ -1,0 +1,25 @@
+rules:
+- id: vuln-weblate-f6753a1a
+  pattern: 'label = str($EXPR)
+
+    '
+  pattern-not: 'label = escape($EXPR)
+
+    '
+  languages:
+  - python
+  message: Detected unescaped string conversion of potentially unsafe input. This
+    can lead to XSS vulnerabilities. Use django.utils.html.escape() to sanitize the
+    output.
+  severity: ERROR
+  metadata:
+    source-url: github.com/WeblateOrg/weblate/commit/f6753a1a1c63fade6ad418fbda827c6750ab0bda
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.html.escape
+    technology:
+    - python

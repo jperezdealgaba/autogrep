@@ -1,0 +1,23 @@
+rules:
+- id: vuln-openldap-21981053
+  pattern: "if ($VAR != NULL) {\n  vrFilter_free($OP, $VAR);\n}\n"
+  pattern-not: "if ($VAR != NULL) {\n  vrFilter_free($OP, $VAR);\n  $VAR = NULL;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a missing NULL assignment after freeing a pointer. This can lead
+    to use-after-free vulnerabilities if the pointer is accessed after being freed.
+    To fix this, always set the pointer to NULL after freeing it to prevent accidental
+    reuse.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openldap/openldap/commit/21981053a1195ae1555e23df4d9ac68d34ede9dd
+    category: security
+    cwe:
+    - CWE-416
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

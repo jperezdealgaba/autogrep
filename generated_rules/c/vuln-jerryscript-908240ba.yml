@@ -1,0 +1,38 @@
+rules:
+- id: vuln-jerryscript-908240ba
+  pattern: 'return ecma_proxy_object_own_property_keys($OBJ);
+
+    '
+  pattern-not: "ecma_collection_t *$PROXY_KEYS = ecma_proxy_object_own_property_keys($OBJ);\n\
+    if (JERRY_UNLIKELY ($PROXY_KEYS == NULL))\n{\n  return $PROXY_KEYS;\n}\necma_collection_t\
+    \ *$RETURN_KEYS = ecma_new_collection ();\nfor (uint32_t $I = 0; $I < $PROXY_KEYS->item_count;\
+    \ $I++)\n{\n  ecma_value_t $ENTRY = $PROXY_KEYS->buffer_p[$I];\n  ecma_string_t\
+    \ *$PROP_NAME = ecma_get_prop_name_from_value ($ENTRY);\n  bool $PROP_IS_SYMBOL\
+    \ = ecma_prop_name_is_symbol ($PROP_NAME);\n  if ($PROP_IS_SYMBOL && (($OPTS &\
+    \ ($ECMA_LIST_SYMBOLS | $ECMA_LIST_SYMBOLS_ONLY)) != 0))\n  {\n    ecma_collection_push_back\
+    \ ($RETURN_KEYS, $ENTRY);\n  }\n  else if (!$PROP_IS_SYMBOL && ($OPTS & $ECMA_LIST_SYMBOLS_ONLY)\
+    \ == 0)\n  {\n    ecma_collection_push_back ($RETURN_KEYS, $ENTRY);\n  }\n  else\n\
+    \  {\n    ecma_free_value ($ENTRY);\n  }\n}\necma_collection_destroy ($PROXY_KEYS);\n\
+    return $RETURN_KEYS;\n"
+  languages:
+  - c
+  message: 'Directly returning the result of `ecma_proxy_object_own_property_keys`
+    without proper validation and filtering can lead to unhandled NULL pointers and
+    memory leaks. This vulnerability can cause undefined behavior and potential security
+    issues. The fix involves checking for NULL, creating a new collection, filtering
+    entries, and properly managing memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/galpeter/jerryscript/commit/908240ba6223fb54e72c2ab85c3765db3492a968
+    category: security
+    cwe:
+    - CWE-476
+    - CWE-252
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.ecma-international.org/ecma-262/6.0/#sec-enumerableownnames
+    technology:
+    - c

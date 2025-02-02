@@ -1,0 +1,25 @@
+rules:
+- id: vuln-krb5-102bb6eb
+  pattern: "if (strcmp($VAR1, $VAR2)) {\n  ...\n}\n"
+  pattern-not: "$VAR3 = make_data((char *)$VAR2, strlen($VAR2) + 1);\nif (!data_eq($VAR1,\
+    \ $VAR3)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected use of strcmp() without proper null-terminated string handling.
+
+    This can lead to incorrect comparisons and potential security vulnerabilities.
+
+    Replace strcmp() with data_eq() after ensuring strings are properly null-terminated
+    using make_data().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/102bb6ebf20f9174130c85c3b052ae104e5073ec
+    category: security
+    cwe:
+    - CWE-170
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

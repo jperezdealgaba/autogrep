@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jenkins-0530a664
+  pattern: '$OWNER.checkPermission(Jenkins.ADMINISTER)
+
+    '
+  pattern-not: '$OWNER.checkPermission(Jenkins.RUN_SCRIPTS)
+
+    '
+  languages:
+  - java
+  message: 'Incorrect permission check detected. The code was using Jenkins.ADMINISTER
+    permission where Jenkins.RUN_SCRIPTS should have been used. This could lead to
+    improper access control. Ensure the correct permission is checked to maintain
+    proper security boundaries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/0530a6645aac10fec005614211660e98db44b5eb
+    category: security
+    cwe: CWE-285
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://www.jenkins.io/doc/developer/security/permissions/
+    technology: java

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jenkins-c3d8e05a
+  pattern: 'Jenkins.getInstance().getExtensionList($CLASS).get(0)
+
+    '
+  pattern-not: "$LOOKUP = Jenkins.getInstance().lookup;\n$CS = $LOOKUP.get($CLASS);\n\
+    if ($CS==null) {\n    try {\n        $LIST = (List) Service.loadInstances($CLASS.getClassLoader(),\
+    \ $CLASS);\n        if (!$LIST.isEmpty())\n            $CS = $LIST.get(0);\n \
+    \   } catch (IOException $E) {\n        $LOGGER.log(Level.WARNING, \"Failed to\
+    \ list up $CLASS implementations\",$E);\n    }\n    if ($CS==null)\n        try\
+    \ {\n            $CS = new $DEFAULTCLASS();\n        } catch (Exception $E) {\n\
+    \            throw new Error($E);\n        }\n    $CS = $LOOKUP.setIfNull($CLASS,$CS);\n\
+    }\nreturn $CS;\n"
+  languages:
+  - java
+  message: Directly accessing extension list without proper initialization can lead
+    to security vulnerabilities. Use the lookup mechanism to ensure proper initialization.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/c3d8e05a1b3d58b6c4dcff97394cb3a79608b4b2
+    category: security
+    cwe: CWE-665
+    owasp: A03:2021-Injection
+    references: https://www.jenkins.io/doc/developer/security/
+    technology: java

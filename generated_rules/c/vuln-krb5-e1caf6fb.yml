@@ -1,0 +1,36 @@
+rules:
+- id: vuln-krb5-e1caf6fb
+  pattern: "char **values = NULL;\n...\nif ((values = ldap_get_values($LDAP, $ENTRY,\
+    \ \"krbprincipalname\")) != NULL) {\n    $KRB_IDENTITY_EXISTS = TRUE;\n    ldap_value_free(values);\n\
+    }\n...\nif ($XARGS_DN != NULL && $KRB_IDENTITY_EXISTS == TRUE) {\n    $ST = EINVAL;\n\
+    \    snprintf($ERRBUF, sizeof($ERRBUF), _(\"ldap object is already kerberized\"\
+    ));\n    k5_setmsg($CONTEXT, $ST, \"%s\", $ERRBUF);\n    goto $CLEANUP;\n}\n"
+  pattern-not: "static krb5_error_code\ncheck_dn_exists(krb5_context context,\n  \
+    \              krb5_ldap_server_handle *ldap_server_handle,\n                const\
+    \ char *dn, krb5_boolean nonkrb_only)\n{\n    ...\n    values = ldap_get_values(ld,\
+    \ ent, \"krbprincipalname\");\n    if (values != NULL) {\n        ldap_value_free(values);\n\
+    \        if (nonkrb_only) {\n            st = EINVAL;\n            k5_setmsg(context,\
+    \ st, _(\"ldap object is already kerberized\"));\n            goto cleanup;\n\
+    \        }\n    }\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly validate LDAP DN entries and check for existing
+    Kerberos identities, which could allow unauthorized access or privilege escalation.
+    The vulnerability occurs when adding a Kerberos principal to an LDAP object that
+    already has a Kerberos identity, potentially bypassing security checks. The fix
+    introduces proper validation functions to ensure DN entries are within the correct
+    subtree and checks for existing Kerberos attributes before adding new ones.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/e1caf6fb74981da62039846931ebdffed71309d1
+    category: security
+    cwe:
+    - CWE-287
+    - CWE-285
+    owasp: A04:2021 - Insecure Design
+    references:
+    - https://web.mit.edu/kerberos/
+    technology:
+    - c

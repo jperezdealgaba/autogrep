@@ -1,0 +1,29 @@
+rules:
+- id: vuln-clamav-495fce91
+  pattern: "if (!$STR) {\n    $CHECKLEN = cli_strnlen($P1, $OBJSIZE - 1) + 1;\n}\n\
+    else {\n    $CHECKLEN = cli_strnlen($P1, $CHECKLEN) + 1;\n}\n"
+  pattern-not: '$CHECKLEN = cli_strnlen($P1, $OBJSIZE - 1) + 1;
+
+    '
+  languages:
+  - c
+  message: 'This code contains a vulnerability where the length check for a string
+    is conditionally determined based on the presence of a string pointer. This can
+    lead to inconsistent length calculations, potentially causing buffer overflows
+    or other memory-related issues. The vulnerability was fixed by always using the
+    object size for the length check. To fix this, ensure consistent length calculations
+    are used regardless of the string pointer condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/495fce917445063d519f14b0009cee025f817bc3
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

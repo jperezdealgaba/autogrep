@@ -1,0 +1,27 @@
+rules:
+- id: vuln-opensc-ed55fcd2
+  pattern: "for ($I = 7; $I < 16; $I++) {\n  ...\n}\n"
+  pattern-not: "for ($I = 0x7; $I <= 0xF; $I++) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The loop condition uses an incorrect upper bound, which can lead to out-of-bounds
+    access. The condition should be adjusted to use hexadecimal notation and a less-than-or-equal
+    comparison to ensure proper iteration over the intended range. This vulnerability
+    can cause memory corruption or undefined behavior. Fix by using hexadecimal notation
+    and a less-than-or-equal comparison in the loop condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/OpenSC/OpenSC/commit/ed55fcd2996930bf58b9bb57e9ba7b1f3a753c43
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

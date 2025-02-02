@@ -1,0 +1,26 @@
+rules:
+- id: vuln-curl-fae6fea2
+  pattern: "$STS->host = strdup($HOSTNAME);\nif(!$STS->host) {\n  ...\n}\n"
+  pattern-not: "$DUPHOST = strdup($HOSTNAME);\nif(!$DUPHOST) {\n  ...\n}\n$HLEN =\
+    \ strlen($DUPHOST);\nif($DUPHOST[$HLEN - 1] == '.')\n  $DUPHOST[--$HLEN] = 0;\n\
+    $STS->host = $DUPHOST;\n"
+  languages:
+  - c
+  message: 'Direct assignment of strdup result to a struct field without checking
+    for trailing dots or buffer length can lead to security vulnerabilities. This
+    can cause issues like incorrect hostname processing or buffer overflows. Always
+    validate and sanitize the hostname before assignment, and ensure the length is
+    within acceptable bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/fae6fea209a2d4db1582f608bd8cc8000721733a
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-170
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

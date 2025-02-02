@@ -1,0 +1,22 @@
+rules:
+- id: vuln-struts-04fcefa4
+  pattern: "if (!$NAME.endsWith(\".class\")) {\n    for (String $PREFIX : $PREFIXES)\
+    \ {\n        InputStream $IS = findInputStream(buildPath($NAME, $PREFIX));\n \
+    \       ...\n    }\n}\n"
+  pattern-not: "for (String $PREFIX : $PREFIXES) {\n    URL $RESOURCE = findResource(buildPath($NAME,\
+    \ $PREFIX));\n    if ($RESOURCE != null) {\n        try {\n            String\
+    \ $PATH = buildPath($NAME, $PREFIX);\n            if ($RESOURCE.getFile().endsWith($PATH))\
+    \ {\n                InputStream $IS = $RESOURCE.openStream();\n            }\n\
+    \        } catch (Exception $EX) {\n            continue;\n        }\n    }\n\
+    }\n"
+  languages:
+  - java
+  message: Potential path traversal vulnerability due to unsafe resource loading.
+    Always validate resource paths and ensure they are within expected directories.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/04fcefa44bae1263c7cad6986a9dafed67f0164f
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    technology: java

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-bolt-5d98be6d
+  pattern: "if ($this->users()->hasRole($user['id'], 'root')) {\n  ...\n}\n"
+  pattern-not: "if ($this->users()->hasRole($user['id'], 'root') || $this->users()->hasRole($user['id'],\
+    \ 'admin')) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code only checks for the ''root'' role, potentially bypassing security
+    checks for users with ''admin'' role. This can lead to unauthorized access to
+    sensitive operations. Ensure all relevant roles are checked, including ''admin''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bolt/bolt/commit/5d98be6d039af10abef83da3171492b05892c206
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

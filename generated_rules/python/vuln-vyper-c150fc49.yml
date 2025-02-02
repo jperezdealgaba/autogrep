@@ -1,0 +1,18 @@
+rules:
+- id: vuln-vyper-c150fc49
+  pattern: "def test_variable_decleration_exception($BAD_CODE):\n    ...\n"
+  pattern-not: "def test_variable_declaration_exception($BAD_CODE):\n    ...\n"
+  languages:
+  - python
+  message: Detected misspelled function name 'test_variable_decleration_exception'.
+    This could lead to confusion and potential bypass of tests. Use the correct spelling
+    'test_variable_declaration_exception' instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/c150fc49ee9375a930d177044559b83cb95f7963
+    category: correctness
+    cwe: CWE-628
+    references:
+    - https://cwe.mitre.org/data/definitions/628.html
+    technology:
+    - python

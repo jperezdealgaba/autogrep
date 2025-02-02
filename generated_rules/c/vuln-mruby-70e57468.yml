@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mruby-70e57468
+  pattern: 'mrb_bool $VAR = $COND ? TRUE : FALSE;
+
+    '
+  pattern-not: 'mrb_bool $VAR = $COND ? FALSE : TRUE;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially dangerous ternary operation where the TRUE and
+    FALSE values are incorrectly assigned. This can lead to unintended behavior and
+    security vulnerabilities. Ensure the logic correctly assigns TRUE and FALSE based
+    on the condition. The fix should swap the TRUE and FALSE values in the ternary
+    operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/70e574689664c10ed2c47581999cc2ce3e3c5afb
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

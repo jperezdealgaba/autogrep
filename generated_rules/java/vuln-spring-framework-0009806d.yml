@@ -1,0 +1,24 @@
+rules:
+- id: vuln-spring-framework-0009806d
+  pattern: 'new StandardEvaluationContext($TARGET)
+
+    '
+  pattern-not: 'SimpleEvaluationContext.forPropertyAccessors($PROPERTY_ACCESSORS).build()
+
+    '
+  languages:
+  - java
+  message: "Usage of StandardEvaluationContext detected, which can lead to SpEL injection\
+    \ vulnerabilities. \nUse SimpleEvaluationContext instead to limit the evaluation\
+    \ context and prevent potential security risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/spring-projects/spring-framework/commit/0009806debb578e884f6dc98bd1f2dc668020021
+    category: security
+    cwe: CWE-94
+    owasp: 'A1: Injection'
+    references:
+    - https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/expression/spel/support/StandardEvaluationContext.html
+    - https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/expression/spel/support/SimpleEvaluationContext.html
+    technology:
+    - java

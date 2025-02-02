@@ -1,0 +1,28 @@
+rules:
+- id: vuln-vyper-6b4d8ff1
+  pattern: "def ir_for_external_call($CALL_EXPR, $CONTEXT):\n    ...\n    $CONTRACT_ADDRESS\
+    \ = Expr.parse_value_expr($CALL_EXPR.func.value, $CONTEXT)\n    $CALL_KWARGS =\
+    \ _parse_kwargs($CALL_EXPR, $CONTEXT)\n    $ARGS_IR = [Expr($X, $CONTEXT).ir_node\
+    \ for $X in $CALL_EXPR.args]\n    ...\n"
+  pattern-not: "def ir_for_external_call($CALL_EXPR, $CONTEXT):\n    ...\n    $CONTRACT_ADDRESS\
+    \ = Expr.parse_value_expr($CALL_EXPR.func.value, $CONTEXT)\n    assert isinstance($CONTRACT_ADDRESS.typ,\
+    \ InterfaceType)\n    $ARGS_IR = [Expr($X, $CONTEXT).ir_node for $X in $CALL_EXPR.args]\n\
+    \    $CALL_KWARGS = _parse_kwargs($CALL_EXPR, $CONTEXT)\n    with $CONTRACT_ADDRESS.cache_when_complex(\"\
+    external_contract\") as ($B1, $CONTRACT_ADDRESS):\n        return $B1.resolve(\n\
+    \            _external_call_helper($CONTRACT_ADDRESS, $ARGS_IR, $CALL_KWARGS,\
+    \ $CALL_EXPR, $CONTEXT)\n        )\n    ...\n"
+  languages:
+  - python
+  message: 'Detected potential vulnerability in external contract call handling. The
+    contract address should be validated using `assert isinstance(contract_address.typ,
+    InterfaceType)` before processing the call. This ensures that the contract address
+    is of the correct interface type, preventing potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/6b4d8ff185de071252feaa1c319712b2d6577f8d
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology: python

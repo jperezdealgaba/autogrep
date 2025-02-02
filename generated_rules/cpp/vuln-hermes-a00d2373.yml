@@ -1,0 +1,26 @@
+rules:
+- id: vuln-hermes-a00d2373
+  pattern: 'JSProxy::getOwnPropertyKeys($FROM, $RUNTIME, $DESC)
+
+    '
+  pattern-not: 'JSObject::getOwnPropertyKeys($FROM, $RUNTIME, $DESC)
+
+    '
+  languages:
+  - cpp
+  message: "The use of `JSProxy::getOwnPropertyKeys` can lead to security vulnerabilities\
+    \ when handling proxy objects. \nThis method does not properly handle host objects,\
+    \ which can result in unexpected behavior or security issues. \nUse `JSObject::getOwnPropertyKeys`\
+    \ instead, which correctly handles both proxy and host objects.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebook/hermes/commit/a00d237346894c6067a594983be6634f4168c9ad
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/facebook/hermes/commit/a00d237346894c6067a594983be6634f4168c9ad
+    technology:
+    - cpp

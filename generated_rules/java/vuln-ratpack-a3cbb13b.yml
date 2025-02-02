@@ -1,0 +1,24 @@
+rules:
+- id: vuln-ratpack-a3cbb13b
+  pattern: '$W.println($THROWABLE.toString())
+
+    '
+  pattern-not: '$W.escapeln($THROWABLE.toString())
+
+    '
+  languages:
+  - java
+  message: "Detected potential XSS vulnerability due to unescaped error output. \n\
+    Printing throwable messages directly to output can lead to XSS if the message\
+    \ contains user-controlled content. \nUse escapeln() instead of println() to properly\
+    \ escape HTML content.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ratpack/ratpack/commit/a3cbb13be1527874528c3b99fc33517c0297b6d3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - java

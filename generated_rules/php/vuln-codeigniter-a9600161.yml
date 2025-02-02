@@ -1,0 +1,29 @@
+rules:
+- id: vuln-codeigniter-a9600161
+  pattern: 'mail($RECIPIENTS, $SUBJECT, $BODY, $HEADERS, ''-f ''.$this->clean_email($this->_headers[''Return-Path'']))
+
+    '
+  pattern-not: 'mail($RECIPIENTS, $SUBJECT, $BODY, $HEADERS, ''-f ''.$FROM)
+
+    '
+  languages:
+  - php
+  message: 'Detected potentially unsafe usage of email addresses in mail() function
+    without proper validation. This can lead to Remote Code Execution (RCE) vulnerabilities
+    when the email address is passed to the shell via the -f option. Use the _validate_email_for_shell
+    method to ensure the email is safe for shell usage.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bcit-ci/CodeIgniter/commit/a9600161a845c6f26eebd9822ae7d799b89c8a00
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/bcit-ci/CodeIgniter/issues/4963
+    - https://gist.github.com/Zenexer/40d02da5e07f151adeaeeaa11af9ab36
+    technology:
+    - php

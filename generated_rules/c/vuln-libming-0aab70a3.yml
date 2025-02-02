@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libming-0aab70a3
+  pattern: 'return $ACT->p.String;
+
+    '
+  pattern-not: "if (!$ACT->p.String)\n{\n    SWF_warn(\"WARNING: Call to getString\
+    \ with PUSH_VARIABLE defining NULL string.\\n\");\n    break;\n}\n$T=malloc(strlen($ACT->p.String)+1);\n\
+    strcpy($T,$ACT->p.String);\nreturn $T;\n"
+  languages:
+  - c
+  message: 'Directly returning a string pointer without checking for NULL can lead
+    to NULL pointer dereference vulnerabilities. This can cause crashes or undefined
+    behavior. Always check for NULL before dereferencing and allocate a new buffer
+    to safely return the string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/0aab70a3020dd8b4fad66b20995fc691f24a0317
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

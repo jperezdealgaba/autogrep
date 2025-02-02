@@ -1,0 +1,28 @@
+rules:
+- id: vuln-curl-b09c8ee1
+  pattern: 'Curl_ssl_getsessionid($DATA, $CONN, $SESSION, $NULL, $SOCKINDEX)
+
+    '
+  pattern-not: 'Curl_ssl_getsessionid($DATA, $CONN, SSL_IS_PROXY() ? TRUE : FALSE,
+    $SESSION, $NULL, $SOCKINDEX)
+
+    '
+  languages:
+  - c
+  message: 'The function `Curl_ssl_getsessionid` is being called without the `isProxy`
+    parameter, which can lead to incorrect session handling. This vulnerability can
+    cause security issues by improperly managing SSL sessions, potentially leading
+    to session reuse attacks. Always include the `isProxy` parameter to ensure proper
+    session management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/b09c8ee15771c614c4bf3ddac893cdb12187c844
+    category: security
+    cwe:
+    - 'CWE-384: Session Fixation'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    technology:
+    - c

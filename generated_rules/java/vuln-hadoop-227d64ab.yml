@@ -1,0 +1,23 @@
+rules:
+- id: vuln-hadoop-227d64ab
+  pattern: '$ZKMANAGER.create($PATH)
+
+    '
+  pattern-not: '$ZKMANAGER.create($PATH, $ACL)
+
+    '
+  languages:
+  - java
+  message: 'Missing ACL (Access Control List) when creating Zookeeper paths. This
+    can lead to unauthorized access to sensitive configuration data. Always specify
+    appropriate ACLs when creating Zookeeper nodes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/hadoop/commit/227d64ab59e8aa6477769b2542ad0cd7a6d855cb
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java

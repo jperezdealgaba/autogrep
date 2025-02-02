@@ -1,0 +1,24 @@
+rules:
+- id: vuln-generator-rs-f7d120a3
+  pattern: "pub struct Generator<'a, A, T> {\n  ...\n}\nunsafe impl<A, T> Send for\
+    \ Generator<'static, A, T> {}\n"
+  pattern-not: "pub struct GeneratorObj<'a, A, T, const LOCAL: bool> {\n  ...\n}\n\
+    unsafe impl<A: Send, T: Send> Send for Generator<'static, A, T> {}\n"
+  languages:
+  - rust
+  message: "The Generator struct is not enforcing Send constraints, which can lead\
+    \ to thread safety issues. \nThe fix adds the Send trait to ensure thread safety\
+    \ when the generator is used across threads. \nUpdate the Generator struct to\
+    \ enforce Send constraints on its type parameters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Xudong-Huang/generator-rs/commit/f7d120a3b724d06a7b623d0a4306acf8f78cb4f0
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://doc.rust-lang.org/std/marker/trait.Send.html
+    technology:
+    - rust

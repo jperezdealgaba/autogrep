@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moby-f0ab919f
+  pattern: 'idtools.MkdirAllAndChown($PATH, 0701, idtools.CurrentIdentity())
+
+    '
+  pattern-not: 'idtools.MkdirAllAndChown($PATH, 0710, idtools.Identity{UID: idtools.CurrentIdentity().UID,
+    GID: $GID})
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure directory creation with mode 0701. This mode allows
+    excessive permissions and may expose sensitive data. Use mode 0710 and ensure
+    proper GID mapping for secure directory creation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moby/moby/commit/f0ab919f518c47240ea0e72d0999576bb8008e64
+    category: security
+    cwe:
+    - CWE-732
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - go

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-clamav-96ff19a1
+  pattern: 'int $BACKBYTES, $OLDBACK, $BACKSIZE, $ADDSIZE;
+
+    '
+  pattern-not: 'int $BACKBYTES, $OLDBACK, $ADDSIZE;
+
+    unsigned int $BACKSIZE;
+
+    '
+  languages:
+  - c
+  message: 'The variable ''backsize'' is declared as a signed integer, which can lead
+    to integer overflow vulnerabilities when handling large values. This is dangerous
+    because it can cause incorrect memory allocations or buffer overflows. To fix
+    this, declare ''backsize'' as an unsigned integer to safely handle larger values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/96ff19a19eba64bdf47f2f12ecdbc5ee331c09e2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

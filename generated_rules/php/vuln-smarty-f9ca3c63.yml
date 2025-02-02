@@ -1,0 +1,37 @@
+rules:
+- id: vuln-smarty-f9ca3c63
+  pattern: '$directory = dirname($filepath) . DIRECTORY_SEPARATOR;
+
+    ...
+
+    $filepath = $this->smarty->_realpath($filepath, true);
+
+    $directory = dirname($filepath) . DIRECTORY_SEPARATOR;
+
+    '
+  pattern-not: '$directory = dirname($this->smarty->_realpath($filepath, true)) .
+    DIRECTORY_SEPARATOR;
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe directory path handling in Smarty template engine. The
+    vulnerability occurs when the directory path is constructed before validating
+    the real path, which could allow directory traversal attacks. This can be exploited
+    to access files outside the intended directory. The fix ensures that the real
+    path is validated before constructing the directory path. To fix this, always
+    validate the real path before using it in directory operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/smarty-php/smarty/commit/f9ca3c63d1250bb56b2bda609dcc9dd81f0065f8
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

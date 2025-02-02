@@ -1,0 +1,26 @@
+rules:
+- id: vuln-suricata-2a2120ec
+  pattern: "static SMTPTransaction *SMTPTransactionCreate(void)\n{\n    ...\n}\n"
+  pattern-not: "static SMTPTransaction *SMTPTransactionCreate(SMTPState *state)\n\
+    {\n    if (state->tx_cnt > smtp_config.max_tx) {\n        return NULL;\n    }\n\
+    \    ...\n}\n"
+  languages:
+  - c
+  message: 'The function SMTPTransactionCreate does not validate the transaction count
+    against the maximum allowed transactions, potentially allowing an unbounded number
+    of transactions. This could lead to resource exhaustion or denial of service.
+    Update the function to accept a state parameter and validate the transaction count
+    against smtp_config.max_tx.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/2a2120ecf10c5b5713ec2bf59469fe57f7b5b747
+    category: security
+    cwe:
+    - CWE-400
+    owasp: A9:2017-Insufficient Logging & Monitoring
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - c

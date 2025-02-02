@@ -1,0 +1,29 @@
+rules:
+- id: vuln-rust-f94360fd
+  pattern: "let $TOKENS = std::iter::once($START_TOKEN.clone())\n    .chain((0..$NUM_CALLS).map(|_|\
+    \ {\n        if $DESUGAR_DOC_COMMENTS {\n            $TOKEN\n        }\n    }))\n\
+    \    .take($NUM_CALLS);\n"
+  pattern-not: "let $NUM_CALLS = $SELF.num_calls - 1;\nlet mut $I = 0;\nlet $TOKENS\
+    \ =\n    std::iter::once($START_TOKEN.clone()).chain(std::iter::from_fn(|| {\n\
+    \        if $I >= $NUM_CALLS {\n            return None;\n        }\n        \n\
+    \        let $TOKEN = if $DESUGAR_DOC_COMMENTS {\n            $TOKEN\n       \
+    \ };\n        \n        if !matches!(\n            $TOKEN.0.kind,\n          \
+    \  token::OpenDelim(token::NoDelim) | token::CloseDelim(token::NoDelim)\n    \
+    \    ) {\n            $I += 1;\n        }\n        Some($TOKEN)\n    }));\n"
+  languages:
+  - rust
+  message: 'The token stream implementation may incorrectly handle tokens when no
+    calls are made, potentially leading to unexpected behavior in macro processing.
+    This vulnerability arises from not properly handling the case where `num_calls`
+    is zero and not correctly tracking token consumption. The fix involves explicitly
+    checking for zero calls and properly tracking token consumption using a counter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/rust-lang/rust/commit/f94360fd83b49554b6c26999a0030e9cfe800f32
+    category: correctness
+    cwe:
+    - CWE-664
+    technology:
+    - rust

@@ -1,0 +1,35 @@
+rules:
+- id: vuln-framework-897d1077
+  pattern: "if (strpos($key, '->') !== false) {\n  $key = Str::before($key, '->');\n\
+    }\n...\n! empty(preg_grep('/^'.preg_quote($key).'$/i', $this->getGuarded()));\n"
+  pattern-not: "if (empty($this->getGuarded())) {\n  return false;\n}\n...\n! empty(preg_grep('/^'.preg_quote($key).'$/i',\
+    \ $this->getGuarded())) ||\n! $this->isGuardableColumn($key);\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to mass assignment attacks due to insufficient
+    guarding of attributes.
+
+    The original code only checks if a key is guarded but does not validate if the
+    column exists in the database,
+
+    which could allow attackers to manipulate non-existent or invalid columns.
+
+    The fix adds a check to ensure the column is guardable by verifying its existence
+    in the database schema.
+
+    To fix this, ensure that all attributes being guarded are validated against the
+    database schema.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laravel/framework/commit/897d107775737a958dbd0b2f3ea37877c7526371
+    category: security
+    cwe:
+    - CWE-915
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control/
+    technology:
+    - php

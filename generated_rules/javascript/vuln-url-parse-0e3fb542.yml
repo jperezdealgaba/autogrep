@@ -1,0 +1,25 @@
+rules:
+- id: vuln-url-parse-0e3fb542
+  pattern: '/^[ \f\n\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/
+
+    '
+  pattern-not: '/^[\x00-\x20\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/
+
+    '
+  languages:
+  - javascript
+  message: 'Incomplete whitespace regex pattern may miss control characters, leading
+    to potential security issues. The regex should include control characters (\x00-\x20)
+    to ensure all potentially harmful characters are stripped.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/unshiftio/url-parse/commit/0e3fb542d60ddbf6933f22eb9b1e06e25eaa5b63
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - javascript

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-server-0705e054
+  pattern: "let $CHANGES_DIR = path.join($TEMP_DIRS, $CONSTANTS);\nfs.mkdirSync($CHANGES_DIR);\n\
+    let $FILES_COUNT = yield* downloadFileFromStorage($CTX, $SAVE_KEY, $CHANGES_DIR);\n\
+    if ($FILES_COUNT > 0) {\n  $CONCAT_DIR = $CHANGES_DIR;\n  $CONCAT_TEMPLATE = \"\
+    changes0\";\n  $DATA_CONVERT.fromChanges = true;\n  $TASK.setFromChanges($DATA_CONVERT.fromChanges);\n\
+    }\n"
+  pattern-not: "if ($TASK.getFromChanges()) {\n  let $CHANGES_DIR = path.join($TEMP_DIRS,\
+    \ $CONSTANTS);\n  fs.mkdirSync($CHANGES_DIR);\n  let $FILES_COUNT = yield* downloadFileFromStorage($CTX,\
+    \ $SAVE_KEY, $CHANGES_DIR);\n  if ($FILES_COUNT > 0) {\n    $CONCAT_DIR = $CHANGES_DIR;\n\
+    \    $CONCAT_TEMPLATE = \"changes0\";\n  } else {\n    $DATA_CONVERT.fromChanges\
+    \ = false;\n    $TASK.setFromChanges($DATA_CONVERT.fromChanges);\n  }\n}\n"
+  languages:
+  - javascript
+  message: Unconditionally setting 'fromChanges' to true without proper validation
+    can lead to incorrect state handling. Ensure the state is set based on the actual
+    condition of the changes directory.
+  severity: ERROR
+  metadata:
+    source-url: github.com/ONLYOFFICE/server/commit/0705e054cb47472c07f310b90ab26771da0199ad
+    category: security
+    cwe: CWE-665
+    owasp: A9:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - javascript

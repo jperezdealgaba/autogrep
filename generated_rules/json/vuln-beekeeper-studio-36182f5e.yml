@@ -1,0 +1,23 @@
+rules:
+- id: vuln-beekeeper-studio-36182f5e
+  pattern: '"dompurify": "^2.2.8"'
+  pattern-not: '"dompurify": "^2.3.0"'
+  languages:
+  - json
+  message: "The version of dompurify specified (^2.2.8) may contain vulnerabilities\
+    \ that could lead to XSS attacks. \nIt is dangerous because it may not properly\
+    \ sanitize malicious HTML, allowing attackers to inject scripts. \nUpgrade to\
+    \ a newer, secure version of dompurify (e.g., ^2.3.0 or later) to mitigate this\
+    \ risk.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/beekeeper-studio/beekeeper-studio/commit/36182f5e2d4c787a2d17868504e315685c779dec
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A3:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://github.com/cure53/DOMPurify
+    technology:
+    - json

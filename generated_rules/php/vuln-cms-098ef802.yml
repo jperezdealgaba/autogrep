@@ -1,0 +1,25 @@
+rules:
+- id: vuln-cms-098ef802
+  pattern: 'return [$FIELD->handle().''.*'' => ''file''];
+
+    '
+  pattern-not: "return [$FIELD->handle().'.*' => ['file', function ($attribute, $value,\
+    \ $fail) {\n    if (in_array(trim(strtolower($value->getClientOriginalExtension())),\
+    \ ['php', 'php3', 'php4', 'php5', 'phtml'])) {\n        $fail(__('validation.uploaded'));\n\
+    \    }\n}]];\n"
+  languages:
+  - php
+  message: "The code is vulnerable to file upload attacks as it does not validate\
+    \ file extensions. \nThis can allow attackers to upload malicious PHP files, potentially\
+    \ leading to remote code execution.\nTo fix this, implement file extension validation\
+    \ to block dangerous file types like PHP, PHP3, PHP4, PHP5, and PHTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/statamic/cms/commit/098ef8024d97286ca501273c18ae75b646262d75
+    category: security
+    cwe:
+    - 434
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

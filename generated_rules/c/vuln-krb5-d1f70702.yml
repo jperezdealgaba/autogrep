@@ -1,0 +1,24 @@
+rules:
+- id: vuln-krb5-d1f70702
+  pattern: "if ($ENT != NULL) {\n  if (($ST = $FUNC($CONTEXT, $LD, $ENT, $POL_NAME,\
+    \ $POLICY)) != 0)\n    goto $CLEANUP;\n}\n"
+  pattern-not: "if ($ENT == NULL) {\n  $ST = $ERROR_CODE;\n  goto $CLEANUP;\n}\n$ST\
+    \ = $FUNC($CONTEXT, $LD, $ENT, $POL_NAME, $POLICY);\n"
+  languages:
+  - c
+  message: 'The code fails to handle the case where `ent` is NULL, which can lead
+    to null pointer dereference or incorrect error handling. This vulnerability can
+    cause undefined behavior or security issues. The fix ensures proper error handling
+    by explicitly checking for NULL and setting an appropriate error code before jumping
+    to the cleanup section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/d1f707024f1d0af6e54a18885322d70fa15ec4d3
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

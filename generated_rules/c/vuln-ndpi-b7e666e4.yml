@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ndpi-b7e666e4
+  pattern: "if($SPORT == 1719 || $DPORT == 1719) {\n  if($PAYLOAD[0] == 0x16 && $PAYLOAD[1]\
+    \ == 0x80 && $PAYLOAD[4] == 0x06 && $PAYLOAD[5] == 0x00) {\n    ...\n  }\n}\n"
+  pattern-not: "if($SPORT == 1719 || $DPORT == 1719) {\n  if(($PAYLOAD_PACKET_LEN\
+    \ >= 5)\n     && ($PAYLOAD[0] == 0x16)\n     && ($PAYLOAD[1] == 0x80)\n     &&\
+    \ ($PAYLOAD[4] == 0x06)\n     && ($PAYLOAD[5] == 0x00)) {\n    ...\n  }\n}\n"
+  languages:
+  - c
+  message: 'The original code lacks a check for the minimum payload length before
+    accessing specific payload bytes, which could lead to out-of-bounds memory access.
+    This vulnerability can cause crashes or potentially be exploited for arbitrary
+    code execution. Always validate the payload length before accessing specific bytes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntop/nDPI/commit/b7e666e465f138ae48ab81976726e67deed12701
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

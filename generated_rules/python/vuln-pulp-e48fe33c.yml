@@ -1,0 +1,24 @@
+rules:
+- id: vuln-pulp-e48fe33c
+  pattern: 'os.system(''chown -R apache:apache /etc/pki/pulp'')
+
+    '
+  pattern-not: 'os.system(''server/bin/pulp-gen-ca-certificate'')
+
+    os.system(''nodes/common/bin/pulp-gen-nodes-certificate'')
+
+    os.system(''rm -rf /etc/pki/pulp/*'')
+
+    '
+  languages:
+  - python
+  message: "Detected insecure file permission change using os.system(). \nDirectly\
+    \ changing ownership of sensitive files can lead to security vulnerabilities.\
+    \ \nInstead, use secure certificate generation and removal processes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pulp/pulp/commit/e48fe33ce3b5d850a4a7e1cbab2ae63ce7b8e0a0
+    category: security
+    cwe: CWE-732
+    owasp: A6:2017-Security Misconfiguration
+    technology: python

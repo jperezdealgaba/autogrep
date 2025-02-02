@@ -1,0 +1,26 @@
+rules:
+- id: vuln-suricata-d8634daf
+  pattern: "if ($PROTO == IPPROTO_TCP && $PROTOCTX != NULL) {\n  ...\n}\n"
+  pattern-not: "if ($PROTO == IPPROTO_TCP && $PROTOCTX != NULL &&\n    ($FLAGS & PKT_STREAM_EST))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing check for PKT_STREAM_EST in TCP protocol handling.
+    This vulnerability could allow processing of packets that are not part of an established
+    stream, potentially leading to security issues such as bypassing security controls
+    or processing malformed packets. Always verify that the packet is part of an established
+    stream using the PKT_STREAM_EST flag when handling TCP packets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/d8634daf74c882356659addb65fb142b738a186b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://suricata.io/
+    technology:
+    - c

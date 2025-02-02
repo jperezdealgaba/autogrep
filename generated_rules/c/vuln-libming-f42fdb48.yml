@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libming-f42fdb48
+  pattern: 'int $VAR = ($ACTIONS[$INDEX-$OFFSET].$RECORD.$FIELD == $VALUE) ? $TRUE
+    : $FALSE;
+
+    '
+  pattern-not: 'int $VAR = ($FUNC($ACTIONS, $INDEX-$OFFSET, $MAX) == $VALUE) ? $TRUE
+    : $FALSE;
+
+    '
+  languages:
+  - c
+  message: 'Direct access to action records without proper bounds checking can lead
+    to out-of-bounds memory access. This vulnerability can cause crashes, undefined
+    behavior, or potentially exploitable conditions. Use the provided OpCode function
+    to safely access action records with bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/f42fdb48986f29278907ab11f615b1c5d2f87530
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

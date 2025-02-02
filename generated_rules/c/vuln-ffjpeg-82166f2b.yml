@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ffjpeg-82166f2b
+  pattern: 'jfif->comp_num = $BUF[0];
+
+    '
+  pattern-not: 'jfif->comp_num = $BUF[0] < 4 ? $BUF[0] : 4;
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns a value from a buffer to `comp_num` without
+    bounds checking, which can lead to out-of-bounds access or memory corruption.
+    This is dangerous because it can be exploited to cause undefined behavior or security
+    vulnerabilities. To fix this, ensure the value is within the expected range before
+    assignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/82166f2b942405b11e40153c70551a48b7e6b4ab
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

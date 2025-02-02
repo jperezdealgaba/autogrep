@@ -1,0 +1,39 @@
+rules:
+- id: vuln-znc-c96798c4
+  pattern: '$TYPE *$VAR = ($TYPE *) *$ITER;
+
+    ret[$VAR->GetUser()->GetUserName()].first += $VAR->GetBytesRead();
+
+    ret[$VAR->GetUser()->GetUserName()].second += $VAR->GetBytesWritten();
+
+    $UI_IN += $VAR->GetBytesRead();
+
+    $UI_OUT += $VAR->GetBytesWritten();
+
+    '
+  pattern-not: "$TYPE *$VAR = NULL;\n...\n$VAR = ($TYPE *) *$ITER;\n...\nif ($VAR)\
+    \ {\n    ret[$VAR->GetUser()->GetUserName()].first += (*$ITER)->GetBytesRead();\n\
+    \    ret[$VAR->GetUser()->GetUserName()].second += (*$ITER)->GetBytesWritten();\n\
+    \    $UI_IN += (*$ITER)->GetBytesRead();\n    $UI_OUT += (*$ITER)->GetBytesWritten();\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'This rule detects unsafe dereferencing of user objects without null checks,
+    which can lead to null pointer dereference vulnerabilities. The original code
+    directly accessed GetUser() on potentially null pointers, which could cause crashes
+    or undefined behavior. The fix introduces a null check before accessing the user
+    object. Always ensure pointers are checked for null before dereferencing them
+    to avoid such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/znc/znc/commit/c96798c4d693744e26ab68deb8773b22ae339060
+    category: security
+    cwe:
+    - 476
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

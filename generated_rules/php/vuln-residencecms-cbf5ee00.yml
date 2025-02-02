@@ -1,0 +1,25 @@
+rules:
+- id: vuln-residencecms-cbf5ee00
+  pattern: '$property->getPropertyDescription()->setContent($htmlContent);
+
+    '
+  pattern-not: '$property->getPropertyDescription()->setContent($this->removeScriptsFromHtml($htmlContent));
+
+    '
+  languages:
+  - php
+  message: 'Detected potentially unsafe HTML content being set without script removal.
+    This can lead to XSS vulnerabilities if the content is user-controlled. Use `removeScriptsFromHtml`
+    to sanitize HTML content before setting it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/coderberg/residencecms/commit/cbf5ee00d801015fcd1d5c8f8ce3b27f573598cc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

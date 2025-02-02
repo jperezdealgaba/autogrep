@@ -1,0 +1,24 @@
+rules:
+- id: vuln-flask-b178e89e
+  pattern: '$DATA.decode($ENCODING or ''utf-8'')
+
+    '
+  pattern-not: "$ENCODING = $KWARGS.pop('encoding', None)\nif $ENCODING is None:\n\
+    \    $ENCODING = detect_encoding($DATA)\n$DATA.decode($ENCODING)\n"
+  languages:
+  - python
+  message: 'Detected unsafe decoding of data without proper encoding detection. This
+    can lead to incorrect interpretation of data if the encoding is not explicitly
+    specified or detected. Always use proper encoding detection, especially when handling
+    JSON data, to ensure compatibility with different UTF encodings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pallets/flask/commit/b178e89e4456e777b1a7ac6d7199052d0dfdbbbe
+    category: security
+    cwe: CWE-172
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc8259
+    technology: python

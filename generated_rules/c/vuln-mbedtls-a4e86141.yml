@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mbedtls-a4e86141
+  pattern: "if( mbedtls_x509_time_is_past( &$VAR ) )\n    return( 1 );\n"
+  pattern-not: 'return( 1 );
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability occurs when a certificate''s revocation date check is
+    bypassed by directly returning 1 without proper validation. This could allow revoked
+    certificates to be treated as valid, leading to potential security risks such
+    as man-in-the-middle attacks. The fix ensures that the revocation date is properly
+    checked before returning a result. Always validate the revocation date before
+    returning a value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ARMmbed/mbedtls/commit/a4e86141f1451e8097f85a823a4426e1c1cfdf7c
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://tls.mbed.org/tech-updates/security-advisories/mbedtls-security-advisory-2021-01
+    technology:
+    - c

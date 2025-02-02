@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ratpack-f2b63eb8
+  pattern: 'ThreadLocalRandom $RANDOM = ThreadLocalRandom.current();
+
+    UUID $UUID = new UUID($RANDOM.nextLong(), $RANDOM.nextLong());
+
+    return AsciiString.of($UUID.toString());
+
+    '
+  pattern-not: 'return AsciiString.cached(UUID.randomUUID().toString());
+
+    '
+  languages:
+  - java
+  message: 'Insecure session ID generation using ThreadLocalRandom detected. This
+    can lead to predictable session IDs, making the application vulnerable to session
+    hijacking. Use UUID.randomUUID() instead for secure random generation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ratpack/ratpack/commit/f2b63eb82dd71194319fd3945f5edf29b8f3a42d
+    category: security
+    cwe: CWE-330
+    owasp: A2:2017-Broken Authentication
+    technology: java

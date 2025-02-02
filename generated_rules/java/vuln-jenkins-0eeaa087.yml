@@ -1,0 +1,22 @@
+rules:
+- id: vuln-jenkins-0eeaa087
+  pattern: "private Authentication legacy($USERNAME, $MAC, $FULLVALUE) {\n  return\
+    \ getUserAuthIfValidMac($USERNAME, $MAC, $FULLVALUE);\n}\n"
+  pattern-not: 'LOGGER.log(Level.FINE, "The legacy method is no longer accepted: username={0}",
+    $USERNAME);
+
+    return Jenkins.ANONYMOUS;
+
+    '
+  languages:
+  - java
+  message: Legacy authentication method detected. This method is no longer accepted
+    and should return Jenkins.ANONYMOUS instead of using getUserAuthIfValidMac.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/0eeaa087aac192fb39f52928be5a5bbf16627ea6
+    category: security
+    cwe: CWE-287
+    owasp: 'A2: Broken Authentication'
+    references: https://jenkins.io/security/advisory/2021-04-21/
+    technology: java

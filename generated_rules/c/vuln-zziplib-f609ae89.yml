@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zziplib-f609ae89
+  pattern: 'return fopen($NAME, $MODE);
+
+    '
+  pattern-not: "$NAME_STRIPPED = strdup($NAME);\nremove_dotdotslash($NAME_STRIPPED);\n\
+    $NAME = $NAME_STRIPPED;\n$MUSTFREE = 1;\n$FP = fopen($NAME, $MODE);\nif ($MUSTFREE)\n\
+    \    free($NAME_STRIPPED);\nreturn $FP;\n"
+  languages:
+  - c
+  message: 'Directly using a path without sanitizing it can lead to directory traversal
+    attacks. The patch adds a function `remove_dotdotslash` to remove "../" components
+    from the path before using it in `fopen`. Always sanitize paths that come from
+    untrusted sources to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/f609ae8971f3c0ce64d38276b778001d0bbfc84b
+    category: security
+    cwe:
+    - 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - c

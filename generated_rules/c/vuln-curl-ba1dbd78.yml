@@ -1,0 +1,30 @@
+rules:
+- id: vuln-curl-ba1dbd78
+  pattern: '$SCRATCH = malloc(2 * $DATA->set.buffer_size);
+
+    '
+  pattern-not: '$SCRATCH = malloc(2 * UPLOAD_BUFSIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe memory allocation using `data->set.buffer_size`
+    which could lead to buffer overflow or insufficient memory allocation. This vulnerability
+    arises because the buffer size is dynamically determined from a user-controlled
+    structure, which may not be properly validated. To fix this, use a defined constant
+    like `UPLOAD_BUFSIZE` instead of dynamically calculated sizes, and ensure proper
+    bounds checking with `DEBUGASSERT`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/ba1dbd78e5f1ed67c1b8d37ac89d90e5e330b628
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - c

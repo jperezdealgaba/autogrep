@@ -1,0 +1,43 @@
+rules:
+- id: vuln-moddable-ebb1acf2
+  pattern: '$PROXY = instance->next;
+
+    $FUNCTION = fxCheckProxyFunction($THE, $PROXY, $_ID);
+
+    ...
+
+    mxPushReference($PROXY->value.proxy.target);
+
+    ...
+
+    mxBehaviorCall($THE, $PROXY->value.proxy.target, $_THIS, $ARGUMENTS);
+
+    '
+  pattern-not: 'mxProxyDeclarations($_ID);
+
+    ...
+
+    mxPushSlot($TARGET);
+
+    ...
+
+    mxBehaviorCall($THE, $TARGET->value.reference, $_THIS, $ARGUMENTS);
+
+    '
+  languages:
+  - c
+  message: "Direct usage of proxy->value.proxy.target without proper validation can\
+    \ lead to security vulnerabilities. \nThe patch introduces a safer macro `mxProxyDeclarations`\
+    \ to handle proxy-related operations, ensuring that the target is properly validated\
+    \ before use. \nTo fix this, replace direct references to proxy->value.proxy.target\
+    \ with the safer `mxProxyDeclarations` macro.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/ebb1acf2294dff88ec4fd70b2791e2df1ea37ef2
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1
+    technology:
+    - c

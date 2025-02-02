@@ -1,0 +1,30 @@
+rules:
+- id: vuln-serendipity-bba6a840
+  pattern: '$serendipity[''dbType''] = $_POST[''dbType''];
+
+    '
+  pattern-not: '$serendipity[''dbType''] = preg_replace(''@[^a-z0-9-]@imsU'', '''',
+    $_POST[''dbType'']);
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of user input to a configuration variable without proper
+    sanitization can lead to security vulnerabilities such as SQL injection or code
+    execution. The variable `dbType` is assigned directly from `$_POST[''dbType'']`
+    without any validation or sanitization. Use `preg_replace` or a similar function
+    to sanitize the input and remove potentially harmful characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/s9y/Serendipity/commit/bba6a840f4d53cbaf62971a3078a98c8ddf92b85
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

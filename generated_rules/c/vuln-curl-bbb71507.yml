@@ -1,0 +1,29 @@
+rules:
+- id: vuln-curl-bbb71507
+  pattern: 'set_ssl_ciphers($SCHANNEL_CRED, $CIPHERS)
+
+    '
+  pattern-not: 'set_ssl_ciphers($SCHANNEL_CRED, $CIPHERS, $ALGIDS)
+
+    '
+  languages:
+  - c
+  message: 'The function `set_ssl_ciphers` is called without passing the `algIds`
+    parameter, which can lead to a buffer overflow vulnerability. This occurs because
+    the function internally uses a static array of size 45 without proper bounds checking.
+    To fix this, ensure that `algIds` is passed as a parameter and that bounds checking
+    is implemented.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/bbb71507b7bab52002f9b1e0880bed6a32834511
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

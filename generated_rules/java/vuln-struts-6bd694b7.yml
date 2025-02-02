@@ -1,0 +1,22 @@
+rules:
+- id: vuln-struts-6bd694b7
+  pattern: "protected Templates getTemplates($PATH) throws TransformerException, IOException\
+    \ {\n    String $VAR = ServletActionContext.getRequest().getParameter(\"xslt.location\"\
+    );\n    if ($VAR != null)\n        $PATH = $VAR;\n    ...\n}\n"
+  pattern-not: "protected Templates getTemplates(final String path) throws TransformerException,\
+    \ IOException {\n    ...\n}\n"
+  languages:
+  - java
+  message: 'Detected a potential XSLT injection vulnerability. The XSLT location is
+    being taken from user input without proper validation, which could allow an attacker
+    to inject malicious XSLT. Always validate and sanitize user input before using
+    it in sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/6bd694b7980494c12d49ca1bf39f12aec3e03e2f
+    category: security
+    cwe: CWE-91
+    owasp: 'A1: Injection'
+    technology: java

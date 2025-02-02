@@ -1,0 +1,20 @@
+rules:
+- id: vuln-notebook-05aa4b2c
+  pattern: version_info = (5, 7, 5)
+  pattern-not: version_info = (5, 7, 6)
+  languages:
+  - python
+  message: Outdated version of Jupyter Notebook detected. This version may contain
+    security vulnerabilities. Update to the latest version to mitigate potential risks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jupyter/notebook/commit/05aa4b2cffb55896b53f0a5e50bc9bca405cb29f
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://jupyter-notebook.readthedocs.io/en/stable/changelog.html
+    technology:
+    - python

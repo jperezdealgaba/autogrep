@@ -1,0 +1,30 @@
+rules:
+- id: vuln-docker-c9379eb3
+  pattern: "func parseSecurityOpt($CONTAINER *Container, $CONFIG *runconfig.Config)\
+    \ error {\n  ...\n  $LABEL_OPTS = append($LABEL_OPTS, $CON[1])\n  ...\n  $CONTAINER.ProcessLabel,\
+    \ $CONTAINER.MountLabel, $ERR = label.InitLabels($LABEL_OPTS)\n  ...\n}\n"
+  pattern-not: "func parseSecurityOpt($CONTAINER *Container, $CONFIG *runconfig.HostConfig)\
+    \ error {\n  ...\n  $LABELOPTS = append($LABELOPTS, $CON[1])\n  ...\n  $CONTAINER.ProcessLabel,\
+    \ $CONTAINER.MountLabel, $ERR = label.InitLabels($LABELOPTS)\n  ...\n}\n"
+  languages:
+  - go
+  message: 'The function `parseSecurityOpt` uses an incorrect configuration type (`runconfig.Config`)
+    for handling security options. This can lead to misconfiguration of container
+    security settings. The correct type to use is `runconfig.HostConfig`. This vulnerability
+    could allow for incorrect security settings to be applied to containers, potentially
+    leading to security breaches. To fix this, update the function signature to use
+    `runconfig.HostConfig` instead of `runconfig.Config`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/docker/commit/c9379eb3fbbc484c056f5a5e49d8d0b755a29c45
+    category: security
+    cwe:
+    - 'CWE-269: Improper Privilege Management'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://docs.docker.com/engine/security/security/
+    technology:
+    - go

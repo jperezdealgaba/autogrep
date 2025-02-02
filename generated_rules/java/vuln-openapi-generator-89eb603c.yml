@@ -1,0 +1,32 @@
+rules:
+- id: vuln-openapi-generator-89eb603c
+  pattern: 'supportingFiles.add(new SupportingFile("modelbase-header.mustache", "model",
+    $MODEL_NAME_PREFIX + "ModelBase.h"));
+
+    supportingFiles.add(new SupportingFile("modelbase-source.mustache", "model", $MODEL_NAME_PREFIX
+    + "ModelBase.cpp"));
+
+    '
+  pattern-not: 'supportingFiles.add(new SupportingFile("modelbase-header.mustache",
+    "model", $MODEL_NAME_PREFIX + "ModelBase.h"));
+
+    supportingFiles.add(new SupportingFile("modelbase-source.mustache", "model", $MODEL_NAME_PREFIX
+    + "ModelBase.cpp"));
+
+    ...
+
+    '
+  languages:
+  - java
+  message: Duplicate file generation detected. This can lead to potential overwrites
+    or inconsistencies in generated files. Ensure each file is generated only once.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/89eb603c17278e3c6ab49fb65256e7454d0c85ba
+    category: security
+    cwe:
+    - CWE-668
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - java

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-zulip-4235be75
+  pattern: "if $SENDER.bot_type != $SENDER.OUTGOING_WEBHOOK_BOT:\n    ...\n"
+  pattern-not: "if not $SKIP_STREAM_ACCESS_CHECK:\n    ...\nelse:\n    assert $SENDER.bot_type\
+    \ == $SENDER.OUTGOING_WEBHOOK_BOT\n"
+  languages:
+  - python
+  message: 'Detected missing stream access check for outgoing webhook bots. This can
+    allow unauthorized access to streams. Ensure that the stream access check is properly
+    enforced or explicitly bypassed with appropriate security measures.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/4235be759db5e0678ceac88ec19f2b8f8482214a
+    category: security
+    cwe: CWE-285
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://github.com/zulip/zulip/commit/4235be759db5e0678ceac88ec19f2b8f8482214a
+    technology:
+    - python

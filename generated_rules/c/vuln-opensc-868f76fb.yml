@@ -1,0 +1,25 @@
+rules:
+- id: vuln-opensc-868f76fb
+  pattern: "if ($PINLEN == 0) {\n    $R = sc_pkcs15_get_pin_info($P15CARD, $PIN_OBJ);\n\
+    \    if ($R == SC_SUCCESS && $AUTH_INFO->logged_in == SC_PIN_STATE_LOGGED_IN)\
+    \ {\n        LOG_FUNC_RETURN($CTX, $R);\n    }\n}\n"
+  pattern-not: "if ($PINLEN == 0) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks if the PIN length is zero and returns success if the PIN
+    is already logged in, which can lead to bypassing PIN verification. This is dangerous
+    as it may allow unauthorized access even when PIN caching is disabled. To fix
+    this, ensure proper PIN verification is always enforced regardless of the logged-in
+    state.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/868f76fb31255fd3fdacfc3e476452efeb61c3e7
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

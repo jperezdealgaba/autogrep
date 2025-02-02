@@ -1,0 +1,32 @@
+rules:
+- id: vuln-opencv-4ca89db2
+  pattern: "if ($SIGNATURE.size() >= $M_SIGNATURE.size() &&\n    (!memcmp($SIGNATURE.c_str(),\
+    \ $M_SIGNATURE.c_str(), $M_SIGNATURE.size()) ||\n     !memcmp($SIGNATURE.c_str(),\
+    \ $M_SIGNATURE_ALT.c_str(), $M_SIGNATURE_ALT.size())))\n    return true;\n"
+  pattern-not: "if ($SIGNATURE.size() >= $M_SIGNATURE.size() &&\n    0 == memcmp($SIGNATURE.c_str(),\
+    \ $M_SIGNATURE.c_str(), $M_SIGNATURE.size()))\n    return true;\nif ($SIGNATURE.size()\
+    \ >= $M_SIGNATURE_ALT.size() &&\n    0 == memcmp($SIGNATURE.c_str(), $M_SIGNATURE_ALT.c_str(),\
+    \ $M_SIGNATURE_ALT.size()))\n    return true;\n"
+  languages:
+  - cpp
+  message: 'The code uses a logical OR (`||`) to combine multiple `memcmp` calls,
+    which can lead to incorrect validation of signatures. This can result in accepting
+    invalid or malicious data. The issue is fixed by separating the `memcmp` checks
+    into distinct `if` statements, ensuring each condition is evaluated independently.
+    To fix, separate the `memcmp` checks into individual `if` statements and ensure
+    proper validation of each signature.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/opencv/opencv/commit/4ca89db22dea962690f31c1781bce5937ee91837
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/697.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - cpp

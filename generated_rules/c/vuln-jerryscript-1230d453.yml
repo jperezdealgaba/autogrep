@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jerryscript-1230d453
+  pattern: "#if ENABLED (JERRY_ES2015)\n  if ($CONTEXT->source_p[0] == LIT_CHAR_ASTERISK)\n\
+    \  {\n    $CONTEXT->token.type = LEXER_MULTIPLY;\n  }\n#endif /* ENABLED (JERRY_ES2015)\
+    \ */\n"
+  pattern-not: "#if ENABLED (JERRY_ES2015)\n  if ($CONTEXT->source_p[0] == LIT_CHAR_ASTERISK)\n\
+    \  {\n    $CONTEXT->token.type = LEXER_MULTIPLY;\n    lexer_consume_next_character($CONTEXT);\n\
+    \    return;\n  }\n#endif /* ENABLED (JERRY_ES2015) */\n"
+  languages:
+  - c
+  message: 'Detected a vulnerability where the parser fails to properly consume the
+    next character after encountering an asterisk. This could lead to incorrect tokenization
+    and potential security issues in the JavaScript parser. The fix ensures that the
+    next character is consumed and the function returns immediately after setting
+    the token type.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/galpeter/jerryscript/commit/1230d4532c215abe8679a3c6ecda6152c502ae60
+    category: security
+    cwe:
+    - CWE-172
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

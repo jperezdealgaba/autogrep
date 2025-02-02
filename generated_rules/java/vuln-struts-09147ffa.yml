@@ -1,0 +1,24 @@
+rules:
+- id: vuln-struts-09147ffa
+  pattern: '$RESULT = $ENCODE ? $RESPONSE.encodeURL($LINK.toString()) : $LINK.toString();
+
+    '
+  pattern-not: "$RESULT = $LINK.toString();\nif ($RESULT.indexOf(\"<script>\") >=\
+    \ 0) {\n    $RESULT = $RESULT.replaceAll(\"<script>\", \"script\");\n}\n$RESULT\
+    \ = $ENCODE ? $RESPONSE.encodeURL($RESULT) : $RESULT;\n"
+  languages:
+  - java
+  message: "Detected potential Cross-Site Scripting (XSS) vulnerability due to missing\
+    \ script tag sanitization. \nThe code directly uses user-controlled input in URL\
+    \ encoding without proper sanitization, which can lead to XSS attacks. \nEnsure\
+    \ all user inputs are properly sanitized to prevent script injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/09147ffad2b3046ed21af0f524c5088e2ac551e6
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - java

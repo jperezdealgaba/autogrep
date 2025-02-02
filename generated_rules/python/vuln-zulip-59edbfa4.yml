@@ -1,0 +1,22 @@
+rules:
+- id: vuln-zulip-59edbfa4
+  pattern: "if $REQUEST.headers.get(\"Authorization\") != $TOKEN:\n    ...\n"
+  pattern-not: "if $AUTHORIZATION is None or not constant_time_compare($AUTHORIZATION,\
+    \ $TOKEN):\n    ...\n"
+  languages:
+  - python
+  message: 'Detected insecure comparison of Authorization headers. Using direct comparison
+    (`!=`) can lead to timing attacks. Use `django.utils.crypto.constant_time_compare`
+    for secure comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/59edbfa4113d140d3e20126bc65f4d67b2a8ffe5
+    category: security
+    cwe: CWE-208
+    owasp: A02:2021-Cryptographic Failures
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.crypto.constant_time_compare
+    technology:
+    - python

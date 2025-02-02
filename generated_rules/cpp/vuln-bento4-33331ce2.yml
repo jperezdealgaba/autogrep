@@ -1,0 +1,23 @@
+rules:
+- id: vuln-bento4-33331ce2
+  pattern: "if (AP4_StringLength($VAR) != 64) {\n  ...\n}\n"
+  pattern-not: "if ($VAR == NULL || AP4_StringLength($VAR) != 64) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Potential NULL pointer dereference vulnerability detected. Before calling
+    AP4_StringLength, ensure the pointer is not NULL to avoid undefined behavior or
+    crashes. Always check for NULL pointers before dereferencing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/33331ce2d35d45d855af7441db6116b4a9e2b70f
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

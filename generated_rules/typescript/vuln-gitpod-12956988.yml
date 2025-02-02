@@ -1,0 +1,35 @@
+rules:
+- id: vuln-gitpod-12956988
+  pattern: "const verifyCSRF = ($ORIGIN) => {\n  let $ALLOWED = isAllowedWebsocketDomain($ORIGIN,\
+    \ $HOSTNAME);\n  ...\n}\n"
+  pattern-not: "const verifyOrigin = ($ORIGIN, $STRICT) => {\n  let $ALLOWED = isAllowedWebsocketDomain($ORIGIN,\
+    \ $HOSTNAME, $STRICT);\n  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Detected a vulnerable CSRF protection implementation in websocket origin
+    verification.
+
+    The old version of `isAllowedWebsocketDomain` did not enforce strict origin checks,
+
+    potentially allowing CSRF attacks from unauthorized domains.
+
+    The fix introduces a `strict` parameter to enforce stricter origin validation.
+
+    Update the CSRF verification to use the strict mode for cookie/session authentication.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gitpod-io/gitpod/commit/12956988eec0031f42ffdfa3bdc3359f65628f9f
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    - 'A5: Broken Access Control'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    - https://cwe.mitre.org/data/definitions/352.html
+    technology:
+    - typescript
+    - websocket

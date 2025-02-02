@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openldap-fbe5611e
+  pattern: "if ($OP->o_conn->c_authz_backend && be_isroot_dn($OP->o_conn->c_authz_backend,\
+    \ $AUTHC_DN)) {\n  $RC = LDAP_SUCCESS;\n  goto DONE;\n}\n"
+  pattern-not: "if ($OP->o_conn->c_authz_backend) {\n  $ZBE = select_backend($AUTHZ_DN,\
+    \ 1);\n  if ($ZBE && be_isroot_dn($ZBE, $AUTHC_DN)) {\n    $RC = LDAP_SUCCESS;\n\
+    \    goto DONE;\n  }\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the manager can authorize as any
+    DN without proper backend validation. This is dangerous because it could allow
+    unauthorized access to sensitive data. The fix involves validating that the authorization
+    is only allowed within the manager''s own databases by checking the appropriate
+    backend. Ensure that the authorization is properly validated within the correct
+    backend context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/openldap/openldap/commit/fbe5611e606e80e56e158cc42f0c7289975836a8
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-redash-da696ff7
+  pattern: "oauth = OAuth()\n...\nblueprint = Blueprint(\"google_oauth\", __name__)\n\
+    ...\ndef google_remote_app():\n    if \"google\" not in oauth.remote_apps:\n \
+    \       oauth.remote_app(\n            \"google\",\n            base_url=\"https://www.google.com/accounts/\"\
+    ,\n            authorize_url=\"https://accounts.google.com/o/oauth2/auth?prompt=select_account+consent\"\
+    ,\n            request_token_url=None,\n            request_token_params={\n \
+    \               \"scope\": \"https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile\"\
+    \n            },\n            access_token_url=\"https://accounts.google.com/o/oauth2/token\"\
+    ,\n            access_token_method=\"POST\",\n            consumer_key=settings.GOOGLE_CLIENT_ID,\n\
+    \            consumer_secret=settings.GOOGLE_CLIENT_SECRET,\n        )\n    return\
+    \ oauth.google\n"
+  pattern-not: "oauth = OAuth($APP)\n...\noauth.register(\n    name=\"google\",\n\
+    \    server_metadata_url=$CONF_URL,\n    client_kwargs={\"scope\": \"openid email\
+    \ profile\"},\n)\n"
+  languages:
+  - python
+  message: "Detected insecure OAuth implementation using flask_oauthlib. This can\
+    \ lead to security issues such as token leakage or improper session management.\
+    \ \nThe vulnerability arises from initializing OAuth without binding it to a Flask\
+    \ app instance, which can cause improper state handling. \nFix by using authlib's\
+    \ Flask OAuth client and initializing it with the Flask app instance.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/getredash/redash/commit/da696ff7f84787cbf85967460fac52886cbe063e
+    category: security
+    cwe: CWE-639
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - python
+    - flask

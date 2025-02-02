@@ -1,0 +1,19 @@
+rules:
+- id: vuln-solr-d172b2c7
+  pattern: "if ($PATH.startsWith($INSTANCE_DIR) || $ALLOW_UNSAFE_RESOURCELOADING)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($ALLOW_UNSAFE_RESOURCELOADING || $PATH.startsWith($INSTANCE_DIR))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Potential unsafe resource loading vulnerability. The order of conditions
+    in the if statement should be reversed to prioritize the security check. Move
+    the allowUnsafeResourceloading check to the beginning of the condition.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/solr/commit/d172b2c7ae8ed534b3ec6ed8167f8736823a66a7
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references: https://cwe.mitre.org/data/definitions/22.html
+    technology: java

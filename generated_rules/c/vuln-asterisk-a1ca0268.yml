@@ -1,0 +1,27 @@
+rules:
+- id: vuln-asterisk-a1ca0268
+  pattern: 'pj_strcpy2(&((pjsip_generic_string_hdr *) $HDR)->hvalue, $VALUE);
+
+    '
+  pattern-not: 'pj_strdup2($POOL, &((pjsip_generic_string_hdr *) $HDR)->hvalue, $VALUE);
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe use of pj_strcpy2 which can lead to buffer overflows.\
+    \ \nThis function does not check the length of the destination buffer, \nmaking\
+    \ it vulnerable to buffer overflow attacks. \nUse pj_strdup2 instead, which allocates\
+    \ memory safely using the provided pool.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/asterisk/asterisk/commit/a1ca0268254374b515fa5992f01340f7717113fa
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://www.owasp.org/index.php/Buffer_Overflow
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

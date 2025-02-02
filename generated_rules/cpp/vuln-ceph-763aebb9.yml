@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ceph-763aebb9
+  pattern: 'boost::replace_all_copy(std::back_inserter($S), $HEADER, "\n", "\\n")
+
+    '
+  pattern-not: 'std::string $TMP = boost::replace_all_copy($HEADER, "\n", "\\n");
+
+    boost::replace_all_copy(std::back_inserter($S), $TMP, "\r", "\\r");
+
+    '
+  languages:
+  - cpp
+  message: 'Detected incomplete header injection prevention. The code only escapes
+    newline characters (''\n'') but not carriage return characters (''\r''), which
+    could lead to HTTP response header injection attacks. To fix this, ensure both
+    ''\n'' and ''\r'' are properly escaped in header values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/763aebb94678018f89427137ffbc0c5205b1edc1
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - cpp

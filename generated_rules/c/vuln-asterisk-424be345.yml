@@ -1,0 +1,45 @@
+rules:
+- id: vuln-asterisk-424be345
+  pattern: "if (!live_dangerously && !strncasecmp($FILENAME, \"/\", 1) &&\n     strncasecmp($FILENAME,\
+    \ $CONFIG_DIR, strlen($CONFIG_DIR))) {\n  ...\n}\n"
+  pattern-not: "if (live_dangerously) {\n  return 0;\n}\n$STRIPPED_FILENAME = ast_strip(ast_strdupa($FILENAME));\n\
+    if ($STRIPPED_FILENAME[0] == '/') {\n  $REAL_PATH = realpath($STRIPPED_FILENAME,\
+    \ NULL);\n} else {\n  if (ast_asprintf(&$PATH, \"%s/%s\", $CONFIG_DIR, $STRIPPED_FILENAME)\
+    \ == -1) {\n    return -1;\n  }\n  $REAL_PATH = realpath($PATH, NULL);\n}\nif\
+    \ (!$REAL_PATH) {\n  return -1;\n}\nif (!ast_begins_with($REAL_PATH, $CONFIG_DIR))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code performs insufficient path validation, allowing access to restricted
+    files.
+
+    This vulnerability occurs because the code only checks if the filename starts
+    with "/"
+
+    and doesn''t match the config directory, without properly resolving and validating
+    the
+
+    full path. This can lead to unauthorized access to sensitive files.
+
+    The fix involves properly resolving the full path using realpath() and validating
+    it
+
+    against the config directory. Always use realpath() to resolve symlinks and validate
+
+    the full path to prevent directory traversal attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/asterisk/asterisk/commit/424be345639d75c6cb7d0bd2da5f0f407dbd0bd5
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

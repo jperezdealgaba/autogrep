@@ -1,0 +1,30 @@
+rules:
+- id: vuln-framework-d03a07e0
+  pattern: 'hash_equals($user->remember_token, $token) ? $this->getGenericUser($user)
+    : null
+
+    '
+  pattern-not: '$user && hash_equals($user->remember_token, $token) ? $this->getGenericUser($user)
+    : null
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses `hash_equals` without checking if `$user` is null,
+    which can lead to a potential null pointer exception. This is dangerous because
+    it can cause the application to crash or behave unexpectedly when `$user` is null.
+    To fix this, ensure `$user` is checked for null before calling `hash_equals`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laravel/framework/commit/d03a07e066aea967d9f1884fa4cfc797a50f5bd2
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-curl-57d299a4
+  pattern: 'unsigned char *$PW = $LEN ? malloc($LEN * 2) : strdup("");
+
+    '
+  pattern-not: "unsigned char *$PW;\nif($LEN > SIZE_T_MAX/2)\n  return $ERROR;\n$PW\
+    \ = $LEN ? malloc($LEN * 2) : strdup(\"\");\n"
+  languages:
+  - c
+  message: 'This code is vulnerable to integer overflow during memory allocation,
+    which can lead to buffer overflow attacks. The multiplication of `len` by 2 in
+    `malloc(len * 2)` can result in a value that exceeds the maximum size of a size_t,
+    leading to a smaller buffer being allocated than expected. This can then be exploited
+    to overwrite adjacent memory. To fix this, add a check to ensure that `len` is
+    not larger than `SIZE_T_MAX/2` before performing the multiplication.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/57d299a499155d4b327e341c6024e293b0418243
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

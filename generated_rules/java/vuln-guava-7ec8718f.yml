@@ -1,0 +1,21 @@
+rules:
+- id: vuln-guava-7ec8718f
+  pattern: '$LIST = new ArrayList<>($LENGTH);
+
+    '
+  pattern-not: '$LIST = new ArrayList<>();
+
+    '
+  languages:
+  - java
+  message: 'Potential vulnerability detected: Initializing ArrayList with a predefined
+    length can lead to unexpected behavior. Use the default constructor instead.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/google/guava/commit/7ec8718f1e6e2814dabaa4b9f96b6b33a813101c
+    category: security
+    cwe:
+    - CWE-664
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - java

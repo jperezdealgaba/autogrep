@@ -1,0 +1,25 @@
+rules:
+- id: vuln-zulip-4a61e36d
+  pattern: "if $URL.startswith($REALM_URI_PREFIX) and urllib.parse.urljoin($REALM_URI_PREFIX,\
+    \ $URL[len($REALM_URI_PREFIX):]) == $URL:\n  ...\n"
+  pattern-not: "if $URL.startswith(($REALM_URI_PREFIX + \"#\", $REALM_URI_PREFIX +\
+    \ \"user_uploads/\")):\n  ...\n"
+  languages:
+  - python
+  message: 'Detected insecure URL validation that could allow bypassing security checks.
+
+    The original code used a weak comparison that could be exploited by crafted URLs.
+
+    The fix ensures URLs are properly validated against specific allowed patterns.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/4a61e36def4ae7349dc7b39f2a9848505389cf6a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - python

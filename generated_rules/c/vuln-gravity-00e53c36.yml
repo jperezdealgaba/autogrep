@@ -1,0 +1,41 @@
+rules:
+- id: vuln-gravity-00e53c36
+  pattern: 'char $VAR[new_size+1];
+
+    ...
+
+    strcpy($VAR, $STR);
+
+    ...
+
+    strcat($VAR, $STR);
+
+    '
+  pattern-not: 'char *$VAR = mem_alloc($SIZE);
+
+    ...
+
+    memcpy($VAR+$SEEK, $STR, $LEN);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe string manipulation using strcpy and strcat without proper
+    bounds checking. This can lead to buffer overflows and memory corruption. Replace
+    with memcpy and ensure proper allocation and bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/00e53c362677ba9363e89e859a54027581c60cf2
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - c

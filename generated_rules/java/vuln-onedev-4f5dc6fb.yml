@@ -1,0 +1,20 @@
+rules:
+- id: vuln-onedev-4f5dc6fb
+  pattern: 'Configuration<?> $CONFIG = Validation.byDefaultProvider().configure();
+
+    '
+  pattern-not: "Configuration<?> $CONFIG = Validation\n    .byDefaultProvider()\n\
+    \    .configure()\n    .messageInterpolator(new ParameterMessageInterpolator());\n"
+  languages:
+  - java
+  message: Missing message interpolator in Hibernate validation configuration. This
+    can lead to improper message handling and potential security issues. Use ParameterMessageInterpolator
+    to ensure secure message interpolation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/4f5dc6fb9e50f2c41c4929b0d8c5824b2cca3d65
+    category: security
+    cwe: CWE-20
+    owasp: A03:2021 - Injection
+    technology:
+    - java

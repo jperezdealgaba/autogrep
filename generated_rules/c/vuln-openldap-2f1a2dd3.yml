@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openldap-2f1a2dd3
+  pattern: "ValuesReturnFilter *$P, *$NEXT;\nif ($VRF == NULL) {\n  return;\n}\nfor\
+    \ ($P = $VRF; $P != NULL; $P = $NEXT) {\n  $NEXT = $P->vrf_next;\n  ...\n}\n"
+  pattern-not: "ValuesReturnFilter *$NEXT;\nfor ( ; $VRF != NULL; $VRF = $NEXT ) {\n\
+    \  $NEXT = $VRF->vrf_next;\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential use-after-free vulnerability due to unnecessary variable\
+    \ declaration and incorrect loop structure. \nThe original code declares an extra\
+    \ pointer variable `$P` and uses it in a loop, which can lead to use-after-free\
+    \ issues if `$P` is accessed after being freed. \nThe fix removes the redundant\
+    \ variable and directly uses `$VRF` in the loop. \nTo fix this, remove the unnecessary\
+    \ variable and directly iterate using the main pointer.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openldap/openldap/commit/2f1a2dd329b91afe561cd06b872d09630d4edb6a
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

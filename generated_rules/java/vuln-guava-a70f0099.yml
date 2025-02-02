@@ -1,0 +1,22 @@
+rules:
+- id: vuln-guava-a70f0099
+  pattern: 'Map<$K, Collection<$V>> $MAP = new $HASHMAP($CAPACITY);
+
+    '
+  pattern-not: 'Map<$K, Collection<$V>> $MAP = new $HASHMAP();
+
+    '
+  languages:
+  - java
+  message: Potential memory inefficiency or incorrect capacity calculation. Use default
+    constructor instead of specifying capacity manually.
+  severity: WARNING
+  metadata:
+    source-url: github.com/google/guava/commit/a70f009926809b9a37ebbc16ebbc9cf71030be11
+    category: performance
+    cwe:
+    - CWE-400
+    references:
+    - https://github.com/google/guava/commit/a70f009926809b9a37ebbc16ebbc9cf71030be11
+    technology:
+    - java

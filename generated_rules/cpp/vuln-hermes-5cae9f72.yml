@@ -1,0 +1,26 @@
+rules:
+- id: vuln-hermes-5cae9f72
+  pattern: 'llvm_unreachable($MSG)
+
+    '
+  pattern-not: 'hermes_fatal($MSG)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of `llvm_unreachable` which can lead to undefined behavior
+    when accessing debug info, string table, bytecode, or exception info from a lazy
+    module. Replace with `hermes_fatal` to ensure the program terminates safely instead
+    of continuing with undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebook/hermes/commit/5cae9f72975cf0e5a62b27fdd8b01f103e198708
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - cpp

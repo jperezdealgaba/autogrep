@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jenkins-da06fd47
+  pattern: "@Exported\npublic Queue.Executable getCurrentExecutable() {\n  ...\n}\n"
+  pattern-not: "@Exported(name=\"currentExecutable\")\n@Restricted(DoNotUse.class)\n\
+    public Queue.Executable getCurrentExecutableForApi() {\n  Executable candidate\
+    \ = getCurrentExecutable();\n  return candidate instanceof AccessControlled &&\
+    \ ((AccessControlled) candidate).hasPermission(Item.READ) ? candidate : null;\n\
+    }\n"
+  languages:
+  - java
+  message: 'Detected an exposed API method without proper access control. The method
+    `getCurrentExecutable()` is exported without checking if the user has the required
+    permissions to access the resource. This can lead to unauthorized access to sensitive
+    information. Add a permission check using `AccessControlled.hasPermission()` before
+    returning the executable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/da06fd471cea79123821c778228eeb08e1cedcc7
+    category: security
+    cwe:
+    - CWE-862
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java

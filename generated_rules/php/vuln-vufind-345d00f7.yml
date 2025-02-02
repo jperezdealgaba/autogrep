@@ -1,0 +1,23 @@
+rules:
+- id: vuln-vufind-345d00f7
+  pattern: "if (!empty($url)) {\n  ...\n}\n"
+  pattern-not: "if (!empty($url) && $this->proxyAllowedForUrl($url)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "Detected a potential security vulnerability where URL validation is missing\
+    \ before processing. \nThis can lead to Server-Side Request Forgery (SSRF) attacks\
+    \ if untrusted URLs are processed without proper validation. \nEnsure all URLs\
+    \ are validated against an allow list using a method like `proxyAllowedForUrl`\
+    \ before processing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vufind-org/vufind/commit/345d00f7d7f1c581f46742effdac70e803b3847b
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/918.html
+    technology:
+    - php

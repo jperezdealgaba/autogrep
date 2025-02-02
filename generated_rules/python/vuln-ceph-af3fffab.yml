@@ -1,0 +1,21 @@
+rules:
+- id: vuln-ceph-af3fffab
+  pattern: "def $FUNC(self, $TOKEN, $ALL_ENDPOINTS=False):\n    ...\n    return self._swagger_ui_page($ALL_ENDPOINTS,\
+    \ $TOKEN)\n"
+  pattern-not: "def $FUNC(self, $ALL_ENDPOINTS=False):\n    ...\n    return self._swagger_ui_page($ALL_ENDPOINTS)\n"
+  languages:
+  - python
+  message: 'Detected a potential security vulnerability where a token is passed directly
+    to the Swagger UI page. This can lead to unauthorized access or token leakage.
+    Remove the token parameter and handle authentication securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/af3fffab3b0f13057134d96e5d481e400d8bfd27
+    category: security
+    cwe: CWE-200
+    owasp: A01:2017-Broken Access Control
+    references:
+    - https://swagger.io/docs/specification/authentication/
+    technology: python

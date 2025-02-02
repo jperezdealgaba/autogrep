@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tika-a3671161
+  pattern: 'private static final String $REGEX = "(\\d+\\.(\\d+\\.?)*)\\p{Blank}+([A-Z]+(\\s[A-Z]+)*){5,}";
+
+    '
+  pattern-not: 'private static final String $REGEX = "(\\d{1,10}\\.(\\d{1,10}\\.?){0,10})\\p{Blank}+([A-Z]{1,256}(\\s[A-Z]+){0,256}){5,}";
+
+    '
+  languages:
+  - java
+  message: 'Potential regex denial of service (ReDoS) vulnerability detected. The
+    regex pattern is vulnerable to catastrophic backtracking due to unbounded quantifiers.
+    Limit the repetition counts to prevent excessive backtracking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/a36711610fa1f6f5ba0f594803415af795e0b265
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - java

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-curl-2eb8dcf2
+  pattern: "static bool tailmatch(const char *$LITTLE, const char *$BIGONE) {\n  size_t\
+    \ $LITTLELEN = strlen($LITTLE);\n  size_t $BIGLEN = strlen($BIGONE);\n  if($LITTLELEN\
+    \ > $BIGLEN)\n    return FALSE;\n  return Curl_raw_equal($LITTLE, $BIGONE+$BIGLEN-$LITTLELEN)\
+    \ ? TRUE : FALSE;\n}\n"
+  pattern-not: "static bool tailmatch(const char *$COOKIE_DOMAIN, const char *$HOSTNAME)\
+    \ {\n  size_t $COOKIE_DOMAIN_LEN = strlen($COOKIE_DOMAIN);\n  size_t $HOSTNAME_LEN\
+    \ = strlen($HOSTNAME);\n  if($HOSTNAME_LEN < $COOKIE_DOMAIN_LEN)\n    return FALSE;\n\
+    \  if(!Curl_raw_equal($COOKIE_DOMAIN, $HOSTNAME+$HOSTNAME_LEN-$COOKIE_DOMAIN_LEN))\n\
+    \    return FALSE;\n  if($HOSTNAME_LEN == $COOKIE_DOMAIN_LEN)\n    return TRUE;\n\
+    \  if('.' == *($HOSTNAME + $HOSTNAME_LEN - $COOKIE_DOMAIN_LEN - 1))\n    return\
+    \ TRUE;\n  return FALSE;\n}\n"
+  languages:
+  - c
+  message: 'The function ''tailmatch'' is vulnerable to domain matching issues. The
+    original implementation does not properly validate the domain against the hostname,
+    which can lead to security vulnerabilities such as cookie hijacking. The fixed
+    version ensures proper domain matching by checking the length and the leading
+    character of the domain. Always validate domain names according to RFC6265 standards.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/2eb8dcf26cb37f09cffe26909a646e702dbcab66
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://tools.ietf.org/html/rfc6265
+    technology:
+    - c

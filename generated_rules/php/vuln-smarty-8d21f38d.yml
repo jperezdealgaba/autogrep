@@ -1,0 +1,27 @@
+rules:
+- id: vuln-smarty-8d21f38d
+  pattern: '$this->_resource_dir = $this->_checkDir($filepath, $this->_resource_dir);
+
+    '
+  pattern-not: "$addPath = $this->_checkDir($filepath, $this->_resource_dir);\nif\
+    \ ($addPath !== false) {\n  $this->_resource_dir = array_merge($this->_resource_dir,\
+    \ $addPath);\n}\n"
+  languages:
+  - php
+  message: 'The code directly assigns the result of `_checkDir` to `_resource_dir`,
+    which can lead to incomplete or incorrect directory handling. This can result
+    in security vulnerabilities such as directory traversal or improper resource access.
+    The fix involves checking the result of `_checkDir` and conditionally merging
+    it with `_resource_dir` only if it is valid.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/smarty-php/smarty/commit/8d21f38dc35c4cd6b31c2f23fc9b8e5adbc56dfe
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

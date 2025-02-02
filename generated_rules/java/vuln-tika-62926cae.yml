@@ -1,0 +1,22 @@
+rules:
+- id: vuln-tika-62926cae
+  pattern: 'if (read > $VALUE.length) { break; }
+
+    '
+  pattern-not: 'if (read >= $VALUE.length) { break; }
+
+    '
+  languages:
+  - java
+  message: 'Potential array index out of bounds vulnerability detected. The comparison
+    ''>'' should be replaced with ''>='' to prevent array index out of bounds exceptions.
+    This could lead to unexpected behavior or crashes if the array boundary is exceeded.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/62926cae31a02d4f23d21148435804b96c543cc
+    category: security
+    cwe: CWE-125
+    owasp: A1:2017-Injection
+    technology: java

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-openapi-generator-1b6cabb9
+  pattern: 'File.createTempFile($PREFIX, $SUFFIX)
+
+    '
+  pattern-not: 'Files.createTempFile($PREFIX, $SUFFIX).toFile()
+
+    '
+  languages:
+  - java
+  message: Using File.createTempFile is potentially unsafe. Use Files.createTempFile
+    instead, which provides better security guarantees.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/1b6cabb97d133a54a81d1512ce159d0e3489bb8e
+    category: security
+    cwe: CWE-377
+    owasp: A9:2017-Insecure Deserialization
+    references:
+    - https://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#createTempFile(java.lang.String,%20java.lang.String,%20java.nio.file.attribute.FileAttribute...)
+    technology:
+    - java

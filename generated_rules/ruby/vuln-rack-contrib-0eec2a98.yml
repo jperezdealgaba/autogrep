@@ -1,0 +1,29 @@
+rules:
+- id: vuln-rack-contrib-0eec2a98
+  pattern: '(request.params[''profiler_runs''] || $TIMES).to_i
+
+    '
+  pattern-not: "if profiler_runs = request.params['profiler_runs']\n  profiler_runs\
+    \ = profiler_runs.to_i\n  if profiler_runs > @maximum_runs\n    return @maximum_runs\n\
+    \  else\n    return profiler_runs\n  end\nelse\n  return @times\nend\n"
+  languages:
+  - ruby
+  message: 'The code directly converts the ''profiler_runs'' parameter from the request
+    to an integer without validating it against a maximum limit. This can lead to
+    excessive resource consumption or denial of service if a malicious user provides
+    a very large value. The fix introduces a maximum limit check to prevent this vulnerability.
+    Always validate and limit user-provided values that control resource usage.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack-contrib/commit/0eec2a9836329051c6742549e65a94a4c24fe6f7
+    category: security
+    cwe:
+    - 'CWE-400: Uncontrolled Resource Consumption'
+    owasp:
+    - 'A6: Vulnerable and Outdated Components'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Vulnerable_and_Outdated_Components.html
+    technology:
+    - ruby

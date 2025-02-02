@@ -1,0 +1,29 @@
+rules:
+- id: vuln-curl-73980f9a
+  pattern: 'DEBUGASSERT($PREFIX[3] == L''\0'');
+
+    '
+  pattern-not: 'DEBUGASSERT($PREFIX[2] == L''\0'');
+
+    '
+  languages:
+  - c
+  message: 'The code contains an incorrect assertion that checks the null terminator
+    at the wrong index in a wide character string. This could lead to incorrect assumptions
+    about the string''s length, potentially causing buffer overflows or other undefined
+    behavior. The fix is to check the correct index (2) instead of (3) to ensure proper
+    string termination validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/73980f9ace6c7577e7fcab8008bbde8a0a231692
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

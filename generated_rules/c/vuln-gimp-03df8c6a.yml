@@ -1,0 +1,22 @@
+rules:
+- id: vuln-gimp-03df8c6a
+  pattern: 'gimp_export_image($IMAGE, $DRAWABLE, NULL, ...)
+
+    '
+  pattern-not: 'gimp_export_image($IMAGE, $DRAWABLE, $FORMAT, ...)
+
+    '
+  languages:
+  - c
+  message: "Detected use of NULL as the format parameter in gimp_export_image. \n\
+    This can lead to undefined behavior or security vulnerabilities. \nAlways specify\
+    \ a valid format string to ensure proper handling of the export process.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gimp/commit/03df8c6af4ec4e5d547e9fff46d0710b3c262c58
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

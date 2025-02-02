@@ -1,0 +1,36 @@
+rules:
+- id: vuln-bento4-53499d8d
+  pattern: '$VAR.Append($BUFFER);
+
+    $LENGTH = $FUNC($PAYLOAD);
+
+    $VAR[$INDEX].SetData($PAYLOAD+$OFFSET, $LENGTH);
+
+    $CURSOR += $OFFSET+$LENGTH;
+
+    '
+  pattern-not: "if ($CURSOR+$OFFSET <= $PAYLOAD_SIZE) {\n  $LENGTH = $FUNC($PAYLOAD);\n\
+    \  $CURSOR += $OFFSET;\n  if ($CURSOR + $LENGTH < $PAYLOAD_SIZE) {\n    $VAR.Append($BUFFER);\n\
+    \    $VAR[$INDEX].SetData($PAYLOAD, $LENGTH);\n    $CURSOR += $LENGTH;\n  }\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'Detected a potential buffer overflow vulnerability due to missing bounds
+    checks when accessing payload data.
+
+    This can lead to memory corruption, crashes, or arbitrary code execution.
+
+    Fix by adding proper bounds checks before accessing and copying data from the
+    payload.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/53499d8d4c69142137c7c7f0097a444783fdeb90
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

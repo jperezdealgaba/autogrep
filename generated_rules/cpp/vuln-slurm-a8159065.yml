@@ -1,0 +1,29 @@
+rules:
+- id: vuln-slurm-a8159065
+  pattern: 'extern void *slurm_xmalloc(size_t, bool, const char *, int, const char
+    *);
+
+    '
+  pattern-not: 'extern void *slurm_xmalloc(uint64_t, bool, const char *, int, const
+    char *);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `slurm_xmalloc` is declared with `size_t` as the first parameter,
+    which can lead to potential integer overflow vulnerabilities. This is dangerous
+    because it can cause memory allocation failures or buffer overflows. The fix involves
+    changing the parameter type to `uint64_t` to ensure safe handling of large values.
+    Always use appropriate types for memory allocation functions to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/SchedMD/slurm/commit/a8159065d1a57d6eadf802efa6837ebf4e56f671
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

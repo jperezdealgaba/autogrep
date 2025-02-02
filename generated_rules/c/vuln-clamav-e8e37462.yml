@@ -1,0 +1,25 @@
+rules:
+- id: vuln-clamav-e8e37462
+  pattern: "if (yc_poly_emulator($DECRYPTOR, $CODE, $ECX)) {\n  ...\n}\n"
+  pattern-not: "if (yc_poly_emulator($DECRYPTOR, $CODE, $ECX, $MAX_EMU)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The function `yc_poly_emulator` is called without a `max_emu` parameter,
+    which can lead to unbounded emulation and potential security vulnerabilities.
+    This issue was fixed by adding a `max_emu` parameter to limit the emulation length.
+    Always ensure that emulation functions have bounds to prevent excessive resource
+    consumption or out-of-bounds access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/e8e3746266dd3f82054ca137b81b800e54de6ebd
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

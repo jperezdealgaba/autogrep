@@ -1,0 +1,26 @@
+rules:
+- id: vuln-curl-cff89bc0
+  pattern: "while(fgets($LINE, $MAX_LEN, $FP)) {\n  ...\n}\n"
+  pattern-not: "while(get_line($LINE, $MAX_LEN, $FP)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of `fgets()` without proper line handling can lead to incomplete
+    or partial lines being processed, which may cause security vulnerabilities. The
+    function `fgets()` does not guarantee that the entire line is read, especially
+    if the line is longer than the buffer size. This can result in incorrect parsing
+    or processing of data. To fix this, use a custom function like `get_line()` that
+    ensures complete lines are read and processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/curl/curl/commit/cff89bc088b7884098ea0c5378bbda3d49c437bc
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://curl.se/docs/security.html
+    technology:
+    - c

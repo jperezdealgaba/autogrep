@@ -1,0 +1,21 @@
+rules:
+- id: vuln-libmysofa-9be98885
+  pattern: "if ($VAR->values) {\n  free($VAR->values);\n}\n"
+  pattern-not: 'arrayFree($VAR);
+
+    '
+  languages:
+  - c
+  message: "Detected a direct free of values without properly freeing associated attributes.\
+    \ \nThis can lead to memory leaks and undefined behavior. \nUse the `arrayFree`\
+    \ function to ensure all associated memory is properly freed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/hoene/libmysofa/commit/9be98885b3e62693eea66c5f0aebe283613fc646
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

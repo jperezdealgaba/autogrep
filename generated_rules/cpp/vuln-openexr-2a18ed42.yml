@@ -1,25 +1,28 @@
 rules:
 - id: vuln-openexr-2a18ed42
-  pattern: "int $L = levelSize($MIN, $MAX, $I, $RMODE);\nif ($L > std::numeric_limits<int>::max()\
-    \ - $SIZE + 1)\n    throw $EXCEPTION(\"Invalid size.\");\n"
-  pattern-not: 'Int64 $L = levelSize($MIN, $MAX, $I, $RMODE);
+  pattern: "int $L = $FUNC($MIN, $MAX, $I, $RMODE);\nif ($L > std::numeric_limits<int>::max()\
+    \ - $SIZE + 1)\n    $THROW($EXC);\n"
+  pattern-not: 'Int64 $L = $FUNC($MIN, $MAX, $I, $RMODE);
 
     '
   languages:
   - cpp
-  message: 'Detected potential integer overflow vulnerability. Using a 32-bit integer
-    for size calculations can lead to overflow when dealing with large values, which
-    can result in undefined behavior or security vulnerabilities. Replace ''int''
-    with ''Int64'' to use 64-bit integers for the calculation.
+  message: 'Detected potential integer overflow vulnerability. The original code uses
+    a 32-bit integer to store the result of a calculation, which can lead to overflow
+    if the size is large. This can cause undefined behavior or security issues. The
+    fix uses a 64-bit integer to avoid overflow. Always use appropriate data types
+    to handle large values safely.
 
     '
   severity: ERROR
   metadata:
-    source-url: github.com/openexr/openexr/commit/2a18ed424a854598c2a20b5dd7e782b436a1e753
+    source-url: github.com/AcademySoftwareFoundation/openexr/commit/2a18ed424a854598c2a20b5dd7e782b436a1e753
     category: security
     cwe:
     - CWE-190
     owasp:
     - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
     technology:
     - cpp

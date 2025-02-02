@@ -1,0 +1,26 @@
+rules:
+- id: vuln-hermes-b2021df6
+  pattern: "{\n  auto *innerFn = vmcast<GeneratorInnerFunction>(\n      $RUNTIME->getCurrentFrame().getCalleeClosure());\n\
+    \  innerFn->saveStack($RUNTIME);\n  innerFn->setNextIP($NEXTIP);\n  innerFn->setState(GeneratorInnerFunction::State::SuspendedYield);\n\
+    \  $IP = NEXTINST(SaveGenerator);\n  DISPATCH;\n}\n"
+  pattern-not: 'DONT_CAPTURE_IP(saveGenerator($RUNTIME, $FRAMEREGS, $RESUMEIP));
+
+    '
+  languages:
+  - cpp
+  message: "Direct manipulation of generator state without proper IP capture can lead\
+    \ to unsafe execution states. \nThis vulnerability occurs when the generator state\
+    \ is saved without ensuring that the instruction pointer (IP) is correctly captured\
+    \ and managed, potentially leading to incorrect program flow or security issues.\n\
+    The fix involves using the `DONT_CAPTURE_IP` macro to ensure safe IP handling\
+    \ and prevent allocations during critical sections.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebook/hermes/commit/b2021df620824627f5a8c96615edbd1eb7fdddfc
+    category: security
+    cwe:
+    - 'CWE-824: Access of Uninitialized Pointer'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

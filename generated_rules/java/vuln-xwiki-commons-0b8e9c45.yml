@@ -1,0 +1,27 @@
+rules:
+- id: vuln-xwiki-commons-0b8e9c45
+  pattern: 'static final Pattern $PATTERN = Pattern.compile("^data-[\\-\\w.\\u00B7-\\uFFFF]");
+
+    '
+  pattern-not: "static final Pattern $PATTERN = Pattern.compile(\"^data-[A-Z_a-z\\\
+    \\u00C0-\\\\u00D6\\\\u00D8-\\\\u00F6\"\n  + \"\\\\u00F8-\\\\u02ff\\\\u0370-\\\\\
+    u037d\\\\u037f-\\\\u1fff\\\\u200c\\\\u200d\\\\u2070-\\\\u218f\\\\u2c00-\\\\u2fef\\\
+    \\u3001-\\\\ud7ff\"\n  + \"\\\\uf900-\\\\ufdcf\\\\ufdf0-\\\\ufffd\\\\x{10000}-\\\
+    \\x{EFFFF}\\\\-.0-9\\\\u00b7\\\\u0300-\\\\u036f\\\\u203f-\\\\u2040]+$\");\n"
+  languages:
+  - java
+  message: Insecure data attribute pattern detected. The pattern should follow the
+    HTML standard for data attributes, ensuring XML compatibility and proper character
+    restrictions. Use a pattern that matches the valid XML Name production without
+    ':' and includes proper Unicode ranges.
+  severity: ERROR
+  metadata:
+    source-url: github.com/xwiki/xwiki-commons/commit/0b8e9c45b7e7457043938f35265b2aa5adc76a68
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://html.spec.whatwg.org/multipage/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes
+    - https://html.spec.whatwg.org/multipage/infrastructure.html#xml-compatible
+    - https://www.w3.org/TR/xml/#NT-Name
+    technology: java

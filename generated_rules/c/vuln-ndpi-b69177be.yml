@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ndpi-b69177be
+  pattern: '($PACKET->payload[0] == 0x07 && $PACKET->payload[1] == 0xff && $PACKET->payload[2]
+    == 0x00)
+
+    '
+  pattern-not: '($PACKET->payload_packet_len >= 3 && $PACKET->payload[0] == 0x07 &&
+    $PACKET->payload[1] == 0xff && $PACKET->payload[2] == 0x00)
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds read vulnerability due to missing length
+    check before accessing packet payload. This can lead to reading beyond the allocated
+    buffer, causing crashes or information leaks. Always verify the packet length
+    before accessing payload data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/ntop/nDPI/commit/b69177be2fbe01c2442239a61832c44e40136c05
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-ok-file-formats-a9cc1711
+  pattern: "static void ok_jpg_generate_huffman_table(ok_jpg_huffman_table *$HUFF,\
+    \ const uint8_t *$BITS) {\n    ...\n    for (int $J = 1; $J <= $BITS[$I]; $J++)\
+    \ {\n        $HUFF->size[$K++] = $I;\n    }\n    ...\n}\n"
+  pattern-not: "static bool ok_jpg_generate_huffman_table(ok_jpg_huffman_table *$HUFF,\
+    \ const uint8_t *$BITS) {\n    ...\n    uint8_t $LEN = $BITS[$I];\n    if ($LEN\
+    \ == 0) {\n        continue;\n    } else if ((unsigned)$K + $LEN >= sizeof($HUFF->size))\
+    \ {\n        return false;\n    } else {\n        memset($HUFF->size + $K, $I,\
+    \ $LEN);\n        $K += $LEN;\n    }\n    ...\n    return true;\n}\n"
+  languages:
+  - c
+  message: "The function `ok_jpg_generate_huffman_table` is vulnerable to a buffer\
+    \ overflow due to insufficient bounds checking. \nThe loop iterates over the `bits`\
+    \ array and writes to the `size` array without verifying that the index `k` remains\
+    \ within bounds. \nThis could lead to memory corruption and potential security\
+    \ exploits. \nThe fix introduces a bounds check and uses `memset` to safely write\
+    \ multiple values at once.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/brackeen/ok-file-formats/commit/a9cc1711dd4ed6a215038f1c5c03af0ef52c3211
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

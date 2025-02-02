@@ -1,0 +1,25 @@
+rules:
+- id: vuln-curl-c97ec984
+  pattern: "while(!done && fgets($BUFFER, $BUFFSIZE, $FILE)) {\n  ...\n}\n"
+  pattern-not: "while(!done && Curl_get_line($BUFFER, $BUFFSIZE, $FILE)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The use of `fgets()` in this context can lead to incomplete or improperly
+    terminated lines, which may cause security vulnerabilities. `fgets()` does not
+    guarantee that the returned line fits within the specified buffer size or ends
+    with a newline. This can lead to buffer overflows or incorrect parsing of input
+    data. Replace `fgets()` with `Curl_get_line()` to ensure that only complete, properly
+    terminated lines are processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/c97ec984fb2bc919a3aa863e0476dffa377b184c
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-curl-8236aba5
+  pattern: "$RC = rename($OLD, $NEW);\nif($RC != 0) {\n  warnf($GLOBAL, \"Failed to\
+    \ rename %s -> %s: %s\\n\", $OLD, $NEW, strerror(errno));\n}\nif($ALLOC) {\n \
+    \ Curl_safefree($OLD);\n}\nif($RC != 0) {\n  free($NEW);\n  return $FAILURE;\n\
+    }\n"
+  pattern-not: 'free($NEW);
+
+    return $FAILURE;
+
+    '
+  languages:
+  - c
+  message: 'Potential file handling vulnerability detected. The code attempts to rename
+    a file and handles failure by freeing resources but may leave the system in an
+    inconsistent state. This could lead to resource leaks or security issues if the
+    file operations are not properly handled. Ensure proper error handling and resource
+    cleanup in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/8236aba58542c5f89f1d41ca09d84579efb05e22
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

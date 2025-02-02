@@ -1,0 +1,22 @@
+rules:
+- id: vuln-zulip-3ba8348c
+  pattern: 'get_stream_by_id($STREAM_ID)
+
+    '
+  pattern-not: 'access_stream_by_id($USER_PROFILE, $STREAM_ID, require_active=True)
+
+    '
+  languages:
+  - python
+  message: Detected insecure stream access. Use access_stream_by_id with user_profile
+    and require_active=True to ensure proper authorization checks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/3ba8348c51f09d823096228fae223bffc054efd5
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology:
+    - python

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moddable-6c88625e
+  pattern: 'the->stack->value.string = (txString)fxNewChunk(the, $L + 1);
+
+    '
+  pattern-not: 'the->stack->value.string = (txString)fxNewChunk(the, fxAddChunkSizes(the,
+    $L, 1));
+
+    '
+  languages:
+  - c
+  message: "This rule detects potential integer overflow vulnerabilities in memory\
+    \ allocation. \nThe vulnerable code directly adds 1 to the length `l` without\
+    \ checking for overflow, \nwhich could lead to insufficient memory allocation\
+    \ and potential security issues. \nThe fix uses `fxAddChunkSizes` to safely handle\
+    \ the addition. Always use safe addition \nfunctions when calculating memory sizes\
+    \ to prevent integer overflow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/6c88625e020649ebdfdd12862c44f5bf4ef5d994
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

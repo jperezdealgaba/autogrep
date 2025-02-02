@@ -1,0 +1,26 @@
+rules:
+- id: vuln-curl-39ce47f2
+  pattern: "if(sscanf($DATA, \"$FORMAT\", $VAR1, $VAR2)) {\n  ...\n}\n"
+  pattern-not: "if(sscanf($DATA, \"$FORMAT\", $VAR1, $VAR2) == $EXPECTED) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The sscanf() function is used without checking the return value, which
+    can lead to undefined behavior if the input does not match the expected format.
+    This can cause security vulnerabilities such as buffer overflows or information
+    leaks. Always check the return value of sscanf() to ensure it matches the expected
+    number of conversions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/39ce47f219b09c380b81f89fe54ac586c8db6bde
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c

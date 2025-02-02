@@ -1,0 +1,26 @@
+rules:
+- id: vuln-curl-058f98dc
+  pattern: 'msnprintf($BUF, $LEN, "%ld%s", $PORT, $HOSTNAME);
+
+    '
+  pattern-not: 'msnprintf($BUF, $LEN, "%ld/%s", $PORT, $HOSTNAME);
+
+    '
+  languages:
+  - c
+  message: "Detected a vulnerable format string in msnprintf that may lead to incorrect\
+    \ hostname handling. \nThe original code concatenates port and hostname directly\
+    \ without proper separation, which can cause issues with parsing and potential\
+    \ security vulnerabilities. \nThe fix adds proper separation using slashes and\
+    \ includes scope_id for IPv6 support. \nUpdate the format string to use proper\
+    \ separators and include scope_id if IPv6 is enabled.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/058f98dc3fe595f21dc26a5b9b1699e519ba5705
+    category: security
+    cwe:
+    - 'CWE-134: Use of Externally-Controlled Format String'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libde265-64d591a6
+  pattern: "if (sizeId==3) {\n  ...\n  assert(scaling_list_pred_matrix_id_delta==1);\n\
+    }\n"
+  pattern-not: "if (sizeId==3) {\n  ...\n  assert(scaling_list_pred_matrix_id_delta==3);\n\
+    }\n"
+  languages:
+  - cpp
+  message: "The assert statement incorrectly validates the scaling_list_pred_matrix_id_delta\
+    \ value for sizeId=3. \nThis could lead to incorrect matrix handling and potential\
+    \ security issues in the decoding process. \nThe fix ensures the correct delta\
+    \ value (3) is asserted for sizeId=3.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/64d591a6c70737604ca3f5791736fc462cbe8a3c
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references: []
+    technology:
+    - cpp

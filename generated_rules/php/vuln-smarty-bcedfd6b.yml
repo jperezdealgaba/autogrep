@@ -1,0 +1,28 @@
+rules:
+- id: vuln-smarty-bcedfd6b
+  pattern: 'const SMARTY_VERSION = ''3.1.32-dev-46'';
+
+    '
+  pattern-not: 'const SMARTY_VERSION = ''3.1.32'';
+
+    '
+  languages:
+  - php
+  message: 'The use of a development version in the SMARTY_VERSION constant can lead
+    to potential security vulnerabilities and instability in production environments.
+    Development versions often contain untested code and may introduce bugs or security
+    flaws. Always use stable, officially released versions in production.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/smarty-php/smarty/commit/bcedfd6b58bed4a7366336979ebaa5a240581531
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - php

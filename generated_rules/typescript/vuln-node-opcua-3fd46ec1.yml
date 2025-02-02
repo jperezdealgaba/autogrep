@@ -1,0 +1,25 @@
+rules:
+- id: vuln-node-opcua-3fd46ec1
+  pattern: 'this._start_timer();
+
+    '
+  pattern-not: 'this._start_timer({ firstTime: $VAR });
+
+    '
+  languages:
+  - typescript
+  message: 'Detected a call to `_start_timer` without the required `firstTime` parameter.
+    This can lead to incorrect state assertions and potential security issues. Always
+    pass the `firstTime` parameter to ensure proper state validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/node-opcua/node-opcua/commit/3fd46ec156e7718a506be41f3916310b6bdd0407
+    category: security
+    cwe:
+    - CWE-388
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - typescript

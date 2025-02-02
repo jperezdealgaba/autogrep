@@ -1,0 +1,62 @@
+rules:
+- id: vuln-mbedtls-89f040a5
+  pattern: 'mbedtls_mpi RR, T, W[1 << MBEDTLS_MPI_WINDOW_SIZE], WW, Apos;
+
+    ...
+
+    MBEDTLS_MPI_CHK(mbedtls_mpi_copy(X, &RR));
+
+    mpi_montred(X, N, mm, &T);
+
+    ...
+
+    mpi_montmul(X, X, N, mm, &T);
+
+    '
+  pattern-not: 'mbedtls_mpi RR, T, W[(1 << MBEDTLS_MPI_WINDOW_SIZE) + 1], WW, Apos;
+
+    ...
+
+    const size_t x_index = sizeof(W) / sizeof(W[0]) - 1;
+
+    W[x_index] = *X;
+
+    ...
+
+    MBEDTLS_MPI_CHK(mbedtls_mpi_copy(&W[x_index], &RR));
+
+    mpi_montred(&W[x_index], N, mm, &T);
+
+    ...
+
+    mpi_montmul(&W[x_index], &W[x_index], N, mm, &T);
+
+    '
+  languages:
+  - c
+  message: 'The code performs modular exponentiation without constant-time table lookups,
+
+    which can leak information through timing side channels. This vulnerability
+
+    allows attackers to potentially recover private keys by observing timing
+
+    variations. The fix involves appending the output variable to a table and
+
+    using constant-time lookups for all operations. Ensure all cryptographic
+
+    operations use constant-time implementations to prevent timing attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ARMmbed/mbedtls/commit/89f040a5c938985c5f30728baed21e49d0846a53
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://tls.mbed.org/
+    technology:
+    - c

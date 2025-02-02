@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ceph-b3118cab
+  pattern: 'ceph_assert($EXPR);
+
+    '
+  pattern-not: "if ($EXPR $OP $VAL) {\n  $RETURN;\n}\n"
+  languages:
+  - cpp
+  message: "Using `ceph_assert` for validation can lead to undefined behavior if the\
+    \ assertion fails in production. \nReplace `ceph_assert` with proper conditional\
+    \ checks and appropriate error handling to ensure safe execution.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/b3118cabb8060a8cc6a01c4e8264cb18e7b1745a
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    references:
+    - https://github.com/ceph/ceph/commit/b3118cabb8060a8cc6a01c4e8264cb18e7b1745a
+    technology:
+    - cpp

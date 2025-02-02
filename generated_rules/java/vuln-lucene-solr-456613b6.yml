@@ -1,0 +1,27 @@
+rules:
+- id: vuln-lucene-solr-456613b6
+  pattern: '$CARROT2RESOURCESDIR = $INITPARAMS.get($CARROTPARAMS.LEXICAL_RESOURCES_DIR,
+    $CARROT_RESOURCES_PREFIX)
+
+    '
+  pattern-not: '$CARROT2RESOURCESDIR = firstNonNull($RESOURCESDIR, $LEXICALRESOURCESDIR,
+    $CARROT_RESOURCES_PREFIX)
+
+    '
+  languages:
+  - java
+  message: 'Potential resource loading vulnerability detected. The code directly accesses
+    deprecated LEXICAL_RESOURCES_DIR without proper fallback handling. Use the firstNonNull
+    method to safely handle resource directory paths and ensure proper resource loading.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/456613b6c3838c670970a68711b7f5c5891a8b4d
+    category: security
+    cwe: CWE-470
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://carrot2.github.io/releases/latest/doc/getting-started/configuration.html
+    technology:
+    - java

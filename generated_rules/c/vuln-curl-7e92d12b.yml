@@ -1,0 +1,30 @@
+rules:
+- id: vuln-curl-7e92d12b
+  pattern: 'return !strchr($DOMAIN, ''.'') && !strcasecompare($DOMAIN, "localhost");
+
+    '
+  pattern-not: "if(strcasecompare($DOMAIN, \"localhost\"))\n  return $FALSE;\nelse\
+    \ {\n  char *$DOT = strchr($DOMAIN, '.');\n  if($DOT)\n    return $DOT[1] ? $FALSE\
+    \ : $TRUE;\n}\nreturn $TRUE;\n"
+  languages:
+  - c
+  message: 'The code checks if a domain is valid by verifying it contains a dot and
+    is not ''localhost''.
+
+    This can lead to security vulnerabilities as it doesn''t properly handle trailing
+    dots or other edge cases.
+
+    To fix this, ensure the domain validation correctly handles trailing dots and
+    other edge cases by checking if the dot is not at the end of the string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/7e92d12b4e6911f424678a133b19de670e183a59
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - c

@@ -1,0 +1,20 @@
+rules:
+- id: vuln-anything-llm-7aaa4b38
+  pattern: "app.get(\"/system/data-export\", [validatedRequest], async (_, response)\
+    \ => {\n  ...\n});\n"
+  pattern-not: "app.get(\n  \"/system/data-export\",\n  [validatedRequest, flexUserRoleValid],\n\
+    \  async (_, response) => {\n    ...\n  }\n);\n"
+  languages:
+  - javascript
+  message: Missing role validation in endpoint '/system/data-export'. This can lead
+    to unauthorized access to sensitive data. Add proper role validation middleware.
+  severity: ERROR
+  metadata:
+    source-url: github.com/mintplex-labs/anything-llm/commit/7aaa4b38e7112a6cd879c1238310c56b1844c6d8
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology:
+    - javascript

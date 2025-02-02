@@ -1,0 +1,21 @@
+rules:
+- id: vuln-ffjpeg-2ad299a3
+  pattern: "while ($VAR < $END) {\n  ...\n}\n"
+  pattern-not: "while ($SIZE > 0 && $VAR < $END) {\n  $SIZE -= $EXPR;\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability due to missing size\
+    \ check in a loop. \nThis can lead to out-of-bounds memory access, causing crashes\
+    \ or arbitrary code execution. \nAlways ensure that the loop condition includes\
+    \ a size check to prevent exceeding buffer boundaries.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/2ad299a390c63895333f8ea51ff54f8765678494
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

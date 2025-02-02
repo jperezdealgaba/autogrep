@@ -1,0 +1,26 @@
+rules:
+- id: vuln-rust-97bf23d2
+  pattern: '$QUERIES.linker()?
+
+    '
+  pattern-not: '$QUERIES.linker($ONGOING_CODEGEN)?
+
+    '
+  languages:
+  - rust
+  message: 'The `linker` method is being called without passing the `ongoing_codegen`
+    parameter, which can lead to incorrect code generation and potential security
+    issues. Always pass the `ongoing_codegen` parameter to ensure proper code generation
+    and avoid undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/97bf23d26b1ffff46f071aa687945a6cf85a5914
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - rust

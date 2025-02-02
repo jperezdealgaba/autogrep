@@ -1,0 +1,21 @@
+rules:
+- id: vuln-lucene-solr-6c8f24eb
+  pattern: "public static boolean isFileForbiddenInConfigset(InputStream $STREAM)\
+    \ {\n  ...\n  return forbiddenTypes.contains(FileTypeMagicUtil.INSTANCE.guessMimeType($BYTES));\n\
+    }\n"
+  pattern-not: "public static boolean isFileForbiddenInConfigset(Path $FILE) {\n \
+    \ ...\n  return forbiddenTypes.contains(FileTypeMagicUtil.INSTANCE.guessMimeType($FILE));\n\
+    }\n"
+  languages:
+  - java
+  message: 'Potential security vulnerability: Using InputStream to check forbidden
+    file types can lead to incomplete or incorrect mime type detection. Use Path instead
+    to ensure accurate mime type checking based on the file''s magic number.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/6c8f24eb9e3fe1cb19058173f2e221de3febfeda
+    category: security
+    cwe: CWE-434
+    owasp: 'A1: Injection'
+    references: https://cwe.mitre.org/data/definitions/434.html
+    technology: java

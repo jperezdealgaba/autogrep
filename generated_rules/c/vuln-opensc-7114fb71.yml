@@ -1,0 +1,27 @@
+rules:
+- id: vuln-opensc-7114fb71
+  pattern: '$VAR.value.value = NULL;
+
+    '
+  pattern-not: 'memset(&$VAR, 0, sizeof($VAR));
+
+    '
+  languages:
+  - c
+  message: 'Setting a pointer to NULL without clearing the entire structure can lead
+    to information disclosure vulnerabilities. The patch replaces the assignment with
+    a memset to ensure all fields are properly initialized. This prevents potential
+    exposure of sensitive data in uninitialized memory. Always use memset to clear
+    structures completely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/7114fb71b54ddfe06ce5dfdab013f4c38f129d14
+    category: security
+    cwe:
+    - CWE-909
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

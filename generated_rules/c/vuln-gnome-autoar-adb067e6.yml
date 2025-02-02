@@ -1,0 +1,31 @@
+rules:
+- id: vuln-gnome-autoar-adb067e6
+  pattern: '$VALID_FILENAME = g_file_equal($EXTRACTED_FILENAME, $DESTINATION_DIR)
+    || g_file_has_prefix($EXTRACTED_FILENAME, $DESTINATION_DIR);
+
+    '
+  pattern-not: '$VALID_FILENAME = is_valid_filename($EXTRACTED_FILENAME, $DESTINATION_DIR);
+
+    '
+  languages:
+  - c
+  message: 'Detected insecure path validation in GNOME Autoar. The original code only
+    checks if the extracted file is equal to or has the destination directory as a
+    prefix, which can be bypassed with symbolic links. This could lead to arbitrary
+    file write vulnerabilities. The fix involves resolving symbolic links and ensuring
+    the file is actually inside the destination directory. Use the ''is_valid_filename''
+    function to properly validate paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnome/gnome-autoar/commit/adb067e645732fdbe7103516e506d09eb6a54429
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/59.html
+    technology:
+    - c

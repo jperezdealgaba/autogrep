@@ -1,0 +1,31 @@
+rules:
+- id: vuln-osticket-621fd275
+  pattern: "if (($org = $user->getOrganization())\n        && ($code = $org->getAccountManagerId()))\
+    \ {\n    if (!isset($vars['staffId']) && $code[0] == 's')\n        $vars['staffId']\
+    \ = substr($code, 1);\n    elseif (!isset($vars['teamId']) && $code[0] == 't')\n\
+    \        $vars['teamId'] = substr($code, 1);\n}\n"
+  pattern-not: "if (($org = $user->getOrganization())\n        && $org->autoAssignAccountManager()\n\
+    \        && ($code = $org->getAccountManagerId())) {\n    if (!isset($vars['staffId'])\
+    \ && $code[0] == 's')\n        $vars['staffId'] = substr($code, 1);\n    elseif\
+    \ (!isset($vars['teamId']) && $code[0] == 't')\n        $vars['teamId'] = substr($code,\
+    \ 1);\n}\n"
+  languages:
+  - php
+  message: 'The code directly accesses the account manager ID without proper validation,
+    which could lead to unauthorized access or incorrect assignments. The patch introduces
+    a method `autoAssignAccountManager()` to validate the assignment. Always validate
+    sensitive operations before proceeding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/osTicket/osTicket/commit/621fd275f9495b09c134102abd395888c7ce3031
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-haproxy-146f53ae
+  pattern: "for ($I = 0; $I < $LIST[$IDX].$N.$LEN; $I++)\n  if ((uint8_t)($LIST[$IDX].$N.$PTR[$I]\
+    \ - 'A') < 'Z' - 'A')\n    goto fail;\n"
+  pattern-not: "for ($I = !!$PHDR; $I < $LIST[$IDX].$N.$LEN; $I++)\n  if ((uint8_t)($LIST[$IDX].$N.$PTR[$I]\
+    \ - 'A') < 'Z' - 'A' || !HTTP_IS_TOKEN($LIST[$IDX].$N.$PTR[$I]))\n    goto fail;\n"
+  languages:
+  - c
+  message: "Detected a vulnerable HTTP/2 header validation that only checks for uppercase\
+    \ characters without validating token format. \nThis can lead to security issues\
+    \ as per RFC7540#8.1.2 and RFC7540#10.3 which require header names to be valid\
+    \ tokens. \nEnsure to use HTTP_IS_TOKEN() to validate header names and start from\
+    \ the second character for pseudo-headers.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/haproxy/haproxy/commit/146f53ae7e97dbfe496d0445c2802dd0a30b0878
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://tools.ietf.org/html/rfc7540#section-8.1.2
+    - https://tools.ietf.org/html/rfc7540#section-10.3
+    technology:
+    - c

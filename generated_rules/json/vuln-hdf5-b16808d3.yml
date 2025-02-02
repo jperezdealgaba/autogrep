@@ -1,0 +1,28 @@
+rules:
+- id: vuln-hdf5-b16808d3
+  pattern: '"EXAMPLES_TGZ_ORIGNAME": {"type": "STRING", "value": "snapshot.tar.gz"}
+
+    '
+  pattern-not: '"EXAMPLES_TGZ_ORIGNAME": {"type": "STRING", "value": "hdf5-examples-$VERSION.tar.gz"}
+
+    '
+  languages:
+  - json
+  message: 'The use of a generic filename ''snapshot.tar.gz'' in the EXAMPLES_TGZ_ORIGNAME
+    field can lead to confusion and potential security risks. It is recommended to
+    use a specific, versioned filename to ensure clarity and traceability. Replace
+    ''snapshot.tar.gz'' with a versioned filename like ''hdf5-examples-<version>.tar.gz''.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/HDFGroup/hdf5/commit/b16808d35160fb0d22999447dbf53838d7918a7a
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - json

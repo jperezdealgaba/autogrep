@@ -1,0 +1,34 @@
+rules:
+- id: vuln-undici-f2324e54
+  pattern: "$VAR.replace(\n  /^[\\r\\n\\t ]+|[\\r\\n\\t ]+$/g,\n  ''\n)\n"
+  pattern-not: 'let $I = $VAR.length;
+
+    while (/[\r\n\t ]/.test($VAR.charAt(--$I)));
+
+    $VAR.slice(0, $I + 1).replace(/^[\r\n\t ]+/, '''')
+
+    '
+  languages:
+  - javascript
+  message: 'Detected a potentially vulnerable use of regex-based string trimming that
+    is susceptible to ReDoS (Regular Expression Denial of Service) attacks. This occurs
+    when a regular expression with potentially exponential time complexity is used
+    on untrusted input. The fix involves using a safer and more efficient approach
+    with manual trimming and a simple regex for leading whitespace.
+
+    To fix this, replace the vulnerable regex-based trimming with the safer approach
+    shown in the pattern-not section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/undici/commit/f2324e549943f0b0937b09fb1c0c16cc7c93abdf
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - javascript

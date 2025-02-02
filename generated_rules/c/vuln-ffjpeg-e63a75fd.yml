@@ -1,0 +1,41 @@
+rules:
+- id: vuln-ffjpeg-e63a75fd
+  pattern: '$VAR->width = $WIDTH;
+
+    $VAR->height = $HEIGHT;
+
+    $VAR->stride = ALIGN($WIDTH * 3, 4);
+
+    $VAR->pdata = malloc($VAR->stride * $HEIGHT);
+
+    '
+  pattern-not: '$VAR->width = (int)$WIDTH > 0 ? (int)$WIDTH : 0;
+
+    $VAR->height = (int)$HEIGHT > 0 ? (int)$HEIGHT : 0;
+
+    $VAR->stride = ALIGN($VAR->width * 3, 4);
+
+    $VAR->pdata = malloc((size_t)$VAR->stride * $HEIGHT);
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns width and height values without validation,
+    which can lead to integer overflow or negative values in memory allocation. This
+    can cause heap corruption or buffer overflows. Always validate width and height
+    values before using them in calculations or memory allocations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/e63a75fdc2ba931c90445037b225170c6c31ce5d
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libming-8dd118ea
+  pattern: "$T = malloc(strlen($VAR) + $N);\nstrcpy($T, $VAR);\nif (strlen($T))\n\
+    \  return $T;\n"
+  pattern-not: "$T = malloc(strlen($VAR) + $N);\nstrcpyext($T, $VAR);\nif (strlen($VAR))\n\
+    \  return $T;\n"
+  languages:
+  - c
+  message: "Detected unsafe string copy operation using `strcpy` without proper bounds\
+    \ checking. \nThis can lead to buffer overflow vulnerabilities if the source string\
+    \ is larger than the allocated memory. \nUse `strcpyext` or similar safe string\
+    \ copy functions to ensure proper bounds checking.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/8dd118eac8a3c93c2f42089e7af4d7bb8cefd0b3
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

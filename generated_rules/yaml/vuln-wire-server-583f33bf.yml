@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wire-server-583f33bf
+  pattern: 'commit: b652ec6e69d1647e827cbee0fa290605ac09dc63
+
+    '
+  pattern-not: 'commit: ef7b1de45ab0ea3a0a333b335579a02d8f88340c
+
+    '
+  languages:
+  - yaml
+  message: 'Detected an outdated commit hash in the stack.yaml file. Using outdated
+    dependencies can introduce security vulnerabilities and bugs. Update to the latest
+    commit hash to ensure the latest security patches and improvements are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireapp/wire-server/commit/583f33bf123f617d07ae9218fa0f08faad18ff3b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - yaml

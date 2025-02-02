@@ -1,0 +1,31 @@
+rules:
+- id: vuln-onedev-d6fc4212
+  pattern: "Class<?> $TYPE = $NODE.getType();\nif ($TYPE.getAnnotation(Editable.class)\
+    \ != null && !ClassUtils.isConcrete($TYPE)) {\n  ImplementationRegistry $REGISTRY\
+    \ = OneDev.getInstance(ImplementationRegistry.class);\n  for (Class<?> $IMPL :\
+    \ $REGISTRY.getImplementations($NODE.getType())) {\n    String $TAG = new Tag(\"\
+    !\" + $IMPL.getSimpleName()).getValue();\n    if ($TAG.equals($NODE.getTag().getValue()))\n\
+    \      return $IMPL;\n  }\n}\nreturn super.getClassForNode($NODE);\n"
+  pattern-not: "if ($NODE instanceof VersionedYamlDoc) {\n  return super.getClassForNode($NODE);\n\
+    } else {\n  Class<?> $TYPE = $NODE.getType();\n  if ($TYPE.getAnnotation(Editable.class)\
+    \ == null) {\n    throw new IllegalStateException(String.format(\"Unexpected yaml\
+    \ node (type: %s, tag: %s)\", $TYPE, $NODE.getTag()));\n  } else {\n    if (!ClassUtils.isConcrete($TYPE))\
+    \ {\n      ImplementationRegistry $REGISTRY = OneDev.getInstance(ImplementationRegistry.class);\n\
+    \      for (Class<?> $IMPL : $REGISTRY.getImplementations($NODE.getType())) {\n\
+    \        String $TAG = new Tag(\"!\" + $IMPL.getSimpleName()).getValue();\n  \
+    \      if ($TAG.equals($NODE.getTag().getValue()))\n          return $IMPL;\n\
+    \      }\n    }\n    return super.getClassForNode($NODE);\n  }\n}\n"
+  languages:
+  - java
+  message: "Potential security vulnerability due to unsafe deserialization of YAML\
+    \ nodes. \nThe code does not validate if the class is marked as `Editable` before\
+    \ deserialization, \nwhich could lead to deserialization of unexpected classes.\
+    \ This could be exploited \nto execute arbitrary code. Ensure that all classes\
+    \ are properly validated before deserialization.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/d6fc4212b1ac1e9bbe3ce444e95f9af1e3ab8b66
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    technology: java

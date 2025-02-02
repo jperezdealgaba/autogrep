@@ -1,0 +1,26 @@
+rules:
+- id: vuln-krb5-f0c094a1
+  pattern: "if (!$RETVAL) {\n    $R = strdup($REALM);\n    if (!$R) { $RETVAL = ENOMEM;\
+    \ }\n}\n"
+  pattern-not: "if (!$RETVAL)\n    $R = k5memdup0($REALM, $RLEN, &$RETVAL);\n"
+  languages:
+  - c
+  message: 'Detected insecure memory allocation using strdup without proper error
+    handling.
+
+    This can lead to memory allocation failures being silently ignored, causing undefined
+    behavior or crashes.
+
+    Use k5memdup0 instead, which properly handles memory allocation errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/f0c094a1b745d91ef2f9a4eae2149aac026a5789
+    category: security
+    cwe:
+    - CWE-476
+    - CWE-391
+    owasp: A9:2021-Security Misconfiguration
+    technology:
+    - c

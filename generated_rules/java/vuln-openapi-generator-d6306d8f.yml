@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openapi-generator-d6306d8f
+  pattern: 'boolean $ISFORM = MediaType.MULTIPART_FORM_DATA.isCompatibleWith($CONTENTTYPE)
+    || MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith($CONTENTTYPE);
+
+    return $ISFORM ? BodyInserters.fromMultipartData($FORMPARAMS) : ($OBJ != null
+    ? BodyInserters.fromObject($OBJ) : null);
+
+    '
+  pattern-not: "if(MediaType.APPLICATION_FORM_URLENCODED.equals($CONTENTTYPE)) {\n\
+    \    MultiValueMap<String, String> $MAP = new LinkedMultiValueMap();\n    $FORMPARAMS\n\
+    \            .toSingleValueMap()\n            .entrySet()\n            .forEach($ES\
+    \ -> $MAP.add($ES.getKey(), (String) $ES.getValue()));\n    return BodyInserters.fromFormData($MAP);\n\
+    } else if(MediaType.MULTIPART_FORM_DATA.equals($CONTENTTYPE)) {\n    return BodyInserters.fromMultipartData($FORMPARAMS);\n\
+    } else {\n    return $OBJ != null ? BodyInserters.fromObject($OBJ) : null;\n}\n"
+  languages:
+  - java
+  message: "Detected a vulnerability where form data handling does not properly distinguish\
+    \ between different media types. \nThis can lead to incorrect processing of form\
+    \ data, potentially causing security issues or data corruption. \nThe fix involves\
+    \ explicitly handling each media type separately and converting form parameters\
+    \ appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/d6306d8fee504ed57802d0a745c7945d86ffb37b
+    category: security
+    cwe: CWE-20
+    owasp: A07:2021 - Identification and Authentication Failures
+    technology:
+    - java

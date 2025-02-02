@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ndpi-23594f03
+  pattern: 'char $BUFFER[64] = { ''\0'' }, $RDNBUF[1024] = { ''\0'' };
+
+    '
+  pattern-not: 'char $BUFFER[64] = { ''\0'' }, $RDNBUF[2048] = { ''\0'' };
+
+    '
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability due to insufficient\
+    \ buffer size. \nThe buffer 'rdnSeqBuf' was originally allocated with a size of\
+    \ 1024 bytes, which may be insufficient for certain TLS operations, leading to\
+    \ buffer overflow. \nThe fix increases the buffer size to 2048 bytes to prevent\
+    \ this issue. \nAlways ensure buffers are appropriately sized to handle the maximum\
+    \ expected data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntop/nDPI/commit/23594f036536468072198a57c59b6e9d63caf6ce
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

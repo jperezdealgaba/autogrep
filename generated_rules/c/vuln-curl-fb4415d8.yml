@@ -1,0 +1,28 @@
+rules:
+- id: vuln-curl-fb4415d8
+  pattern: 'socksreq[$LEN++] = (char) $HOSTNAME_LEN;
+
+    '
+  pattern-not: 'socksreq[$LEN++] = (unsigned char) $HOSTNAME_LEN;
+
+    '
+  languages:
+  - c
+  message: 'The code uses a potentially unsafe cast of a length value to a signed
+    char type, which can lead to integer overflow. This vulnerability can be exploited
+    to bypass length checks and cause buffer overflows. Use an unsigned char type
+    for length values to prevent this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/fb4415d8aee6c1045be932a34fe6107c2f5ed147
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ceph-b206912d
+  pattern: "void $CLASS::$METHOD(CephContext *$CCT) {\n  ...\n}\n"
+  pattern-not: "int $CLASS::$METHOD(CephContext *$CCT) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "The method `$METHOD` in class `$CLASS` should return an `int` to properly\
+    \ handle error conditions. \nThe current implementation returns `void`, which\
+    \ can lead to unhandled errors and potential security vulnerabilities. \nUpdate\
+    \ the method to return an `int` and ensure all error paths return appropriate\
+    \ error codes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/b206912d753778b8d889a903f509a6f951cf41a4
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - cpp

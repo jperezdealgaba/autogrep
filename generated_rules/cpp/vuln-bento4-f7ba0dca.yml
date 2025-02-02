@@ -1,0 +1,28 @@
+rules:
+- id: vuln-bento4-f7ba0dca
+  pattern: 'AP4_Result $RESULT = data.SetDataSize($SIZE);
+
+    '
+  pattern-not: "AP4_LargeSize $STREAM_SIZE = 0;\nAP4_Result $RESULT = m_DataStream->GetSize($STREAM_SIZE);\n\
+    if (AP4_SUCCEEDED($RESULT)) {\n    if ($SIZE + $OFFSET > $STREAM_SIZE) {\n   \
+    \     return AP4_ERROR_OUT_OF_RANGE;\n    }\n}\n$RESULT = data.SetDataSize($SIZE);\n"
+  languages:
+  - cpp
+  message: 'Detected a potential out-of-bounds memory access vulnerability due to
+    missing size validation before setting data size. This can lead to memory corruption
+    or crashes. To fix this, ensure that the size and offset are validated against
+    the stream size before setting the data size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/f7ba0dca622837bfab063e500f6013640e8e76e4
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - cpp

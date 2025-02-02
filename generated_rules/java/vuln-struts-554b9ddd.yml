@@ -1,0 +1,21 @@
+rules:
+- id: vuln-struts-554b9ddd
+  pattern: "if (!($VALUE.getClass().equals(String.class)) || !Pattern.compile($REGEX,\
+    \ Pattern.CASE_INSENSITIVE).matcher(String.valueOf($VALUE)).matches()) {\n  ...\n\
+    }\n"
+  pattern-not: "if (!($VALUE.getClass().equals(String.class)) || !Pattern.compile($REGEX,\
+    \ Pattern.CASE_INSENSITIVE).matcher(String.valueOf($VALUE).trim()).matches())\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Potential URL validation vulnerability due to missing input trimming.\
+    \ \nFailing to trim input strings can lead to bypassing URL validation checks.\
+    \ \nAlways trim input strings before validation to ensure proper security checks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/554b9dddb0fbd1e581ef577dd62a7c22955ad0f6
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-community/attacks/Command_Injection
+    technology: java

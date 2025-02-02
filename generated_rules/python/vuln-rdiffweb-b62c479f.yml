@@ -1,0 +1,23 @@
+rules:
+- id: vuln-rdiffweb-b62c479f
+  pattern: "StringField(\n    _('Fullname'),\n    validators=[\n        validators.optional(),\n\
+    \    ],\n)\n"
+  pattern-not: "StringField(\n    _('Fullname'),\n    validators=[\n        validators.optional(),\n\
+    \        validators.length(max=256, message=_('Fullname too long.')),\n    ],\n\
+    )\n"
+  languages:
+  - python
+  message: "Detected a StringField without a length validator for 'Fullname'. \nThis\
+    \ can lead to potential security issues such as denial of service or data truncation\
+    \ \nif the input exceeds expected limits. Always include a length validator with\
+    \ a maximum \nlength constraint.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ikus060/rdiffweb/commit/b62c479ff6979563c7c23e7182942bc4f460a2c7
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://wtforms.readthedocs.io/en/2.3.x/validators/
+    technology:
+    - python

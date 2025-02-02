@@ -1,0 +1,23 @@
+rules:
+- id: vuln-ratpack-efb910d3
+  pattern: 'HttpHeaders $HEADERS = new DefaultHttpHeaders(false);
+
+    '
+  pattern-not: 'HttpHeaders $HEADERS = new DefaultHttpHeaders();
+
+    '
+  languages:
+  - java
+  message: 'Using `DefaultHttpHeaders(false)` can lead to security vulnerabilities
+    as it disables header validation. This can allow malicious headers to be processed,
+    potentially leading to injection attacks or other security issues. Always use
+    `DefaultHttpHeaders()` without the `false` parameter to ensure proper header validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ratpack/ratpack/commit/efb910d38a96494256f36675ef0e5061097dd77d
+    category: security
+    cwe: CWE-113
+    owasp: 'A1: Injection'
+    technology: java

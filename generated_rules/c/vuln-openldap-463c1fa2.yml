@@ -1,0 +1,33 @@
+rules:
+- id: vuln-openldap-463c1fa2
+  pattern: "for ( $J = 0; !BER_BVISNULL( &$A->a_nvals[$J] ); $J++ ) {\n  assert( $J\
+    \ < $I );\n  ber_dupbv( &$TMP->a_nvals[$J], &$A->a_nvals[$J] );\n  if ( BER_BVISNULL(\
+    \ &$TMP->a_nvals[$J] ) ) break;\n  ...\n}\nassert( $J == $I );\n"
+  pattern-not: "$J = 0;\nif ( $I ) {\n  for ( ; !BER_BVISNULL( &$A->a_nvals[$J] );\
+    \ $J++ ) {\n    assert( $J < $I );\n    ber_dupbv( &$TMP->a_nvals[$J], &$A->a_nvals[$J]\
+    \ );\n    if ( BER_BVISNULL( &$TMP->a_nvals[$J] ) ) break;\n    ...\n  }\n  assert(\
+    \ $J == $I );\n}\n"
+  languages:
+  - c
+  message: 'The code contains a potential out-of-bounds access vulnerability due to
+    an unchecked loop condition.
+
+    The loop iterates over an array without ensuring that the index stays within bounds,
+    which could lead to memory corruption or crashes.
+
+    To fix this, add a check to ensure the loop only runs if the array size is greater
+    than zero.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openldap/openldap/commit/463c1fa25d45e393dc1f1ea235286f79e872fad0
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

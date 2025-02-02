@@ -1,0 +1,37 @@
+rules:
+- id: vuln-ffjpeg-31649ad6
+  pattern: '$BUF[0] = calloc(1, $JW * $JH / 1 * sizeof(int));
+
+    $BUF[1] = calloc(1, $JW * $JH / 4 * sizeof(int));
+
+    $BUF[2] = calloc(1, $JW * $JH / 4 * sizeof(int));
+
+    '
+  pattern-not: '$BUF[0] = calloc(1, sizeof(int) * $JW * $JH / 1);
+
+    $BUF[1] = calloc(1, sizeof(int) * $JW * $JH / 4);
+
+    $BUF[2] = calloc(1, sizeof(int) * $JW * $JH / 4);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerable code uses an incorrect order of operations in the calloc
+    function, which could lead to incorrect memory allocation sizes. This is dangerous
+    because it may result in buffer overflows or underflows, potentially leading to
+    memory corruption or arbitrary code execution. To fix this, ensure that the sizeof
+    operator is applied first, followed by the multiplication with the dimensions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/31649ad67e232aaa31ceb7aaa3c3451e5bbcb4cb
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - c

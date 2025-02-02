@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libming-efc75c28
+  pattern: '$T = malloc(10);
+
+    sprintf($T, "%ld", $VAR);
+
+    '
+  pattern-not: "{\n  char $LENGTH_FINDER[1];\n  int $NEEDED_LENGTH = snprintf($LENGTH_FINDER,\
+    \ 1, \"%ld\", $VAR) + 1;\n  if ($NEEDED_LENGTH <= 0) {\n    $WARN_FUNC(\"WARNING:\
+    \ could not evaluate size of buffer (memory issue ?).\\n\");\n    break;\n  }\n\
+    \  $T = malloc($NEEDED_LENGTH);\n  sprintf($T, \"%ld\", $VAR);\n}\n"
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability due to unsafe use of\
+    \ `malloc` and `sprintf`. \nThe code allocates a fixed-size buffer without checking\
+    \ the actual size needed for the formatted string, \nwhich can lead to buffer\
+    \ overflow. To fix this, use `snprintf` to calculate the required buffer size\
+    \ \nand allocate memory dynamically based on the result.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/efc75c28e89fe864cf0412d5a5f0b4a451e14509
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

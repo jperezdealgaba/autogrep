@@ -1,0 +1,18 @@
+rules:
+- id: vuln-zip4j-ddd8fdc8
+  pattern: "public byte[] getCalculatedAuthenticationBytes() {\n  return mac.doFinal();\n\
+    }\n"
+  pattern-not: "public byte[] getCalculatedAuthenticationBytes(int $NUM) {\n  return\
+    \ mac.doFinal($NUM);\n}\n"
+  languages:
+  - java
+  message: Insecure use of MAC authentication without proper byte pushback. This can
+    lead to verification failures and security vulnerabilities. Always pass the number
+    of bytes pushed back for proper MAC calculation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/srikanth-lingala/zip4j/commit/ddd8fdc8ad0583eb4a6172dc86c72c881485c55b
+    category: security
+    cwe: CWE-354
+    owasp: A06:2021 - Vulnerable and Outdated Components
+    technology: java

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tsmuxer-8f2c5801
+  pattern: 'return ($X->isDVEL) ? $Y : ($X->isHDR10plus ? $Z : ($X->isHDR10 ? $W :
+    $V));
+
+    '
+  pattern-not: 'return ($X->isDVRPU || $X->isDVEL) ? $Y : ($X->isHDR10plus ? $Z :
+    ($X->isHDR10 ? $W : $V));
+
+    '
+  languages:
+  - cpp
+  message: 'The code is vulnerable due to missing a check for `isDVRPU` in the conditional
+    expression. This could lead to incorrect handling of HDR metadata, potentially
+    causing display issues or incorrect video processing. The fix is to include `isDVRPU`
+    in the conditional check to ensure proper handling of all HDR metadata types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/justdan96/tsMuxer/commit/8f2c58019be1f05160c06d175af416e380a205c9
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - cpp

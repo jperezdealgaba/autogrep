@@ -1,0 +1,33 @@
+rules:
+- id: vuln-krb5-8ee70ec6
+  pattern: 'strlcpy($DST, $SRC->data, $SRC->length + 1);
+
+    '
+  pattern-not: "if ($SRC->data != NULL)\n    memcpy($DST, $SRC->data, $SRC->length);\n"
+  languages:
+  - c
+  message: 'Potential null pointer dereference and buffer overflow vulnerability detected.
+
+    The code uses strlcpy with a source pointer that is not checked for NULL,
+
+    which could lead to undefined behavior. Additionally, adding 1 to the length
+
+    could cause a buffer overflow if the source data is exactly the length of the
+
+    destination buffer. Always check for NULL pointers before copying data and
+
+    use memcpy with the correct length to avoid overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/8ee70ec63931d1e38567905387ab9b1d45734d81
+    category: security
+    cwe:
+    - CWE-476
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    - 'A8: Software and Data Integrity Failures'
+    technology:
+    - c

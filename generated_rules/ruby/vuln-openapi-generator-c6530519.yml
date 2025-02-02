@@ -1,0 +1,29 @@
+rules:
+- id: vuln-openapi-generator-c6530519
+  pattern: "if @config.temp_folder_path.nil?\n  raise \"@config.temp_folder_path must\
+    \ be setup first (e.g. ENV[\\\"HOME\\\"], ENV[\\\"HOMEPATH\\\"])\" +\n       \
+    \ \"to avoid dowloading the file to a location readable by everyone.\"\nend\n"
+  pattern-not: "if @config.temp_folder_path.nil?\n  raise \"@config.temp_folder_path\
+    \ must be setup first (e.g. ENV[\\\"HOME\\\"], ENV[\\\"HOMEPATH\\\"])\" +\n  \
+    \      \"to avoid downloading the file to a location readable by everyone.\"\n\
+    end\n"
+  languages:
+  - ruby
+  message: 'The code does not validate the temporary folder path, which can lead to
+    files being downloaded to a default directory that is readable by anyone. This
+    can expose sensitive information. Ensure that the temporary folder path is explicitly
+    set to a secure location.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/c6530519975341d7784a252132b2f0854f488901
+    category: security
+    cwe:
+    - 'CWE-552: Files or Directories Accessible to External Parties'
+    owasp:
+    - A05:2021 - Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A05_2021-Security_Misconfiguration
+    technology:
+    - ruby

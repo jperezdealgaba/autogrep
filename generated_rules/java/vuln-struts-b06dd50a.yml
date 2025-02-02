@@ -1,0 +1,24 @@
+rules:
+- id: vuln-struts-b06dd50a
+  pattern: "if ($MULTIWRAPPER.hasErrors()) {\n  ...\n  if ($VALIDATION != null) {\n\
+    \    $VALIDATION.addActionError($LOCALIZEDTEXTUTIL.findText($ERROR.getClazz(),\
+    \ $ERROR.getTextKey(), $ACTIONCONTEXT.getContext().getLocale(), $ERROR.getDefaultMessage(),\
+    \ $ERROR.getArgs()));\n  }\n}\n"
+  pattern-not: "if ($MULTIWRAPPER.hasErrors() && $VALIDATION != null) {\n  $TEXTPROVIDER\
+    \ = $TEXTPROVIDERGETTER($ACTION);\n  if ($TEXTPROVIDER.hasKey($ERROR.getTextKey()))\
+    \ {\n    $ERRORMESSAGE = $TEXTPROVIDER.getText($ERROR.getTextKey(), $ARGS);\n\
+    \  } else {\n    $ERRORMESSAGE = $TEXTPROVIDER.getText(\"struts.messages.error.uploading\"\
+    , $ERROR.getDefaultMessage());\n  }\n  $VALIDATION.addActionError($ERRORMESSAGE);\n\
+    }\n"
+  languages:
+  - java
+  message: Potential unvalidated error message handling in file upload interceptor.
+    This could lead to security vulnerabilities such as information disclosure. Ensure
+    error messages are properly validated and localized.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/b06dd50af2a3319dd896bf5c2f4972d2b772cf2b
+    category: security
+    cwe: CWE-209
+    owasp: A07:2021 - Identification and Authentication Failures
+    technology: java

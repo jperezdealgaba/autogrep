@@ -1,0 +1,28 @@
+rules:
+- id: vuln-flatpress-264217f3
+  pattern: "$arr['name'] = apply_filters('pre_comment_author_name', stripslashes($arr['name']));\n\
+    ...\nif (isset($arr['email']))\n    $arr['email'] = apply_filters('pre_comment_author_email',\
+    \ $arr['email']);\n...\nif (isset($arr['url']))\n    $arr['url'] = apply_filters('pre_comment_author_url',\
+    \ $arr['url']);\n...\n$arr['content'] = apply_filters('pre_comment_content', $arr['content']);\n"
+  pattern-not: "$arr['name'] = strip_tags(apply_filters('pre_comment_author_name',\
+    \ stripslashes($arr['name'])));\n...\nif (isset($arr['email'])) {\n    $arr['email']\
+    \ = strip_tags(apply_filters('pre_comment_author_email', $arr['email']));\n}\n\
+    ...\nif (isset($arr['url'])) {\n    $arr['url'] = strip_tags(apply_filters('pre_comment_author_url',\
+    \ $arr['url']));\n}\n...\n$arr['content'] = strip_tags(apply_filters('pre_comment_content',\
+    \ $arr['content']));\n"
+  languages:
+  - php
+  message: "Missing `strip_tags` function on user input can lead to XSS vulnerabilities.\
+    \ \nThe code applies filters to user input but does not sanitize HTML tags, allowing\
+    \ potential malicious scripts to be injected. \nTo fix this, ensure all user input\
+    \ is sanitized using `strip_tags` before being processed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpressblog/flatpress/commit/264217f318a8852c4f3e34350d4a0e1363cdd727
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

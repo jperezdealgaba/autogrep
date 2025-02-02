@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gravity-f00c04df
+  pattern: "if (VALUE_ISA_INSTANCE(GET_VALUE(0))) {\n    $OBJECT = VALUE_AS_OBJECT(GET_VALUE(0));\n\
+    } else if (VALUE_ISA_CLASS(GET_VALUE(0))) {\n    ...\n}\n"
+  pattern-not: "if (VALUE_ISA_INSTANCE(GET_VALUE(0)) || VALUE_ISA_CLASS(GET_VALUE(0)))\
+    \ {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for instance and class types separately, which can lead
+    to inconsistent handling of core classes. This could potentially cause issues
+    with bound methods in core classes. The fix combines the checks and adds additional
+    validation to prevent binding methods to core classes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/f00c04dfa62d5f6ce0bc30e26545066de31d622c
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A12:2017-Insecure Deserialization
+    technology:
+    - c

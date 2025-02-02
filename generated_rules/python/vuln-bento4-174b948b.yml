@@ -1,0 +1,16 @@
+rules:
+- id: vuln-bento4-174b948b
+  pattern: SDK_REVISION = '636'
+  pattern-not: SDK_REVISION = '637'
+  languages:
+  - python
+  message: Outdated SDK revision detected. Using an outdated SDK version can expose
+    the application to known vulnerabilities. Update to the latest SDK revision to
+    ensure security patches are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/174b948be29b69009b235ae0aa92884d05bcea49
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology: python

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-onedev-9637fc8f
+  pattern: '<version>4.0.0</version>
+
+    '
+  pattern-not: '<version>4.0.1</version>
+
+    '
+  languages:
+  - xml
+  message: Outdated version '4.0.0' detected. This version may contain security vulnerabilities.
+    Upgrade to version '4.0.1' to ensure the latest security patches are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/9637fc8fa461c5777282a0021c3deb1e7a48f137
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - xml

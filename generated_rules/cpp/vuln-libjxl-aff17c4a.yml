@@ -1,0 +1,36 @@
+rules:
+- id: vuln-libjxl-aff17c4a
+  pattern: "for (size_t $I = 0; $I < $STAGES.size(); $I++) {\n  for (size_t $C = 0;\
+    \ $C < $SHIFTS.size(); $C++) {\n    if ($STAGES[$I]->GetChannelMode($C) == $KINPUT)\
+    \ {\n      $ASSERT($FIRST_IMAGE_DIM_STAGE == $STAGES.size() || $I >= $FIRST_IMAGE_DIM_STAGE);\n\
+    \    }\n  }\n}\n"
+  pattern-not: "// Check that kInput stages appear after the switch to image dimensions\
+    \ (if\n// any).\nfor (size_t $I = 0; $I < $STAGES.size(); $I++) {\n  for (size_t\
+    \ $C = 0; $C < $SHIFTS.size(); $C++) {\n    if ($STAGES[$I]->GetChannelMode($C)\
+    \ == $KINPUT) {\n      $ASSERT($FIRST_IMAGE_DIM_STAGE == $STAGES.size() || $I\
+    \ >= $FIRST_IMAGE_DIM_STAGE);\n    }\n  }\n}\n"
+  languages:
+  - cpp
+  message: 'The code contains a potentially unsafe assertion check that was removed
+    in the patch.
+
+    This vulnerability could lead to undefined behavior if the assertion fails in
+    production builds.
+
+    The fix involves removing this assertion check to prevent potential crashes.
+
+    Consider using proper error handling instead of assertions for production code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libjxl/libjxl/commit/aff17c4a57eb1e4d7ef00ea728d33cdb5b2ca9da
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/ERR05-C.+Application+assertions+must+not+contain+side+effects
+    technology:
+    - cpp

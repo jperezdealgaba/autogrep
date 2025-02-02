@@ -1,0 +1,25 @@
+rules:
+- id: vuln-krb5-b863de7f
+  pattern: "if(entry == (kadm5_principal_ent_t) NULL)\n    return EINVAL;\n"
+  pattern-not: "if(entry == NULL)\n    return EINVAL;\n"
+  languages:
+  - c
+  message: 'The code uses a potentially incorrect type cast in the NULL check, which
+    can lead to undefined behavior. The fix removes the unnecessary type cast, ensuring
+    the NULL check is performed correctly. This vulnerability could cause the program
+    to handle NULL pointers incorrectly, leading to potential security issues or crashes.
+    Always use direct NULL checks without unnecessary type casting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/b863de7fbf080b15e347a736fdda0a82d42f4f6b
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

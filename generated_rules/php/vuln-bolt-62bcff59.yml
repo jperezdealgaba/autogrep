@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bolt-62bcff59
+  pattern: "if (!$this->isMatchingExtension($oldName, $newName)) {\n  ...\n}\n"
+  pattern-not: "if (!$this->isExtensionChangedAndIsChangeAllowed($oldName, $newName))\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to file extension validation bypass. The original
+    method `isMatchingExtension` did not properly validate file extensions, potentially
+    allowing malicious file uploads. This could lead to security risks such as remote
+    code execution. Ensure file extensions are validated using a whitelist approach,
+    as implemented in the fixed version with `validateFileExtension`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bolt/bolt/commit/62bcff5940cf33e5acdb27f9e8efc0da72eef198
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

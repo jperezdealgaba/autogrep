@@ -1,0 +1,25 @@
+rules:
+- id: vuln-krb5-5e6d1796
+  pattern: "if ($CODE == 0 || $CODE == KRB5_PREAUTH_FAILED) {\n    ...\n}\n"
+  pattern-not: "if (!$CODE || $CODE == KRB5_PREAUTH_FAILED || $CODE == KRB5KDC_ERR_KEY_EXP)\
+    \ {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to handle the case where the key is expired (KRB5KDC_ERR_KEY_EXP),
+    which could lead to security vulnerabilities by allowing expired keys to be used.
+    This was fixed by adding a check for KRB5KDC_ERR_KEY_EXP in the condition. Ensure
+    that all relevant error codes are properly handled in authentication checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/5e6d1796106df8ba6bc1973ee0917c170d929086
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://web.mit.edu/kerberos/advisories/
+    technology:
+    - c

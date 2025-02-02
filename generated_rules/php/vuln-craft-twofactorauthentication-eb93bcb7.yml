@@ -1,0 +1,28 @@
+rules:
+- id: vuln-craft-twofactorauthentication-eb93bcb7
+  pattern: '$this->asModelSuccess($VAR, modelName: ''user'', data: $VAR2)
+
+    '
+  pattern-not: '$this->asSuccess(data: $VAR)
+
+    '
+  languages:
+  - php
+  message: 'The use of `asModelSuccess` with a hardcoded ''user'' model name can expose
+    sensitive user data. This method may include more information than necessary in
+    the response, leading to potential information disclosure. Use `asSuccess` instead
+    to return only the required data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/born05/craft-twofactorauthentication/commit/eb93bcb73037171dae8ca5cfa4c20e7e5748b73a
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+    technology:
+    - php

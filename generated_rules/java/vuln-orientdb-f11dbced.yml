@@ -1,0 +1,19 @@
+rules:
+- id: vuln-orientdb-f11dbced
+  pattern: "if ($REQUEST.parameters != null && $REQUEST.parameters.containsKey($CALLBACK))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($GLOBAL_CONFIG.NETWORK_HTTP_JSONP_ENABLED.getValueAsBoolean()\
+    \ && $REQUEST.parameters != null && $REQUEST.parameters.containsKey($CALLBACK))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: JSONP vulnerability detected. JSONP should be explicitly enabled via configuration
+    to prevent potential security risks. Ensure JSONP is only enabled when necessary
+    by checking OGlobalConfiguration.NETWORK_HTTP_JSONP_ENABLED.getValueAsBoolean().
+  severity: ERROR
+  metadata:
+    source-url: github.com/orientechnologies/orientdb/commit/f11dbced94cb587f445cb99db08735c023921053
+    category: security
+    cwe: CWE-942
+    owasp: A6:2017-Security Misconfiguration
+    technology: java

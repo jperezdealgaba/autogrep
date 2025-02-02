@@ -1,0 +1,26 @@
+rules:
+- id: vuln-elasticsearch-5d8e9e24
+  pattern: "if (!Files.exists($FILE) || Files.isHidden($FILE)) {\n  ...\n}\n"
+  pattern-not: "if (!Files.exists($FILE) || Files.isHidden($FILE) || !$FILE.toAbsolutePath().normalize().startsWith($SITE_FILE.toAbsolutePath()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential path traversal vulnerability detected. The code checks for file
+    existence and hidden status but does not properly validate the file path against
+    a safe base directory. This can allow attackers to access files outside the intended
+    directory. To fix this, ensure that the file path is normalized and validated
+    against the base directory using `toAbsolutePath().normalize().startsWith()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/elastic/elasticsearch/commit/5d8e9e24c917b5f2c0958ba68be34a42efaeadbc
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://www.owasp.org/index.php/Path_Traversal
+    technology:
+    - java

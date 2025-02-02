@@ -1,0 +1,32 @@
+rules:
+- id: vuln-bundler-65cfebb0
+  pattern: "def $FUNC($LOGIN, $WARNING)\n  $LOGIN ||= \"unknown\"\n  Kernel.send(:require,\
+    \ \"tmpdir\")\n  $PATH = Pathname.new(Dir.tmpdir).join(\"bundler\", \"home\")\n\
+    \  SharedHelpers.filesystem_access($PATH) do |$TMP_HOME_PATH|\n    unless $TMP_HOME_PATH.exist?\n\
+    \      $TMP_HOME_PATH.mkpath\n      $TMP_HOME_PATH.chmod(0o777)\n    end\n   \
+    \ $TMP_HOME_PATH.join($LOGIN).tap(&:mkpath)\n  end\nrescue RuntimeError => $E\n\
+    \  raise $E.exception(\"#{$WARNING}\\nBundler also failed to create a temporary\
+    \ home directory at `#{$PATH}':\\n#{$E}\")\nend\n"
+  pattern-not: "def $FUNC($WARNING)\n  Kernel.send(:require, \"tmpdir\")\n  SharedHelpers.filesystem_access(Dir.tmpdir)\
+    \ do\n    $PATH = Bundler.tmp\n    at_exit { Bundler.rm_rf($PATH) }\n    $PATH\n\
+    \  end\nrescue RuntimeError => $E\n  raise $E.exception(\"#{$WARNING}\\nBundler\
+    \ also failed to create a temporary home directory':\\n#{$E}\")\nend\n"
+  languages:
+  - ruby
+  message: 'The function creates a temporary home directory with a predictable path
+    based on the user''s login name, which can lead to security issues such as directory
+    traversal or privilege escalation. The directory is also created with overly permissive
+    permissions (777), which can expose sensitive data. Use a secure random path and
+    avoid using the user''s login name in the path.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bundler/bundler/commit/65cfebb041c454c246aaf32a177b0243915a9998
+    category: security
+    cwe:
+    - 'CWE-377: Insecure Temporary File'
+    owasp:
+    - A9:2017-Insecure Deserialization
+    technology:
+    - ruby

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-curl-8ae35102
+  pattern: 'bool $VAR = ($EXPR == $AUTH_TYPE) || ($EXPR == $AUTH_TYPE_WB) ? TRUE :
+    FALSE;
+
+    '
+  pattern-not: 'bool $VAR = ($EXPR & $AUTH_TYPE) || ($EXPR & $AUTH_TYPE_WB) ? TRUE
+    : FALSE;
+
+    '
+  languages:
+  - c
+  message: 'The code uses equality comparison (==) instead of bitwise AND (&) to check
+    authentication flags. This can lead to incorrect authentication logic, as the
+    flags are typically set as bitfields. Use bitwise AND to properly check for specific
+    authentication types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/8ae35102c43d8d06572c3a1292eb6e27e663c78d
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c

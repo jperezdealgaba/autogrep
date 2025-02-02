@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openapi-generator-00c7ebab
+  pattern: 'val $FILE = File.createTempFile($PREFIX, $SUFFIX)
+
+    '
+  pattern-not: 'val $FILE = Files.createTempFile($PREFIX, $SUFFIX).toFile
+
+    '
+  languages:
+  - scala
+  message: 'Using `File.createTempFile` directly can lead to security vulnerabilities
+    as it doesn''t handle file permissions securely. Use `Files.createTempFile` instead,
+    which provides better control over file permissions and is more secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/00c7ebab667582c6e904229a5c336368904fe2a0
+    category: security
+    cwe:
+    - CWE-377
+    owasp:
+    - A9:2017-Insufficient Attack Protection
+    references:
+    - https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#createTempFile-java.lang.String-java.lang.String-java.nio.file.attribute.FileAttribute...-
+    technology:
+    - scala

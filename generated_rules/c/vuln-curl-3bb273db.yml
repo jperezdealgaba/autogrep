@@ -1,0 +1,29 @@
+rules:
+- id: vuln-curl-3bb273db
+  pattern: 'sscanf($URL, "%[^\n/?]%[^\n]", $HOST, $PATH);
+
+    '
+  pattern-not: 'sscanf($URL, "%[^\n/?#]%[^\n]", $HOST, $PATH);
+
+    '
+  languages:
+  - c
+  message: 'The sscanf pattern used for parsing URLs is incomplete and does not properly
+    handle ''#'' characters in the path. This can lead to incorrect parsing of URLs,
+    potentially causing security issues such as path traversal or misinterpretation
+    of URL components. Update the sscanf pattern to include ''#'' in the character
+    exclusion list.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/3bb273db7e40ebc284cff45f3ce3f0475c8339c2
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://curl.se/docs/CVE-2021-22945.html
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-clamav-9a6bb57f
+  pattern: 'if (!$CT && !$PN) $CONTINUE;
+
+    '
+  pattern-not: 'if (!$CT || !$PN) $CONTINUE;
+
+    '
+  languages:
+  - c
+  message: 'The use of ''&&'' instead of ''||'' in the condition can lead to incorrect
+    logic flow, potentially bypassing important checks. This could allow malicious
+    content to be processed incorrectly. Replace ''&&'' with ''||'' to ensure the
+    correct logic is applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/9a6bb57f89721db637f4ddb5b233c1c4e23d223a
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/697.html
+    technology:
+    - c

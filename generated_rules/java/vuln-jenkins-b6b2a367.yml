@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jenkins-b6b2a367
+  pattern: "for (AbstractProject $DOWNSTREAM : $T.getChildProjects($THIS)) {\n  ...\n\
+    }\n"
+  pattern-not: "List<AbstractProject> $CHILDPROJECTS;\nSecurityContext $ORIG = ACL.impersonate(ACL.SYSTEM);\n\
+    try {\n  $CHILDPROJECTS = $T.getChildProjects($THIS);\n} finally {\n  SecurityContextHolder.setContext($ORIG);\n\
+    }\nfor (AbstractProject $DOWNSTREAM : $CHILDPROJECTS) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Insecure access to child projects detected. The code directly accesses
+    child projects without proper security context, which can lead to unauthorized
+    access. Wrap the child project retrieval in a security context using ACL.impersonate()
+    to ensure proper authorization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/b6b2a367a7976be80a799c6a49fa6c58d778b50e
+    category: security
+    cwe: 'CWE-285: Improper Authorization'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://www.jenkins.io/security/advisories/
+    technology:
+    - java

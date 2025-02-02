@@ -1,0 +1,22 @@
+rules:
+- id: vuln-jenkins-8830d68f
+  pattern: "if ($PATH.isEmpty() || $PATH.contains(\"..\") || $PATH.contains(\"%\"\
+    ) || $PATH.contains(\"META-INF\") || $PATH.contains(\"WEB-INF\")) {\n  ...\n}\n"
+  pattern-not: "String $PATHUC = $PATH.toUpperCase(Locale.ENGLISH);\nif ($PATH.isEmpty()\
+    \ || $PATH.contains(\"..\") || $PATH.contains(\"%\") || $PATHUC.contains(\"META-INF\"\
+    ) || $PATHUC.contains(\"WEB-INF\")) {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Potential path traversal vulnerability due to case-sensitive path validation.\
+    \ \nAttackers could bypass security checks by using different cases in path names.\n\
+    Convert the path to a consistent case (e.g., uppercase) before validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/8830d68f5fe21f344be3496984bc4470bfcd0564
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - java

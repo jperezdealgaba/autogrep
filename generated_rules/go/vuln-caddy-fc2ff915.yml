@@ -1,0 +1,34 @@
+rules:
+- id: vuln-caddy-fc2ff915
+  pattern: 'var certCache = make(map[string]Certificate)
+
+    var certCacheMu sync.RWMutex
+
+    '
+  pattern-not: "type certificateCache struct {\n    sync.RWMutex\n    cache map[string]Certificate\n\
+    }\n"
+  languages:
+  - go
+  message: 'Using a global certificate cache without proper instance isolation can
+    lead to
+
+    certificate management issues during in-process reloads. The global state may
+
+    persist across reloads, causing memory leaks and potential certificate conflicts.
+
+    The fix introduces an instance-specific certificate cache that gets garbage
+
+    collected after reloads, preventing these issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mholt/caddy/commit/fc2ff9155cc53393ac29885f6de83ed87093b274
+    category: security
+    cwe:
+    - CWE-664
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://caddyserver.com/docs/automatic-https
+    technology:
+    - go

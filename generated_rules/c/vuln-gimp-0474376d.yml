@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gimp-0474376d
+  pattern: "{\n  $FDAT = fits_decode_card(fits_search_card($HDR, \"XTENSION\"), $TYP_FSTRING);\n\
+    \  strcpy($HDULIST->xtension, $FDAT->fstring);\n}\n"
+  pattern-not: "{\n  $FDAT = fits_decode_card(fits_search_card($HDR, \"XTENSION\"\
+    ), $TYP_FSTRING);\n  if ($FDAT != NULL)\n    {\n      strcpy($HDULIST->xtension,\
+    \ $FDAT->fstring);\n    }\n  else\n    {\n      strcpy($ERRMSG, \"No valid XTENSION\
+    \ header found.\");\n      goto err_return;\n    }\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses the result of `fits_decode_card` without checking
+    if it is NULL. This can lead to a NULL pointer dereference, potentially causing
+    a crash or undefined behavior. Always check the return value of functions that
+    can return NULL before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gimp/commit/0474376d234bc3d0901fd5e86f89d778a6473dd8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

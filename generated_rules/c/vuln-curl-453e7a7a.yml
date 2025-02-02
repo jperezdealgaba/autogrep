@@ -1,0 +1,23 @@
+rules:
+- id: vuln-curl-453e7a7a
+  pattern: "if(errno || ($END == ':')) {\n  ...\n}\n"
+  pattern-not: "if(errno)\n  /* overflow */\n  $END = NULL;\nelse if($END == ':')\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for both `errno` and `*endp == '':''` in the same condition,
+    which can lead to undefined behavior if `errno` is set and `endp` is NULL. This
+    can cause a null pointer dereference or other unexpected behavior. To fix this,
+    separate the checks into distinct conditions, handling `errno` first and then
+    checking `*endp == '':''`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/453e7a7a03a2cec749abd3878a48e728c515cca7
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

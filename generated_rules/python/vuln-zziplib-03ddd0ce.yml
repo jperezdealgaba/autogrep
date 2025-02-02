@@ -1,0 +1,17 @@
+rules:
+- id: vuln-zziplib-03ddd0ce
+  pattern: '".so %s.%s\n" % ($REFENTRYTITLE, $MANVOLNUM)'
+  pattern-not: '".so man%s/%s.%s\n" % ($MANVOLNUM, $REFENTRYTITLE, $MANVOLNUM)'
+  languages:
+  - python
+  message: Detected unsafe string formatting in .so directive. This can lead to incorrect
+    or insecure file references. Use the corrected format that includes the 'man'
+    directory prefix.
+  severity: ERROR
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/03ddd0ce0864e629256bc078eaadb0d21d0df6d9
+    category: security
+    cwe: 'CWE-73: External Control of File Name or Path'
+    owasp: A5:2017-Security Misconfiguration
+    technology:
+    - python

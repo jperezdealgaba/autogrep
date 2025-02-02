@@ -1,0 +1,32 @@
+rules:
+- id: vuln-struts-58947c3f
+  pattern: "public void execute(String $KEY, ActionMapping $MAPPING) {\n    ...\n\
+    \    String $NAME = $KEY.substring($ACTION_PREFIX.length());\n    if ($ALLOW_DYNAMIC_METHOD_CALLS)\
+    \ {\n        int $BANG = $NAME.indexOf('!');\n        if ($BANG != -1) {\n   \
+    \         String $METHOD = $NAME.substring($BANG + 1);\n            $MAPPING.setMethod($METHOD);\n\
+    \            $NAME = $NAME.substring(0, $BANG);\n        }\n    }\n    $MAPPING.setName(cleanupActionName($NAME));\n\
+    \    ...\n}\n"
+  pattern-not: "public void execute(final String $KEY, ActionMapping $MAPPING, HttpServletRequest\
+    \ $REQUEST) {\n    if ($REQUEST != null && $REQUEST.getAttribute($STRUTS2_ACTION_PREFIX_PARSED)\
+    \ == null) {\n        $REQUEST.setAttribute($STRUTS2_ACTION_PREFIX_PARSED, true);\n\
+    \        String $NAME = $KEY.substring($ACTION_PREFIX.length());\n        if ($ALLOW_DYNAMIC_METHOD_CALLS)\
+    \ {\n            int $BANG = $NAME.indexOf('!');\n            if ($BANG != -1)\
+    \ {\n                String $METHOD = $NAME.substring($BANG + 1);\n          \
+    \      $MAPPING.setMethod($METHOD);\n                $NAME = $NAME.substring(0,\
+    \ $BANG);\n            }\n        }\n        String $ACTION_NAME = cleanupActionName($NAME);\n\
+    \        $MAPPING.setName($ACTION_NAME);\n        if (getDefaultExtension() !=\
+    \ null) {\n            $ACTION_NAME = $ACTION_NAME + \".\" + getDefaultExtension();\n\
+    \        }\n        $MAPPING.setResult(new ServletDispatcherResult($ACTION_NAME));\n\
+    \    }\n}\n"
+  languages:
+  - java
+  message: Dynamic method invocation in Struts2 is vulnerable to remote code execution.
+    Ensure `allowDynamicMethodCalls` is set to `false` and validate method names using
+    a whitelist.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/58947c3f85ae641c1a476316a2888e53605948d1
+    category: security
+    cwe: CWE-94
+    owasp: A1:2017-Injection
+    technology: java

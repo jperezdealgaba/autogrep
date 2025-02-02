@@ -1,0 +1,29 @@
+rules:
+- id: vuln-osticket-33ed106b
+  pattern: 'Http::download($NAME, $TYPE, null, "inline");
+
+    '
+  pattern-not: 'Http::download($NAME, $TYPE, null, $DISPOSITION);
+
+    '
+  languages:
+  - php
+  message: 'The use of a hardcoded ''inline'' disposition in file downloads can lead
+    to security vulnerabilities by forcing the browser to render potentially dangerous
+    content. This can be exploited to execute malicious scripts or display harmful
+    content. Instead, use a conditional check to ensure that only safe content types
+    are displayed inline.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/osTicket/osTicket/commit/33ed106b1602f559a660a69f931a9d873685d1ba
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - php

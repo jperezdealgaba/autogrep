@@ -1,0 +1,19 @@
+rules:
+- id: vuln-lucene-solr-add003f2
+  pattern: '$REQINFO.getReq().getUserPrincipal()
+
+    '
+  pattern-not: '$REQINFO.getUserPrincipal()
+
+    '
+  languages:
+  - java
+  message: Direct access to UserPrincipal through getReq() is unsafe. Use the getUserPrincipal()
+    method instead to ensure proper security handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/add003f217806afb4e1604f697cdb0a5a7115895
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    technology: java

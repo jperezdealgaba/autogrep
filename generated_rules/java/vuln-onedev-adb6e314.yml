@@ -1,0 +1,27 @@
+rules:
+- id: vuln-onedev-adb6e314
+  pattern: "try (InputStream $IS = new BufferedInputStream(new FileInputStream($FILE)))\
+    \ {\n  $RESPONSE.setContentType(ContentDetector.detectMediaType($IS, $PATH).toString());\n\
+    } catch (Exception $E) {\n  throw new RuntimeException($E);\n}\n"
+  pattern-not: '$RESPONSE.getHeaders().addHeader("X-Content-Type-Options", "nosniff");
+
+    $RESPONSE.setContentType(MimeTypes.OCTET_STREAM);
+
+    '
+  languages:
+  - java
+  message: 'Potential MIME type sniffing vulnerability detected. The Content-Type
+    header should be explicitly set to prevent MIME sniffing, and the ''X-Content-Type-Options:
+    nosniff'' header should be added for security.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/adb6e31476621f824fc3227a695232df830d83ab
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A06_2021-Vulnerable_and_Outdated_Components.html
+    technology:
+    - java

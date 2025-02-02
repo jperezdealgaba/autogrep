@@ -1,0 +1,22 @@
+rules:
+- id: vuln-lucene-solr-6e9ed203
+  pattern: 'SolrConfig.readFromResourceLoader($LOADER, $FILENAME, true, null)
+
+    '
+  pattern-not: 'SolrConfig.readFromResourceLoader($LOADER, $FILENAME, $TRUSTED, null)
+
+    '
+  languages:
+  - java
+  message: "Potential security vulnerability detected: Reading Solr configuration\
+    \ without proper trust verification. \nThis could allow untrusted configurations\
+    \ to be loaded, leading to security risks. \nEnsure the 'trusted' flag is properly\
+    \ validated before loading configurations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/6e9ed203b30958396bdfd41760d426b386646865
+    category: security
+    cwe: CWE-345
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java

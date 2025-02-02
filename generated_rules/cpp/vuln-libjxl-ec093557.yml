@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libjxl-ec093557
+  pattern: "if ($CPARAMS.resampling > 1) {\n  $CPARAMS.progressive_dc = 0;\n}\n"
+  pattern-not: "if ($CPARAMS.resampling > 1 || $FRAME_INFO.is_preview) {\n  $CPARAMS.progressive_dc\
+    \ = 0;\n}\n"
+  languages:
+  - cpp
+  message: 'The condition in this if statement is incomplete, potentially leading
+    to incorrect behavior. The original code only checks `cparams.resampling > 1`
+    but should also include `frame_info.is_preview` in the condition. This could result
+    in improper handling of progressive DC settings for preview frames. To fix this,
+    ensure the condition includes both `cparams.resampling > 1` and `frame_info.is_preview`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/libjxl/libjxl/commit/ec093557b0e8f76a48b0a68356d786c664a65660
+    category: security
+    cwe:
+    - CWE-670
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - cpp

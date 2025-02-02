@@ -1,0 +1,29 @@
+rules:
+- id: vuln-notebook-35f32dd2
+  pattern: '$JENV_OPT = $JINJA_ENV_OPTIONS if $JINJA_ENV_OPTIONS else {}
+
+    '
+  pattern-not: '$JENV_OPT = {"autoescape": True}
+
+    $JENV_OPT.update($JINJA_ENV_OPTIONS if $JINJA_ENV_OPTIONS else {})
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe Jinja2 environment configuration without autoescape enabled.
+    This can lead to Cross-Site Scripting (XSS) vulnerabilities. Always set `autoescape=True`
+    when configuring Jinja2 environments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jupyter/notebook/commit/35f32dd2da804d108a3a3585b69ec3295b2677ed
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://jinja.palletsprojects.com/en/3.1.x/api/#autoescaping
+    technology:
+    - python

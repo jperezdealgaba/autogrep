@@ -1,0 +1,25 @@
+rules:
+- id: vuln-slurm-750cc23e
+  pattern: "void *slurm_xmalloc(size_t $SIZE, bool $CLEAR, ...) {\n  ...\n}\n"
+  pattern-not: "void *slurm_xmalloc(uint64_t $SIZE, bool $CLEAR, ...) {\n  if ($SIZE\
+    \ > 0xffffffff)\n    fatal(\"attempt at overflow\");\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `slurm_xmalloc` uses `size_t` for the size parameter, which
+    can lead to integer overflow vulnerabilities. This is dangerous because it can
+    result in memory allocation of an incorrect size, potentially leading to buffer
+    overflows or other memory corruption issues. The fix changes the type to `uint64_t`
+    and adds a check to prevent overflow. To fix this, ensure the size parameter is
+    of a type that can handle large values and add bounds checking to prevent overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/SchedMD/slurm/commit/750cc23edcc6fddfff21d33bdaf4fb7deb28cfda
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

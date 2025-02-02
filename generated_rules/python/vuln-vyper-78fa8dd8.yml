@@ -1,0 +1,33 @@
+rules:
+- id: vuln-vyper-78fa8dd8
+  pattern: "IRnode.from_list(\n    [\n        \"seq\",\n        [\"mstore\", $PLACEHOLDER,\
+    \ $GETELEM($ARG, 0)],\n        [\"mstore\", [\"add\", $PLACEHOLDER, 32], $GETELEM($ARG,\
+    \ 1)],\n        [\"mstore\", [\"add\", $PLACEHOLDER, 64], $GETELEM($ARG2, 0)],\n\
+    \        [\"mstore\", [\"add\", $PLACEHOLDER, 96], $GETELEM($ARG2, 1)],\n    \
+    \    [\n            \"assert\",\n            [\"staticcall\", [\"gas\"], $CALL,\
+    \ $PLACEHOLDER, $SIZE, $PLACEHOLDER, $RET_SIZE],\n        ],\n        $PLACEHOLDER,\n\
+    \    ],\n    typ=$TYP,\n    location=$LOC,\n)\n"
+  pattern-not: "IRnode.from_list(\n    [\n        \"seq\",\n        make_setter($DST0,\
+    \ $ARG0),\n        make_setter($DST1, $ARG1),\n        [\"assert\", [\"staticcall\"\
+    , [\"gas\"], $CALL, $BUF, $SIZE, $BUF, $RET_SIZE]],\n        $BUF,\n    ],\n \
+    \   typ=$TYP,\n    location=$LOC,\n)\n"
+  languages:
+  - python
+  message: 'Detected unsafe memory handling in Vyper''s built-in functions. The original
+    code directly manipulated memory using mstore and get_element_ptr, which could
+    lead to memory corruption or undefined behavior. The patch replaces this with
+    safer make_setter calls. Always use safe memory management patterns in smart contract
+    development.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/78fa8dd8f91ba0cb26277eeffb585c68c83e7daa
+    category: security
+    cwe: CWE-119
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://docs.vyperlang.org/en/stable/built-ins.html
+    technology:
+    - python
+    - vyper

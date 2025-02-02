@@ -1,0 +1,39 @@
+rules:
+- id: vuln-fastasyncworldedit-e7876c4e
+  pattern: "- name: Publish to CurseForge\n  if: ${{ runner.os == 'Linux' && env.STATUS\
+    \ == 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main'}}\n\
+    \  uses: itsmeow/curseforge-upload@v3\n  with:\n    file_path: worldedit-bukkit/build/libs/FastAsyncWorldEdit-Bukkit-${{\
+    \ github.event.release.tag_name }}.jar\n    game_versions: \"$VAR\"\n    project_id:\
+    \ 103525\n    game_endpoint: minecraft\n    token: ${{ secrets.CURSEFORGE_TOKEN\
+    \ }}\n    display_name: FastAsyncWorldEdit ${{ github.event.release.tag_name }}\n\
+    \    release_type: release\n    changelog: \"Click here to view changelog: https://github.com/IntellectualSites/FastAsyncWorldEdit/releases/tag/${{\
+    \ github.event.release.tag_name }}\"\n    changelog_type: markdown\n"
+  pattern-not: "- name: Publish to CurseForge\n  if: ${{ runner.os == 'Linux' && env.STATUS\
+    \ == 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main'}}\n\
+    \  uses: itsmeow/curseforge-upload@v3\n  with:\n    file_path: worldedit-bukkit/build/libs/FastAsyncWorldEdit-Bukkit-${{\
+    \ github.event.release.tag_name }}.jar\n    game_versions: \"8503,9016,9190,9261,9560,9561\"\
+    \n    project_id: 103525\n    game_endpoint: minecraft\n    token: ${{ secrets.CURSEFORGE_TOKEN\
+    \ }}\n    display_name: FastAsyncWorldEdit ${{ github.event.release.tag_name }}\n\
+    \    release_type: release\n    changelog: \"Click here to view changelog: https://github.com/IntellectualSites/FastAsyncWorldEdit/releases/tag/${{\
+    \ github.event.release.tag_name }}\"\n    changelog_type: markdown\n"
+  languages:
+  - yaml
+  message: 'The `game_versions` field in the CurseForge upload action is vulnerable
+    to incorrect or outdated version numbers. This can lead to publishing builds for
+    unsupported or incorrect Minecraft versions, potentially causing compatibility
+    issues for users. Ensure the `game_versions` field is up-to-date with valid version
+    IDs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/IntellectualSites/FastAsyncWorldEdit/commit/e7876c4eba73252deed1c5cbfd9ca5c737135390
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://minecraft.curseforge.com/api/game/versions
+    technology:
+    - yaml

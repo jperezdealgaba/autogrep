@@ -1,0 +1,38 @@
+rules:
+- id: vuln-curl-364f1747
+  pattern: "if($CODE == $VALUE) {\n  if($DATA->set.use_ssl && !$CONN->ssl[$FIRSTSOCKET].use)\
+    \ {\n    if($TLS_SUPPORTED)\n      $RESULT = $PERFORM_STARTTLS($DATA, $CONN);\n\
+    \    else if($DATA->set.use_ssl == CURLUSESSL_TRY)\n      $RESULT = $PERFORM_AUTHENTICATION($DATA,\
+    \ $CONN);\n    else {\n      $FAILF($DATA, \"STARTTLS not supported.\");\n   \
+    \   $RESULT = CURLE_USE_SSL_FAILED;\n    }\n  }\n  else\n    $RESULT = $PERFORM_AUTHENTICATION($DATA,\
+    \ $CONN);\n}\n"
+  pattern-not: "if($CODE == $VALUE) {\n  if(!$DATA->set.use_ssl || $CONN->ssl[$FIRSTSOCKET].use)\n\
+    \    $RESULT = $PERFORM_AUTHENTICATION($DATA, $CONN);\n  else if($CODE == $VALUE\
+    \ && $TLS_SUPPORTED)\n    $RESULT = $PERFORM_STARTTLS($DATA, $CONN);\n  else if($DATA->set.use_ssl\
+    \ <= CURLUSESSL_TRY)\n    $RESULT = $PERFORM_AUTHENTICATION($DATA, $CONN);\n \
+    \ else {\n    $FAILF($DATA, \"STARTTLS not supported.\");\n    $RESULT = CURLE_USE_SSL_FAILED;\n\
+    \  }\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly handle SSL/TLS fallback scenarios, potentially
+    allowing
+
+    cleartext authentication when TLS is required. This vulnerability could lead to
+
+    sensitive data being transmitted insecurely. The fix ensures that SSL/TLS is
+
+    properly enforced based on the configured security level (CURLUSESSL_TRY, etc.).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/364f174724ef115c63d5e5dc1d3342c8a43b1cca
+    category: security
+    cwe:
+    - 'CWE-319: Cleartext Transmission of Sensitive Information'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://curl.se/docs/security.html
+    technology:
+    - c

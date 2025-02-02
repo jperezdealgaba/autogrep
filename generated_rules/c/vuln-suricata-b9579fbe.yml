@@ -1,0 +1,32 @@
+rules:
+- id: vuln-suricata-b9579fbe
+  pattern: "if (!($CD->flags & DETECT_CONTENT_RELATIVE_NEXT)) {\n  ...\n  goto match;\n\
+    }\n...\nif ($DET_CTX->discontinue_matching)\n  goto no_match;\n"
+  pattern-not: "if (($CD->flags & (DETECT_CONTENT_DISTANCE|DETECT_CONTENT_WITHIN))\
+    \ == 0) {\n  ...\n  $DET_CTX->discontinue_matching = 1;\n}\n...\nif (($CD->flags\
+    \ & DETECT_CONTENT_RELATIVE_NEXT) == 0) {\n  ...\n  $DET_CTX->discontinue_matching\
+    \ = 1;\n  goto no_match;\n}\n"
+  languages:
+  - c
+  message: 'The original code incorrectly handled the detection of content matches
+    in Suricata, leading to potential false positives or negatives in rule matching.
+    This could allow malicious traffic to bypass detection or cause legitimate traffic
+    to be incorrectly flagged. The issue was fixed by properly handling the discontinue_matching
+    flag and ensuring the correct conditions are checked before continuing or stopping
+    the matching process. To fix this, ensure that the discontinue_matching flag is
+    set appropriately and that the correct conditions are checked before proceeding
+    with match or no-match decisions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/b9579fbe7dd408200ef03cbe20efddb624b73885
+    category: security
+    cwe:
+    - CWE-670
+    owasp:
+    - 'A09: Security Logging and Monitoring Failures'
+    references:
+    - https://github.com/OISF/suricata/commit/b9579fbe7dd408200ef03cbe20efddb624b73885
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-jenkins-fbf96734
+  pattern: "if (!$U.isPasswordCorrect($PASSWORD)) {\n  throw new BadCredentialsException($MESSAGE);\n\
+    }\n"
+  pattern-not: "if (!$U.isPasswordCorrect($PASSWORD)) {\n  String $MESSAGE;\n  try\
+    \ {\n    $MESSAGE = ResourceBundle.getBundle($BUNDLE).getString($KEY);\n  } catch\
+    \ (MissingResourceException $X) {\n    $MESSAGE = \"Bad credentials\";\n  }\n\
+    \  throw new BadCredentialsException($MESSAGE);\n}\n"
+  languages:
+  - java
+  message: "Detected a hardcoded error message in authentication failure handling.\
+    \ \nThis can expose sensitive information or make the application more vulnerable\
+    \ to attacks. \nUse localized error messages from a resource bundle instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/fbf96734470caba9364f04e0b77b0bae7293a1ec
+    category: security
+    cwe:
+    - CWE-209
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - java

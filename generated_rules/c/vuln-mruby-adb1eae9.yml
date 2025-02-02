@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mruby-adb1eae9
+  pattern: 'mrb_raisef($MRB, $ERROR, "negative (or overflowed) string size");
+
+    '
+  pattern-not: 'mrb_raise($MRB, $ERROR, "negative (or overflowed) string size");
+
+    '
+  languages:
+  - c
+  message: "The use of `mrb_raisef` with a format string in this context can lead\
+    \ to potential formatting vulnerabilities. \nThis is dangerous because it could\
+    \ allow for format string attacks, which might lead to memory corruption or information\
+    \ disclosure.\nUse `mrb_raise` instead, which does not involve format string processing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/adb1eae912659d680a9c5b7832e22cf73d36a69a
+    category: security
+    cwe:
+    - CWE-134
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/134.html
+    technology:
+    - c

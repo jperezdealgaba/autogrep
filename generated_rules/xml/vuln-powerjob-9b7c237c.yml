@@ -1,0 +1,26 @@
+rules:
+- id: vuln-powerjob-9b7c237c
+  pattern: '<version>4.3.5</version>
+
+    '
+  pattern-not: '<version>4.3.6</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version ''4.3.5'' is outdated and may contain security vulnerabilities.
+    Update to version ''4.3.6'' to ensure the latest security patches are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PowerJob/PowerJob/commit/9b7c237cf09d155a10438cddce9c801f83ac6bd2
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - xml

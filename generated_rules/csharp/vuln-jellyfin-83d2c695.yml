@@ -1,0 +1,29 @@
+rules:
+- id: vuln-jellyfin-83d2c695
+  pattern: '$MEDIAENCODER.UpdateEncoderPath($PATH, $PATHTYPE)
+
+    '
+  pattern-not: '// API ENDPOINT DISABLED (NOOP) FOR SECURITY PURPOSES
+
+    //$MEDIAENCODER.UpdateEncoderPath($PATH, $PATHTYPE)
+
+    '
+  languages:
+  - csharp
+  message: "The use of UpdateEncoderPath with untrusted input can lead to security\
+    \ vulnerabilities. \nThis method was disabled in the patch to prevent potential\
+    \ exploitation. \nEnsure that any path manipulation is securely handled and avoid\
+    \ using deprecated or unsafe APIs.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jellyfin/jellyfin/commit/83d2c69516471e2db72d9273c6a04247d0f37c86
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - csharp

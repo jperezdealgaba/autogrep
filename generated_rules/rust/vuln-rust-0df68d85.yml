@@ -1,0 +1,33 @@
+rules:
+- id: vuln-rust-0df68d85
+  pattern: 'let mut pm = plugins::PluginManager::new($PATH);
+
+    ...
+
+    pm.load_plugin($NAME);
+
+    '
+  pattern-not: 'let mut pm = plugins::PluginManager::new();
+
+    '
+  languages:
+  - rust
+  message: 'Detected unsafe plugin loading in Rust code. This vulnerability allows
+    loading arbitrary dynamic libraries, which can lead to code execution. The issue
+    was fixed by removing the ability to specify plugin paths and names. Ensure that
+    your code does not load plugins from untrusted sources. See CVE-2018-1000622 for
+    more details.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/0df68d850c0f032afaebba442f0800333772503e
+    category: security
+    cwe:
+    - 'CWE-427: Uncontrolled Search Path Element'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1000622
+    technology:
+    - rust

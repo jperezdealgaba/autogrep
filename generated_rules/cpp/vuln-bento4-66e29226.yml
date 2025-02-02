@@ -1,0 +1,23 @@
+rules:
+- id: vuln-bento4-66e29226
+  pattern: "if ($PAYLOAD_SIZE < 3) {\n  ...\n}\n"
+  pattern-not: "if ($PAYLOAD_SIZE < 4) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'This code checks if the payload size is less than 3, which can lead to
+    insufficient data validation. The minimum required payload size should be 4 to
+    ensure proper data handling. This vulnerability can cause undefined behavior or
+    crashes when processing malformed input. Fix by changing the condition to check
+    for payload size less than 4.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/66e29226d27784e39cddc7ff61240087f3618e88
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

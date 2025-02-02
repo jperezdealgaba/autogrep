@@ -1,0 +1,25 @@
+rules:
+- id: vuln-weblate-b6a7eace
+  pattern: 'os.path.join($PROJECT.full_path, $NAME[$VCS_PREFIX_LEN:])
+
+    '
+  pattern-not: "$PATH = $NAME[$VCS_PREFIX_LEN:]\nif $PATH != os.path.normpath($PATH):\n\
+    \    ...\nos.path.join($PROJECT.full_path, $PATH)\n"
+  languages:
+  - python
+  message: 'Detected unsafe path joining operation without path normalization. This
+    can lead to path traversal vulnerabilities where an attacker could manipulate
+    the path to access unauthorized files or directories. Always normalize paths before
+    joining them to ensure they are safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WeblateOrg/weblate/commit/b6a7eace155fa0feaf01b4ac36165a9c5e63bfdd
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/os.path.html#os.path.normpath
+    technology:
+    - python

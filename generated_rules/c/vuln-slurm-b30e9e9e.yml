@@ -1,0 +1,24 @@
+rules:
+- id: vuln-slurm-b30e9e9e
+  pattern: "if ($JOB_ENV->spank_job_env_size) {\n  env_array_merge_spank(&$ENV, (const\
+    \ char **) $JOB_ENV->spank_job_env);\n}\n"
+  pattern-not: "if ($JOB_ENV->spank_job_env_size)\n  env_array_merge(&$ENV, (const\
+    \ char **) $JOB_ENV->spank_job_env);\n"
+  languages:
+  - c
+  message: 'The function `env_array_merge_spank` was incorrectly used instead of `env_array_merge`
+    to handle job environment variables. This could lead to improper handling of environment
+    variables, potentially causing security vulnerabilities or unexpected behavior.
+    The issue was fixed by replacing `env_array_merge_spank` with `env_array_merge`.
+    Ensure that the correct function is used for merging environment variables.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/SchedMD/slurm/commit/b30e9e9ee2ade6951bfaf28e15ef77325a206971
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp: 'A9: Security Misconfiguration'
+    technology:
+    - c

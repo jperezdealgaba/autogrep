@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jenkins-3cd946cb
+  pattern: "class $CLASS {\n    private final User user;\n    public $CONSTRUCTOR(User\
+    \ user, String message) {\n        super($MESSAGE);\n        this.user = user;\n\
+    \    }\n}\n"
+  pattern-not: "class $CLASS {\n    private transient User user;\n    private @CheckForNull\
+    \ String userId;\n    public $CONSTRUCTOR(@CheckForNull User user, @CheckForNull\
+    \ String message) {\n        this(user != null ? user.getId() : null, message);\n\
+    \    }\n    private $CONSTRUCTOR(String userId, String message) {\n        super($MESSAGE);\n\
+    \        this.userId = userId;\n    }\n}\n"
+  languages:
+  - java
+  message: Storing User objects directly in fields can lead to deserialization issues
+    and information exposure. Instead, store user IDs and retrieve the User object
+    when needed.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/3cd946cbef82c6da5ccccf3890d0ae4e091c4265
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/502.html
+    technology:
+    - java

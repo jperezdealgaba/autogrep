@@ -1,0 +1,29 @@
+rules:
+- id: vuln-twig-2eb33080
+  pattern: "if (!$VAR instanceof Closure && $ENV->hasExtension('\\Twig\\Extension\\\
+    SandboxExtension') && $ENV->getExtension('\\Twig\\Extension\\SandboxExtension')->isSandboxed())\
+    \ {\n    throw new RuntimeError('The callable passed to \"filter\" filter must\
+    \ be a Closure in sandbox mode.');\n}\n"
+  pattern-not: 'twig_check_arrow_in_sandbox($ENV, $VAR, ''filter'', ''filter'');
+
+    '
+  languages:
+  - php
+  message: 'The callable passed to the filter must be a Closure in sandbox mode to
+    prevent security vulnerabilities. The original check was incomplete and could
+    allow unsafe callables. Use the `twig_check_arrow_in_sandbox` function to properly
+    validate callables in sandbox mode.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/twigphp/Twig/commit/2eb33080558611201b55079d07ac88f207b466d5
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://twig.symfony.com/doc/3.x/tags/sandbox.html
+    technology:
+    - php

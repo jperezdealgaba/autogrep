@@ -1,0 +1,21 @@
+rules:
+- id: vuln-notebook-979e0bd1
+  pattern: "if $PARSED.netloc or not ($PARSED.path + '/').startswith($BASE_URL):\n\
+    \    ...\n    if $PARSED.netloc:\n        ...\n"
+  pattern-not: "if $URL != $PATH_ONLY or not ($PARSED.path + '/').startswith($BASE_URL):\n\
+    \    ...\n    if $URL != $PATH_ONLY:\n        ...\n"
+  languages:
+  - python
+  message: "Detected potential URL validation bypass vulnerability. \nThe original\
+    \ code only checks `netloc` to validate URLs, which can be bypassed. \nUse `urlunparse`\
+    \ to compare the full URL path without the scheme and netloc for proper validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jupyter/notebook/commit/979e0bd15e794ceb00cc63737fcd5fd9addc4a99
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlunparse
+    technology:
+    - python

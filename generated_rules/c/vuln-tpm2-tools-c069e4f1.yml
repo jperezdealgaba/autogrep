@@ -1,0 +1,21 @@
+rules:
+- id: vuln-tpm2-tools-c069e4f1
+  pattern: 'memset($BUFFER, $VALUE, $SIZE);
+
+    '
+  pattern-not: "int $RC = RAND_bytes($BUFFER, $SIZE);\nif ($RC != 1) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected insecure initialization of sensitive memory using memset. \n\
+    This can lead to weak cryptographic key generation. \nReplace with secure random\
+    \ number generation using RAND_bytes and check the return value.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tpm2-software/tpm2-tools/commit/c069e4f179d5e6653a84fb236816c375dca82515
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

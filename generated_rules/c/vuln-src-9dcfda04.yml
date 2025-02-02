@@ -1,0 +1,29 @@
+rules:
+- id: vuln-src-9dcfda04
+  pattern: "if (!valid_localpart($MADDR->user) ||\n    !valid_domainpart($MADDR->domain))\
+    \ {\n    ...\n    if ($MAILFROM && $MADDR->user[0] == '\\0' && $MADDR->domain[0]\
+    \ == '\\0')\n        return (1);\n    ...\n}\n"
+  pattern-not: "if ($MAILFROM && $MADDR->user[0] == '\\0' && $MADDR->domain[0] ==\
+    \ '\\0')\n    return (1);\nif ($MADDR->user[0] == '\\0' || !valid_localpart($MADDR->user))\n\
+    \    return (0);\nif ($MADDR->domain[0] == '\\0') {\n    (void)strlcpy($MADDR->domain,\
+    \ $DOMAIN, sizeof($MADDR->domain));\n}\nif (!valid_domainpart($MADDR->domain))\n\
+    \    return (0);\n"
+  languages:
+  - c
+  message: 'The code incorrectly validates email addresses by not properly checking
+    the domain part after handling an empty user and domain. This can lead to accepting
+    invalid email addresses. The patch ensures that the domain part is validated correctly
+    after handling the empty case. To fix this, ensure that the domain part is validated
+    even after handling the empty user and domain case.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openbsd/src/commit/9dcfda045474d8903224d175907bfc29761dcb45
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c

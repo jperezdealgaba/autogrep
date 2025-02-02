@@ -1,0 +1,33 @@
+rules:
+- id: vuln-opencv-3ece62cb
+  pattern: '$VAR_16 = v_load($VAR_PTR);
+
+    $VAR_SHIFTED_16 = v_extract<1>($VAR_16, $VAR_16);
+
+    v_expand($VAR_16, $VAR_8, $TMP);
+
+    v_expand($VAR_SHIFTED_16, $VAR_SHIFTED_8, $TMP);
+
+    '
+  pattern-not: '$VAR_8 = v_load_expand($VAR_PTR);
+
+    $VAR_SHIFTED_8 = v_load_expand($VAR_PTR + 1);
+
+    '
+  languages:
+  - cpp
+  message: 'The code uses a less efficient and potentially unsafe pattern for loading
+    and expanding data using `v_load` and `v_extract`. This can lead to performance
+    issues and potential memory access errors. Instead, use `v_load_expand` directly,
+    which is both safer and more efficient. This change was made in the OpenCV commit
+    3ece62cb9c62c66d3fcc314eb5327aa4c5bcb701 to improve performance and safety.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: https://github.com/opencv/opencv/commit/3ece62cb9c62c66d3fcc314eb5327aa4c5bcb701
+    category: performance
+    cwe:
+    - CWE-120
+    technology:
+    - cpp

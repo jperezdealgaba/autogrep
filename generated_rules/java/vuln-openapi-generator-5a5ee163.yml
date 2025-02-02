@@ -1,0 +1,23 @@
+rules:
+- id: vuln-openapi-generator-5a5ee163
+  pattern: 'String[] $LINES = $TEXT.split("\n");
+
+    '
+  pattern-not: 'String[] $LINES = $TEXT.split("\n", -1);
+
+    '
+  languages:
+  - java
+  message: 'Potential issue with String.split() without a limit parameter. When splitting
+    a string by newline characters without a limit, trailing empty strings are discarded.
+    This can lead to unexpected behavior, especially when preserving line breaks is
+    important. To fix this, use split("\n", -1) to preserve all trailing empty strings.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/5a5ee163dc0a9a046f0e986d212629d019528583
+    category: correctness
+    cwe: CWE-697
+    technology:
+    - java

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-gimp-687ec479
+  pattern: '$VAR->top = GUINT32_FROM_BE($VAR->top);
+
+    $VAR->left = GUINT32_FROM_BE($VAR->left);
+
+    $VAR->bottom = GUINT32_FROM_BE($VAR->bottom);
+
+    $VAR->right = GUINT32_FROM_BE($VAR->right);
+
+    '
+  pattern-not: '$VAR->top = GINT32_FROM_BE($VAR->top);
+
+    $VAR->left = GINT32_FROM_BE($VAR->left);
+
+    $VAR->bottom = GINT32_FROM_BE($VAR->bottom);
+
+    $VAR->right = GINT32_FROM_BE($VAR->right);
+
+    '
+  languages:
+  - c
+  message: "Detected incorrect use of GUINT32_FROM_BE instead of GINT32_FROM_BE for\
+    \ reading signed integers from binary data. \nThis can lead to incorrect interpretation\
+    \ of negative values, potentially causing memory corruption or incorrect program\
+    \ behavior. \nUse GINT32_FROM_BE for signed integer values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gimp/commit/687ec47914ec08d6e460918cb641c196d80140a3
+    category: security
+    cwe:
+    - 'CWE-681: Incorrect Conversion between Numeric Types'
+    technology:
+    - c

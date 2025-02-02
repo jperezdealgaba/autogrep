@@ -1,0 +1,22 @@
+rules:
+- id: vuln-fast-xml-parser-d0bfe8a3
+  pattern: 'this.registeredParsers = registerCommonValueParsers();
+
+    '
+  pattern-not: 'this.registeredParsers = registerCommonValueParsers(this.options);
+
+    '
+  languages:
+  - javascript
+  message: 'Missing options parameter in registerCommonValueParsers() call. This can
+    lead to improper handling of input data and potential security vulnerabilities.
+    Always pass the options parameter to ensure proper configuration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NaturalIntelligence/fast-xml-parser/commit/d0bfe8a3a2813a185f39591bbef222212d856164
+    category: security
+    cwe: CWE-20
+    owasp: A01:2021-Broken Access Control
+    technology: javascript

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-flatpress-742f8b04
+  pattern: "array(\n  ...,\n  'wml'\n)\n"
+  pattern-not: "array(\n  ...,\n  'wml',\n  'svg'\n)\n"
+  languages:
+  - php
+  message: "The code is missing the 'svg' file type in the array of allowed file extensions.\
+    \ \nThis can lead to security vulnerabilities by allowing the upload of potentially\
+    \ dangerous SVG files. \nAdd 'svg' to the array to ensure proper file type validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpressblog/flatpress/commit/742f8b04f233e3cc52bed11f79fcc9911faee776
+    category: security
+    cwe:
+    - 434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

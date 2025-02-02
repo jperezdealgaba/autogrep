@@ -1,0 +1,28 @@
+rules:
+- id: vuln-prestashop-709d9afa
+  pattern: "if (Tools::isSubmit('submitReorder') && $id_order = (int) Tools::getValue('id_order'))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (Tools::isSubmit('submitReorder')\n    && $this->context->customer->isLogged()\n\
+    \    && $id_order = (int) Tools::getValue('id_order')\n) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code allows reordering without verifying if the customer is logged
+    in, which could lead to unauthorized access to order details.
+
+    This is dangerous because it could allow attackers to manipulate or view orders
+    they should not have access to.
+
+    To fix this, ensure that the customer is logged in before processing the reorder
+    request.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PrestaShop/PrestaShop/commit/709d9afab7bdba1de5d7225a40e4f28c35975909
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

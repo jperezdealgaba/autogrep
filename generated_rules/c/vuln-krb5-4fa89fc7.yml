@@ -1,0 +1,27 @@
+rules:
+- id: vuln-krb5-4fa89fc7
+  pattern: "if ($RETURN_TOKEN != $NO_TOKEN_SEND && $RETURN_TOKEN != $CHECK_MIC) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($RETURN_TOKEN == $INIT_TOKEN_SEND ||\n    $RETURN_TOKEN == $CONT_TOKEN_SEND)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The condition checks for `return_token` values incorrectly, potentially
+    allowing unintended token handling. This could lead to security vulnerabilities
+    in the SPNEGO mechanism by processing tokens that should be rejected. The fix
+    correctly checks for `INIT_TOKEN_SEND` and `CONT_TOKEN_SEND` to ensure proper
+    token handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/4fa89fc784b87b22bb551e9a8dc754cb2392d732
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://web.mit.edu/kerberos/
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-memos-c07b4a57
+  pattern: "if strings.HasPrefix($RESOURCE.Type, echo.MIMETextHTML) {\n  $C.Response().Writer.Header().Set(\"\
+    Content-Type\", echo.MIMETextPlain)\n} else {\n  $C.Response().Writer.Header().Set(\"\
+    Content-Type\", $RESOURCE.Type)\n}\n"
+  pattern-not: '$C.Response().Writer.Header().Set("Content-Type", $RESOURCE.Type)
+
+    '
+  languages:
+  - go
+  message: 'The code sets the Content-Type header based on a prefix check of the resource
+    type, which can lead to incorrect content type handling and potential security
+    issues. Instead, the Content-Type should be set directly to the resource type
+    to ensure proper handling and prevent security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/c07b4a57caa89905e54b800f4d8fb720bbf5bf82
+    category: security
+    cwe:
+    - CWE-436
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - go

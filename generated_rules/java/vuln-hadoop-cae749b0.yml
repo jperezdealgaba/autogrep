@@ -1,0 +1,28 @@
+rules:
+- id: vuln-hadoop-cae749b0
+  pattern: "$UNTAR_COMMAND.append(\" gzip -dc '\")\n    .append(FileUtil.makeSecureShellPath($INFILE))\n\
+    \    .append(\"' | (\");\n"
+  pattern-not: "$UNTAR_COMMAND.append(\" gzip -dc \")\n    .append($SOURCE)\n    .append(\"\
+    \ | (\");\n"
+  languages:
+  - java
+  message: 'Potential command injection vulnerability due to insecure shell command
+    construction.
+
+    The original code directly appends user-controlled input to a shell command without
+    proper sanitization.
+
+    To fix, use a pre-sanitized source variable and avoid directly appending raw input
+    to shell commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/hadoop/commit/cae749b076f35f0be13a926ee8cfbb7ce4402746
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - java

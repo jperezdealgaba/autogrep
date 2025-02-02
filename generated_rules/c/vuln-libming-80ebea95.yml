@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libming-80ebea95
+  pattern: 'outputSWF_UNKNOWNBLOCK($VAR);
+
+    '
+  pattern-not: 'SWF_error("printing type:  %d (%s) is not implemented", $TYPE, blockName($TYPE));
+
+    '
+  languages:
+  - c
+  message: 'The use of `outputSWF_UNKNOWNBLOCK` without proper error handling can
+    lead to undefined behavior or crashes when processing unknown block types. This
+    vulnerability can be exploited by crafting malicious SWF files to cause denial
+    of service or other unexpected behavior. Replace `outputSWF_UNKNOWNBLOCK` with
+    a proper error handling mechanism like `SWF_error` to safely handle unknown block
+    types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/80ebea953f0da0a5206bfaf02d5396d292e91a3a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

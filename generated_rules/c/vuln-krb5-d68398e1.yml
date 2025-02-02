@@ -1,0 +1,30 @@
+rules:
+- id: vuln-krb5-d68398e1
+  pattern: "if ($SUBBUF->bound > $BUF->bound)\n  return $ASN1_OVERRUN;\n"
+  pattern-not: 'if ($BUF->next > $BUF->bound + 1) return $ASN1_OVERRUN;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overrun vulnerability due to incorrect boundary
+    checks.
+
+    The original code compared the bounds of a sub-buffer with the main buffer, which
+    could lead to buffer overruns if not properly validated.
+
+    The fix ensures that the next pointer in the buffer does not exceed the bound
+    by more than one, preventing overruns.
+
+    Always validate buffer boundaries carefully to avoid memory corruption vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/d68398e122cfd6c3fc35ab54b3cbeed38ae1e6a9
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A08:2021 - Software and Data Integrity Failures
+    technology:
+    - c

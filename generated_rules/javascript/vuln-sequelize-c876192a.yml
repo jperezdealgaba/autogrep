@@ -1,0 +1,20 @@
+rules:
+- id: vuln-sequelize-c876192a
+  pattern: "if ($DIALECT == \"postgres\") {\n  ...\n}\n"
+  pattern-not: "if ($DIALECT === \"postgres\" || $DIALECT === \"sqlite\") {\n  ...\n\
+    }\n"
+  languages:
+  - javascript
+  message: Potential SQL dialect comparison vulnerability. Using '==' instead of '==='
+    can lead to unexpected behavior. Always use strict equality when comparing SQL
+    dialects to avoid security issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/sequelize/sequelize/commit/c876192aa6ce1f67e22b26a4d175b8478615f42d
+    category: security
+    cwe: CWE-697
+    owasp: 'A1: Injection'
+    references:
+    - http://stackoverflow.com/q/603572/130598
+    technology:
+    - javascript

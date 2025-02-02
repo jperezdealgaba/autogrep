@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libtiff-b6af137b
+  pattern: 'assert($VAR <= 0xFFFFFFFFUL);
+
+    '
+  pattern-not: "if($VAR > 0xFFFFFFFFUL) {\n    TIFFErrorExt($TIF->tif_clientdata,\
+    \ $MODULE, \"Illegal value for SubIFD tag\");\n    _TIFFfree($O);\n    return(0);\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code uses an assert statement to check if a value is within the 32-bit
+    range, which can be optimized out in release builds, leading to potential security
+    vulnerabilities. Instead, proper error handling should be implemented to ensure
+    the value is validated at runtime. This vulnerability could allow an attacker
+    to pass illegal values that bypass the assert check, potentially leading to undefined
+    behavior or crashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/b6af137bf9ef852f1a48a50a5afb88f9e9da01cc
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c

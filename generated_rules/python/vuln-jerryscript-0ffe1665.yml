@@ -1,0 +1,20 @@
+rules:
+- id: vuln-jerryscript-0ffe1665
+  pattern: '$CASE.run_pipe()
+
+    '
+  pattern-not: '$CASE.run()
+
+    '
+  languages:
+  - python
+  message: Detected insecure use of run_pipe() method. This method may lead to vulnerabilities
+    in test execution. Use the secure run() method instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/galpeter/jerryscript/commit/0ffe1665bd0ee457dd4c1083811e1592a5e2908d
+    category: security
+    cwe: 'CWE-665: Improper Initialization'
+    owasp: A12:2017-Security Misconfiguration
+    technology:
+    - python

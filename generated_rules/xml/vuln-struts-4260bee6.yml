@@ -1,0 +1,27 @@
+rules:
+- id: vuln-struts-4260bee6
+  pattern: '<jackson.version>2.9.2</jackson.version>
+
+    '
+  pattern-not: '<jackson.version>2.9.4</jackson.version>
+
+    '
+  languages:
+  - xml
+  message: 'The version of Jackson library specified is vulnerable. Versions before
+    2.9.4 contain security issues that could lead to remote code execution. Upgrade
+    to Jackson version 2.9.4 or later to mitigate this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/4260bee634cb606be6071bce2383fddb510608aa
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/FasterXML/jackson-databind/issues
+    technology:
+    - xml

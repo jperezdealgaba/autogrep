@@ -1,0 +1,25 @@
+rules:
+- id: vuln-cms-4c6fe041
+  pattern: "if (in_array(trim(strtolower($value->getClientOriginalExtension())), ['php',\
+    \ 'php3', 'php4', 'php5', 'phtml'])) {\n  ...\n}\n"
+  pattern-not: "if (in_array(trim(strtolower($value->getClientOriginalExtension())),\
+    \ ['php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'phar'])) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: "Detected an incomplete list of dangerous file extensions in file upload\
+    \ validation. \nThis could allow attackers to upload malicious PHP files with\
+    \ extensions like php7, php8, or phar, potentially leading to remote code execution.\
+    \ \nUpdate the list of blocked extensions to include all known PHP-related extensions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/statamic/cms/commit/4c6fe041e2203a8033e5949ce4a5d9d6c0ad2411
+    category: security
+    cwe:
+    - 434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

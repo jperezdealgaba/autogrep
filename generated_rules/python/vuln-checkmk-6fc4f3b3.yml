@@ -1,0 +1,22 @@
+rules:
+- id: vuln-checkmk-6fc4f3b3
+  pattern: 'html.render_pre(HTML($VALUE), class_="ve_textarea")
+
+    '
+  pattern-not: 'html.render_pre($VALUE, class_="ve_textarea")
+
+    '
+  languages:
+  - python
+  message: "Detected potential XSS vulnerability due to unnecessary HTML wrapping.\
+    \ \nDirectly passing unescaped HTML content can lead to cross-site scripting (XSS)\
+    \ attacks. \nRemove the HTML wrapper to ensure proper escaping.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/checkmk/checkmk/commit/6fc4f3b341bae28d741edf172812ac204d2f78f5
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology: python

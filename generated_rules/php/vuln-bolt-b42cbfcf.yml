@@ -1,0 +1,29 @@
+rules:
+- id: vuln-bolt-b42cbfcf
+  pattern: '$response = $this->renameObject($object, $data[''old''] . ''_nonexistent'',
+    $data[''new'']);
+
+    '
+  pattern-not: '$response = $this->renameObject($object, $data[''old''] . ''_nonexistent.txt'',
+    $data[''new'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential file handling issue where a file extension is missing.
+    This could lead to incorrect file type handling or security vulnerabilities. Ensure
+    that file names include proper extensions to avoid such issues.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/bolt/bolt/commit/b42cbfcf3e3108c46a80581216ba03ef449e419f
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

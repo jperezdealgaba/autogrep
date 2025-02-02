@@ -1,0 +1,27 @@
+rules:
+- id: vuln-vyper-c3e68c30
+  pattern: 'num_kwargs = len($SIG.default_args)
+
+    kwargs_needed = num_kwargs - num_provided_kwargs
+
+    kw_vals = list($SIG.default_values.values())[:kwargs_needed]
+
+    '
+  pattern-not: 'kw_vals = list($SIG.default_values.values())[num_provided_kwargs:]
+
+    '
+  languages:
+  - python
+  message: 'Detected incorrect handling of keyword arguments in Vyper code. This vulnerability
+    can lead to incorrect argument processing and potential security issues. The fix
+    involves correctly slicing the default values based on the number of provided
+    keyword arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/c3e68c302aa6e1429946473769dd1232145822ac
+    category: security
+    cwe: CWE-682
+    owasp: A06:2021-Vulnerable and Outdated Components
+    technology: python

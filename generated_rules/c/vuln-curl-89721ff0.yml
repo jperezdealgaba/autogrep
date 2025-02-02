@@ -1,0 +1,24 @@
+rules:
+- id: vuln-curl-89721ff0
+  pattern: "if(strequal($NEEDLE->protostr, \"FTP\")) {\n  ...\n}\n"
+  pattern-not: "if($NEEDLE->protocol & PROT_FTP) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses ''strequal'' to compare protocol strings, which can lead
+    to security vulnerabilities if the strings are not properly validated. This can
+    be exploited to bypass SSL/TLS verification checks. Use protocol flags (e.g.,
+    PROT_FTP) instead of string comparisons to ensure secure protocol handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/89721ff04af70f527baae1368f3b992777bf6526
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/295.html
+    technology:
+    - c

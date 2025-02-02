@@ -1,0 +1,22 @@
+rules:
+- id: vuln-lucene-solr-a3d456fb
+  pattern: 'Boolean $VAR = Boolean.getBoolean($CONST);
+
+    $VAR2 = (null == $VAR ? false : $VAR);
+
+    '
+  pattern-not: '$VAR2 = Boolean.getBoolean($CONST);
+
+    '
+  languages:
+  - java
+  message: "Inefficient and potentially error-prone null check for Boolean.getBoolean().\
+    \ \nThe method Boolean.getBoolean() already returns false for null or invalid\
+    \ values, \nso the explicit null check is redundant and could lead to confusion\
+    \ or bugs. \nSimplify the code by directly assigning the result of Boolean.getBoolean().\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/a3d456fba2cd1b9892defbcf46a0eb4d4bb4d01f
+    category: code-quality
+    cwe: CWE-398
+    technology: java

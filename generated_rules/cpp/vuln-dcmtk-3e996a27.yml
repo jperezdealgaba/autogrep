@@ -1,0 +1,23 @@
+rules:
+- id: vuln-dcmtk-3e996a27
+  pattern: 'errorFlag = $LIST->get()->read($IN, $X, $G, $L);
+
+    '
+  pattern-not: "$DO = $LIST->get();\nif ($DO)\n  errorFlag = $DO->read($IN, $X, $G,\
+    \ $L);\nelse\n  errorFlag = $EC;\n"
+  languages:
+  - cpp
+  message: 'Directly accessing and using the result of `get()` without checking for
+    null can lead to null pointer dereference, causing undefined behavior or crashes.
+    Always check the returned pointer before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DCMTK/dcmtk/commit/3e996a2749a9355c9b680fa464ecfd9ab9ff567f
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

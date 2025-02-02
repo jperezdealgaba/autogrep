@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openswan-9eaa6c2a
+  pattern: '$S += $PADLEN + 3;
+
+    (*$PSIG) = $S;
+
+    '
+  pattern-not: "(*$PSIG) = $S + $PADLEN + 3;\n...\nfor ($P = $S+2; $P < $S+$PADLEN+2;\
+    \ $P++)\n  if (*$P == 0xFF)\n    $CNT_FFS ++;\nif ($CNT_FFS != $PADLEN)\n  return\
+    \ \"invalid Padding String\";\n"
+  languages:
+  - c
+  message: 'The code directly assigns a pointer after incrementing it without verifying
+    the padding contents. This can lead to security vulnerabilities if the padding
+    is not properly validated, potentially allowing attackers to manipulate the signature.
+    The fix includes verifying the padding contents to ensure it consists of valid
+    0xFF bytes. Always validate padding in cryptographic operations to prevent such
+    issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/xelerance/Openswan/commit/9eaa6c2a823c1d2b58913506a15f9474bf857a3d
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

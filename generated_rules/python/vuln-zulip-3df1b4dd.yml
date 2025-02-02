@@ -1,0 +1,27 @@
+rules:
+- id: vuln-zulip-3df1b4dd
+  pattern: '$CAN_USE_DIFFERENT_BACKEND = email_auth_enabled($REALM) or (len(get_external_method_dicts($REALM))
+    > 0)
+
+    '
+  pattern-not: "if email_auth_enabled($REALM):\n    $CAN_USE_DIFFERENT_BACKEND = True\n\
+    elif len(get_external_method_dicts($REALM)) > 0 and not $PASSWORD_REQUIRED:\n\
+    \    $CAN_USE_DIFFERENT_BACKEND = True\nelse:\n    $CAN_USE_DIFFERENT_BACKEND\
+    \ = False\n"
+  languages:
+  - python
+  message: 'Detected insecure LDAP authentication bypass logic. The original code
+    could allow users to create accounts without proper LDAP authentication if email
+    authentication or any external authentication method is enabled, even if the user
+    did not come through an external authentication method. This could lead to unauthorized
+    account creation. The fix ensures that users can only proceed with account creation
+    if they have been properly authenticated through LDAP or an external method.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/3df1b4dd7c210c21deb6f829df19412b74573f8d
+    category: security
+    cwe: CWE-287
+    owasp: A2:2017-Broken Authentication
+    technology: python

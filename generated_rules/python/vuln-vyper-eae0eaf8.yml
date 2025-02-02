@@ -1,0 +1,25 @@
+rules:
+- id: vuln-vyper-eae0eaf8
+  pattern: "if $TYPE.nonreentrant is not None:\n  $TYPE.set_reentrancy_key_position(StorageSlot($STORAGE_SLOT))\n\
+    \  $VARIABLE_NAME = f\"nonreentrant.{$TYPE.nonreentrant}\"\n  $RET[$VARIABLE_NAME]\
+    \ = {\n      \"type\": \"nonreentrant lock\",\n      \"location\": \"storage\"\
+    ,\n      \"slot\": $STORAGE_SLOT,\n  }\n  $STORAGE_SLOT += 1\n"
+  pattern-not: "if $TYPE.nonreentrant is None:\n  continue\n$VARIABLE_NAME = f\"nonreentrant.{$TYPE.nonreentrant}\"\
+    \nif $VARIABLE_NAME in $RET:\n  continue\n$TYPE.set_reentrancy_key_position(StorageSlot($STORAGE_SLOT))\n\
+    $RET[$VARIABLE_NAME] = {\n    \"type\": \"nonreentrant lock\",\n    \"location\"\
+    : \"storage\",\n    \"slot\": $STORAGE_SLOT,\n}\n$STORAGE_SLOT += 1\n"
+  languages:
+  - python
+  message: 'Detected incorrect handling of nonreentrant keys in storage layout. The
+    original code could assign multiple storage slots to the same nonreentrant key,
+    leading to potential storage collisions. The fix ensures that a nonreentrant key
+    only takes one slot, ignoring subsequent occurrences.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/eae0eaf86eb462746e4867352126f6c1dd43302f
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

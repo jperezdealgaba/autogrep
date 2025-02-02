@@ -1,0 +1,26 @@
+rules:
+- id: vuln-opencv-aacae206
+  pattern: 'int $STEP = (int)$IMG.step;
+
+    '
+  pattern-not: 'int $STEP = validateToInt($IMG.step);
+
+    '
+  languages:
+  - cpp
+  message: 'Directly casting `size_t` to `int` without validation can lead to integer
+    overflow or truncation, which may cause memory corruption or security vulnerabilities.
+    Use the `validateToInt` function to ensure the value is within the valid range
+    for an `int`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencv/opencv/commit/aacae2065744adb05e858d327198c7bbe7f452b0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-asterisk-faddd99f
+  pattern: "if (!($SESSION->writeperm & $PERMISSION)\n    && (\n        strcasestr($APP,\
+    \ \"system\") ||\n        strcasestr($APP, \"exec\") ||\n        strcasestr($APP,\
+    \ \"agi\") ||\n        strcasestr($APP, \"mixmonitor\") ||\n        strcasestr($APP,\
+    \ \"externalivr\") ||\n        strcasestr($APP, \"originate\") ||\n        (strstr($APPDATA,\
+    \ \"SHELL\") && ($BAD_APPDATA = 1)) ||\n        (strstr($APPDATA, \"EVAL\") &&\
+    \ ($BAD_APPDATA = 1))\n    )) {\n    ...\n}\n"
+  pattern-not: "if (!is_originate_app_permitted($APP, $APPDATA, $SESSION->writeperm))\
+    \ {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly checks for specific application strings (e.g., "system",
+    "exec", "agi") and appdata strings (e.g., "SHELL", "EVAL") to enforce permissions.
+    This approach is error-prone and hard to maintain. The patch introduces a more
+    robust permission checking mechanism using a structured list of permissions and
+    corresponding search functions. Update the code to use the new permission checking
+    mechanism to avoid security vulnerabilities and improve maintainability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/asterisk/asterisk/commit/faddd99f2b9408b524e5eb8a01589fe1fa282df2
+    category: security
+    cwe:
+    - CWE-863
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://www.asterisk.org
+    technology:
+    - c

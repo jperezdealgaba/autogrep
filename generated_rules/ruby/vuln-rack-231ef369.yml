@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rack-231ef369
+  pattern: "$HEADER.to_s.split(/\\s*,\\s*/).map do |$PART|\n  $ATTRIBUTE, $PARAMETERS\
+    \ = $PART.split(/\\s*;\\s*/, 2)\n  ...\nend\n"
+  pattern-not: "$HEADER.to_s.split(\",\").each(&:strip!).map do |$PART|\n  $ATTRIBUTE,\
+    \ $PARAMETERS = $PART.split(\";\", 2).each(&:strip!)\n  ...\nend\n"
+  languages:
+  - ruby
+  message: 'The original code splits headers using a regex that includes whitespace
+    handling, which can lead to incorrect parsing of header values. This could potentially
+    cause security issues such as header injection or misinterpretation of headers.
+    The fix uses `split(",")` followed by `strip!` to ensure proper handling of whitespace.
+    Use the fixed version to avoid these issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/231ef369ad0b542575fb36c74fcfcfabcf6c530c
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A6:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

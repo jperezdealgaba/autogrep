@@ -1,0 +1,28 @@
+rules:
+- id: vuln-engine-f8a0f268
+  pattern: 'maskSecretKeys($INPUT, $PATH)
+
+    '
+  pattern-not: 'maskSecretKeys($INPUT)
+
+    '
+  languages:
+  - go
+  message: 'Detected usage of `maskSecretKeys` with a path parameter, which was removed
+    in the fix. This could lead to improper masking of sensitive data in certain API
+    paths. The path parameter is no longer needed and should be removed to ensure
+    consistent masking of sensitive data across all API endpoints.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/engine/commit/f8a0f26843bc5aff33cf9201b75bd4bdbb48a3ad
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/docker/engine/commit/f8a0f26843bc5aff33cf9201b75bd4bdbb48a3ad
+    technology:
+    - go

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-serendipity-cdf37562
+  pattern: "if ($serendipity['GET']['adminAction'] == 'install' || $serendipity['GET']['adminAction']\
+    \ == 'install-frontend' || $serendipity['GET']['adminAction'] == 'install-backend')\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (($serendipity['GET']['adminAction'] == 'install' || $serendipity['GET']['adminAction']\
+    \ == 'install-frontend' || $serendipity['GET']['adminAction'] == 'install-backend')\
+    \ && serendipity_checkFormToken()) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Missing CSRF token validation in template installation check. This vulnerability
+    allows attackers to forge requests and perform unauthorized actions on behalf
+    of users. Always validate CSRF tokens for sensitive actions by calling serendipity_checkFormToken().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/s9y/Serendipity/commit/cdf375623d512f3be78e28e5400167c33360bbab
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

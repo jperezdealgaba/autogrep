@@ -1,0 +1,24 @@
+rules:
+- id: vuln-docker-f8a0f268
+  pattern: "func maskSecretKeys($INP interface{}, $PATH string) {\n    ...\n}\n"
+  pattern-not: "func maskSecretKeys($INP interface{}) {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'The function `maskSecretKeys` was previously passing both the input and
+    the path as parameters, which could lead to incorrect handling of sensitive data.
+    The path parameter was removed to simplify the function and ensure consistent
+    behavior. Update the function to only accept the input parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/docker/commit/f8a0f26843bc5aff33cf9201b75bd4bdbb48a3ad
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://github.com/docker/docker/commit/f8a0f26843bc5aff33cf9201b75bd4bdbb48a3ad
+    technology:
+    - go

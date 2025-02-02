@@ -1,0 +1,29 @@
+rules:
+- id: vuln-twig-35f3035c
+  pattern: '$this->validateName($name);
+
+    '
+  pattern-not: '$this->validateName($shortname);
+
+    '
+  languages:
+  - php
+  message: 'The use of `$name` instead of `$shortname` in the `validateName` method
+    can lead to path traversal vulnerabilities. This is dangerous because it allows
+    attackers to include files outside the intended directory, potentially leading
+    to unauthorized access or code execution. To fix this, ensure that `$shortname`
+    is used for validation to properly restrict file paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/twigphp/Twig/commit/35f3035c5deb0041da7b84daf02dea074ddc7a0b
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

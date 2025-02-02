@@ -1,0 +1,23 @@
+rules:
+- id: vuln-struts-25e50069
+  pattern: '"''" + $VALUE + "''"
+
+    '
+  pattern-not: 'escape($VALUE)
+
+    '
+  languages:
+  - java
+  message: Potential security vulnerability due to improper escaping of user input.
+    This can lead to code injection attacks. Use the 'escape' method to properly sanitize
+    the input.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/25e50069d60434a30395e3a98357ffba2bed427e
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

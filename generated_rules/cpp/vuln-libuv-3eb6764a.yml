@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libuv-3eb6764a
+  pattern: 'uv_mutex_t $READ_MUTEX;
+
+    uv_mutex_t $WRITE_MUTEX;
+
+    '
+  pattern-not: "union {\n  CRITICAL_SECTION $CS;\n  uv_mutex_t $UNUSED;\n} $READ_LOCK;\n\
+    union {\n  HANDLE $SEM;\n  uv_mutex_t $UNUSED;\n} $WRITE_LOCK;\n"
+  languages:
+  - cpp
+  message: 'Detected use of raw `uv_mutex_t` for synchronization, which may lead to
+    race conditions or deadlocks. The fix involves using a union with either a `CRITICAL_SECTION`
+    or a `HANDLE` for better synchronization control. Replace `uv_mutex_t` with the
+    appropriate union structure to ensure thread safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libuv/libuv/commit/3eb6764acd2d708f6873c177a77f9bef3b266fa9
+    category: security
+    cwe:
+    - CWE-362
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://docs.microsoft.com/en-us/windows/win32/sync/critical-section-objects
+    - https://docs.microsoft.com/en-us/windows/win32/sync/semaphore-objects
+    technology:
+    - cpp

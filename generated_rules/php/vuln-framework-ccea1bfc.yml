@@ -1,0 +1,31 @@
+rules:
+- id: vuln-framework-ccea1bfc
+  pattern: '[''php'', ''php3'', ''php4'', ''php5'', ''phtml'']
+
+    '
+  pattern-not: '[''php'', ''php3'', ''php4'', ''php5'', ''phtml'', ''phar'']
+
+    '
+  languages:
+  - php
+  message: 'The list of potentially dangerous file extensions is incomplete, missing
+    ''phar''.
+
+    This could allow attackers to upload malicious PHAR (PHP Archive) files, which
+    can lead to arbitrary code execution.
+
+    Update the list to include ''phar'' to prevent such attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laravel/framework/commit/ccea1bfcbb37cf923dc1bb30cdbf2effbfb1619c
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/intro.phar.php
+    technology:
+    - php

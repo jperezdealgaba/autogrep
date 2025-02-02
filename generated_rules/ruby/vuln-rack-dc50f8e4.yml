@@ -1,0 +1,30 @@
+rules:
+- id: vuln-rack-dc50f8e4
+  pattern: 'ATTRIBUTE_CHAR = %r{[^ \t\v\n\r)(><@,;:\\"/\[\]?=''*%]}
+
+    '
+  pattern-not: 'ATTRIBUTE_CHAR = %r{[^ \x00-\x1f\x7f)(><@,;:\\"/\[\]?=''*%]}
+
+    '
+  languages:
+  - ruby
+  message: 'The regex pattern used for ATTRIBUTE_CHAR is vulnerable because it does
+    not properly exclude all control characters. This can lead to security issues
+    such as header injection or other parsing vulnerabilities. The fix includes excluding
+    all control characters (0x00-0x1f and 0x7f) to ensure proper handling of multipart
+    form data. Update the regex to include all control characters as shown in the
+    fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/dc50f8e495f67eb933b1fc33ebee550908d945e6
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/HTTP_Response_Splitting
+    technology:
+    - ruby

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-generator-rs-9209ce23
+  pattern: 'let $SCOPE = $G.get_scope();
+
+    $G.init(move || $CLOSURE($SCOPE));
+
+    '
+  pattern-not: '$G.scoped_init($CLOSURE);
+
+    '
+  languages:
+  - rust
+  message: 'Detected unsafe usage of `get_scope` followed by `init` with a closure.
+    This pattern can lead to undefined behavior due to improper handling of raw pointers
+    and lifetimes. The `scoped_init` method should be used instead, which safely manages
+    the scope and closure initialization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Xudong-Huang/generator-rs/commit/9209ce2336011f67662c047512e4378a3a5f60bd
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - rust

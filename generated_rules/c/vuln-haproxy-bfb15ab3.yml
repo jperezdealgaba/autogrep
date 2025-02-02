@@ -1,0 +1,27 @@
+rules:
+- id: vuln-haproxy-bfb15ab3
+  pattern: "if (!http_find_header($HTX, ist(\"Set-Cookie\"), &$CTX, 1)) {\n  ...\n\
+    }\n"
+  pattern-not: "if (is_cookie2 || !http_find_header($HTX, ist(\"Set-Cookie\"), &$CTX,\
+    \ 1)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code is vulnerable due to missing a check for `is_cookie2` before
+    evaluating the `http_find_header` function. This can lead to incorrect handling
+    of cookie headers, potentially causing security issues such as cookie manipulation
+    or injection. To fix this, ensure that `is_cookie2` is checked before evaluating
+    the `http_find_header` function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/haproxy/haproxy/commit/bfb15ab34ead85f64cd6da0e9fb418c9cd14cee8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

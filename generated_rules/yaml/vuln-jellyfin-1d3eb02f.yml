@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jellyfin-1d3eb02f
+  pattern: 'uses: github/codeql-action/init@49abf0ba24d0b7953cb586944e918a0b92074c80
+
+    '
+  pattern-not: 'uses: github/codeql-action/init@74483a38d39275f33fcff5f35b679b5ca4a26a99
+
+    '
+  languages:
+  - yaml
+  message: 'Outdated version of the CodeQL action is being used, which may contain
+    security vulnerabilities or bugs. Always use the latest version of the CodeQL
+    action to ensure the latest security patches and improvements are applied. Update
+    to the latest version to mitigate potential risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jellyfin/jellyfin/commit/1d3eb02f299a80aacb4742c912fda46200394b59
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/upgrading-codeql
+    technology:
+    - yaml

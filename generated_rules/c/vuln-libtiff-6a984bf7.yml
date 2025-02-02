@@ -1,0 +1,33 @@
+rules:
+- id: vuln-libtiff-6a984bf7
+  pattern: 'uint8 *$VAR = (uint8 *)_TIFFmalloc($SIZE);
+
+    '
+  pattern-not: 'uint8 *$VAR;
+
+    $VAR = (uint8 *)_TIFFmalloc($SIZE);
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns the result of _TIFFmalloc to a variable declaration
+
+    without proper error handling or separation of declaration and initialization.
+
+    This can lead to memory management issues and potential vulnerabilities if
+
+    the allocation fails. To fix this, separate the declaration and initialization,
+
+    and ensure proper error handling is in place.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/6a984bf7905c6621281588431f384e79d11a2e33
+    category: security
+    cwe:
+    - CWE-665
+    - CWE-401
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-zulip-5797f013
+  pattern: 'r''''''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*(([''"])(.*?)\12\s*)?\)''''''
+
+    '
+  pattern-not: 'r''''''\(\s*(<(?:[^<>\\]|\\.)*>|(\([^()]*\)|[^()])*?)\s*((''(?:[^''\\]|\\.)*''|"(?:[^"\\]|\\.)*")\s*)?\)''''''
+
+    '
+  languages:
+  - python
+  message: 'Detected a potentially unsafe regular expression pattern that may allow
+    for ReDoS (Regular Expression Denial of Service) attacks. The pattern contains
+    nested quantifiers that can lead to catastrophic backtracking. The fixed version
+    properly escapes special characters and limits the scope of quantifiers to prevent
+    excessive backtracking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/5797f013b3be450c146a4141514bda525f2f1b51
+    category: security
+    cwe: CWE-400
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - python

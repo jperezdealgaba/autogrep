@@ -1,0 +1,32 @@
+rules:
+- id: vuln-rack-f9511340
+  pattern: '$READ_BUFFER = $IO.gets
+
+    ...
+
+    raise EOFError, "bad content body" if $READ_BUFFER.nil?
+
+    '
+  pattern-not: "$CONTENT = $IO.read($BUFSIZE)\nraise EOFError, \"bad content body\"\
+    \ unless $CONTENT\n$BUF << $CONTENT\nwhile $BUF.gsub!(/\\A([^\\n]*\\n)/, '')\n\
+    \  $READ_BUFFER = $1\n  return if $READ_BUFFER == $FULL_BOUNDARY\nend\nraise EOFError,\
+    \ \"bad content body\" if Utils.bytesize($BUF) >= $BUFSIZE\n"
+  languages:
+  - ruby
+  message: "Detected a vulnerable pattern in multipart parsing that could lead to\
+    \ denial of service (DoS) attacks. \nThe original code reads unbounded data using\
+    \ `gets`, which can be exploited by sending extremely long boundaries.\nThe fix\
+    \ introduces a bounded read using `BUFSIZE` and checks for excessive buffer size.\
+    \ \nTo fix, replace unbounded reads with bounded reads and add size validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/f95113402b7239f225282806673e1b6424522b18
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Denial_of_Service
+    technology:
+    - ruby

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-pac4j-34d5b102
+  pattern: 'java.util.UUID.randomUUID().toString().replace("-", "").substring(0, $SIZE)
+
+    '
+  pattern-not: "StringBuffer $SB = new StringBuffer(\"\");\nwhile ($SB.length() <\
+    \ $SIZE) {\n    $SB.append(java.util.UUID.randomUUID().toString().replace(\"-\"\
+    , \"\"));\n}\n$SB.toString().substring(0, $SIZE);\n"
+  languages:
+  - java
+  message: 'Insecure random string generation detected. The previous implementation
+    could generate strings shorter than the requested size due to the substring operation
+    on a single UUID. This can lead to insufficient entropy in security-sensitive
+    contexts. Use the fixed version that ensures the generated string meets the required
+    length by appending multiple UUIDs if necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pac4j/pac4j/commit/34d5b1028a2db201ee81ec51b52a782fe073f609
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A2:2017-Insecure Authentication
+    technology:
+    - java

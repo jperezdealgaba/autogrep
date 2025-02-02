@@ -1,0 +1,39 @@
+rules:
+- id: vuln-rust-08504fbb
+  pattern: 'let mut $S = String::with_capacity($LEN * $N);
+
+    $S.extend((0..$N).map(|_| $SELF));
+
+    $S
+
+    '
+  pattern-not: "if $N == 0 {\n    return String::new();\n}\nlet mut $S = Vec::with_capacity($LEN\
+    \ * $N);\n$S.extend($SELF.as_bytes());\nlet mut $M = $N >> 1;\nwhile $M > 0 {\n\
+    \    let $LEN = $S.len();\n    unsafe {\n        ptr::copy_nonoverlapping($S.as_ptr(),\
+    \ ($S.as_mut_ptr() as *mut u8).add($LEN), $LEN);\n        $S.set_len($LEN * 2);\n\
+    \    }\n    $M >>= 1;\n}\nlet $RES_LEN = $N * $LEN;\nif $RES_LEN > $S.len() {\n\
+    \    unsafe {\n        ptr::copy_nonoverlapping(\n            $S.as_ptr(),\n \
+    \           ($S.as_mut_ptr() as *mut u8).add($S.len()),\n            $RES_LEN\
+    \ - $S.len(),\n        );\n        $S.set_len($RES_LEN);\n    }\n}\nunsafe { String::from_utf8_unchecked($S)\
+    \ }\n"
+  languages:
+  - rust
+  message: 'The code directly extends a String with repeated content without proper
+    capacity management, which can lead to inefficient memory usage and potential
+    security vulnerabilities. The fixed version uses a more efficient approach with
+    Vec and unsafe pointer operations to manage memory more effectively. Always ensure
+    proper capacity management when dealing with repeated string operations.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/08504fbb0b05abdd9543f08102b0d6275dde210c
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://doc.rust-lang.org/std/string/struct.String.html
+    technology:
+    - rust

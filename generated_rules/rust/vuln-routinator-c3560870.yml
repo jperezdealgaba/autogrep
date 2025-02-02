@@ -1,0 +1,30 @@
+rules:
+- id: vuln-routinator-c3560870
+  pattern: "let mut $DATA = MaxSizeRead::new($READER, $MAX_SIZE);\nif RepositoryObject::create($PATH,\
+    \ &mut $DATA).is_err() {\n    if $DATA.was_triggered() {\n        return Err($ERROR::LargeObject($URI));\n\
+    \    } else {\n        return Err($ERROR::Fatal);\n    }\n} else {\n    Ok(())\n\
+    }\n"
+  pattern-not: "let mut $DATA = RrdpDataRead::new($READER, $URI, $MAX_SIZE);\nRepositoryObject::create($PATH,\
+    \ &mut $DATA).map_err(|$IO_ERR| {\n    match $DATA.take_err() {\n        Some($DATA_ERR)\
+    \ => $DATA_ERR.into(),\n        None => {\n            error!(\"{}\", $IO_ERR);\n\
+    \            $ERROR::Fatal\n        }\n    }\n})\n"
+  languages:
+  - rust
+  message: "The code uses `MaxSizeRead` to limit object size but does not properly\
+    \ handle read errors, which can lead to incomplete error handling and potential\
+    \ security issues. The vulnerability arises because read errors are not distinguished\
+    \ from write errors, and the `was_triggered` method does not provide enough context\
+    \ to handle errors appropriately. \nTo fix this, replace `MaxSizeRead` with `RrdpDataRead`,\
+    \ which stores read errors separately and allows for more precise error handling.\
+    \ This ensures that read errors are not treated as fatal errors when they should\
+    \ not be.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/NLnetLabs/routinator/commit/c3560870164f924952a2a28f8d2f88936d2225cc
+    category: security
+    cwe:
+    - 'CWE-391: Unchecked Error Condition'
+    owasp:
+    - OWASP-2021:A04 - Insecure Design
+    technology:
+    - rust

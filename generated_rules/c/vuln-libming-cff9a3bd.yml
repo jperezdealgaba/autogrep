@@ -1,0 +1,21 @@
+rules:
+- id: vuln-libming-cff9a3bd
+  pattern: "for($I = 0; $I <= $N; ++$I) {\n  ...\n}\n"
+  pattern-not: "for($I = 0; $I < $N; ++$I) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential off-by-one error in a loop condition. Using `<=`
+    instead of `<` can lead to out-of-bounds access, which may result in memory corruption
+    or undefined behavior. Replace `<=` with `<` to ensure the loop stays within bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/cff9a3bd2c428ad0cd8c8deb538031e11f29a0fe
+    category: security
+    cwe:
+    - CWE-193
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

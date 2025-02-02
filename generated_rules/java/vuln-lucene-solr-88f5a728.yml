@@ -1,0 +1,25 @@
+rules:
+- id: vuln-lucene-solr-88f5a728
+  pattern: '$VAR = $ARGS.getBooleanArg($PARAM);
+
+    '
+  pattern-not: '$VAR = Boolean.getBoolean($PARAM);
+
+    '
+  languages:
+  - java
+  message: 'Potential security vulnerability detected. Using `getBooleanArg` from
+    request arguments can allow attackers to manipulate resource loading settings.
+    Instead, use `Boolean.getBoolean` to read system properties, which are only configurable
+    at node startup and not per-request. This prevents attackers from enabling dangerous
+    features during runtime.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/88f5a728259fd9d459f9f8c6e3ef7035e4b1c5a4
+    category: security
+    cwe: 'CWE-15: External Control of System or Configuration Setting'
+    owasp: A01:2021 - Broken Access Control
+    references: https://cwe.mitre.org/data/definitions/15.html
+    technology: java

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-clamav-26b19809
+  pattern: 'unsigned int max_jmp_loop = 100000;
+
+    '
+  pattern-not: 'unsigned int max_jmp_loop = 100000000;
+
+    '
+  languages:
+  - c
+  message: 'The variable `max_jmp_loop` is set to a low value (100000), which can
+    lead to insufficient loop iteration limits. This can cause the program to terminate
+    prematurely or fail to handle large inputs properly. Increase the value of `max_jmp_loop`
+    to 100000000 to ensure adequate loop iteration limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Cisco-Talos/clamav/commit/26b19809fb3b940cb0fda0422d685fff02a53b5f
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    owasp:
+    - A12:2021-Security Misconfiguration
+    technology:
+    - c

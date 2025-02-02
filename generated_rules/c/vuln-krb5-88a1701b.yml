@@ -1,0 +1,26 @@
+rules:
+- id: vuln-krb5-88a1701b
+  pattern: '$REPLY = *$TKT->header_tkt;
+
+    '
+  pattern-not: '$REPLY.server = $TKT->header_tkt->server;
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe copying of the entire header ticket structure, which may
+    include sensitive authorization data. This can lead to security vulnerabilities
+    by exposing unintended data. Instead, copy only the necessary fields explicitly,
+    such as the server field, to avoid inadvertently including sensitive information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/88a1701b423c13991a8064feeb26952d3641d840
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - c

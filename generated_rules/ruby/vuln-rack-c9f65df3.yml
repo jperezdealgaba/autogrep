@@ -1,0 +1,29 @@
+rules:
+- id: vuln-rack-c9f65df3
+  pattern: 'DISPPARM = /;\s*(#{TOKEN})=("(?:\\"|[^"])*"|#{TOKEN})*/
+
+    '
+  pattern-not: 'DISPPARM = /;\s*(#{TOKEN})=("(?:\\"|[^"])*"|#{TOKEN})/
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression in the Content-Disposition header parser is vulnerable
+    to ReDoS (Regular Expression Denial of Service) due to the use of a greedy quantifier
+    (*) at the end of the pattern. This can be exploited by an attacker to cause excessive
+    backtracking, leading to a denial of service. The fix removes the greedy quantifier
+    to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/c9f65df37a151821eb88ddd1dc404b83e52c52d5
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html
+    technology:
+    - ruby

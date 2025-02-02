@@ -1,0 +1,30 @@
+rules:
+- id: vuln-zziplib-d2e5d5c5
+  pattern: "if ($COND) {\n    ...\n    if ($VAR != NULL)\n        free($VAR);\n  \
+    \  return $ERROR_CODE;\n}\n"
+  pattern-not: 'return ($COND) ? $ERROR_CODE : 0;
+
+    '
+  languages:
+  - c
+  message: 'The code contains a redundant and unsafe pattern where memory is freed
+    and an error is returned within nested conditionals. This can lead to double-free
+    vulnerabilities or memory leaks if not handled correctly. The fixed version simplifies
+    the logic by using a ternary operator, which is safer and more efficient. Replace
+    the nested conditionals with a direct return statement using a ternary operator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/d2e5d5c53212e54a97ad64b793a4389193fec687
+    category: security
+    cwe:
+    - CWE-415
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/415.html
+    - https://cwe.mitre.org/data/definitions/401.html
+    technology:
+    - c

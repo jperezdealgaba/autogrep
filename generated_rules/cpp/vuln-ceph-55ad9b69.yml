@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ceph-55ad9b69
+  pattern: "if ($EC == http::error::partial_message || $EC == http::error::need_buffer)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($EC == http::error::need_buffer) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potential security vulnerability where both `http::error::partial_message`
+    and `http::error::need_buffer` are checked in the same condition. This could lead
+    to incorrect handling of partial messages, potentially causing security issues.
+    The fix involves removing the check for `http::error::partial_message`. Ensure
+    that only `http::error::need_buffer` is checked to handle buffer needs correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/55ad9b6937f09bbf81dea27b017ffa4e63d4f044
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - cpp

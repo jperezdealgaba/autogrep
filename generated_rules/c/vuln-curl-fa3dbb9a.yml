@@ -1,0 +1,26 @@
+rules:
+- id: vuln-curl-fa3dbb9a
+  pattern: 'uint32_t $N = (uint32_t)($NAMELEN + $VALUELEN + 3);
+
+    '
+  pattern-not: 'uint32_t $N = (uint32_t)($NAMELEN + $VALUELEN + 4);
+
+    '
+  languages:
+  - c
+  message: 'Incorrect calculation of HTTP2 header length due to wrong offset value.
+    This vulnerability can lead to buffer overflow or incorrect header parsing. The
+    offset should be 4 to account for ": " and "\r\n" instead of 3. Update the calculation
+    to use the correct offset.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/fa3dbb9a147488a2943bda809c66fc497efe06cb
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ceph-6171399f
+  pattern: '$SOCKET.remote_endpoint()
+
+    '
+  pattern-not: '$SOCKET.remote_endpoint($EC)
+
+    '
+  languages:
+  - cpp
+  message: 'Using `remote_endpoint()` without error handling can lead to undefined
+    behavior if the connection fails. Always check for errors by passing an error_code
+    parameter to `remote_endpoint()` and handle the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/6171399fdedd928b4249d135b4036e3de25079aa
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://www.boost.org/doc/libs/1_66_0/doc/html/boost_asio/reference/basic_stream_socket/remote_endpoint.html
+    technology:
+    - cpp

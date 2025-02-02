@@ -1,0 +1,29 @@
+rules:
+- id: vuln-rack-d286516c
+  pattern: '/^#{CONDISP}.*;\s*filename="(.*?)"(?:\s*$|\s*;\s*#{TOKEN}=)/i
+
+    '
+  pattern-not: '/^#{CONDISP}.*;\s*filename=(#{VALUE})/i
+
+    '
+  languages:
+  - ruby
+  message: 'The regex pattern for parsing filenames in multipart form data is vulnerable
+    to unescaped quotes, which can lead to incorrect parsing and potential security
+    issues. The pattern should handle escaped quotes properly to avoid misinterpretation
+    of the filename. Update the pattern to use the #{VALUE} token, which correctly
+    handles escaped quotes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/d286516cbd58fbb2ad6944ce9040e9ba96d9371a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/rack/rack/commit/d286516cbd58fbb2ad6944ce9040e9ba96d9371a
+    technology:
+    - ruby

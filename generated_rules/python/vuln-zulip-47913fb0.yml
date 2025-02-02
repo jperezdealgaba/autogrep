@@ -1,0 +1,23 @@
+rules:
+- id: vuln-zulip-47913fb0
+  pattern: '($TYPE, $LABEL, $CHECKER, eval, $NAME)
+
+    '
+  pattern-not: '($TYPE, $LABEL, $CHECKER, ast.literal_eval, $NAME)
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe use of `eval()` which can lead to arbitrary code execution.\
+    \ \nReplace `eval()` with `ast.literal_eval()` to safely evaluate literals only.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/47913fb091794830c54eac2927e26bce92cfced1
+    category: security
+    cwe: CWE-94
+    owasp: A03:2021-Injection
+    references:
+    - https://docs.python.org/3/library/functions.html#eval
+    - https://docs.python.org/3/library/ast.html#ast.literal_eval
+    technology:
+    - python

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-rack-0cd7e9aa
+  pattern: '$DIGEST == generate_hmac($DATA, $SECRET)
+
+    '
+  pattern-not: 'Rack::Utils.secure_compare($DIGEST, generate_hmac($DATA, $SECRET))
+
+    '
+  languages:
+  - ruby
+  message: 'Detected insecure string comparison of HMAC digests. Using `==` for comparison
+    can lead to timing attacks, as the comparison may leak information about the correct
+    HMAC value. Use `Rack::Utils.secure_compare` to perform a constant-time comparison,
+    which mitigates timing attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/0cd7e9aa397f8ebb3b8481d67dbac8b4863a7f07
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://github.com/rack/rack/commit/0cd7e9aa397f8ebb3b8481d67dbac8b4863a7f07
+    technology:
+    - ruby

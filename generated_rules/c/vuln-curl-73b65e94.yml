@@ -1,0 +1,42 @@
+rules:
+- id: vuln-curl-73b65e94
+  pattern: 'unsigned char $RANDSUFFIX[9];
+
+    ...
+
+    $TEMPSTORE = aprintf("%s.%s.tmp", $FILENAME, $RANDSUFFIX);
+
+    '
+  pattern-not: 'unsigned char $RANDBUF[41];
+
+    char *$DIR;
+
+    $DIR = dirslash($FILENAME);
+
+    ...
+
+    $TEMPSTORE = aprintf("%s%s.tmp", $DIR, $RANDBUF);
+
+    free($DIR);
+
+    '
+  languages:
+  - c
+  message: 'The code uses a fixed-size buffer for generating temporary filenames,
+    which can lead to buffer overflows or truncation issues. The fix involves using
+    a larger buffer and properly handling directory paths. Ensure temporary filenames
+    are generated safely and handle memory allocation correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/73b65e94f3531179de45c6f3c836a610e3d0a846
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-moddable-723816ab
+  pattern: "if ($TOKEN_FLAGS[$TOKEN] & $TOKEN_BEGIN_EXPRESSION)\n    $EXPRESSION_FUNC($PARSER);\n\
+    else\n    $REPORT_ERROR($PARSER, $ERROR_MSG);\n"
+  pattern-not: '$EXPRESSION_FUNC($PARSER);
+
+    '
+  languages:
+  - c
+  message: 'The code directly checks token flags to decide whether to execute an expression
+    or report an error, which can lead to incorrect behavior if the token flags are
+    not properly validated. This vulnerability can cause the parser to miss critical
+    error conditions or execute unintended code paths. The fix removes the conditional
+    check and always executes the expression function, ensuring consistent behavior.
+    To fix this, remove the conditional check and always call the expression function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/723816ab9b52f807180c99fc69c7d08cf6c6bd61
+    category: security
+    cwe:
+    - CWE-670
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

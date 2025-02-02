@@ -1,0 +1,32 @@
+rules:
+- id: vuln-flatpress-516bdc17
+  pattern: "if ($expectedNonce == $nonce || substr(wp_hash(($i - 1) . $action . $uid),\
+    \ -12, 10) == $nonce)\n  return true;\nreturn false;\n"
+  pattern-not: '$expectedPreviousNonce = substr(wp_hash(($i - 1) . $action . $uid),
+    -12, 10);
+
+    return $nonce == $expectedNonce || $nonce == $expectedPreviousNonce;
+
+    '
+  languages:
+  - php
+  message: 'Missing nonce verification in admin action handling. This vulnerability
+    allows for CSRF (Cross-Site Request Forgery) attacks, where an attacker can trick
+    a user into performing unintended actions. The patch adds proper nonce verification
+    to ensure that the request is legitimate. Always verify nonces for sensitive admin
+    actions to prevent CSRF attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpressblog/flatpress/commit/516bdc173a81c12e5ed3025fbb9424bbf1ab40d8
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    - 'A5: Broken Access Control'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

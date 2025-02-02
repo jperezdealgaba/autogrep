@@ -1,0 +1,22 @@
+rules:
+- id: vuln-opencms-core-72a05e3e
+  pattern: 'return "<div class=\"dialoghead\" unselectable=\"on\">" + ($TITLE == null
+    ? "" : $TITLE) + "</div>";
+
+    '
+  pattern-not: "String $ESCAPED_TITLE;\nif ($TITLE == null) {\n  $ESCAPED_TITLE =\
+    \ \"\";\n} else {\n  $ESCAPED_TITLE = CmsEncoder.escapeHtml($TITLE);\n}\nreturn\
+    \ \"<div class=\\\"dialoghead\\\" unselectable=\\\"on\\\">\" + $ESCAPED_TITLE\
+    \ + \"</div>\";\n"
+  languages:
+  - java
+  message: Potential XSS vulnerability detected. User input should be properly escaped
+    using CmsEncoder.escapeHtml() before being included in HTML output.
+  severity: ERROR
+  metadata:
+    source-url: github.com/alkacon/opencms-core/commit/72a05e3ea1cf692e2efce002687272e63f98c14a
+    category: security
+    cwe: CWE-79
+    owasp: A3:2017-Cross-Site Scripting (XSS)
+    references: https://owasp.org/www-community/attacks/xss/
+    technology: java

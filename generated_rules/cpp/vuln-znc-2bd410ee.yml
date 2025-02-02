@@ -1,0 +1,26 @@
+rules:
+- id: vuln-znc-2bd410ee
+  pattern: "if (!spSession->IsAdmin() && (!spSession->GetUser() || spSession->GetUser()\
+    \ != pNetwork->GetUser())) {\n  ...\n}\n"
+  pattern-not: "if (!spSession->IsAdmin() && (!spSession->GetUser() || !pNetwork ||\
+    \ spSession->GetUser() != pNetwork->GetUser())) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a missing null check for `pNetwork` before dereferencing it.
+    This can lead to a null pointer dereference, causing crashes or undefined behavior.
+    The vulnerability occurs in access control checks where `pNetwork` might be null.
+    To fix this, add a null check for `pNetwork` before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/znc/znc/commit/2bd410ee5570cea127233f1133ea22f25174eb28
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

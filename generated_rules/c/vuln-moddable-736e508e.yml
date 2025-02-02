@@ -1,0 +1,25 @@
+rules:
+- id: vuln-moddable-736e508e
+  pattern: '$VAR = fxToInteger($THE, $STACK);
+
+    '
+  pattern-not: '$VAR = (txInteger)fxToLength($THE, $STACK);
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe use of `fxToInteger` which may lead to integer overflow\
+    \ or undefined behavior. \nThe function `fxToInteger` directly converts a value\
+    \ to an integer without proper bounds checking, \nwhich can be dangerous when\
+    \ dealing with large values. Use `fxToLength` with appropriate type \ncasting\
+    \ instead, as it ensures the value is within a safe range.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/736e508edfacd531f86214343201477c5b84a436
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Misconfiguration
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-routinator-ff7d4f37
+  pattern: 'builder.gzip(!$CONFIG.rrdp_disable_gzip)
+
+    '
+  pattern-not: 'builder.gzip(true)
+
+    '
+  languages:
+  - rust
+  message: 'Detected the use of a deprecated and potentially insecure configuration
+    option `rrdp_disable_gzip`. This option has been removed due to security concerns
+    related to disabling gzip transfer encoding in RRDP. Using this option can expose
+    the application to vulnerabilities such as data tampering or information disclosure.
+    Remove any references to `rrdp_disable_gzip` and ensure gzip transfer encoding
+    is enabled by default.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NLnetLabs/routinator/commit/ff7d4f37260e379fb38740c63d52a9165b057e4d
+    category: security
+    cwe:
+    - 'CWE-319: Cleartext Transmission of Sensitive Information'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Cryptographic_Failures
+    technology:
+    - rust

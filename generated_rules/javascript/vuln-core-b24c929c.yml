@@ -1,0 +1,28 @@
+rules:
+- id: vuln-core-b24c929c
+  pattern: '$TAGLIST = $TAGLIST + ''<a class="bookmark_tag" href="''+replaceQueryString(String(window.location),
+    $TAG, encodeURIComponent($TAGS[$I])) + ''">'' + $TAGS[$I] + ''</a> '';
+
+    '
+  pattern-not: '$TAGLIST = $TAGLIST + ''<a class="bookmark_tag" href="''+replaceQueryString(escapeHTML(String(window.location)),
+    $TAG, encodeURIComponent($TAGS[$I])) + ''">'' + $TAGS[$I] + ''</a> '';
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability detected due to unescaped HTML in URL construction.\
+    \ \nThe use of String(window.location) without proper escaping can lead to XSS\
+    \ attacks. \nAlways use escapeHTML or similar functions to sanitize user-controlled\
+    \ input in URLs.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/owncloud/core/commit/b24c929cc0
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

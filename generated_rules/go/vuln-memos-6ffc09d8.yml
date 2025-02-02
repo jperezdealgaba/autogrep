@@ -1,0 +1,33 @@
+rules:
+- id: vuln-memos-6ffc09d8
+  pattern: "func GetWebsiteMetadata(c echo.Context) error {\n    urlStr := c.QueryParam(\"\
+    url\")\n    if urlStr == \"\" {\n        return echo.NewHTTPError(http.StatusBadRequest,\
+    \ \"Missing website url\")\n    }\n    if _, err := url.Parse(urlStr); err !=\
+    \ nil {\n        return echo.NewHTTPError(http.StatusBadRequest, \"Wrong url\"\
+    ).SetInternal(err)\n    }\n    htmlMeta, err := getter.GetHTMLMeta(urlStr)\n \
+    \   if err != nil {\n        return echo.NewHTTPError(http.StatusNotAcceptable,\
+    \ fmt.Sprintf(\"Failed to get website meta with url: %s\", urlStr)).SetInternal(err)\n\
+    \    }\n    return c.JSON(http.StatusOK, htmlMeta)\n}\n"
+  pattern-not: "func GetWebsiteMetadata(c echo.Context) error {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'The GetWebsiteMetadata function is vulnerable to SSRF (Server-Side Request
+    Forgery) as it directly uses user-provided URLs without proper validation or restriction.
+    This can allow attackers to make requests to internal services or arbitrary external
+    endpoints. To fix this, ensure that the URL is validated against a whitelist of
+    allowed domains or implement strict URL parsing and validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/6ffc09d86a1302c384ef085aa70c7bddb3ce7ba9
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    - https://cwe.mitre.org/data/definitions/918.html
+    technology:
+    - go

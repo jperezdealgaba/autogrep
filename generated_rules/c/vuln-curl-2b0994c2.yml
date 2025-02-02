@@ -1,0 +1,33 @@
+rules:
+- id: vuln-curl-2b0994c2
+  pattern: "const psl_ctx_t *$PSL = Curl_psl_use($DATA);\nint $ACCEPTABLE;\nif($PSL)\
+    \ {\n  $ACCEPTABLE = psl_is_cookie_domain_acceptable($PSL, $DOMAIN, $CO_DOMAIN);\n\
+    \  Curl_psl_release($DATA);\n}\nelse\n  $ACCEPTABLE = !bad_domain($DOMAIN, strlen($DOMAIN));\n"
+  pattern-not: "bool $ACCEPTABLE = FALSE;\nchar $LCASE[256];\nchar $LCOOKIE[256];\n\
+    size_t $DLEN = strlen($DOMAIN);\nsize_t $CLEN = strlen($CO_DOMAIN);\nif(($DLEN\
+    \ < sizeof($LCASE)) && ($CLEN < sizeof($LCOOKIE))) {\n  const psl_ctx_t *$PSL\
+    \ = Curl_psl_use($DATA);\n  if($PSL) {\n    Curl_strntolower($LCASE, $DOMAIN,\
+    \ $DLEN + 1);\n    Curl_strntolower($LCOOKIE, $CO_DOMAIN, $CLEN + 1);\n    $ACCEPTABLE\
+    \ = psl_is_cookie_domain_acceptable($PSL, $LCASE, $LCOOKIE);\n    Curl_psl_release($DATA);\n\
+    \  }\n  else\n    $ACCEPTABLE = !bad_domain($DOMAIN, strlen($DOMAIN));\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses the domain and cookie domain strings without converting
+    them to lowercase, which can lead to incorrect domain matching and potential security
+    vulnerabilities. This is dangerous because it can allow cookies to be set for
+    incorrect or malicious domains. The fix involves converting the domain strings
+    to lowercase before performing the domain acceptability check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/2b0994c29a721c91c572cff7808c572a24d251eb
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://curl.se/docs/CVE-2023-XXXX.html
+    technology:
+    - c

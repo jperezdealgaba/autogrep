@@ -1,0 +1,29 @@
+rules:
+- id: vuln-jerryscript-841d536f
+  pattern: "void\necma_op_create_arguments_object (ecma_object_t *$FUNC_OBJ, ecma_object_t\
+    \ *$LEX_ENV, vm_frame_ctx_shared_args_t *$SHARED_ARGS)\n{\n  ...\n  ecma_property_value_t\
+    \ *$PROP_VALUE;\n  $PROP_VALUE = ecma_create_named_data_property ($LEX_ENV, ecma_get_magic_string\
+    \ (LIT_MAGIC_STRING_ARGUMENTS), $PROP_FLAGS, NULL);\n  $PROP_VALUE->value = ecma_make_object_value\
+    \ ($OBJ);\n  ecma_deref_object ($OBJ);\n  ...\n}\n"
+  pattern-not: "ecma_value_t\necma_op_create_arguments_object (vm_frame_ctx_shared_args_t\
+    \ *$SHARED_ARGS, ecma_object_t *$LEX_ENV)\n{\n  ...\n  return ecma_make_object_value\
+    \ ($OBJ);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The original implementation of ecma_op_create_arguments_object had a memory
+    management issue where it created a property in the lexical environment but didn''t
+    return the created object value. This could lead to memory leaks or improper handling
+    of the arguments object. The fix changes the function to return the created object
+    value, which must be properly freed by the caller using ecma_free_value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/galpeter/jerryscript/commit/841d536fce1ce29267cdf0ea12be4026e1c35d3a
+    category: security
+    cwe:
+    - 'CWE-401: Improper Release of Memory Before Removing Last Reference'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

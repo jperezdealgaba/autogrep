@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libming-8b29e8e7
+  pattern: '#define DEBUGSTACK
+
+    '
+  pattern-not: '//#define DEBUGSTACK
+
+    '
+  languages:
+  - c
+  message: 'The DEBUGSTACK macro is enabled, which can expose sensitive information
+    during debugging. This can lead to information disclosure vulnerabilities. To
+    fix this, comment out or remove the DEBUGSTACK macro definition.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/libming/libming/commit/8b29e8e7b321bbe102b3d543a7a5f20227371612
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

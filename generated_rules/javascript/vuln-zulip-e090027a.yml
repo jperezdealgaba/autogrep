@@ -1,0 +1,19 @@
+rules:
+- id: vuln-zulip-e090027a
+  pattern: '$VAR = $NAMES.join("<br/>")
+
+    '
+  pattern-not: '$VAR = $NAMES.map($FUNC).join("<br/>")
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability detected when joining strings with HTML tags.\
+    \ \nUse proper escaping or sanitization (e.g., _.escape) to prevent injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/e090027adcbf62737d5b1f83a9618a9500a49321
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017 - Cross-Site Scripting (XSS)
+    technology: javascript

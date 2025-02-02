@@ -1,0 +1,27 @@
+rules:
+- id: vuln-krb5-ef08b09c
+  pattern: "if (!xdr_array($XDRS, (caddr_t *) &$OBJP->key_data, &$N, ~0, sizeof(krb5_key_data),\
+    \ $XDR_FUNC)) {\n  ...\n}\n"
+  pattern-not: "$R = xdr_array($XDRS, (caddr_t *) &$OBJP->key_data, &$N, $OBJP->n_key_data,\
+    \ sizeof(krb5_key_data), $XDR_FUNC);\n$OBJP->n_key_data = $N;\nif (!$R) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected unsafe use of xdr_array with a hardcoded maximum size (~0) which
+    can lead to memory corruption or denial of service. The vulnerability arises when
+    decoding untrusted input without proper bounds checking. Always use the actual
+    array size from the object (objp->n_key_data) instead of ~0 to ensure proper bounds
+    checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/krb5/krb5/commit/ef08b09c9459551aabbe7924fb176f1583053cdd
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

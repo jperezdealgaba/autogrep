@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openldap-6fe51a9a
+  pattern: 'assert(0);
+
+    '
+  pattern-not: '/* invalid input */
+
+    '
+  languages:
+  - c
+  message: 'The use of `assert(0)` in the code indicates a potential issue where the
+    program may terminate abruptly due to an invalid state. This can be dangerous
+    as it may lead to denial of service or unexpected behavior in production environments.
+    Instead of using `assert(0)`, handle the invalid input gracefully with appropriate
+    error handling or logging.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/openldap/openldap/commit/6fe51a9ab04fd28bbc171da3cf12f1c1040d6629
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

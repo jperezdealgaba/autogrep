@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jenkins-ccc374a7
+  pattern: '$G.requires($JOB_LOADED).add($DESCRIPTION, new Executable() { ... })
+
+    '
+  pattern-not: '$G.requires($JOB_LOADED).attains($COMPLETED).add($DESCRIPTION, new
+    Executable() { ... })
+
+    '
+  languages:
+  - java
+  message: "Missing `.attains(COMPLETED)` in task scheduling can lead to race conditions\
+    \ or incomplete state transitions. \nThis vulnerability could result in inconsistent\
+    \ system states or improper cleanup of resources. \nAlways specify the target\
+    \ state using `.attains()` when scheduling tasks with `.requires()`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/ccc374a7176d7704941fb494589790b7673efe2
+    category: security
+    cwe: CWE-362
+    owasp: A10:2021 - Server-Side Request Forgery
+    references:
+    - https://www.jenkins.io/doc/developer/guide/state/
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - java

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-tsmuxer-5b8fdee7
+  pattern: '$READER.skipBits($READER.getBits(8))
+
+    '
+  pattern-not: 'int $VAR = $READER.getBits(8);
+
+    for (int $I = 0; $I < $VAR; $I++) $READER.skipBit();
+
+    '
+  languages:
+  - cpp
+  message: 'The code skips bits in a potentially unsafe manner by directly using the
+    result of getBits(8) in skipBits. This can lead to incorrect bit skipping and
+    potential data corruption. Instead, use a loop to skip each bit individually based
+    on the number of bits to skip.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/justdan96/tsMuxer/commit/5b8fdee725f8b4b2f8c5dd23da6bc1c05ee7a8f9
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

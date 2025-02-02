@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redash-a16f551e
+  pattern: '"cypress:install": "npm install --no-save cypress@^3.1.5 @percy/cypress@^0.2.3
+    atob@2.1.2"
+
+    '
+  pattern-not: '"cypress:install": "npm install --no-save cypress@3.4.1 @percy/cypress@^0.2.3
+    atob@2.1.2"
+
+    '
+  languages:
+  - json
+  message: 'Detected an outdated version of Cypress (^3.1.5) in the installation script.
+    Using outdated dependencies can expose the application to known vulnerabilities.
+    Upgrade to Cypress 3.4.1 or later to mitigate potential security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/getredash/redash/commit/a16f551e22c6288df6f067aa12caa5afd9a8f1dd
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - json

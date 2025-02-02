@@ -1,0 +1,15 @@
+rules:
+- id: vuln-openapi-generator-06ad7a51
+  pattern: "if (\"string\".equalsIgnoreCase($DATATYPE)) {\n  ...\n}\n"
+  pattern-not: "if (isDataTypeString($DATATYPE)) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Direct string comparison for data type detection can lead to inconsistent
+    behavior. Use the dedicated method `isDataTypeString` instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/06ad7a51eff04393203cfa715e54e1fb59d984fe
+    category: security
+    cwe: CWE-697
+    owasp: A03:2021 - Injection
+    technology: java

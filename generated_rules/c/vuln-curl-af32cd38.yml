@@ -1,0 +1,33 @@
+rules:
+- id: vuln-curl-af32cd38
+  pattern: '$VAR->set.http_disable_hostname_check_before_authentication
+
+    '
+  pattern-not: '$VAR->set.allow_auth_to_other_hosts
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves the use of the deprecated `http_disable_hostname_check_before_authentication`
+    setting, which could allow sensitive authentication headers to be sent to unintended
+    hosts. This is dangerous because it could lead to credential leakage to unauthorized
+    servers. The issue has been fixed by replacing it with the `allow_auth_to_other_hosts`
+    setting, which provides better control over authentication header forwarding.
+    Always use the new setting to ensure authentication headers are only sent to trusted
+    hosts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/af32cd3859336ab963591ca0df9b1e33a7ee066b
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-201
+    owasp:
+    - A01:2021 - Broken Access Control
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://curl.se/docs/CVE-2021-XXXX.html
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rust-4457658f
+  pattern: '"CC0-1.0 OR Apache-2.0"
+
+    '
+  pattern-not: '"CC0-1.0 OR MIT-0 OR Apache-2.0"
+
+    '
+  languages:
+  - rust
+  message: 'The dependency license specification is missing the MIT-0 license option.
+    This could lead to unintended licensing conflicts or restrictions. Always include
+    all valid license options to ensure compliance and flexibility.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/4457658f68b5c165cd76d24b8147a8f77b9f660e
+    category: security
+    cwe:
+    - CWE-1065
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://spdx.org/licenses/
+    technology:
+    - rust

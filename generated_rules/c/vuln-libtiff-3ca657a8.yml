@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libtiff-3ca657a8
+  pattern: "static void $FUNC(TIFF* $TIFF, uint8* $CP0, tmsize_t $CC) {\n  ...\n \
+    \ assert(($CC%$STRIDE)==0);\n  ...\n}\n"
+  pattern-not: "static int $FUNC(TIFF* $TIFF, uint8* $CP0, tmsize_t $CC) {\n  ...\n\
+    \  if(($CC%$STRIDE)!=0) {\n    TIFFErrorExt($TIFF->tif_clientdata, \"$FUNC\",\
+    \ \"%s\", \"($CC%$STRIDE)!=0\");\n    return 0;\n  }\n  ...\n  return 1;\n}\n"
+  languages:
+  - c
+  message: "The function uses `assert` to validate input conditions, which can be\
+    \ disabled in production builds, leading to potential vulnerabilities. \nThis\
+    \ can cause undefined behavior if the assertion fails in a production environment.\
+    \ \nReplace `assert` with proper error handling that returns an error code and\
+    \ logs the issue.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/3ca657a8793dd011bf869695d72ad31c779c3cc1
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c

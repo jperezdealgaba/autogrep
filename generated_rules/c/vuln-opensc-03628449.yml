@@ -1,0 +1,27 @@
+rules:
+- id: vuln-opensc-03628449
+  pattern: "if ($LPATH.len >= 2 && $LPATH.value[0] == 0x3F && $LPATH.value[1] == 0x00)\
+    \ {\n  memmove(&$LPATH.value[0], &$LPATH.value[2], $LPATH.len - 2);\n  $LPATH.len\
+    \ -= 2;\n}\n"
+  pattern-not: "if ($PATH->type != SC_PATH_TYPE_DF_NAME\n    && $LPATH.len >= 2\n\
+    \    && $LPATH.value[0] == 0x3F && $LPATH.value[1] == 0x00) {\n  memmove(&$LPATH.value[0],\
+    \ &$LPATH.value[2], $LPATH.len - 2);\n  $LPATH.len -= 2;\n}\n"
+  languages:
+  - c
+  message: 'The code performs a memmove operation without first checking the path
+    type, which could lead to incorrect handling of directory paths. This vulnerability
+    could cause data corruption or unintended behavior when processing certain types
+    of paths. To fix this, ensure that the path type is checked before performing
+    the memmove operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/OpenSC/OpenSC/commit/03628449b75a93787eb2359412a3980365dda49b
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

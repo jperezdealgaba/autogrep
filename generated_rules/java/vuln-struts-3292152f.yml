@@ -1,0 +1,15 @@
+rules:
+- id: vuln-struts-3292152f
+  pattern: "if ($VAR != null && $VAR.size() > 0) {\n  ...\n}\n"
+  pattern-not: "if ($VAR != null && !$VAR.isEmpty()) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Using `size() > 0` to check for empty collections is less efficient and
+    less readable compared to `isEmpty()`. Replace `size() > 0` with `isEmpty()` for
+    better clarity and performance.
+  severity: WARNING
+  metadata:
+    source-url: github.com/apache/struts/commit/3292152f8c0a77ee4827beede82b6580478a2c2a
+    category: best-practices
+    cwe: CWE-398
+    technology: java

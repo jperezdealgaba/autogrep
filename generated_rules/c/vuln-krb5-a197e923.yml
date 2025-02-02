@@ -1,0 +1,28 @@
+rules:
+- id: vuln-krb5-a197e923
+  pattern: 'xdr_free($FUNC, $PTR);
+
+    '
+  pattern-not: 'xdr_free(xdr_func, xdr_ptr);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of xdr_free without proper parameter validation. This
+    can lead to memory corruption or undefined behavior if the provided function or
+    pointer is invalid. Ensure that the function and pointer parameters passed to
+    xdr_free are properly validated before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/a197e92349a4aa2141b5dff12e9dd44c2a2166e3
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

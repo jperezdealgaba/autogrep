@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gravity-c67888e6
+  pattern: 'gravity_vm_runclosure($VM, $CLOSURE, $VALUE, $ARGS, $COUNT);
+
+    '
+  pattern-not: 'if (!gravity_vm_runclosure($VM, $CLOSURE, $VALUE, $ARGS, $COUNT))
+    return false;
+
+    '
+  languages:
+  - c
+  message: 'The function `gravity_vm_runclosure` is called without checking its return
+    value, which can lead to uncontrolled execution flow in case of failure. This
+    can result in undefined behavior or security vulnerabilities. Always check the
+    return value of `gravity_vm_runclosure` and handle failures appropriately by returning
+    an error or terminating the function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/c67888e6d2f65b1e9ba0e53a86bf2a538335b5b6
+    category: security
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

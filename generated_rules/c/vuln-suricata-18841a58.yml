@@ -1,0 +1,26 @@
+rules:
+- id: vuln-suricata-18841a58
+  pattern: "if ($HTTP_STATE != NULL && $HTTP_STATE->conn != NULL)\n    return htp_list_get($HTTP_STATE->conn->transactions,\
+    \ $TX_ID);\n"
+  pattern-not: "if ($HTTP_STATE != NULL && $HTTP_STATE->conn != NULL && $TX_ID >=\
+    \ $HTTP_STATE->tx_freed)\n    return htp_list_get($HTTP_STATE->conn->transactions,\
+    \ $TX_ID - $HTTP_STATE->tx_freed);\n"
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where transactions are accessed without
+    checking the `tx_freed` offset, which can lead to accessing invalid memory or
+    incorrect transactions. This can cause crashes or security issues if an attacker
+    can manipulate transaction IDs. To fix this, ensure that the `tx_id` is checked
+    against `http_state->tx_freed` before accessing the transaction list.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/OISF/suricata/commit/18841a58da71e735ddf4e52cbfa6989755ecbeb7
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ratpack-603e0c56
+  pattern: 'private String $VAR = Long.toString(System.currentTimeMillis() / $NUM);
+
+    '
+  pattern-not: 'private String $VAR = randomString($NUM);
+
+    '
+  languages:
+  - java
+  message: 'Insecure secret token generation using a time-based value detected. This
+    can lead to predictable secrets, making the system vulnerable to attacks. Use
+    a cryptographically secure random value generator instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ratpack/ratpack/commit/603e0c56ab668c88234dd79d01b811581ea057b6
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - java

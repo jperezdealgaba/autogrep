@@ -1,0 +1,27 @@
+rules:
+- id: vuln-slurm-5ac031b2
+  pattern: 'info("Warning: Unable to assume uid=%u", $UID);
+
+    '
+  pattern-not: 'fatal("Unable to assume uid=%u", $UID);
+
+    '
+  languages:
+  - c
+  message: 'The code uses `info()` instead of `fatal()` to handle failure in assuming
+    a user ID, which can lead to continued execution with incorrect privileges. This
+    is dangerous because it may allow unauthorized access or privilege escalation.
+    Replace `info()` with `fatal()` to ensure the program terminates when it cannot
+    assume the specified user ID.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/SchedMD/slurm/commit/5ac031b2ef5462f6e8e47dad0247bd474614c118
+    category: security
+    cwe:
+    - CWE-273
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c

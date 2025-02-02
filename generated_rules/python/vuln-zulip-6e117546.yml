@@ -1,0 +1,30 @@
+rules:
+- id: vuln-zulip-6e117546
+  pattern: "if $FORWARDER_USER_PROFILE is not None and $FORWARDER_USER_PROFILE.can_forge_sender:\n\
+    \    ...\n    return\n"
+  pattern-not: "if $FORWARDER_USER_PROFILE is not None and $FORWARDER_USER_PROFILE\
+    \ != $SENDER:\n    if (\n        $FORWARDER_USER_PROFILE.can_forge_sender\n  \
+    \      and $FORWARDER_USER_PROFILE.realm_id == $SENDER.realm_id\n        and $SENDER.realm_id\
+    \ == $STREAM.realm_id\n    ):\n        return\n    else:\n        raise JsonableError(_(\"\
+    User not authorized for this query\"))\n"
+  languages:
+  - python
+  message: 'Detected missing authorization check when using can_forge_sender permission.
+
+    The original code allowed users with can_forge_sender to bypass realm checks,
+
+    potentially enabling unauthorized message forging across realms.
+
+    Fix by ensuring proper realm validation and authorization checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/6e11754642a59d83d7a575b78e6c3e988d3b6c93
+    category: security
+    cwe: CWE-285
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://zulip.readthedocs.io/en/stable/subsystems/sending-messages.html#message-sending-security
+    technology:
+    - python

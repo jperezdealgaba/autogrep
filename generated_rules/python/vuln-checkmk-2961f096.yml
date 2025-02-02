@@ -1,0 +1,25 @@
+rules:
+- id: vuln-checkmk-2961f096
+  pattern: "return \"%s: %s;%s;%s;%s;%s\" % (\n    $WHAT,\n    $CONTACT,\n    $SPEC,\n\
+    \    $STATE,\n    $PLUGIN,\n    $OUTPUT[:$MAX_LENGTH].replace(\";\", $REPLACE)\n\
+    )\n"
+  pattern-not: "return SanitizedLivestatusLogStr(\n    \"{}: {};{};{};{};{}\".format(\n\
+    \        $WHAT,\n        livestatus.lqencode($CONTACT),\n        livestatus.lqencode($SPEC),\n\
+    \        livestatus.lqencode($STATE),\n        livestatus.lqencode($PLUGIN),\n\
+    \        livestatus.lqencode($OUTPUT[:$MAX_LENGTH].replace(\";\", $REPLACE))\n\
+    \    )\n)\n"
+  languages:
+  - python
+  message: 'Detected unencoded string concatenation in notification messages. This
+    can lead to injection vulnerabilities in Livestatus log entries. Use SanitizedLivestatusLogStr
+    and livestatus.lqencode() to properly sanitize all inputs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/checkmk/checkmk/commit/2961f0962585012eff18ef804d87535bd3c821c3
+    category: security
+    cwe: CWE-116
+    owasp: A1:2017-Injection
+    technology:
+    - python

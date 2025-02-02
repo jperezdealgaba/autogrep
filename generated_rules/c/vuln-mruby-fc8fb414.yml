@@ -1,0 +1,22 @@
+rules:
+- id: vuln-mruby-fc8fb414
+  pattern: "if (argc == 0) {\n  return mrb_hash_new_capa(mrb, argc);\n}\n"
+  pattern-not: 'if (argc == 0) return result;
+
+    '
+  languages:
+  - c
+  message: "Detected a vulnerability where an empty hash is created with incorrect\
+    \ capacity. \nThis can lead to inefficient memory usage or potential security\
+    \ issues. \nThe fix ensures that an empty hash is returned directly without unnecessary\
+    \ allocation.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/mruby/mruby/commit/fc8fb41451b07b3fda0726ba80e88e509ad02452
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

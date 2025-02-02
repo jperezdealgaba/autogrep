@@ -1,0 +1,22 @@
+rules:
+- id: vuln-krb5-93b4a630
+  pattern: "if (check_anon($REALM, $CLIENT->client, $SERVER) != 0) {\n  ...\n}\n"
+  pattern-not: "if (check_anon($REALM, $CLIENT.princ, $SERVER) != 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability arises from accessing the client structure incorrectly,
+    which could lead to incorrect authentication checks. This is dangerous because
+    it may allow unauthorized access or privilege escalation. To fix it, ensure the
+    correct field (princ) is accessed from the client structure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/93b4a6306a0026cf1cc31ac4bd8a49ba5d034ba7
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - c

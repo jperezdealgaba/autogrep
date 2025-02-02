@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jenkins-9de62915
+  pattern: "if ($PATH.isEmpty() || $PATH.contains(\"..\") || $PATH.contains(\"%\"\
+    ) || $PATHUC.contains(\"META-INF\") || $PATHUC.contains(\"WEB-INF\")) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($PATH.isEmpty() || $PATH.contains(\"..\") || $PATH.startsWith(\"\
+    .\") || $PATH.contains(\"%\") || $PATHUC.contains(\"META-INF\") || $PATHUC.contains(\"\
+    WEB-INF\")) {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Potential path traversal vulnerability detected. The code fails to check\
+    \ for paths starting with a dot (.), which could allow attackers to bypass security\
+    \ checks. \nThis vulnerability could lead to unauthorized access to sensitive\
+    \ files. \nTo fix this, ensure that paths starting with a dot (.) are explicitly\
+    \ checked, as shown in the patch.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/9de62915807deab61d6e780eed660428f9889b51
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - java

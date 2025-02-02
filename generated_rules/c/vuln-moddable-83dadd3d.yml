@@ -1,0 +1,29 @@
+rules:
+- id: vuln-moddable-83dadd3d
+  pattern: 'return (char*)$VAR + (32 * 1024);
+
+    '
+  pattern-not: 'return (char*)$VAR + (16 * 1024) + mxASANStackMargin;
+
+    '
+  languages:
+  - c
+  message: 'The code uses a fixed stack margin of 32 KB, which may not be sufficient
+    for certain environments and could lead to stack overflow vulnerabilities. This
+    was fixed by reducing the base margin to 16 KB and adding a configurable mxASANStackMargin
+    to adjust for different environments. To fix this, ensure the stack margin is
+    configurable and appropriate for the target environment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/83dadd3def6d2e7e75fc003a5ab409aa81275dd8
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libmysofa-0b250b6f
+  pattern: 'assert($VAR == $VAL);
+
+    '
+  pattern-not: "if($VAR != $VAL)\n  return $ERROR;\n"
+  languages:
+  - c
+  message: 'The use of assert() for validation can be dangerous as it is typically
+    disabled in release builds, potentially allowing invalid input to pass unchecked.
+    Replace assert() with proper error handling to ensure validation is always enforced.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hoene/libmysofa/commit/0b250b6fa5f4d8768bf03b00a88866d5f3476f56
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    technology:
+    - c

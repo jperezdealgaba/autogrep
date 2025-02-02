@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mruby-b1d0296a
+  pattern: 'if ($H && mt_del($MRB, $H, $MID)) return;
+
+    '
+  pattern-not: "if ($H && mt_del($MRB, $H, $MID)) {\n  mrb_mc_clear_by_class($MRB,\
+    \ $C);\n  return;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves a missing cleanup operation after deleting
+    a method table entry. This can lead to memory corruption or undefined behavior
+    due to stale references. The fix adds a call to `mrb_mc_clear_by_class` to properly
+    clean up the class cache. Ensure that all cleanup operations are performed before
+    returning from the function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/b1d0296a937fe278239bdfac840a3fd0e93b3ee9
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

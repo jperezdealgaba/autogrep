@@ -1,0 +1,29 @@
+rules:
+- id: vuln-suricata-bb26e621
+  pattern: '$MODULE.PktAcqBreakLoop = NULL;
+
+    '
+  pattern-not: '$MODULE.PktAcqBreakLoop = $FUNC;
+
+    '
+  languages:
+  - c
+  message: 'A NULL assignment to PktAcqBreakLoop can lead to a potential null pointer
+    dereference, causing undefined behavior or crashes. This vulnerability occurs
+    when the function pointer is not properly initialized before being used. The fix
+    involves assigning a valid function pointer to PktAcqBreakLoop, ensuring proper
+    handling of the break loop functionality. Always ensure that function pointers
+    are properly initialized before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/bb26e6216e5190d841529c0ecb1292b9a358ed54
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

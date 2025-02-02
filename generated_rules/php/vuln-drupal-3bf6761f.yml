@@ -1,0 +1,28 @@
+rules:
+- id: vuln-drupal-3bf6761f
+  pattern: '$file = reset($files);
+
+    '
+  pattern-not: '$file = array_shift($files);
+
+    '
+  languages:
+  - php
+  message: 'The use of `reset()` on an array can lead to unintended behavior, especially
+    when the array is modified elsewhere in the code. This can cause security issues,
+    such as incorrect file handling or access control bypasses. Use `array_shift()`
+    to ensure the first element is removed and returned, preventing potential inconsistencies.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/drupal/drupal/commit/3bf6761ff7537dc68e22ea73f155134f3cfd41a8
+    category: security
+    cwe:
+    - CWE-1188
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://www.drupal.org/project/drupal
+    technology:
+    - php

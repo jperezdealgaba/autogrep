@@ -1,0 +1,23 @@
+rules:
+- id: vuln-weblate-d9e136ff
+  pattern: "if $TEXT and $TEXT[0] in ('=', '+', '-', '@'):\n    return \"'\" + $TEXT\n"
+  pattern-not: "if $TEXT and $TEXT[0] in ('=', '+', '-', '@', '|', '%'):\n    return\
+    \ \"'{0}'\".format($TEXT.replace('|', '\\|'))\n"
+  languages:
+  - python
+  message: 'Detected unsafe string concatenation when handling special characters.
+    This can lead to injection vulnerabilities when the text is used in contexts like
+    YAML or other formats. Always use proper escaping or formatting to safely handle
+    special characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WeblateOrg/weblate/commit/d9e136ff228e3760fd6dd7572869ac38e9a81809
+    category: security
+    cwe: CWE-116
+    owasp: A1:2017-Injection
+    references:
+    - https://yaml.org/spec/1.2/spec.html#id2767112
+    technology:
+    - python

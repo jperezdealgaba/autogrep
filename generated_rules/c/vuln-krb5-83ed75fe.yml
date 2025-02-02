@@ -1,0 +1,29 @@
+rules:
+- id: vuln-krb5-83ed75fe
+  pattern: 'gss_buffer_desc $CLIENT_NAME, $SERVICE_NAME;
+
+    '
+  pattern-not: 'gss_buffer_desc $CLIENT_NAME = GSS_C_EMPTY_BUFFER;
+
+    gss_buffer_desc $SERVICE_NAME = GSS_C_EMPTY_BUFFER;
+
+    '
+  languages:
+  - c
+  message: 'Uninitialized `gss_buffer_desc` variables can lead to undefined behavior
+    when used with GSS-API functions. Always initialize `gss_buffer_desc` variables
+    to `GSS_C_EMPTY_BUFFER` to avoid potential security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/83ed75feba32e46f736fcce0d96a0445f29b96c2
+    category: security
+    cwe:
+    - 'CWE-909: Missing Initialization of Resource'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://tools.ietf.org/html/rfc2744
+    technology:
+    - c

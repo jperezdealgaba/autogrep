@@ -1,0 +1,31 @@
+rules:
+- id: vuln-rack-4e33ad10
+  pattern: 'MULTIPART_CONTENT_DISPOSITION = /Content-Disposition:.*\s+name=(#{VALUE})/ni
+
+    '
+  pattern-not: 'MULTIPART_CONTENT_DISPOSITION = /Content-Disposition:[^:]*;\s+name=(#{VALUE})/ni
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression for `MULTIPART_CONTENT_DISPOSITION` is vulnerable
+    to header injection attacks due to insufficiently strict matching. The pattern
+    allows for arbitrary characters after `Content-Disposition:`, which could lead
+    to malicious input being processed incorrectly. This can be exploited to bypass
+    security checks or inject malicious content. To fix this, ensure that the pattern
+    explicitly disallows colons after `Content-Disposition:` by using `[^:]*` to match
+    only non-colon characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/4e33ad10bf5f16d25c156f905bcc548e7f787bc3
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - ruby

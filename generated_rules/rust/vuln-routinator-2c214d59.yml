@@ -1,0 +1,29 @@
+rules:
+- id: vuln-routinator-2c214d59
+  pattern: 'Self::new($CERT, $URI, $ISSUER, $TAL)
+
+    '
+  pattern-not: 'Self::new($CERT, $URI, $ISSUER, $CHAIN_LEN, $TAL)
+
+    '
+  languages:
+  - rust
+  message: 'The code is vulnerable to CA depth overrun due to missing chain length
+    validation. This can lead to excessive certificate chain depth, potentially causing
+    resource exhaustion or security issues. The fix involves adding chain length validation
+    and limiting the maximum depth of the CA chain. Ensure that the `Self::new` function
+    includes a `chain_len` parameter and validates it against `max_ca_depth`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NLnetLabs/routinator/commit/2c214d591b1f2804f8df7eb7a020ce6b94fcec83
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - rust

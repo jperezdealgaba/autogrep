@@ -1,0 +1,28 @@
+rules:
+- id: vuln-vyper-049dbdc6
+  pattern: '$RETURN_T = $CONTRACT_SIG.return_type
+
+    ...
+
+    $BUF = IRnode($BUF, typ=$RETURN_T, encoding=_returndata_encoding($CONTRACT_SIG),
+    location=MEMORY)
+
+    '
+  pattern-not: "$RETURN_T = new_type_to_old_type($AST_RETURN_T)\n...\n$BUF = IRnode.from_list(\n\
+    \    $BUF,\n    typ=$RETURN_T,\n    location=MEMORY,\n    encoding=Encoding.ABI,\n\
+    \    annotation=f\"{$EXPR.node_source_code} returndata buffer\",\n)\n"
+  languages:
+  - python
+  message: Detected unsafe return type handling in external contract calls. The return
+    type from the ABI signature was used directly without proper validation, which
+    could lead to type mismatches and potential vulnerabilities. Ensure the return
+    type is properly validated and converted using `new_type_to_old_type`.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/049dbdc647b2ce838fae7c188e6bb09cf16e470b
+    category: security
+    cwe: CWE-704
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python
+    - vyper

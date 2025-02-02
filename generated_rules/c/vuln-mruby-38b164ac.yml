@@ -1,0 +1,23 @@
+rules:
+- id: vuln-mruby-38b164ac
+  pattern: "if ($IS_SPLAT || $N > $LIMIT || $CURSP() >= $SLIMIT) {\n  ...\n}\n"
+  pattern-not: "if ($IS_SPLAT || $CURSP() >= $SLIMIT) {\n  ...\n}\nelse if ($N > $LIMIT)\
+    \ {\n  pop_n($N);\n  genop_2($S, $OP_ARRAY, $CURSP(), $N);\n  return -1;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when multiple conditions are combined in a single
+    if statement without proper handling of the `n > limit` case. This can lead to
+    incorrect stack management and potential security issues. The fix separates the
+    `n > limit` condition into a distinct else-if block with proper handling. Ensure
+    that each condition is handled independently to prevent stack corruption.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/38b164ace7d6ae1c367883a3d67d7f559783faad
+    category: security
+    cwe:
+    - CWE-120
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - c

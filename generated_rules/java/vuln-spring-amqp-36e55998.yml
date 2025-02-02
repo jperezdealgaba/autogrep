@@ -1,0 +1,23 @@
+rules:
+- id: vuln-spring-amqp-36e55998
+  pattern: 'org.springframework.amqp.utils.SerializationUtils.deserialize($BODY)
+
+    '
+  pattern-not: 'org.springframework.amqp.support.converter.SerializerMessageConverter.fromMessage($BODY)
+
+    '
+  languages:
+  - java
+  message: Unsafe deserialization detected. Using SerializationUtils.deserialize()
+    can lead to security vulnerabilities. Use SerializerMessageConverter with a whitelist
+    to safely deserialize objects.
+  severity: ERROR
+  metadata:
+    source-url: github.com/spring-projects/spring-amqp/commit/36e55998f6352ba3498be950ccab1d5f4d0ce655
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - java

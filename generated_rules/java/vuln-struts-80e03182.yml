@@ -1,0 +1,26 @@
+rules:
+- id: vuln-struts-80e03182
+  pattern: 'return isAccepted($NAME) && !isExcluded($NAME);
+
+    '
+  pattern-not: 'return isWithinLengthLimit($NAME) && isAccepted($NAME) && !isExcluded($NAME);
+
+    '
+  languages:
+  - java
+  message: 'Missing length validation for parameter names can lead to security vulnerabilities
+    by allowing excessively long parameter names. This can be exploited in denial
+    of service attacks or other security issues. Ensure parameter names are validated
+    for length using isWithinLengthLimit() before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/80e03182d66d9e6ab18f9a9a9b3c42725a1c89e9
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

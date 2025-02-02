@@ -1,0 +1,25 @@
+rules:
+- id: vuln-lucene-solr-5385d0dc
+  pattern: "File $F = new File($PATH);\n...\nif ($F.isFile() && $F.canRead()) {\n\
+    \  ...\n}\n"
+  pattern-not: "File $F = new File($PATH);\n...\nboolean $FOUND = $F.isFile() && $F.canRead();\n\
+    if (!$FOUND) {\n  ...\n}\nif ($FOUND) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential path traversal vulnerability detected. The code checks if a
+    file exists and is readable without verifying if it''s within the allowed instance
+    directory. This could allow attackers to access files outside the intended directory.
+    Add checks to ensure the file is within the instance directory by using URI normalization
+    and relativization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/5385d0dcddce1238dd1c3947514457cbed8cf014
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java

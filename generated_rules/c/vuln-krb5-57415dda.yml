@@ -1,0 +1,26 @@
+rules:
+- id: vuln-krb5-57415dda
+  pattern: 'get_tag($DER, $LEN, $TAG_OUT, $CONTENTS, $CLEN, $REMAINDER, $RLEN)
+
+    '
+  pattern-not: 'get_tag($DER, $LEN, $TAG_OUT, $CONTENTS, $CLEN, $REMAINDER, $RLEN,
+    $RECURSION)
+
+    '
+  languages:
+  - c
+  message: 'Missing recursion depth check in ASN.1 decoding function. This vulnerability
+    can lead to stack overflow due to unbounded recursion. Add a recursion depth parameter
+    and check it to prevent stack overflow. Example fix: `if (recursion >= 32) return
+    ASN1_OVERFLOW;`
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/57415dda6cf04e73ffc3723be518eddfae599bfd
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

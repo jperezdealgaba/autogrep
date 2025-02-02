@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libtiff-d6033205
+  pattern: '$VAR = (uint8*) _TIFFmalloc($SIZE);
+
+    '
+  pattern-not: '$VAR = (uint8*) _TIFFcalloc(1, $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of _TIFFmalloc without initialization, which can lead to
+    uninitialized memory buffers. This is dangerous because it can expose sensitive
+    data or cause undefined behavior if the buffer is read before being written. Use
+    _TIFFcalloc instead to ensure the memory is zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/d60332057b9575ada4f264489582b13e30137be1
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - http://bugzilla.maptools.org/show_bug.cgi?id=2651
+    technology:
+    - c

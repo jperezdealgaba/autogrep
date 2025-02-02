@@ -1,0 +1,33 @@
+rules:
+- id: vuln-krb5-ea92d2f0
+  pattern: "if ($BUFFER->Offset < $HEADER_LEN || \n    $BUFFER->Offset + $BUFFER->cbBufferSize\
+    \ > $LEN) {\n  ...\n}\n"
+  pattern-not: "if ($BUFFER->Offset < $HEADER_LEN || \n    $BUFFER->Offset > $LEN\
+    \ ||\n    $BUFFER->cbBufferSize > $LEN - $BUFFER->Offset) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected an integer overflow vulnerability in buffer boundary checks.
+
+    The original check could allow for integer overflow when calculating the buffer
+    size,
+
+    potentially leading to out-of-bounds memory access. The fix ensures that the buffer
+
+    offset and size are properly validated to prevent overflow conditions.
+
+    To fix this, ensure that the buffer offset and size are checked separately and
+    that
+
+    the size does not exceed the remaining space after the offset.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/krb5/krb5/commit/ea92d2f0fcceb54a70910fa32e9a0d7a5afc3583
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

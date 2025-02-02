@@ -1,0 +1,27 @@
+rules:
+- id: vuln-serendipity-62859334
+  pattern: "if (serendipity_isResponseClean($_SERVER['HTTP_REFERER'])) {\n    ...\n\
+    }\n"
+  pattern-not: "if (serendipity_isResponseClean($_SERVER['HTTP_REFERER']) && preg_match('@^https?://'\
+    \ . preg_quote($_SERVER['HTTP_HOST'], '@') . '@imsU')) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'The code uses the HTTP_REFERER header without validating it against the
+    expected host, which can lead to open redirect vulnerabilities. Attackers can
+    manipulate the HTTP_REFERER to redirect users to malicious sites. To fix this,
+    ensure the HTTP_REFERER matches the expected host using a regex pattern as shown
+    in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/s9y/Serendipity/commit/6285933470bab2923e4573b5d54ba9a32629b0cd
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Open_redirect
+    technology:
+    - php

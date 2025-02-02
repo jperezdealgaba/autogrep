@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wiki-084dcd69
+  pattern: 'let $PATH_PARTS = _.filter(_.split($RAWPATH, ''/''), $P => !_.isEmpty($P))
+
+    '
+  pattern-not: "let $PATH_PARTS = _.filter(_.split($RAWPATH, '/'), $P => {\n  $P =\
+    \ _.trim($P)\n  return !_.isEmpty($P) && $P !== '..' && $P !== '.'\n})\n"
+  languages:
+  - javascript
+  message: 'Incomplete path sanitization detected. The code does not properly filter
+    out dangerous path components like ''..'' and ''.'', which could lead to directory
+    traversal attacks. Ensure all path components are trimmed and checked against
+    unsafe patterns.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Requarks/wiki/commit/084dcd69d1591586ee4752101e675d5f0ac6dcdc
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - javascript

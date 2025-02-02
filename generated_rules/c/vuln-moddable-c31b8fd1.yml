@@ -1,0 +1,34 @@
+rules:
+- id: vuln-moddable-c31b8fd1
+  pattern: 'while (COMPARE($I) < 0) $I++;
+
+    while (COMPARE($J) > 0) $J--;
+
+    '
+  pattern-not: 'while ((COMPARE($I) < 0) && ($I <= $J)) $I++;
+
+    while ((COMPARE($J) > 0) && ($I <= $J)) $J--;
+
+    '
+  languages:
+  - c
+  message: 'The code contains a potential out-of-bounds access vulnerability due to
+    missing bounds checks in while loops. This could lead to undefined behavior or
+    memory corruption if the loop variables exceed valid bounds. To fix this, ensure
+    that bounds checks (e.g., `i <= j`) are included in the loop conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Moddable-OpenSource/moddable/commit/c31b8fd15df1ce5fdc11161d4d88fae278e974e1
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

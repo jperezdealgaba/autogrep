@@ -1,0 +1,23 @@
+rules:
+- id: vuln-jerryscript-a56e31f1
+  pattern: ECMA_PROPERTY_FIXED
+  pattern-not: ECMA_PROPERTY_FLAG_CONFIGURABLE
+  languages:
+  - cpp
+  message: Using ECMA_PROPERTY_FIXED instead of ECMA_PROPERTY_FLAG_CONFIGURABLE can
+    lead to security vulnerabilities by making properties immutable when they should
+    be configurable. This can prevent proper modification or deletion of properties,
+    potentially leading to unexpected behavior or security issues. Use ECMA_PROPERTY_FLAG_CONFIGURABLE
+    to ensure properties are configurable.
+  severity: ERROR
+  metadata:
+    source-url: github.com/galpeter/jerryscript/commit/a56e31f194fe52000ed95605ae3c92390cd60ad5
+    category: security
+    cwe:
+    - CWE-472
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/472.html
+    technology:
+    - cpp

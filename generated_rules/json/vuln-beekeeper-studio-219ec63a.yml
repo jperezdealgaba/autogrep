@@ -1,0 +1,27 @@
+rules:
+- id: vuln-beekeeper-studio-219ec63a
+  pattern: '"vuejs-noty": "^0.1.3"
+
+    '
+  pattern-not: '"noty": "beekeeper-studio/noty#dc27550d340dd53480cf861d5ad4e7e292107ad6"
+
+    '
+  languages:
+  - json
+  message: 'The dependency ''vuejs-noty'' is using a vulnerable version. This could
+    lead to security issues due to outdated or insecure code. Update to the secure
+    version ''noty'' from the beekeeper-studio repository.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/beekeeper-studio/beekeeper-studio/commit/219ec63a4cf2627c7efe49394f7d485178d80a9c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - json

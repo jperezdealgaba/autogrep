@@ -1,0 +1,32 @@
+rules:
+- id: vuln-drupal-3999b8f6
+  pattern: '$form_state->setErrorByName(''form_token'', $this->t(''The form has become
+    outdated. Copy any unsaved work in the form below and then <a href=":link">reload
+    this page</a>.'', ['':link'' => $url]));
+
+    '
+  pattern-not: '$form_state->setErrorByName(''form_token'', $this->t(''The form has
+    become outdated. Press the back button, copy any unsaved work in the form, and
+    then reload the page.''));
+
+    '
+  languages:
+  - php
+  message: 'Detected an outdated form error message that includes a direct link to
+    reload the page, which could expose sensitive information. This vulnerability
+    allows attackers to manipulate the URL and potentially access unauthorized data.
+    The fix removes the direct link and advises users to use the back button instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/drupal/drupal/commit/3999b8f658bf2ef8e96a7ee8ccb279c5d3073006
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A6:2021 - Vulnerable and Outdated Components
+    references:
+    - https://www.drupal.org/sa-core-2020-012
+    technology:
+    - php

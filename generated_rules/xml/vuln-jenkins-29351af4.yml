@@ -1,0 +1,24 @@
+rules:
+- id: vuln-jenkins-29351af4
+  pattern: '<version>0.9.10-jenkins-43</version>
+
+    '
+  pattern-not: '<version>0.9.10-jenkins-48</version>
+
+    '
+  languages:
+  - xml
+  message: "Detected an outdated version of a dependency in the Jenkins war/pom.xml\
+    \ file. \nUsing outdated versions can expose the application to known security\
+    \ vulnerabilities. \nUpdate the dependency to the latest secure version (0.9.10-jenkins-48\
+    \ or higher) to mitigate potential risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/29351af4bd01f61715418916fc12c52be46bd9b0
+    category: security
+    cwe:
+    - 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - xml

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-slurm-351669e7
+  pattern: "if (memcmp((void *) $SIG, (void *) $MSG->io_key, $MSG->io_key_len)) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($MSG->io_key_len != $SIG_LEN ||\n    memcmp((void *) $SIG, (void\
+    \ *) $MSG->io_key, $MSG->io_key_len)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code performs a memory comparison without first checking the length
+    of the input, which can lead to buffer overflows or incorrect validation. This
+    vulnerability was fixed by adding a length check before the `memcmp` call. Always
+    validate input lengths before performing memory comparisons to ensure safe handling
+    of buffers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/SchedMD/slurm/commit/351669e7db3b5bc84b5791dc3626d683b8abe18e
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

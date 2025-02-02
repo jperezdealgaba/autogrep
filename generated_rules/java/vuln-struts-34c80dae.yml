@@ -1,0 +1,37 @@
+rules:
+- id: vuln-struts-34c80dae
+  pattern: 'import java.util.*;
+
+    '
+  pattern-not: 'import java.util.ArrayList;
+
+    import java.util.Collection;
+
+    import java.util.Collections;
+
+    import java.util.HashSet;
+
+    import java.util.LinkedHashMap;
+
+    import java.util.List;
+
+    import java.util.Map;
+
+    import java.util.Set;
+
+    '
+  languages:
+  - java
+  message: Potential security vulnerability due to wildcard imports. Using wildcard
+    imports can lead to namespace pollution and conflicts. Explicitly import only
+    the necessary classes to maintain clarity and avoid potential security risks.
+  severity: WARNING
+  metadata:
+    source-url: github.com/apache/struts/commit/34c80dae734e70f13c0e46f9c83602fb71318e58
+    category: security
+    cwe:
+    - CWE-486
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - java

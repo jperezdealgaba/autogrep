@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libgcrypt-db4e9976
+  pattern: "mpi_add($K, $K, $Q);\nif (!mpi_test_bit($K, $QBITS))\n  mpi_add($K, $K,\
+    \ $Q);\n"
+  pattern-not: '_gcry_dsa_modify_k($K, $Q, $QBITS);
+
+    '
+  languages:
+  - c
+  message: 'Detected a vulnerable implementation of (EC)DSA that does not properly
+    modify the random value `k` to mitigate timing attacks. This can lead to side-channel
+    attacks where an attacker can recover the private key by observing timing differences
+    in the cryptographic operations. The fix involves using `_gcry_dsa_modify_k` to
+    ensure `k` is within a safe range, reducing timing variations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpg/libgcrypt/commit/db4e9976cc31b314aafad6626b2894e86ee44d60
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - c

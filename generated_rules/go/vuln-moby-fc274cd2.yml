@@ -1,0 +1,30 @@
+rules:
+- id: vuln-moby-fc274cd2
+  pattern: "func sendBody($URL string, $HEADER http.Header) bool {\n  ...\n  if strings.HasSuffix($URL,\
+    \ \"/auth\") {\n    ...\n  }\n}\n"
+  pattern-not: "func sendBody($INURL string, $HEADER http.Header) bool {\n  $U, $ERR\
+    \ := url.Parse($INURL)\n  if $ERR != nil {\n    return false\n  }\n  $ISAUTH,\
+    \ $ERR := isAuthEndpoint($U.Path)\n  if $ISAUTH || $ERR != nil {\n    ...\n  }\n\
+    }\n"
+  languages:
+  - go
+  message: 'The function `sendBody` uses a simple string suffix check to determine
+    if a URL is an auth endpoint, which can lead to false positives. This can cause
+    sensitive data to be sent to unauthorized endpoints. The fix involves properly
+    parsing the URL and using a regex pattern to accurately identify auth endpoints.
+    Update the code to use `url.Parse` and `isAuthEndpoint` for more secure endpoint
+    validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moby/moby/commit/fc274cd2ff4cf3b48c91697fb327dd1fb95588fb
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://tools.ietf.org/html/rfc7230
+    technology:
+    - go

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-ndpi-61066fb1
+  pattern: 'ndpi_min($PACKET->payload_packet_len - $A1, sizeof($FLOW->initial_binary_bytes))
+
+    '
+  pattern-not: '$DIFF = $PACKET->payload_packet_len - $A1;
+
+    ndpi_min($DIFF, sizeof($FLOW->initial_binary_bytes))
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability occurs due to a direct calculation of the minimum value
+    between the packet length and the size of the buffer. This can lead to incorrect
+    calculations and potential buffer overflows. The fix involves calculating the
+    difference first and then applying the minimum function. Always ensure intermediate
+    calculations are performed separately to avoid such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntop/nDPI/commit/61066fb106efa6d3d95b67e47b662de208b2b622
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mruby-5c114c91
+  pattern: "if (mrb_basic_ptr($VAR)->tt == MRB_TT_FREE) {\n  $ARRAY[$INDEX] = mrb_nil_value();\n\
+    }\nelse {\n  mrb_gc_mark($MRB, mrb_basic_ptr($VAR));\n}\n"
+  pattern-not: "mrb_gc_mark($MRB, mrb_basic_ptr($VAR));\n$E = $C->stend - $C->stbase;\n\
+    $NIL = mrb_nil_value();\nfor (; $I<$E; $I++) {\n  $C->stbase[$I] = $NIL;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when the garbage collector fails to properly
+    mark and clear memory, leading to potential use-after-free or memory corruption
+    issues. The original code conditionally marks or clears memory based on the type
+    of the object, which can result in inconsistent memory states. The fix ensures
+    that all memory is consistently marked and cleared. To fix this, ensure that all
+    memory is properly marked and cleared in a consistent manner.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/mruby/mruby/commit/5c114c91d4ff31859fcd84cf8bf349b737b90d99
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    - https://cwe.mitre.org/data/definitions/825.html
+    technology:
+    - c

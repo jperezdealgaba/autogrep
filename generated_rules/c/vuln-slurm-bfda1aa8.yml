@@ -1,0 +1,27 @@
+rules:
+- id: vuln-slurm-bfda1aa8
+  pattern: "if (!is_admin && (slurm_conf.private_data & PRIVATE_DATA_JOBS)) {\n  ...\n\
+    }\n"
+  pattern-not: "if (!is_admin && ((slurm_conf.private_data & PRIVATE_DATA_JOBS) ||\n\
+    \                  (job_cond->flags & JOBCOND_FLAG_SCRIPT) ||\n              \
+    \    (job_cond->flags & JOBCOND_FLAG_ENV))) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The access control check in the code is incomplete, potentially allowing
+    unauthorized access to job-related data. The original condition only checks for
+    admin privileges and the private data flag, but it does not account for additional
+    job condition flags (JOBCOND_FLAG_SCRIPT and JOBCOND_FLAG_ENV). This can lead
+    to information disclosure or unauthorized access. To fix this, ensure the condition
+    includes checks for all relevant job condition flags.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/SchedMD/slurm/commit/bfda1aa87885cfa0aac96092c29b4733492efb54
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - c

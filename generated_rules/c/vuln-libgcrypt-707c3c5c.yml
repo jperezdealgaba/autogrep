@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libgcrypt-707c3c5c
+  pattern: 'gen_k($P, 1)
+
+    '
+  pattern-not: 'gen_k($P)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of insecure ''small_k'' parameter in gen_k function. This
+    can lead to weak encryption keys, especially when used for signing. The ''small_k''
+    parameter was removed to ensure that keys are generated with sufficient strength.
+    Always use the version of gen_k without the ''small_k'' parameter to maintain
+    cryptographic security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpg/libgcrypt/commit/707c3c5c511ee70ad0e39ec613471f665305fbea
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - c

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-routinator-d671a3c7
+  pattern: 'let $REPORT = $REPO.process()?;
+
+    '
+  pattern-not: 'let $REPORT = $REPO.process_origins()?;
+
+    '
+  languages:
+  - rust
+  message: 'Detected use of the deprecated `process()` method instead of `process_origins()`.
+
+    This can lead to incorrect validation of route origins in RPKI repositories.
+
+    The vulnerability was fixed by replacing `process()` with `process_origins()`
+
+    to properly handle route origin attestations. Always use `process_origins()`
+
+    for correct validation of RPKI data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NLnetLabs/routinator/commit/d671a3c71a1b8eb0f5ab70aa6fd4054f0c5027d9
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - rust
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc6480
+    - https://datatracker.ietf.org/doc/html/rfc6482

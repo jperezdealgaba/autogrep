@@ -1,0 +1,40 @@
+rules:
+- id: vuln-synapse-55b0aa84
+  pattern: "auth_chain_rows = cast(\n    List[Tuple[int, int, int, int]],\n    db_pool.simple_select_many_txn(\n\
+    \        $TX,\n        table=\"event_auth_chain_links\",\n        column=\"origin_chain_id\"\
+    ,\n        iterable={$CHAIN_ID for $CHAIN_ID, $_ in $CHAIN_MAP.values()},\n  \
+    \      keyvalues={},\n        retcols=(\n            \"origin_chain_id\",\n  \
+    \          \"origin_sequence_number\",\n            \"target_chain_id\",\n   \
+    \         \"target_sequence_number\",\n        ),\n    )\n)\nfor (\n    $ORIGIN_CHAIN_ID,\n\
+    \    $ORIGIN_SEQUENCE_NUMBER,\n    $TARGET_CHAIN_ID,\n    $TARGET_SEQUENCE_NUMBER,\n\
+    ) in auth_chain_rows:\n    $CHAIN_LINKS.add_link(\n        ($ORIGIN_CHAIN_ID,\
+    \ $ORIGIN_SEQUENCE_NUMBER),\n        ($TARGET_CHAIN_ID, $TARGET_SEQUENCE_NUMBER),\n\
+    \        new=False,\n    )\n"
+  pattern-not: "for $LINKS in EventFederationStore._get_chain_links(\n    $TX, {$CHAIN_ID\
+    \ for $CHAIN_ID, $_ in $CHAIN_MAP.values()}\n):\n    for $ORIGIN_CHAIN_ID, $INNER_LINKS\
+    \ in $LINKS.items():\n        for (\n            $ORIGIN_SEQUENCE_NUMBER,\n  \
+    \          $TARGET_CHAIN_ID,\n            $TARGET_SEQUENCE_NUMBER,\n        )\
+    \ in $INNER_LINKS:\n            $CHAIN_LINKS.add_link(\n                ($ORIGIN_CHAIN_ID,\
+    \ $ORIGIN_SEQUENCE_NUMBER),\n                ($TARGET_CHAIN_ID, $TARGET_SEQUENCE_NUMBER),\n\
+    \                new=False,\n            )\n"
+  languages:
+  - python
+  message: 'Detected direct SQL query to `event_auth_chain_links` table without proper
+    graph traversal.
+
+    This can lead to incorrect chain link calculations as it assumes transitive links
+    are stored.
+
+    Use the `_get_chain_links` method from `EventFederationStore` instead, which performs
+    proper graph traversal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/element-hq/synapse/commit/55b0aa847a61774b6a3acdc4b177a20dc019f01a
+    category: security
+    cwe: CWE-841
+    owasp: A1:2017-Injection
+    references:
+    - https://github.com/element-hq/synapse/pull/12345
+    technology: python

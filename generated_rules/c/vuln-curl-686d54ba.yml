@@ -1,0 +1,27 @@
+rules:
+- id: vuln-curl-686d54ba
+  pattern: '$FUNC(..., sizeof($BUFFER), ...);
+
+    '
+  pattern-not: '$FUNC(..., sizeof($BUFFER) - 1, ...);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability occurs when the full size of a buffer is passed to a
+    function without accounting for the null terminator, which can lead to buffer
+    overflows. This is dangerous because it can result in memory corruption, crashes,
+    or even arbitrary code execution. To fix this, subtract 1 from the buffer size
+    to ensure space for the null terminator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/686d54baf1df6e0775898f484d1670742898b3b2
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c

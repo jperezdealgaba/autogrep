@@ -1,0 +1,29 @@
+rules:
+- id: vuln-smarty-614ad1f8
+  pattern: "$output .= \"/* Smarty version \" . Smarty::SMARTY_VERSION . \", created\
+    \ on \" . strftime(\"%Y-%m-%d %H:%M:%S\") .\n           \"\\n  from \\\"\" . $_template->source->filepath\
+    \ . \"\\\" */\\n\\n\";\n"
+  pattern-not: "$output .= \"/* Smarty version {Smarty::SMARTY_VERSION}, created on\
+    \ \" . strftime(\"%Y-%m-%d %H:%M:%S\") .\n           \"\\n  from \\\"\" . str_replace('*/','*\
+    \ /',$_template->source->filepath) . \"\\\" */\\n\\n\";\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to potential XSS attacks due to the direct inclusion
+    of `$_template->source->filepath` in the output without proper sanitization. This
+    could allow an attacker to inject malicious JavaScript code. To fix this, use
+    `str_replace` to sanitize the filepath by replacing ''*/'' with ''* /'' to prevent
+    closing the comment block prematurely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/smarty-php/smarty/commit/614ad1f8b9b00086efc123e49b7bb8efbfa81b61
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

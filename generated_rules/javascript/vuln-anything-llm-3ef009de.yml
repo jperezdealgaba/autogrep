@@ -1,0 +1,28 @@
+rules:
+- id: vuln-anything-llm-3ef009de
+  pattern: 'updates.username = String($USERNAME)
+
+    '
+  pattern-not: 'updates.username = User.validations.username(String($USERNAME))
+
+    '
+  languages:
+  - javascript
+  message: 'Missing username validation detected. Directly assigning a username without
+    proper validation can lead to security issues such as injection attacks or data
+    corruption. Ensure username inputs are validated using the User.validations.username
+    method to enforce length constraints and proper formatting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mintplex-labs/anything-llm/commit/3ef009de73c837f9025df8bba62572885c70c72f
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - javascript

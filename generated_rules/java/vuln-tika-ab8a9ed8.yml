@@ -1,0 +1,16 @@
+rules:
+- id: vuln-tika-ab8a9ed8
+  pattern: "while ($READ < $SECTION_SIZE) {\n  ...\n}\n"
+  pattern-not: "while ($READ < $SECTION_SIZE && $BLOCKS < $MAX_BLOCKS) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Potential infinite loop vulnerability due to missing loop guard. Add a
+    maximum iteration limit to prevent infinite loops in resource parsing.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/ab8a9ed830ec710a32e4ffdf4989aea3aaea92ef
+    category: security
+    cwe: CWE-835
+    owasp: A03:2021-Injection
+    technology: java

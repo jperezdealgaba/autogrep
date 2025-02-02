@@ -1,0 +1,34 @@
+rules:
+- id: vuln-katex-085e21b5
+  pattern: 'let $STR = $U_SUBS_AND_SUPS[$LEX.text];
+
+    ...
+
+    $STR += $U_SUBS_AND_SUPS[$TOKEN];
+
+    const $BODY = (new Parser($STR, $SETTINGS)).parse();
+
+    '
+  pattern-not: 'const $SUBSUP_TOKENS = [];
+
+    $SUBSUP_TOKENS.push(new Token($U_SUBS_AND_SUPS[$LEX.text]));
+
+    $SUBSUP_TOKENS.unshift(new Token($U_SUBS_AND_SUPS[$TOKEN]));
+
+    const $BODY = $THIS.subparse($SUBSUP_TOKENS);
+
+    '
+  languages:
+  - javascript
+  message: 'Detected unsafe string concatenation for parsing in KaTeX. This can lead
+    to parsing vulnerabilities when handling Unicode sub/superscripts. Use token-based
+    parsing instead of string concatenation to safely handle input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/KaTeX/KaTeX/commit/085e21b5da05414efefa932570e7201a7c70e5b2
+    category: security
+    cwe: CWE-116
+    owasp: A03:2021 - Injection
+    technology: javascript

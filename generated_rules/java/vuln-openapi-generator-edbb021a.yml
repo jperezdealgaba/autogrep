@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openapi-generator-edbb021a
+  pattern: "String $DESTPATH = null;\nif ($OPTS.getOptions() != null) {\n  $DESTPATH\
+    \ = $OPTS.getOptions().get(\"outputFolder\");\n}\nif ($DESTPATH == null) {\n \
+    \ $DESTPATH = $LANGUAGE + \"-\" + $TYPE.getTypeName();\n}\n"
+  pattern-not: 'String $DESTPATH = $LANGUAGE + "-" + $TYPE.getTypeName();
+
+    '
+  languages:
+  - java
+  message: 'Potential path traversal vulnerability detected. The code uses untrusted
+    input from ''outputFolder'' without proper validation, which could allow attackers
+    to access unauthorized directories. Always use a fixed, safe destination path
+    instead of user-controlled input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/edbb021aadae47dcfe690313ce5119faf77f800d
+    category: security
+    cwe: CWE-22
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - java

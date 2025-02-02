@@ -1,0 +1,19 @@
+rules:
+- id: vuln-core-ce66759
+  pattern: '"<span class=''fc-event-title''>" + $EVENT.title + "</span>"
+
+    '
+  pattern-not: '"<span class=''fc-event-title''>" + htmlEscape($EVENT.title) + "</span>"
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unescaped event title in HTML. Use htmlEscape()
+    to sanitize the input.
+  severity: ERROR
+  metadata:
+    source-url: github.com/owncloud/core/commit/ce66759
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology: javascript

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-curl-894f6ec7
+  pattern: "if(sscanf($DATA, \"%127[^,],%127s\", $VARNAME, $VARVAL) == 2) {\n  ...\n\
+    \  msnprintf($BUFFER, $BUFFER_SIZE, \"%c%s%c%s\", $ENV_VAR, $VARNAME, $ENV_VALUE,\
+    \ $VARVAL);\n  ...\n}\n"
+  pattern-not: "int $RV;\nchar $SEP[2] = \"\";\n$VARVAL[0] = 0;\n$RV = sscanf($DATA,\
+    \ \"%127[^,]%1[,]%127s\", $VARNAME, $SEP, $VARVAL);\nif($RV == 1) {\n  ...\n \
+    \ msnprintf($BUFFER, $BUFFER_SIZE, \"%c%s\", $ENV_VAR, $VARNAME);\n  ...\n} else\
+    \ if($RV >= 2) {\n  ...\n  msnprintf($BUFFER, $BUFFER_SIZE, \"%c%s%c%s\", $ENV_VAR,\
+    \ $VARNAME, $ENV_VALUE, $VARVAL);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of sscanf without proper input validation can lead to buffer overflows
+    or incorrect parsing of environment variables. This vulnerability occurs when
+    parsing telnet environment variables without checking the return value of sscanf
+    correctly. The fixed version properly handles the return value and ensures safe
+    parsing. To fix this, always validate the return value of sscanf and handle different
+    cases appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/894f6ec730597eb243618d33cc84d71add8d6a8a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

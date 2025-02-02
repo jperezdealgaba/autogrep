@@ -1,0 +1,28 @@
+rules:
+- id: vuln-struts-d832747d
+  pattern: "<interceptor-ref name=\"params\">\n  <param name=\"excludeParams\">^action:.*,^method:.*</param>\n\
+    </interceptor-ref>\n"
+  pattern-not: '<interceptor-ref name="params"/>
+
+    '
+  languages:
+  - xml
+  message: 'The use of specific excludeParams in the params interceptor can lead to
+    insufficient parameter filtering, potentially allowing unauthorized access to
+    sensitive methods or actions. This vulnerability was fixed by removing the specific
+    excludeParams, which ensures that all parameters are properly filtered. To fix
+    this, remove the excludeParams configuration from the params interceptor.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/d832747d647df343ed07a58b1b5e540a05a4d51b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - xml

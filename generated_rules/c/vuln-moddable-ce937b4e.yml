@@ -1,0 +1,26 @@
+rules:
+- id: vuln-moddable-ce937b4e
+  pattern: '$VAR = fxCombinePath($PARSER, $BASE, $NAME);
+
+    '
+  pattern-not: '$VAR = fxRealFilePath($PARSER, fxCombinePath($PARSER, $BASE, $NAME));
+
+    '
+  languages:
+  - c
+  message: 'Direct usage of `fxCombinePath` without `fxRealFilePath` can lead to path
+    manipulation vulnerabilities. This can allow an attacker to construct malicious
+    paths that bypass security checks. Always use `fxRealFilePath` to resolve and
+    validate the final path.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Moddable-OpenSource/moddable/commit/ce937b4ee6fad6b17dcc482c3fde55c379459e05
+    category: security
+    cwe:
+    - 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: 'A1: Injection'
+    technology:
+    - c

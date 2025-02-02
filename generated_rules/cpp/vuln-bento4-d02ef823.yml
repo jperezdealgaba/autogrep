@@ -1,0 +1,24 @@
+rules:
+- id: vuln-bento4-d02ef823
+  pattern: 'printf("  duration:   %lld (media timescale units)\n", $MOVIE.GetDuration());
+
+    '
+  pattern-not: 'printf("  duration:   %lld (movie timescale units)\n", $MOVIE.GetDuration());
+
+    '
+  languages:
+  - cpp
+  message: 'Incorrect usage of "media timescale units" instead of "movie timescale
+    units" in printf statement. This could lead to confusion or misinterpretation
+    of the duration value. Replace "media timescale units" with "movie timescale units"
+    to ensure accurate representation of the duration in the output.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/d02ef8230a8fee4904a750eb912521c5f1c74e0b
+    category: correctness
+    cwe:
+    - 'CWE-705: Incorrect Control Flow Scoping'
+    technology:
+    - cpp

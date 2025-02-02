@@ -1,0 +1,31 @@
+rules:
+- id: vuln-framework-576cba74
+  pattern: '$QUERY->where(''remember_token'', $TOKEN);
+
+    return $this->getGenericUser($USER);
+
+    '
+  pattern-not: 'return hash_equals($USER->remember_token, $TOKEN) ? $this->getGenericUser($USER)
+    : null;
+
+    '
+  languages:
+  - php
+  message: 'The code directly compares a token using a database query, which is vulnerable
+    to timing attacks. Timing attacks can allow an attacker to infer information about
+    the token by measuring the time taken for the comparison. Use `hash_equals()`
+    to perform a constant-time comparison, which mitigates this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laravel/framework/commit/576cba749f9cfa150e9ba3eb23c06c70b75f64a8
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://www.php.net/manual/en/function.hash-equals.php
+    technology:
+    - php

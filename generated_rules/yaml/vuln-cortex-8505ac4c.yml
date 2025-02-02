@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cortex-8505ac4c
+  pattern: 'image: quay.io/cortexproject/build-image:upgrade-to-go-1.20.4-6025f83e5
+
+    '
+  pattern-not: 'image: quay.io/cortexproject/build-image:feature-master-update-to-go-1.21-050c36e7b
+
+    '
+  languages:
+  - yaml
+  message: "The build image is using an outdated Go version (1.20.4), which may contain\
+    \ security vulnerabilities. \nIt is recommended to update to the latest stable\
+    \ version of Go (1.21.0 or higher) to ensure security patches and improvements\
+    \ are applied.\nUpdate the image tag to use the latest Go version, such as 'feature-master-update-to-go-1.21-050c36e7b'.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/cortexproject/cortex/commit/8505ac4cb865f814fb4b8db0e1bd81c1248b2a11
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://golang.org/doc/devel/release
+    technology:
+    - yaml

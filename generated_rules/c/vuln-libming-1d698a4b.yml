@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libming-1d698a4b
+  pattern: '$VAR->Actions[$VAR->numActions-1].SWF_ACTIONRECORD.ActionCode == SWFACTION_JUMP
+
+    '
+  pattern-not: 'OpCode($VAR->Actions, $VAR->numActions-1, $VAR2) == SWFACTION_JUMP
+
+    '
+  languages:
+  - c
+  message: "Direct access to the ActionCode field in SWF_ACTIONRECORD can lead to\
+    \ unsafe operations. \nThe vulnerability arises from not using the OpCode function,\
+    \ which performs necessary bounds checking. \nThis can result in out-of-bounds\
+    \ memory access or undefined behavior. \nAlways use the OpCode function to safely\
+    \ access action codes.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libming/libming/commit/1d698a4b1f03d6136bbf2b0171b86985be553454
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-url-to-png-9336020c
+  pattern: 'const $VAR = z.string().url();
+
+    '
+  pattern-not: "const $VAR = z\n  .string()\n  .url()\n  .refine(\n    $FUNC => {\n\
+    \      try {\n        const $URL = new URL($FUNC);\n        return $URL.protocol\
+    \ === \"http:\" || $URL.protocol === \"https:\";\n      } catch ($ERR) {\n   \
+    \     return false;\n      }\n    },\n    {\n      message: \"must start with\
+    \ http or https\",\n    },\n  );\n"
+  languages:
+  - typescript
+  message: 'Detected insecure URL validation that does not restrict protocols to http/https.
+
+    This vulnerability allows dangerous protocols like file:// or view-source:// to
+    be used,
+
+    which can lead to local file access or other security issues.
+
+    Fix by adding a .refine() check to ensure the URL starts with http:// or https://.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasonraimondi/url-to-png/commit/9336020c5e603323f5cf4a2ac3bb9a7735cf61f7
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html
+    technology:
+    - typescript

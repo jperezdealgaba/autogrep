@@ -1,0 +1,26 @@
+rules:
+- id: vuln-aria2-37368130
+  pattern: 'A2_LOG_INFO(fmt(MSG_RECEIVE_RESPONSE, $CUID, $PROC->getHeaderString().c_str()));
+
+    '
+  pattern-not: 'A2_LOG_INFO(fmt(MSG_RECEIVE_RESPONSE, $CUID, eraseConfidentialInfo($PROC->getHeaderString()).c_str()));
+
+    '
+  languages:
+  - cpp
+  message: 'Sensitive information in HTTP headers is being logged without redaction.
+    This can expose credentials, cookies, or other confidential data in log files,
+    leading to security breaches. Use a function like `eraseConfidentialInfo` to redact
+    sensitive information before logging.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aria2/aria2/commit/37368130ca7de5491a75fd18a20c5c5cc641824a
+    category: security
+    cwe:
+    - 'CWE-532: Information Exposure Through Log Files'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - cpp

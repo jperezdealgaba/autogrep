@@ -1,0 +1,30 @@
+rules:
+- id: vuln-krb5-6609658d
+  pattern: "if (strncmp($HANDLE->params.realm, $REALM->data, $REALM->length) == 0\n\
+    \    && strncmp(\"kadmin\", $C1->data, $C1->length) == 0) {\n    if (strncmp(\"\
+    history\", $C2->data, $C2->length) == 0)\n        goto $FAIL;\n    else\n    \
+    \    $SUCCESS = 1;\n}\n"
+  pattern-not: "$SUCCESS = data_eq_string(*$REALM, $HANDLE->params.realm) &&\n   \
+    \ data_eq_string(*$C1, \"kadmin\") && !data_eq_string(*$C2, \"history\");\n"
+  languages:
+  - c
+  message: 'Detected insecure string comparison using `strncmp` which can lead to
+    incorrect validation.
+
+    The `strncmp` function is being used to compare sensitive data, which can be vulnerable
+    to timing attacks or incorrect comparisons.
+
+    Replace `strncmp` with a secure comparison function like `data_eq_string` to ensure
+    proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/6609658db0799053fbef0d7d0aa2f1fd68ef32d8
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-curl-5ea31458
+  pattern: 'SSL_SET_OPTION(issuercert)
+
+    '
+  pattern-not: 'SSL_CONN_CONFIG(issuercert)
+
+    '
+  languages:
+  - c
+  message: 'The use of `SSL_SET_OPTION(issuercert)` is unsafe and has been replaced
+    with `SSL_CONN_CONFIG(issuercert)` in the patch. This change ensures proper handling
+    of SSL issuer certificates, preventing potential security vulnerabilities such
+    as incorrect certificate validation or memory corruption. Replace all instances
+    of `SSL_SET_OPTION(issuercert)` with `SSL_CONN_CONFIG(issuercert)` to fix this
+    issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/5ea3145850ebff1dc2b13d17440300a01ca38161
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - A09:2021 - Security Logging and Monitoring Failures
+    technology:
+    - c

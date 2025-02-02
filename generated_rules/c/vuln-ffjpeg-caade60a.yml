@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ffjpeg-caade60a
+  pattern: 'bmp_load(&$BMP, $ARG);
+
+    '
+  pattern-not: "if (bmp_load(&$BMP, $ARG) == -1) {\n    ...\n    return -1;\n}\n"
+  languages:
+  - c
+  message: 'The function `bmp_load` is called without checking its return value, which
+    can lead to undefined behavior if the function fails. This can cause the program
+    to continue executing with invalid data, potentially leading to crashes or security
+    vulnerabilities. To fix this, always check the return value of `bmp_load` and
+    handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/caade60a69633d74100bd3c2528bddee0b6a1291
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

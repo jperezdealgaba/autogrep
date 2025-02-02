@@ -1,0 +1,30 @@
+rules:
+- id: vuln-curl-9c91ec77
+  pattern: '#if defined(HAVE_LIBIDN) && defined(HAVE_TLD_H)
+
+    #define USE_LIBIDN
+
+    '
+  pattern-not: '#if defined(HAVE_LIBIDN2) && defined(HAVE_IDN2_H)
+
+    #define USE_LIBIDN2
+
+    '
+  languages:
+  - cpp
+  message: "The code is using an outdated and potentially insecure version of libidn.\
+    \ \nThis could lead to security vulnerabilities due to missing features or bug\
+    \ fixes in the newer version. \nUpdate the code to use libidn2 and the corresponding\
+    \ header file idn2.h.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/curl/curl/commit/9c91ec778104ae3b744b39444d544e82d5ee9ece
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://curl.se/docs/security.html
+    technology:
+    - cpp

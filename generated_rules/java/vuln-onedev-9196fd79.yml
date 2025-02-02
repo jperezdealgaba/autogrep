@@ -1,0 +1,32 @@
+rules:
+- id: vuln-onedev-9196fd79
+  pattern: 'new SAXReader().read($XML)
+
+    '
+  pattern-not: '$READER = new SAXReader();
+
+    $READER.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+    $READER.read($XML);
+
+    '
+  languages:
+  - java
+  message: 'Detected XML External Entity (XXE) vulnerability. The SAXReader is used
+    without disabling DTD processing, which can allow malicious XML to access external
+    resources or execute arbitrary code. To fix this, set the feature "http://apache.org/xml/features/disallow-doctype-decl"
+    to true on the SAXReader instance.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/9196fd795e87dab069b4260a3590a0ea886e770f
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+    technology:
+    - java

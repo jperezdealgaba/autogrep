@@ -1,0 +1,29 @@
+rules:
+- id: vuln-rack-37c1160b
+  pattern: 'BUFSIZE = 1048576
+
+    '
+  pattern-not: 'BUFSIZE = 16384
+
+    '
+  languages:
+  - ruby
+  message: 'The buffer size for multipart parsing is set to 1MB (1048576 bytes), which
+    can lead to excessive memory consumption and potential denial of service (DoS)
+    attacks. This is dangerous because it allows attackers to send large multipart
+    payloads that consume server resources. To fix this, reduce the buffer size to
+    a safer value, such as 16KB (16384 bytes).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/37c1160b2360074d20858792f23a7eb3afeabebd
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - ruby

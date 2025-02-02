@@ -1,0 +1,23 @@
+rules:
+- id: vuln-zulip-6336322d
+  pattern: "$OLD_CAN_ACCESS_STREAM_USER_IDS = (\n    set($STREAM_SUBSCRIBER_USER_IDS)\n\
+    \    | set($PREVIOUSLY_SUBSCRIBED_USER_IDS)\n    | { $USER.id for $USER in $STREAM.realm.get_admin_users_and_bots()\
+    \ }\n)\n"
+  pattern-not: "$OLD_CAN_ACCESS_STREAM_USER_IDS = set($STREAM_SUBSCRIBER_USER_IDS)\
+    \ | {\n    $USER.id for $USER in $STREAM.realm.get_admin_users_and_bots()\n}\n"
+  languages:
+  - python
+  message: Potential security issue detected where previously subscribed users are
+    included in the access list for a stream. This could lead to unauthorized access
+    to stream metadata. Ensure that only current subscribers and realm admins have
+    access.
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/6336322d2f9bbccaacfc80cba83a3c62eefd5737
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://github.com/zulip/zulip/commit/6336322d2f9bbccaacfc80cba83a3c62eefd5737
+    technology:
+    - python

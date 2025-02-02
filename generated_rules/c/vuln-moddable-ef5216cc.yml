@@ -1,0 +1,24 @@
+rules:
+- id: vuln-moddable-ef5216cc
+  pattern: "if (!$VAR && ($BYTE != $CONST))\n  $FUNC($ERROR, $MSG, $ID);\n"
+  pattern-not: "if ($VAR) {\n  if ($VAR->$FIELD < 0)\n    $FUNC($ERROR, $MSG, $ID);\n\
+    }\nelse {\n  if ($BYTE != $CONST)\n    $FUNC($ERROR, $MSG, $ID);\n}\n"
+  languages:
+  - c
+  message: 'The code fails to check if a variable is initialized before accessing
+    it, which can lead to undefined behavior. This vulnerability can result in reference
+    errors and potential security issues. The fix involves adding a proper check to
+    ensure the variable is initialized before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/ef5216cc8bf87f8b16313eb13af0b54b06917c06
+    category: security
+    cwe:
+    - CWE-457
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references: []
+    technology:
+    - c

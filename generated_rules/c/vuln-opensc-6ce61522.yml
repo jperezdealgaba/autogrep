@@ -1,0 +1,29 @@
+rules:
+- id: vuln-opensc-6ce61522
+  pattern: "if ($VAR1->flags & SC_ASN1_PRESENT && $VAR1[0].flags & SC_ASN1_PRESENT)\
+    \ {\n  free($VAR1[0].parm);\n}\n"
+  pattern-not: 'free(info.subject.value);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where memory is freed based on a condition
+    that checks flags in a structure. The issue arises because the code might free
+    memory incorrectly, leading to potential use-after-free vulnerabilities. The fix
+    involves directly freeing the correct memory location without the conditional
+    check. To fix this, ensure that memory is freed directly and correctly, avoiding
+    conditional checks that might lead to incorrect memory management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/6ce6152284c47ba9b1d4fe8ff9d2e6a3f5ee02c7
+    category: security
+    cwe:
+    - CWE-416
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c

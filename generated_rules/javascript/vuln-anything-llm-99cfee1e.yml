@@ -1,0 +1,25 @@
+rules:
+- id: vuln-anything-llm-99cfee1e
+  pattern: "const { username, password } = reqBody($REQUEST);\nconst multiUserModeEnabled\
+    \ = await SystemSettings.isMultiUserMode();\nif (multiUserModeEnabled) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($RESPONSE.locals.multiUserMode) {\n  const { username, password\
+    \ } = reqBody($REQUEST);\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Potential security issue: User credentials are extracted before checking
+    multi-user mode. This could lead to unauthorized access. Ensure multi-user mode
+    is checked before processing sensitive data.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/mintplex-labs/anything-llm/commit/99cfee1e7025fe9a0919a4d506ba1e1b819f6073
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/287.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - javascript

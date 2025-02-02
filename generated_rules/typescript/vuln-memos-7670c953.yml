@@ -1,0 +1,27 @@
+rules:
+- id: vuln-memos-7670c953
+  pattern: 'const $VAR = marked($MATCH, [], [$LINK]);
+
+    '
+  pattern-not: 'const $VAR = marked($MATCH, [], [$LINK, PlainText]);
+
+    '
+  languages:
+  - typescript
+  message: 'The code uses the `marked` function without including `PlainText` in the
+    list of parsers, which can lead to improper handling of plain text content. This
+    can result in security vulnerabilities such as XSS if the plain text is not properly
+    sanitized. To fix this, ensure `PlainText` is included in the parsers list when
+    using the `marked` function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/7670c9536000bb32c6345d4906a91268dcddd5fc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - typescript

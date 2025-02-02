@@ -1,0 +1,23 @@
+rules:
+- id: vuln-suricata-4a04f814
+  pattern: 'BuildTestPacket($ID, $OFF, $MF, $CONTENT, $LEN)
+
+    '
+  pattern-not: 'BuildTestPacket($PROTO, $ID, $OFF, $MF, $CONTENT, $LEN)
+
+    '
+  languages:
+  - c
+  message: "Detected a missing protocol parameter in BuildTestPacket function calls.\
+    \ \nThis could lead to incorrect packet handling and potential security vulnerabilities.\
+    \ \nAlways specify the protocol (e.g., IPPROTO_ICMP) when calling BuildTestPacket.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/4a04f814b15762eb446a5ead4d69d021512df6f8
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

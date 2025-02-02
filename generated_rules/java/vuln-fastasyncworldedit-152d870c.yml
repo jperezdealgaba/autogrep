@@ -1,0 +1,21 @@
+rules:
+- id: vuln-fastasyncworldedit-152d870c
+  pattern: "try {\n  ...\n} catch (RuntimeException $E) {\n  ...\n} catch (Throwable\
+    \ $RE) {\n  $RE.printStackTrace();\n  throw new RuntimeException($RE);\n}\n"
+  pattern-not: "try {\n  ...\n} catch (RuntimeException | Error $E) {\n  ...\n} catch\
+    \ (Exception $E) {\n  throw new RuntimeException($E);\n}\n"
+  languages:
+  - java
+  message: 'Inconsistent exception handling detected. Catching Throwable and rethrowing
+    as RuntimeException can mask critical errors like OutOfMemoryError. Instead, catch
+    specific exceptions or use RuntimeException | Error to avoid suppressing critical
+    errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/IntellectualSites/FastAsyncWorldEdit/commit/152d870cdbb5ad7e3ad019e301083c298cee1aaf
+    category: security
+    cwe: CWE-248
+    owasp: A10:2021 - Server-Side Request Forgery (SSRF)
+    technology: java

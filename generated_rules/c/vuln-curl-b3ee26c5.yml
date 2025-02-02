@@ -1,0 +1,20 @@
+rules:
+- id: vuln-curl-b3ee26c5
+  pattern: "if(!strequal($VAR1, $VAR2) || !strequal($VAR3, $VAR4)) {\n  ...\n}\n"
+  pattern-not: "if(strcmp($VAR1, $VAR2) || strcmp($VAR3, $VAR4)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "The use of `strequal` for string comparison is vulnerable to timing attacks.\
+    \ \n`strequal` performs a byte-by-byte comparison and stops at the first mismatch,\
+    \ \nwhich can be exploited by attackers to deduce sensitive information. \nReplace\
+    \ `strequal` with `strcmp` to mitigate this risk.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/b3ee26c5df75d97f6895e6ec4538894ebaf76e48
+    category: security
+    cwe:
+    - 'CWE-208: Observable Timing Discrepancy'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - c

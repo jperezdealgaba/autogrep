@@ -1,0 +1,20 @@
+rules:
+- id: vuln-struts-0c8366cb
+  pattern: "public void execute($KEY, $MAPPING, $REQUEST) {\n  ...\n  $REQUEST.setAttribute($ATTR,\
+    \ $VALUE);\n  ...\n}\n"
+  pattern-not: "public void execute($KEY, $MAPPING) {\n  ...\n  if (allowActionPrefix)\
+    \ {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - java
+  message: Potential security vulnerability due to improper handling of action prefixes.
+    The request attribute manipulation can lead to incorrect action mapping. Ensure
+    proper validation and handling of action prefixes by using the allowActionPrefix
+    and allowActionCrossNamespaceAccess flags.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/0c8366cb792227d484b9ca13e537037dd0cb57dc
+    category: security
+    cwe: CWE-284
+    owasp: 'A1: Injection'
+    references: https://cwe.mitre.org/data/definitions/284.html
+    technology: java

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-opensc-1db88374
+  pattern: "$RV = sc_pkcs15_get_objects($P15CARD, $TYPE, $OBJS, $SIZE);\nif ($RV !=\
+    \ SC_SUCCESS) {\n  ...\n}\nfor ($II = 0; $II < $RV; $II++) {\n  ...\n}\n"
+  pattern-not: "$NOBJS = sc_pkcs15_get_objects($P15CARD, $TYPE, $OBJS, $SIZE);\nif\
+    \ ($NOBJS < 1) {\n  ...\n}\nfor ($II = 0; $II < $NOBJS; $II++) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code incorrectly uses the return value of `sc_pkcs15_get_objects`
+    as both the status check and the loop counter. This can lead to incorrect loop
+    iterations if the function returns a non-error status code that doesn''t match
+    the actual number of objects. Instead, store the number of objects in a separate
+    variable and use it for the loop.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/1db88374
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

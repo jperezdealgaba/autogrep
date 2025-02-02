@@ -1,0 +1,27 @@
+rules:
+- id: vuln-didiwiki-5e5c7966
+  pattern: "if ($PAGE && (access($PAGE, R_OK) == 0)) {\n  ...\n}\n"
+  pattern-not: "if ($PAGE && page_name_is_good($PAGE) && (access($PAGE, R_OK) == 0))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential path traversal vulnerability due to missing validation
+    of the page name before accessing the file. This can allow unauthorized access
+    to files outside the intended directory. Ensure the page name is validated using
+    the `page_name_is_good` function before performing file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/yarolig/didiwiki/commit/5e5c796617e1712905dc5462b94bd5e6c08d15ea
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

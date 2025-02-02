@@ -1,0 +1,43 @@
+rules:
+- id: vuln-suricata-843d0b7a
+  pattern: "switch ($SSN->state) {\n    case TCP_SYN_SENT:\n        if(StreamTcpPacketStateSynSent($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_SYN_RECV:\n        if(StreamTcpPacketStateSynRecv($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_ESTABLISHED:\n        if(StreamTcpPacketStateEstablished($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_FIN_WAIT1:\n        if(StreamTcpPacketStateFinWait1($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_FIN_WAIT2:\n        if(StreamTcpPacketStateFinWait2($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_CLOSING:\n        if(StreamTcpPacketStateClosing($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_CLOSE_WAIT:\n        if(StreamTcpPacketStateCloseWait($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_LAST_ACK:\n        if(StreamTcpPacketStateLastAck($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_TIME_WAIT:\n        if(StreamTcpPacketStateTimeWait($TV,\
+    \ $P, $STT, $SSN, &$STT->pseudo_queue)) {\n            goto error;\n        }\n\
+    \        break;\n    case TCP_CLOSED:\n        SCLogDebug(\"packet received on\
+    \ closed state\");\n        break;\n    default:\n        SCLogDebug(\"packet\
+    \ received on default state\");\n        break;\n}\n"
+  pattern-not: "if (StreamTcpStateDispatch($TV, $P, $STT, $SSN, &$STT->pseudo_queue,\
+    \ $SSN->state) < 0)\n    goto error;\nStreamTcpPacketCheckPostRst($SSN, $P);\n"
+  languages:
+  - c
+  message: 'The code uses a switch statement to handle TCP states, which can lead
+    to missed RST packet handling in the CLOSED state. This can allow RST injection
+    attacks. Use the StreamTcpStateDispatch function for consistent state handling
+    and StreamTcpPacketCheckPostRst for RST packet validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/843d0b7a10bb45627f94764a6c5d468a24143345
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

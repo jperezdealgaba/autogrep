@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libming-3120f1cd
+  pattern: 'int $OFF = (&($TREC->GlyphEntries[$I]))->GlyphIndex[0];
+
+    '
+  pattern-not: 'unsigned long $OFF = (&($TREC->GlyphEntries[$I]))->GlyphIndex[0];
+
+    '
+  languages:
+  - c
+  message: 'The use of ''int'' for storing an offset can lead to integer overflow
+    or truncation issues, which may result in memory corruption or incorrect behavior.
+    This is particularly dangerous when dealing with large indices or offsets. The
+    fix involves using ''unsigned long'' to ensure proper handling of large values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/3120f1cdae0c5232a4fb15e5ce42b8c455b43379
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

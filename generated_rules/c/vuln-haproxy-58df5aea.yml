@@ -1,0 +1,29 @@
+rules:
+- id: vuln-haproxy-58df5aea
+  pattern: 'dns_read_name($RESP, $BUFEND, $READER, $NAME, $MAX_SIZE, $OFFSET)
+
+    '
+  pattern-not: 'dns_read_name($RESP, $BUFEND, $READER, $NAME, $MAX_SIZE, $OFFSET,
+    $DEPTH)
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential infinite recursion vulnerability in DNS name resolution.
+    The function `dns_read_name` lacks a depth counter, which could lead to stack
+    exhaustion or infinite recursion when processing malicious DNS responses. To fix
+    this, add a depth parameter and check its value to limit recursion depth.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/haproxy/haproxy/commit/58df5aea0a0c926b2238f65908f5e9f83d1cca25
+    category: security
+    cwe:
+    - CWE-674
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/674.html
+    technology:
+    - c

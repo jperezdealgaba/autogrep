@@ -1,0 +1,22 @@
+rules:
+- id: vuln-curl-b7eeb6e6
+  pattern: '#define $FUNC(x)
+
+    '
+  pattern-not: '#define $FUNC(x) do {} while(0)
+
+    '
+  languages:
+  - cpp
+  message: "The macro definition is incomplete and may lead to unexpected behavior.\
+    \ \nAlways use a do-while(0) loop for macros that expand to multiple statements\
+    \ \nto ensure proper scoping and avoid potential issues in control flow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/b7eeb6e67fca686f840eacd6b8394edb58b07482
+    category: security
+    cwe:
+    - CWE-483
+    owasp: A9:2017-Insufficient Logging & Monitoring
+    technology:
+    - cpp

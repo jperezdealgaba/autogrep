@@ -1,0 +1,28 @@
+rules:
+- id: vuln-url-parse-d5c64791
+  pattern: 'result += $URL.host + $URL.pathname;
+
+    '
+  pattern-not: 'if ($HOST[$HOST.length - 1] === '':'') $HOST += '':'';
+
+    result += $HOST + $URL.pathname;
+
+    '
+  languages:
+  - javascript
+  message: 'Detected a URL parsing vulnerability where a trailing colon in the host
+    is not properly handled. This can lead to invalid URLs being transformed into
+    valid ones, potentially causing security issues. To fix this, ensure that trailing
+    colons are preserved when constructing the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/unshiftio/url-parse/commit/d5c64791ef496ca5459ae7f2176a31ea53b127e5
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://github.com/unshiftio/url-parse/commit/d5c64791ef496ca5459ae7f2176a31ea53b127e5
+    technology:
+    - javascript

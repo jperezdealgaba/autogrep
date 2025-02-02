@@ -1,0 +1,32 @@
+rules:
+- id: vuln-libgcrypt-6199cd96
+  pattern: 'memcpy($DST, $SRC, $LEN);
+
+    ...
+
+    memcpy($DST + $OFFSET, $SRC + $OFFSET, $LEN2);
+
+    '
+  pattern-not: "memcpy($DST, $SRC, $LEN);\n...\nif ($SRC + $BLOCKLEN < $PEND)\n  memcpy($DST,\
+    \ $SRC, $BLOCKLEN);\n"
+  languages:
+  - c
+  message: 'Detected a potentially unsafe memory copy operation that may lead to buffer
+    overflow or memory corruption. The original code copies memory without proper
+    boundary checks, which can result in overwriting adjacent memory regions. Ensure
+    proper boundary checks are performed before memory operations to prevent such
+    vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpg/libgcrypt/commit/6199cd963d1fba86e0b7b9e2de4b6c00b945193a
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

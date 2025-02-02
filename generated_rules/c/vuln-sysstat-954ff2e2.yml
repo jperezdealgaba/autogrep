@@ -1,0 +1,25 @@
+rules:
+- id: vuln-sysstat-954ff2e2
+  pattern: "if ((unsigned long long) $VAL1 * (unsigned long long) $VAL2 * (unsigned\
+    \ long long) $VAL3 > UINT_MAX) {\n  ...\n}\n"
+  pattern-not: "if (($VAL1 != 0) && ($VAL2 != 0) && ($VAL3 != 0) &&\n    (((unsigned\
+    \ long long)UINT_MAX / (unsigned long long)$VAL1 < (unsigned long long)$VAL2)\
+    \ ||\n    ((unsigned long long)UINT_MAX / ((unsigned long long)$VAL1 * (unsigned\
+    \ long long)$VAL2) < (unsigned long long)$VAL3))) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected potential integer overflow vulnerability due to unchecked multiplication.\
+    \ \nMultiplying large integers can result in values that exceed the maximum limit\
+    \ of UINT_MAX, leading to undefined behavior. \nTo fix, check for potential overflow\
+    \ before performing the multiplication by ensuring that the operands are non-zero\
+    \ and that the result of the division is greater than the maximum limit.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/sysstat/sysstat/commit/954ff2e2673cef48f0ed44668c466eab041db387
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

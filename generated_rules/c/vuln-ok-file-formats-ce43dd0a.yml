@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ok-file-formats-ce43dd0a
+  pattern: 'size_t $SIZE = $NUM_BLOCKS * 64 * sizeof(*$BLOCKS) + $EXTRA_SPACE;
+
+    '
+  pattern-not: 'size_t $SIZE = ($NUM_BLOCKS * 64 + $EXTRA_SPACE) * sizeof(*$BLOCKS);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability is caused by incorrect order of operations in memory
+    allocation calculation.
+
+    This can lead to insufficient memory allocation, potentially causing buffer overflows
+    or crashes.
+
+    The fix is to ensure the extra space is added before multiplying by the size of
+    the block.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/brackeen/ok-file-formats/commit/ce43dd0a862485928dc30f282e69094b21d925fc
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

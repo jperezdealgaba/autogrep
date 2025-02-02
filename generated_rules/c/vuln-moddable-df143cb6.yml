@@ -1,0 +1,23 @@
+rules:
+- id: vuln-moddable-df143cb6
+  pattern: "if ($VAR->root->description->token == $TOKEN) {\n    ...\n}\n"
+  pattern-not: "if ($VAR->root->description && ($VAR->root->description->token ==\
+    \ $TOKEN)) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential null pointer dereference vulnerability. Accessing
+    `description->token` without first checking if `description` is null can lead
+    to a crash or undefined behavior. Always check for null pointers before dereferencing
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/df143cb68a45e5bbbc9bc95fdcd7478f3ac8c263
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

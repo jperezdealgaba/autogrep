@@ -1,0 +1,29 @@
+rules:
+- id: vuln-struts-2e2da292
+  pattern: '<param name="excludeParams">^class\..*,^dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,^parameters\..*,^action:.*,^method:.*</param>
+
+    '
+  pattern-not: '<param name="excludeParams">^action:.*,^method:.*</param>
+
+    '
+  languages:
+  - xml
+  message: 'The `excludeParams` configuration is too permissive, allowing potentially
+    dangerous parameters to be excluded from validation. This can lead to security
+    vulnerabilities such as remote code execution or data exposure. To fix this, restrict
+    the `excludeParams` to only necessary parameters like `^action:.*` and `^method:.*`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/2e2da292166adbc78c4cb1e308b30ddb4fba6d3f
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - xml

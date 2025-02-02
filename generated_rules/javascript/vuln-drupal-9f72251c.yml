@@ -1,0 +1,23 @@
+rules:
+- id: vuln-drupal-9f72251c
+  pattern: 'var $RE = RegExp(''^((f|ht)tps?:)?//(?!'' + window.location.host + '')'');
+
+    return $RE.test($URL);
+
+    '
+  pattern-not: 'return !Drupal.urlIsLocal($URL);
+
+    '
+  languages:
+  - javascript
+  message: Insecure URL validation detected. The custom regex-based validation for
+    external URLs is deprecated and can be bypassed. Use Drupal.urlIsLocal() instead
+    for secure URL validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/drupal/drupal/commit/9f72251c9291b5613acb9ca4ea7a51b4739e3f93
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    references: https://www.drupal.org/docs/7/security/writing-secure-code/url-validation
+    technology: javascript

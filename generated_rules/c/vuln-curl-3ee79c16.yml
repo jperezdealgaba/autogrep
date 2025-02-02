@@ -1,0 +1,26 @@
+rules:
+- id: vuln-curl-3ee79c16
+  pattern: '$DATA->info.header_size += $DELTA;
+
+    $DATA->req.headerbytecount += $DELTA;
+
+    '
+  pattern-not: "$RESULT = Curl_bump_headersize($DATA, $DELTA, $FLAG);\nif($RESULT)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Directly incrementing header size and byte count without bounds checking
+    can lead to integer overflow and security vulnerabilities. Use `Curl_bump_headersize`
+    to properly check and handle header size limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/3ee79c1674fd6f99e8efca52cd7510e08b766770
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

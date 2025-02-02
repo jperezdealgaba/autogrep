@@ -1,0 +1,33 @@
+rules:
+- id: vuln-krb5-8096a4aa
+  pattern: "if ($RETURN_TOKEN != NO_TOKEN_SEND && $RETURN_TOKEN != CHECK_MIC) {\n\
+    \    ...\n    if ($SEND_TOKEN_INIT) {\n        $TMPRET = make_spnego_tokenInit_msg($SC,\
+    \ 1, $MIC_OUT, 0, GSS_C_NO_BUFFER, $RETURN_TOKEN, $OUTPUT_TOKEN);\n    } else\
+    \ {\n        $TMPRET = make_spnego_tokenTarg_msg($NEG_STATE, $SC ? $SC->internal_mech\
+    \ : GSS_C_NO_OID, $MECHTOK_OUT, $MIC_OUT, $RETURN_TOKEN, $OUTPUT_TOKEN);\n   \
+    \ }\n    ...\n}\n"
+  pattern-not: "if ($RETURN_TOKEN == INIT_TOKEN_SEND && $SEND_TOKEN_INIT) {\n    $TMPRET\
+    \ = make_spnego_tokenInit_msg($SC, 1, $MIC_OUT, 0, GSS_C_NO_BUFFER, $RETURN_TOKEN,\
+    \ $OUTPUT_TOKEN);\n    if ($TMPRET < 0)\n        $RET = GSS_S_FAILURE;\n} else\
+    \ if ($RETURN_TOKEN != NO_TOKEN_SEND && $RETURN_TOKEN != CHECK_MIC) {\n    $TMPRET\
+    \ = make_spnego_tokenTarg_msg($NEG_STATE, $SC ? $SC->internal_mech : GSS_C_NO_OID,\
+    \ $MECHTOK_OUT, $MIC_OUT, $RETURN_TOKEN, $OUTPUT_TOKEN);\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability in the code involves incorrect handling of token initialization
+    in the SPNEGO mechanism. The original code could lead to incorrect token generation
+    due to improper conditions, potentially causing security issues in authentication.
+    The fix ensures that the token is only generated when the correct conditions are
+    met, preventing potential misuse.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/8096a4aa162f87aaf2129a7300a3645518074b13
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

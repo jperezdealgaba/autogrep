@@ -1,0 +1,32 @@
+rules:
+- id: vuln-docker-a588898f
+  pattern: 'append($ARGS, "origin", $REF)
+
+    '
+  pattern-not: 'append($ARGS, "origin", "--", $REF)
+
+    '
+  languages:
+  - go
+  message: 'Detected a potential security vulnerability where git refspecs are not
+    properly sanitized.
+
+    This can lead to command injection or other malicious behavior if the refspec
+    starts with a hyphen.
+
+    To fix this, ensure that the refspec is prefixed with ''--'' to prevent it from
+    being interpreted as a command-line option.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/docker/commit/a588898f99d697e5ff481ecb3b273f45410f10e6
+    category: security
+    cwe:
+    - CWE-88
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://git-scm.com/docs/git-fetch#Documentation/git-fetch.txt---
+    technology:
+    - go

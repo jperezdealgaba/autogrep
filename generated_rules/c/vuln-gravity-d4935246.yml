@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gravity-d4935246
+  pattern: 'if ((!$CLOSURE) || (($CLOSURE->f->tag == $EXEC_TYPE_INTERNAL) && ($CLOSURE->f->internal
+    == $CONVERT_FUNC))) return $RETURN_VALUE;
+
+    '
+  pattern-not: "if ((!$CLOSURE) || (($CLOSURE->f->tag == $EXEC_TYPE_INTERNAL) && ($CLOSURE->f->internal\
+    \ == $CONVERT_FUNC)) ||\n    gravity_vm_getclosure($VM) == $CLOSURE) return $RETURN_VALUE;\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs due to insufficient validation of closure objects
+    in the Gravity runtime. This can lead to incorrect handling of object conversions,
+    potentially causing unexpected behavior or crashes. The fix adds an additional
+    check using `gravity_vm_getclosure` to ensure proper validation. To fix this,
+    always validate the closure object with `gravity_vm_getclosure` before returning
+    a value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/d493524612edb6763c6ec07355ce584d83695e9b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

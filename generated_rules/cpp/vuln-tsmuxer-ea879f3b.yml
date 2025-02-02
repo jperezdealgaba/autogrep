@@ -1,0 +1,30 @@
+rules:
+- id: vuln-tsmuxer-ea879f3b
+  pattern: 'for (; *$CURBUFF == 0xFF && $CURBUFF < $NALEND; $CURBUFF++) $PAYLOAD +=
+    0xFF;
+
+    '
+  pattern-not: 'for (; $CURBUFF < $NALEND && *$CURBUFF == 0xFF; $CURBUFF++) $PAYLOAD
+    += 0xFF;
+
+    '
+  languages:
+  - cpp
+  message: 'The original code checks the value of the buffer before verifying its
+    bounds, which can lead to out-of-bounds memory access. This is dangerous because
+    it can cause crashes, undefined behavior, or even security vulnerabilities like
+    arbitrary code execution. Always check buffer bounds before accessing the contents.
+    Fix by swapping the order of the conditions in the loop.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/justdan96/tsMuxer/commit/ea879f3b915baa4f9d145ce44229f7b3b1952c30
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openexr-2f01a253
+  pattern: 'in.setFrameBuffer(&$VAR[-$DX], 1, 0);
+
+    '
+  pattern-not: 'intptr_t $BASE = reinterpret_cast<intptr_t>(&$VAR[0]);
+
+    in.setFrameBuffer(reinterpret_cast<$TYPE*>($BASE - $DX*sizeof($TYPE)), 1, 0);
+
+    '
+  languages:
+  - cpp
+  message: "Using negative array indices with pointer arithmetic can lead to undefined\
+    \ behavior. \nInstead, use integer arithmetic to compute the offset and then cast\
+    \ to the appropriate pointer type. \nThis ensures well-defined behavior across\
+    \ all architectures.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/AcademySoftwareFoundation/openexr/commit/2f01a253db2bc82724405a16c76783c38c67ba05
+    category: security
+    cwe:
+    - CWE-466
+    technology:
+    - cpp

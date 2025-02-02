@@ -1,0 +1,21 @@
+rules:
+- id: vuln-onedev-39d95ab8
+  pattern: "protected String escape(String $STRING) {\n  ...\n}\n"
+  pattern-not: "public static String escape(String $STRING) {\n  ...\n}\n"
+  languages:
+  - java
+  message: "The `escape` method should be declared as `public static` to ensure proper\
+    \ usage across different contexts. \nUsing a protected method can lead to inconsistent\
+    \ behavior and potential security vulnerabilities when the method is accessed\
+    \ from outside its class hierarchy. \nFix by changing the method visibility to\
+    \ `public static`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/39d95ab8122c5d9ed18e69dc024870cae08d2d60
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    technology:
+    - java

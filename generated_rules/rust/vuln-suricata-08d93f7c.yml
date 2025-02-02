@@ -1,0 +1,22 @@
+rules:
+- id: vuln-suricata-08d93f7c
+  pattern: '$BLOCK.name == $NAME.as_bytes()
+
+    '
+  pattern-not: '$BLOCK.name.as_ref() == $NAME.as_bytes()
+
+    '
+  languages:
+  - rust
+  message: "Direct comparison of `Vec<u8>` with `&[u8]` can lead to inefficient memory\
+    \ usage and potential performance issues. \nUse `as_ref()` to convert `Vec<u8>`\
+    \ to `&[u8]` for comparison to avoid unnecessary memory allocations and improve\
+    \ performance.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/OISF/suricata/commit/08d93f7c3762781b743f88f9fdc4389eb9c3eb64
+    category: performance
+    cwe:
+    - CWE-400
+    technology:
+    - rust

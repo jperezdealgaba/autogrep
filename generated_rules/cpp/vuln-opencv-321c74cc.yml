@@ -1,0 +1,29 @@
+rules:
+- id: vuln-opencv-321c74cc
+  pattern: "bool $CLASS::Feature::read(const FileNode& $NODE)\n{\n  ...\n  $IT >>\
+    \ $RECT[$RI].r.x >> $RECT[$RI].r.y >> $RECT[$RI].r.width >> $RECT[$RI].r.height\
+    \ >> $RECT[$RI].weight;\n  ...\n}\n"
+  pattern-not: "bool $CLASS::Feature::read(const FileNode& $NODE, const Size& $ORIGWINSIZE)\n\
+    {\n  ...\n  $IT >> $RW.r.x >> $RW.r.y >> $RW.r.width >> $RW.r.height >> $RW.weight;\n\
+    \  ...\n  CV_CheckGE($RW.r.x, 0, \"Invalid HAAR feature\");\n  CV_CheckGE($RW.r.y,\
+    \ 0, \"Invalid HAAR feature\");\n  CV_CheckLT($RW.r.x, $W, \"Invalid HAAR feature\"\
+    );\n  CV_CheckLT($RW.r.y, $H, \"Invalid HAAR feature\");\n  CV_CheckLE($RW.r.x\
+    \ + $RW.r.width, $W, \"Invalid HAAR feature\");\n  CV_CheckLE($RW.r.y + $RW.r.height,\
+    \ $H, \"Invalid HAAR feature\");\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "Missing input validation in feature reading function can lead to out-of-bounds\
+    \ access or integer overflow. \nThe function reads rectangle coordinates and dimensions\
+    \ without validating them against the original window size.\nAdd validation checks\
+    \ to ensure the coordinates are within bounds and the dimensions do not cause\
+    \ overflow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencv/opencv/commit/321c74ccd6077bdea1d47450ca4fe955cb5b6330
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-190
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

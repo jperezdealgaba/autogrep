@@ -1,0 +1,21 @@
+rules:
+- id: vuln-flatpress-0ee4f2e8
+  pattern: "$CONFIG = [\n    ...,\n    'author' => $_POST['author'],\n    'email'\
+    \ => $_POST['email'],\n    ...,\n];\n"
+  pattern-not: "$CONFIG = [\n    ...,\n    'author' => wp_specialchars($_POST['author']),\n\
+    \    'email' => wp_specialchars($_POST['email']),\n    ...,\n];\n"
+  languages:
+  - php
+  message: "Directly using $_POST data without sanitization can lead to XSS vulnerabilities.\
+    \ \nAlways sanitize user input before using it in the application. \nUse functions\
+    \ like wp_specialchars() to escape the data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpressblog/flatpress/commit/0ee4f2e8a7b9276880b56858e408cc9c6643cc3b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

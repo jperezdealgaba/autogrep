@@ -1,0 +1,25 @@
+rules:
+- id: vuln-vyper-bc3ca37e
+  pattern: "def lookup_sig(cls, sigs, method_name, expr_args, stmt_or_expr, context):\n\
+    \  ...\n  full_sig = cls.get_full_sig(stmt_or_expr.func.attr, expr_args, None,\
+    \ context.structs,)\n  ...\n  if full_sig in context.sigs[\"self\"]:\n    return\
+    \ context.sigs[\"self\"][full_sig]\n  else:\n    synonym_sig = synonymise(full_sig)\n\
+    \    ...\n    return ssig[0]\n"
+  pattern-not: "def lookup_internal_function(cls, method_name, args_lll, context):\n\
+    \  ...\n  for sig in context.sigs['self']:\n    if sig.name != method_name:\n\
+    \      continue\n    ...\n    return sig, kw_vals\n"
+  languages:
+  - python
+  message: Detected outdated function signature lookup method that can lead to incorrect
+    method resolution. This can cause security vulnerabilities due to improper function
+    handling. Use the updated `lookup_internal_function` method instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/bc3ca37e60ae1e38724223787a13b5188396839d
+    category: security
+    cwe: CWE-1284
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://vyper.readthedocs.io/en/stable/security.html
+    technology:
+    - python

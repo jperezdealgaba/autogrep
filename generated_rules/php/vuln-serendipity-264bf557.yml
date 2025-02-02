@@ -1,0 +1,28 @@
+rules:
+- id: vuln-serendipity-264bf557
+  pattern: '"?serendipity[step]=1" . $add_url . "&amp;serendipity[textarea]=" . $serendipity[''GET''][''textarea'']
+
+    '
+  pattern-not: '"?serendipity[step]=1" . $add_url . "&amp;serendipity[textarea]="
+    . htmlspecialchars($serendipity[''GET''][''textarea''])
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to Cross-Site Scripting (XSS) because it directly
+    concatenates user input from `$serendipity[''GET''][''textarea'']` into a URL
+    without proper escaping. This allows an attacker to inject malicious scripts into
+    the page. To fix this, use `htmlspecialchars()` to escape the user input before
+    including it in the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/s9y/Serendipity/commit/264bf55719baacc069ff9d3cc35f0c349cde11e3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A3:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-znc-f6aa35c6
+  pattern: 'WebSock.PrintErrorPage("Could not add channel [" + $VAR->GetName() + "]")
+
+    '
+  pattern-not: 'WebSock.PrintErrorPage("Could not add channel [" + $VAR + "]")
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential vulnerability where a method call `GetName()` is
+    used to construct an error message. This could lead to unexpected behavior or
+    security issues if the method returns sensitive or improperly sanitized data.
+    Instead, use a direct variable reference to ensure the message is constructed
+    safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/znc/znc/commit/f6aa35c6fbf2aac3c1bb83d4750041b769f61cbf
+    category: security
+    cwe:
+    - 'CWE-116: Improper Encoding or Escaping of Output'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/116.html
+    technology:
+    - cpp

@@ -1,0 +1,49 @@
+rules:
+- id: vuln-hyperstart-7670d5e8
+  pattern: '$TYPE $UID = ($TYPE)id_or_max($NAME);
+
+    FILE *$FILE = fopen("/etc/passwd", "r");
+
+    ...
+
+    if (!strcmp($PWD->pw_name, $NAME) || $PWD->pw_uid == $UID) { ... }
+
+    '
+  pattern-not: '$TYPE $UID;
+
+    FILE *$FILE;
+
+    struct passwd *$PWD;
+
+    $UID = ($TYPE)id_or_max($NAME);
+
+    $FILE = fopen("/etc/passwd", "r");
+
+    ...
+
+    if ($PWD->pw_uid == $UID || (!strcmp($PWD->pw_name, $NAME) && ($TYPE)INVALID_UGID
+    == $UID)) { ... }
+
+    '
+  languages:
+  - c
+  message: 'Detected insecure user ID validation in hyperstart. The original code
+    fails to properly handle invalid user IDs, which could lead to security vulnerabilities
+    such as privilege escalation or unauthorized access. The fix introduces a check
+    for INVALID_UGID to ensure proper validation. Always validate user IDs against
+    a defined constant for invalid values to prevent security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hyperhq/hyperstart/commit/7670d5e82291ebab819070db105d9d4dc26a4c6d
+    category: security
+    cwe:
+    - CWE-287
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/287.html
+    technology:
+    - c

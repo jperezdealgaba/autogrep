@@ -1,0 +1,32 @@
+rules:
+- id: vuln-opensc-6903aebf
+  pattern: 'int $REC;
+
+    int $OFFS = 0;
+
+    int $REC_LEN = $FILE->record_length;
+
+    '
+  pattern-not: 'size_t $REC;
+
+    size_t $OFFS = 0;
+
+    size_t $REC_LEN = $FILE->record_length;
+
+    '
+  languages:
+  - c
+  message: "The use of `int` for record-related variables can lead to integer overflow\
+    \ vulnerabilities. \nThis is dangerous because it can cause buffer overflows or\
+    \ incorrect memory access when handling large records. \nThe fix is to use `size_t`\
+    \ for these variables to ensure proper handling of large sizes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/6903aebfddc466d966c7b865fae34572bf3ed23e
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

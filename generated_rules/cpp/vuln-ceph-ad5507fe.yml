@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ceph-ad5507fe
+  pattern: "if (!$S->bucket_name_str.empty())\n  $S->cio->print(\"Bucket: %s\\r\\\
+    n\", $S->bucket_name_str.c_str());\n"
+  pattern-not: "if (!$S->bucket_name_str.empty()) {\n  string $B;\n  url_encode($S->bucket_name_str,\
+    \ $B);\n  $S->cio->print(\"Bucket: %s\\r\\n\", $B.c_str());\n}\n"
+  languages:
+  - cpp
+  message: 'Detected unencoded bucket name in print statement. This can lead to security
+    vulnerabilities such as HTTP response splitting or injection attacks. Always encode
+    user-controlled data before outputting it. Fix by using url_encode() on the bucket
+    name before printing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/ad5507fe0bf72ed5bdf8353e315cc9092c740144
+    category: security
+    cwe:
+    - CWE-113
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-fastasyncworldedit-083f8a4d
+  pattern: '$CLASS.class.getDeclaredField("entityManager");
+
+    $FIELD.setAccessible(true);
+
+    '
+  pattern-not: '$CLASS.class.getDeclaredField(Refraction.pickName("entityManager",
+    $PARAM));
+
+    $FIELD.setAccessible(true);
+
+    '
+  languages:
+  - java
+  message: 'Direct field access using reflection without obfuscation handling detected.
+    This can lead to runtime errors if field names change due to obfuscation. Use
+    Refraction.pickName() to handle obfuscated field names safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/IntellectualSites/FastAsyncWorldEdit/commit/083f8a4dd8b5ccb315da66603ee32fdbe108e02c
+    category: security
+    cwe: CWE-470
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology: java

@@ -1,33 +1,33 @@
 rules:
 - id: vuln-chakracore-d73c5f12
-  pattern: '$CTX->ClearDisableImplicitFlags();
+  pattern: '$SAVE = $CTX->GetImplicitCallFlags();
 
-    JavascriptFunction::CallRootFunctionInScript($FUNC, $ARGS);
+    $CTX->ClearDisableImplicitFlags();
 
-    $CTX->SetImplicitCallFlags($FLAGS);
+    ...
 
-    '
-  pattern-not: "{\n  AutoRestoreFlags $VAR($CTX, $FLAGS, $DISABLEFLAGS);\n  JavascriptFunction::CallRootFunctionInScript($FUNC,\
-    \ $ARGS);\n}\n"
-  message: 'Detected unsafe manual manipulation of thread context flags around function
-    calls.
-
-    This pattern is vulnerable because it doesn''t properly restore thread context
-    flags
-
-    in case of exceptions. Use the AutoRestoreFlags RAII pattern instead to ensure
-
-    proper cleanup in all execution paths.
+    $CTX->SetImplicitCallFlags($SAVE);
 
     '
+  pattern-not: "{\n    AutoRestoreFlags $AUTO($CTX, $CTX->GetImplicitCallFlags(),\
+    \ $CTX->GetDisableImplicitFlags());\n    ...\n}\n"
   languages:
   - cpp
-  severity: WARNING
+  message: 'Detected unsafe manual management of implicit call flags. This can lead
+    to inconsistent state and potential security vulnerabilities if exceptions or
+    early returns occur between flag manipulation. Use RAII pattern (like AutoRestoreFlags)
+    to ensure flags are always properly restored.
+
+    '
+  severity: ERROR
   metadata:
-    source-url: github.com/chakra-core/ChakraCore/commit/d73c5f12d9c5cbbf64f59ae04e76a531b3e844b3
+    source-url: github.com/Microsoft/ChakraCore/commit/d73c5f12d9c5cbbf64f59ae04e76a531b3e844b3
     category: security
     cwe:
-    - CWE-665
-    owasp: A9:2017-Using Components with Known Vulnerabilities
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization
     technology:
     - cpp

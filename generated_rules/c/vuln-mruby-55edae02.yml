@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mruby-55edae02
+  pattern: '$VAR->flags = $EXPR;
+
+    '
+  pattern-not: '$VAR->flags |= $EXPR & MRB_FLAG_IS_FROZEN;
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment of flags without proper bitwise masking can lead to
+    unintended overwrites of critical flags. This can cause security issues such as
+    bypassing frozen object checks. Use bitwise operations to ensure only the intended
+    flags are modified.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/55edae0226409de25e59922807cb09acb45731a2
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

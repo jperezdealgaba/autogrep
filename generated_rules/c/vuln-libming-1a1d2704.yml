@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libming-1a1d2704
+  pattern: "char *readBytes(FILE *f, int $SIZE) {\n  ...\n  SWF_warn(\"readBytes:\
+    \ want to read %i < 1 bytes: Handling a 0\\n\", $SIZE);\n  ...\n  int $I;\n  ...\n\
+    }\n"
+  pattern-not: "char *readBytes(FILE *f, unsigned long $SIZE) {\n  ...\n  SWF_warn(\"\
+    readBytes: want to read %lu < 1 bytes: Handling a 0\\n\", $SIZE);\n  ...\n  unsigned\
+    \ long $I;\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `readBytes` uses a signed integer for the size parameter,
+    which can lead to integer overflow or underflow vulnerabilities. This is dangerous
+    because it can cause memory corruption or unexpected behavior when handling large
+    sizes. To fix this, use an unsigned long type for the size parameter and loop
+    variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/1a1d2704cb19f2d3299f042bb3a4783c960b0a9a
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-191
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

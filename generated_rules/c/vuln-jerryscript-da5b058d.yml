@@ -1,0 +1,30 @@
+rules:
+- id: vuln-jerryscript-da5b058d
+  pattern: "if ($MODE == NUMBER_ROUTINE_TO_PRECISION\n    && ($ARG_NUM < 1 || $ARG_NUM\
+    \ > 100))\n{\n  return ecma_raise_range_error($MSG);\n}\n"
+  pattern-not: "if ($MODE == NUMBER_ROUTINE_TO_FIXED\n    && ($ARG_NUM <= -1 || $ARG_NUM\
+    \ >= 101))\n{\n  ecma_stringbuilder_destroy(&$BUILDER);\n  return ecma_raise_range_error($MSG);\n\
+    }\nelse if ($MODE == NUMBER_ROUTINE_TO_PRECISION\n        && ($ARG_NUM < 1 ||\
+    \ $ARG_NUM > 100))\n{\n  ecma_stringbuilder_destroy(&$BUILDER);\n  return ecma_raise_range_error($MSG);\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code lacks proper boundary checks for the `toFixed` method, which
+    can lead to incorrect or unsafe behavior. Specifically, the `toFixed` method should
+    validate that the argument is within the range of 0 to 100. Without this check,
+    invalid inputs can cause unexpected behavior or errors. The fix includes adding
+    a boundary check for the `toFixed` method and ensuring proper cleanup with `ecma_stringbuilder_destroy`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/galpeter/jerryscript/commit/da5b058decd93c8a067068018ec8c242ab16b39d
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/682.html
+    technology:
+    - c

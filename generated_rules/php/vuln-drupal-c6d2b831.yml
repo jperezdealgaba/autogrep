@@ -1,0 +1,30 @@
+rules:
+- id: vuln-drupal-c6d2b831
+  pattern: '$this->drupalCreateUser(array(''access content''))
+
+    '
+  pattern-not: '$this->drupalCreateUser(array(''access content overview'', ''access
+    content''))
+
+    '
+  languages:
+  - php
+  message: 'The user creation lacks the ''access content overview'' permission, which
+    can lead to unauthorized access to the content overview page. This is dangerous
+    because it may expose sensitive content information to users who should not have
+    access. To fix this, ensure that users who need to access the content overview
+    page have the ''access content overview'' permission.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/drupal/drupal/commit/c6d2b8311b82fe78d18732f01a68ceca3dea50af
+    category: security
+    cwe:
+    - CWE-276
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://www.drupal.org/project/drupal
+    technology:
+    - php

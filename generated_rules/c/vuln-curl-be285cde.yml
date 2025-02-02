@@ -1,0 +1,28 @@
+rules:
+- id: vuln-curl-be285cde
+  pattern: "if ($SIZE >= 48)\n  memcpy($NTLM->nonce, &$BUFFER[24], 8);\n"
+  pattern-not: "if (($SIZE < 32) || \n     (memcmp($BUFFER, \"NTLMSSP\", 8) != 0)\
+    \ || \n     (memcmp($BUFFER+8, $TYPE2_MARKER, sizeof($TYPE2_MARKER)) != 0)) {\n\
+    \  /* This was not a good enough type-2 message */\n  free($BUFFER);\n  return\
+    \ $ERROR;\n}\n$NTLM->flags = readint_le(&$BUFFER[20]);\nmemcpy($NTLM->nonce, &$BUFFER[24],\
+    \ 8);\n"
+  languages:
+  - c
+  message: 'The code directly copies data from a buffer without proper validation
+    of the buffer''s size or content. This can lead to buffer overflows or invalid
+    memory access if the input is malformed. The vulnerability was fixed by adding
+    proper validation checks for the buffer size and content before processing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/be285cde3f52571087816759220a68cb994d9307
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

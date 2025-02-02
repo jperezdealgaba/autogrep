@@ -1,0 +1,34 @@
+rules:
+- id: vuln-zulip-e3a4aeef
+  pattern: '$TAG = markdown.util.etree.Element("a")
+
+    $TAG.set("href", $URL)
+
+    $TAG.set("title", $URL)
+
+    $TAG.text = $TEXT
+
+    '
+  pattern-not: '$TAG = markdown.util.etree.Element("a")
+
+    $TAG.set("href", $URL)
+
+    $TAG.set("title", $TEXT)
+
+    $TAG.text = $TEXT
+
+    '
+  languages:
+  - python
+  message: Potential XSS vulnerability detected. The 'title' attribute should not
+    contain untrusted URLs. Use safe text instead of the URL in the title attribute.
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/e3a4aeeffa17d6e001586d11f8c714f9c690e1b1
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - python

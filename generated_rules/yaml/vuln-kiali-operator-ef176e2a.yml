@@ -1,0 +1,29 @@
+rules:
+- id: vuln-kiali-operator-ef176e2a
+  pattern: 'value: "true"
+
+    '
+  pattern-not: 'value: "false"
+
+    '
+  languages:
+  - yaml
+  message: 'The value "true" for the configuration setting is insecure and should
+    be set to "false" to prevent potential security risks. This setting could allow
+    unauthorized actions or configurations that compromise the system. Always ensure
+    that security-related settings are properly configured to the most restrictive
+    option.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kiali/kiali-operator/commit/ef176e2ac209d6aba0403d06bce5c7641d6826ff
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - yaml

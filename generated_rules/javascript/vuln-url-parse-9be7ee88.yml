@@ -1,0 +1,31 @@
+rules:
+- id: vuln-url-parse-9be7ee88
+  pattern: '$VAR = $AUTH.split('':'');
+
+    $URL.username = $VAR[0];
+
+    $URL.password = $VAR[1] || '''';
+
+    '
+  pattern-not: "$INDEX = $AUTH.indexOf(':');\nif (~$INDEX) {\n  $URL.username = $AUTH.slice(0,\
+    \ $INDEX);\n  $URL.username = encodeURIComponent(decodeURIComponent($URL.username));\n\
+    \  $URL.password = $AUTH.slice($INDEX + 1);\n  $URL.password = encodeURIComponent(decodeURIComponent($URL.password));\n\
+    } else {\n  $URL.username = encodeURIComponent(decodeURIComponent($AUTH));\n}\n"
+  languages:
+  - javascript
+  message: Potential URL parsing vulnerability due to insecure handling of authentication
+    credentials. Using `split(':')` directly can lead to incorrect parsing of special
+    characters. Use `indexOf` and `slice` with proper encoding to handle credentials
+    securely.
+  severity: ERROR
+  metadata:
+    source-url: github.com/unshiftio/url-parse/commit/9be7ee88afd2bb04e4d5a1a8da9a389ac13f8c40
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - javascript

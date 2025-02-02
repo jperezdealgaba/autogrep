@@ -1,0 +1,36 @@
+rules:
+- id: vuln-bento4-22192de5
+  pattern: 'int $NAME_SIZE = $SIZE - ($AP4_FULL_ATOM_HEADER_SIZE + 20);
+
+    if ($NAME_SIZE == 0) return;
+
+    '
+  pattern-not: 'if ($SIZE < $AP4_FULL_ATOM_HEADER_SIZE + 20) return;
+
+    AP4_UI32 $NAME_SIZE = $SIZE - ($AP4_FULL_ATOM_HEADER_SIZE + 20);
+
+    if ($NAME == NULL) return;
+
+    '
+  languages:
+  - cpp
+  message: 'The code calculates a size value without checking if the size is valid,
+    which can lead to integer underflow or invalid memory access. This is dangerous
+    because it can cause undefined behavior, crashes, or potential security vulnerabilities.
+    To fix this, always validate the size before performing arithmetic operations
+    and ensure proper null checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/22192de5367fa0cee985917f092be4060b7c00b0
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - cpp

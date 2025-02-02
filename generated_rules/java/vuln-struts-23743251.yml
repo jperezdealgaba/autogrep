@@ -1,0 +1,34 @@
+rules:
+- id: vuln-struts-23743251
+  pattern: "if (LOG.isWarnEnabled()) {\n  LOG.warn(\"Action/method [#0] does not match\
+    \ allowed action names pattern [#1], cleaning it up!\", $RAW_ACTION_NAME, $ALLOWED_ACTION_NAMES);\n\
+    }\nString $CLEAN_ACTION_NAME = $RAW_ACTION_NAME;\nfor (String $CHUNK : $ALLOWED_ACTION_NAMES.split($RAW_ACTION_NAME))\
+    \ {\n  $CLEAN_ACTION_NAME = $CLEAN_ACTION_NAME.replace($CHUNK, \"\");\n}\nif (LOG.isDebugEnabled())\
+    \ {\n  LOG.debug(\"Cleaned action/method name [#0]\", $CLEAN_ACTION_NAME);\n}\n\
+    return $CLEAN_ACTION_NAME;\n"
+  pattern-not: 'throw new StrutsException("Action [" + $RAW_ACTION_NAME + "] does
+    not match allowed action names pattern [" + $ALLOWED_ACTION_NAMES + "]!");
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure cleanup of action names in Struts. The original code
+    attempts to clean up action names by removing disallowed patterns, which can lead
+    to security vulnerabilities. Instead, it should throw an exception when an action
+    name does not match the allowed pattern. This prevents potential exploitation
+    of unsafe action names.
+
+    To fix this, ensure that invalid action names are rejected immediately by throwing
+    a StrutsException.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/237432512df0e27013f7c7b9ab59fdce44ca34a5
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

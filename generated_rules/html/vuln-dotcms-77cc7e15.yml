@@ -1,0 +1,29 @@
+rules:
+- id: vuln-dotcms-77cc7e15
+  pattern: '<input name="email" ... value="$!forgotPasswordForm.email" ... />
+
+    '
+  pattern-not: '<input name="email" ... value="$xsstool.escapeHTMLAttrib($!forgotPasswordForm.email)"
+    ... />
+
+    '
+  languages:
+  - html
+  message: "Detected unescaped user input in HTML attribute value, which can lead\
+    \ to Cross-Site Scripting (XSS) vulnerabilities. \nThe email input field value\
+    \ is directly embedded without proper escaping, allowing attackers to inject malicious\
+    \ scripts. \nTo fix this, use `$xsstool.escapeHTMLAttrib($!forgotPasswordForm.email)`\
+    \ to properly escape the input.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/dotCMS/commit/77cc7e15abc35763fb22dcacb9bf92a91adce640
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+    technology:
+    - html

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-speckle-server-3689e1cd
+  pattern: "export const canCreateToken = (userScopes: string[], tokenScopes: string[])\
+    \ => {\n  return tokenScopes.every((scope) => userScopes.includes(scope))\n}\n"
+  pattern-not: "export const canCreateToken = (params: {\n  userScopes: string[]\n\
+    \  tokenScopes: string[]\n  strict?: boolean\n}) => {\n  const { userScopes, tokenScopes,\
+    \ strict } = params\n  const hasAllScopes = tokenScopes.every((scope) => userScopes.includes(scope))\n\
+    \  if (!hasAllScopes) {\n    if (!strict) return false\n    throw new TokenCreateError(\n\
+    \      \"You can't create a token with scopes that you don't have\"\n    )\n \
+    \ }\n  return true\n}\n"
+  languages:
+  - typescript
+  message: 'The function `canCreateToken` does not properly validate token scopes,
+    allowing users to create tokens with unauthorized scopes. This can lead to privilege
+    escalation attacks. The function should be updated to throw an error when unauthorized
+    scopes are detected, especially in strict mode.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/specklesystems/speckle-server/commit/3689e1cd58ec4f06abee836af34889d6ce474571
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - typescript

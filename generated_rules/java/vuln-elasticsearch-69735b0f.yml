@@ -1,0 +1,26 @@
+rules:
+- id: vuln-elasticsearch-69735b0f
+  pattern: '$SETTINGS.getAsBoolean($GROOVY_SCRIPT_SANDBOX_ENABLED, true)
+
+    '
+  pattern-not: '$SETTINGS.getAsBoolean($GROOVY_SCRIPT_SANDBOX_ENABLED, false)
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure default sandbox configuration for Groovy scripts. Setting
+    the sandbox to true by default can expose the system to arbitrary code execution
+    vulnerabilities. Always ensure the sandbox is enabled by default to restrict unsafe
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/elastic/elasticsearch/commit/69735b0f4ab9ad7df4b82e8c917589b52cb9978c
+    category: security
+    cwe: 'CWE-94: Improper Control of Generation of Code (''Code Injection'')'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/94.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: java

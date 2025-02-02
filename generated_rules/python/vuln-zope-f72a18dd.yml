@@ -1,0 +1,20 @@
+rules:
+- id: vuln-zope-f72a18dd
+  pattern: '''AccessControl >= 4.2'''
+  pattern-not: '''AccessControl >= 5.2'''
+  languages:
+  - python
+  message: "Detected an outdated version requirement for AccessControl (>= 4.2). \n\
+    This could lead to security vulnerabilities due to missing critical fixes in older\
+    \ versions.\nUpgrade to AccessControl >= 5.2 to ensure all security patches are\
+    \ applied.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/zopefoundation/Zope/commit/f72a18dda8e9bf2aedb46168761668464a4be988
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - python

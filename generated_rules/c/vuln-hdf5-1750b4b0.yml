@@ -1,0 +1,24 @@
+rules:
+- id: vuln-hdf5-1750b4b0
+  pattern: "if ($FUNC($ADDR, $SIZE, $ACCUM->loc, $ACCUM->size) || (($ADDR + $SIZE)\
+    \ == $ACCUM->loc) || ($ACCUM->loc + $ACCUM->size) == $ADDR) {\n  ...\n}\n"
+  pattern-not: "if ($FUNC($ADDR, $SIZE, $ACCUM->loc, $ACCUM->size) && (($ADDR + $SIZE)\
+    \ == $ACCUM->loc) || ($ACCUM->loc + $ACCUM->size) == $ADDR) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for address overlap or equality without ensuring that
+    the addresses are defined. This can lead to undefined behavior if the addresses
+    are not properly initialized. Always check if the addresses are defined using
+    H5F_addr_defined before performing any operations on them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/HDFGroup/hdf5/commit/1750b4b0af5158009aa2f861c65fb4bf8fc364de
+    category: security
+    cwe:
+    - CWE-457
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

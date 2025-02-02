@@ -1,0 +1,27 @@
+rules:
+- id: vuln-plasma-workspace-8164beac
+  pattern: "QString $BODY;\n...\n$BODY = $CONTAINER->data()[QStringLiteral(\"body\"\
+    )].toString();\nif ($BODY != $NEW_BODY) {\n    $BODY.append(\"\\n\").append($NEW_BODY);\n\
+    } else {\n    $BODY = $NEW_BODY;\n}\n"
+  pattern-not: "QString $BODY_FINAL = NotificationSanitizer::parse($BODY);\n...\n\
+    const QString $PREVIOUS_BODY = $CONTAINER->data()[QStringLiteral(\"body\")].toString();\n\
+    if ($PREVIOUS_BODY != $BODY_FINAL) {\n    $BODY_FINAL = $PREVIOUS_BODY + QStringLiteral(\"\
+    <br/>\") + $BODY_FINAL;\n}\n"
+  languages:
+  - cpp
+  message: 'Detected unsafe string concatenation in XML/HTML content. This can lead
+    to malformed XML/HTML documents when appending content, potentially causing parsing
+    errors or security vulnerabilities. Use a proper sanitizer or parser to handle
+    XML/HTML content safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/KDE/plasma-workspace/commit/8164beac15ea34ec0d1564f0557fe3e742bdd938
+    category: security
+    cwe:
+    - 'CWE-116: Improper Encoding or Escaping of Output'
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - cpp

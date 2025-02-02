@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jenkins-6078dd7a
+  pattern: '<version>2.53.3-20160211.162333-3</version>
+
+    '
+  pattern-not: '<version>2.53.2</version>
+
+    '
+  languages:
+  - xml
+  message: 'Using a snapshot version (2.53.3-20160211.162333-3) of a dependency can
+    lead to instability and security risks because snapshot versions are not stable
+    and may contain untested or vulnerable code. Always use a stable release version
+    (e.g., 2.53.2) to ensure reliability and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/6078dd7aa097baf3402de9d5279f6053926a1ea7
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - xml

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-cimg-193abd7b
+  pattern: 'const ulongT $FSIZ = $FILE ? cimg::type<ulongT>::max() : (ulongT)cimg::fsize($FILENAME);
+
+    '
+  pattern-not: 'const ulongT $FSIZ = $FILE ? (ulongT)cimg_max_file_size : (ulongT)cimg::fsize($FILENAME);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of cimg::type<ulongT>::max() for file size calculation, which
+    can lead to integer overflow or excessive memory allocation. This is dangerous
+    as it allows processing of arbitrarily large files, potentially leading to denial
+    of service or memory exhaustion. Use cimg_max_file_size instead to enforce a reasonable
+    limit.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dtschump/CImg/commit/193abd7b29f3686840a48702d26aa3bf29deac3e
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

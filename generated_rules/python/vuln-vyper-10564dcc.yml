@@ -1,0 +1,23 @@
+rules:
+- id: vuln-vyper-10564dcc
+  pattern: '$CTX.append_instruction($OPCODE, [$IRLITERAL(...)])
+
+    '
+  pattern-not: '$BB.append_instruction($OPCODE, $VALUE)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe usage of IRLiteral in append_instruction. Directly passing
+    raw integers without proper wrapping can lead to security vulnerabilities. Use
+    the updated append_instruction method that automatically wraps integers in IRLiteral.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/10564dcc37756f3d3684b7a91fd8f4325a38c4d8
+    category: security
+    cwe: CWE-120
+    owasp: A1:2017-Injection
+    technology:
+    - python

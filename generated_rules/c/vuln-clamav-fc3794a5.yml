@@ -1,0 +1,26 @@
+rules:
+- id: vuln-clamav-fc3794a5
+  pattern: "if ($EXE_SECTION.raw >= $FSIZE) {\n  ...\n  free($SECTION_HDR);\n  free($EXE_SECTIONS);\n\
+    \  ...\n  return $CLEAN_RETURN;\n}\n"
+  pattern-not: "if (!CLI_ISCONTAINED(0, $FSIZE, $EXE_SECTION.uraw, $EXE_SECTION.ursz)\
+    \ || $EXE_SECTION.raw >= $FSIZE) {\n  ...\n  if ($NSECTIONS == 1) {\n    free($SECTION_HDR);\n\
+    \    free($EXE_SECTIONS);\n    ...\n    return $CLEAN_RETURN;\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potentially broken PE file section validation vulnerability.
+    The code checks if a section''s raw offset is beyond the file size but does not
+    properly handle the case when the section size is also invalid. This could allow
+    malformed PE files to bypass security checks. The fix includes a more comprehensive
+    validation using CLI_ISCONTAINED and handles section rescanning.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/fc3794a54d2affe5770c1f876484a871c783e91e
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

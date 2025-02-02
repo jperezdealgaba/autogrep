@@ -1,0 +1,31 @@
+rules:
+- id: vuln-suricata-d13bd2ae
+  pattern: 'len += $F->data_len;
+
+    '
+  pattern-not: 'len = MAX(len, $F->offset + $F->data_len);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves incorrect packet length calculation during
+    defragmentation, which could lead to buffer overflows or incorrect packet reassembly.
+    The issue occurs when the length is incremented by the fragment''s data length
+    without considering the fragment''s offset. This can result in incorrect packet
+    length calculations, potentially leading to security vulnerabilities. The fix
+    is to use MAX(len, frag->offset + frag->data_len) to ensure the packet length
+    is updated to the largest known data offset.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/d13bd2ae217a6d2ceb347f74d27cbfcd37b9bda9
+    category: security
+    cwe:
+    - 'CWE-130: Improper Handling of Length Parameter Inconsistency'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/130.html
+    technology:
+    - c

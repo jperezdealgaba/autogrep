@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wiki-57b56d3a
+  pattern: "if ($CONFIG.scanSVG && $OPTS.mimetype === 'image/svg+xml') {\n  ...\n\
+    }\n"
+  pattern-not: "if (\n  $CONFIG.scanSVG &&\n  (\n    $OPTS.mimetype.toLowerCase().startsWith('image/svg')\
+    \ ||\n    $OPTS.ext.toLowerCase() === 'svg'\n  )\n) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Incomplete SVG file type validation detected. The original check only
+    verifies the MIME type ''image/svg+xml'', which can be bypassed by using alternative
+    MIME types or file extensions. This could allow malicious SVG files to bypass
+    security checks. To fix this, ensure the validation checks for both the MIME type
+    and file extension, and use case-insensitive comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Requarks/wiki/commit/57b56d3a5b9c00358814e76f3ee5b4bb353ad62f
+    category: security
+    cwe: CWE-434
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/File_Upload
+    technology:
+    - javascript

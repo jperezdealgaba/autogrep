@@ -1,0 +1,25 @@
+rules:
+- id: vuln-solr-35fc4bdc
+  pattern: "MetricsMap $VAR = new MetricsMap(\n    map -> System.getenv().forEach(\n\
+    \        ($K, $V) -> {\n          if (!$HIDDEN.contains($K)) {\n            map.putNoEx(String.valueOf($K),\
+    \ $V);\n          }\n        }\n    )\n);\n$METRIC_MANAGER.registerGauge($NULL,\
+    \ $REGISTRY_NAME, $VAR, $TAG, $STRATEGY, \"env\", \"system\");\n"
+  pattern-not: "MetricsMap $VAR = new MetricsMap(\n    map -> System.getenv().forEach(\n\
+    \        ($K, $V) -> {\n          if (!$HIDDEN.contains($K)) {\n            map.putNoEx(String.valueOf($K),\
+    \ sanitize($V));\n          }\n        }\n    )\n);\n$METRIC_MANAGER.registerGauge($NULL,\
+    \ $REGISTRY_NAME, $VAR, $TAG, $STRATEGY, \"env\", \"system\");\n"
+  languages:
+  - java
+  message: "Exposing system environment variables without proper sanitization can\
+    \ lead to information disclosure. \nEnsure sensitive environment variables are\
+    \ either filtered or sanitized before being exposed in metrics.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/solr/commit/35fc4bdc48171d9a64251c54a1e76deb558cf9d8
+    category: security
+    cwe: CWE-200
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: java

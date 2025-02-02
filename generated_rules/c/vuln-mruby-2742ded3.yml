@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mruby-2742ded3
+  pattern: 'mrb_bool $VAR = $COND ? FALSE : TRUE;
+
+    '
+  pattern-not: 'mrb_bool $VAR = ($COND) ? TRUE : FALSE;
+
+    '
+  languages:
+  - c
+  message: 'The ternary operator is incorrectly used to set a boolean value, which
+    can lead to logical errors. The condition should be negated to ensure the correct
+    boolean assignment. This can cause unexpected behavior in the program logic. Fix
+    by inverting the condition and swapping the TRUE and FALSE values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/2742ded32fe18f88833d76b297f5c2170b6880c3
+    category: security
+    cwe:
+    - CWE-570
+    owasp:
+    - A03:2021-Injection
+    references: []
+    technology:
+    - c

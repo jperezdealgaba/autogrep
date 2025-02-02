@@ -1,0 +1,25 @@
+rules:
+- id: vuln-bento4-80e00530
+  pattern: 'if ($ENTRY_COUNT * 4 > $SIZE) return;
+
+    '
+  pattern-not: 'if (($SIZE - $AP4_ATOM_HEADER_SIZE - 4) / 4 < $ENTRY_COUNT) return;
+
+    '
+  languages:
+  - cpp
+  message: "This code contains an integer overflow vulnerability due to insufficient\
+    \ validation of buffer sizes. \nThe check `if (entry_count * 4 > size)` can lead\
+    \ to incorrect calculations and potential memory corruption. \nFix this by validating\
+    \ the buffer size using the corrected formula: `if ((size - AP4_ATOM_HEADER_SIZE\
+    \ - 4) / 4 < entry_count)`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/80e00530366671a2b55ffce5c64809e3bf0de533
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

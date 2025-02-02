@@ -1,0 +1,18 @@
+rules:
+- id: vuln-jenkins-23f4809e
+  pattern: "if ($REQ != null && $REQ.getMethod().equals(\"POST\")) {\n  ...\n}\n"
+  pattern-not: "if ($REQ == null || $REQ.getMethod().equals(\"POST\")) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Insecure request method validation detected. The condition should allow
+    requests with null or POST methods to prevent unauthorized access. Fix by using
+    '== null ||' instead of '!= null &&'.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/23f4809e6c10a221e9d67f2e841536845387b42d
+    category: security
+    cwe: CWE-285
+    owasp: A01:2021-Broken Access Control
+    technology:
+    - java

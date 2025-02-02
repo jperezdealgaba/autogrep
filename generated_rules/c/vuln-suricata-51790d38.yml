@@ -1,0 +1,23 @@
+rules:
+- id: vuln-suricata-51790d38
+  pattern: "if ($LINE_LEN >= 4 && $FUNC(\"SSH-\", $LINE_PTR, 4) != 0) {\n  ...\n}\n"
+  pattern-not: "if ($LINE_LEN < 4) {\n  ...\n}\nif ($FUNC(\"SSH-\", $LINE_PTR, 4)\
+    \ != 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly compares the buffer content without first checking if
+    the buffer length is sufficient. This can lead to out-of-bounds memory access
+    if the buffer is shorter than expected. Always verify the buffer length before
+    performing memory comparisons to prevent potential crashes or security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/51790d3824bc381e24aaeef20338dd6b8bd4e453
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-mercurial-plugin-54b4f82e
+  pattern: "public class $CLASS extends AbstractModelObject implements UnprotectedRootAction\
+    \ {\n  ...\n  public String getSearchUrl() {\n    return getUrlName();\n  }\n\
+    \  ...\n}\n"
+  pattern-not: "public class $CLASS implements UnprotectedRootAction {\n  ...\n}\n"
+  languages:
+  - java
+  message: Unnecessary inheritance from AbstractModelObject detected. This can lead
+    to security issues by exposing unnecessary methods. Remove the inheritance to
+    reduce the attack surface.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/mercurial-plugin/commit/54b4f82e80c89d51b12bc64258f6b59e98b0c16a
+    category: security
+    cwe: CWE-400
+    owasp: A04:2021 - Insecure Design
+    technology: java

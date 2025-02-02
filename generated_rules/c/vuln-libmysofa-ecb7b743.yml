@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libmysofa-ecb7b743
+  pattern: '$DATA->data = malloc($SIZE);
+
+    '
+  pattern-not: '$DATA->data = calloc(1, $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'The use of `malloc` without initialization can lead to uninitialized memory
+    usage, which may result in undefined behavior or security vulnerabilities. Replace
+    `malloc` with `calloc` to ensure memory is zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hoene/libmysofa/commit/ecb7b743b6f6d47b93a7bc680a60071a0f9524c6
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/908.html
+    technology:
+    - c

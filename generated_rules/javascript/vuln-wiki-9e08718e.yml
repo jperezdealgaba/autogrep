@@ -1,0 +1,21 @@
+rules:
+- id: vuln-wiki-9e08718e
+  pattern: "if ($RAW_TEXT.indexOf('{{') >= 0 && $RAW_TEXT.indexOf('}}') > 1) {\n \
+    \ ...\n}\n"
+  pattern-not: "const $REGEX = /(\\{|&#x7b;?){2}(.+?)(\\}|&#x7d;?){2}/i;\nif ($REGEX.test($RAW_TEXT))\
+    \ {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: Insecure detection of Mustache templates using string indexOf. This can
+    lead to template injection vulnerabilities. Use a regular expression to properly
+    validate Mustache templates.
+  severity: ERROR
+  metadata:
+    source-url: github.com/Requarks/wiki/commit/9e08718ee904046f8b2294ef6ac79e8a75a451e3
+    category: security
+    cwe: CWE-94
+    owasp: A1:2017-Injection
+    references:
+    - https://mustache.github.io/mustache.5.html
+    technology:
+    - javascript

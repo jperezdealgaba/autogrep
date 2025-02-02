@@ -1,0 +1,31 @@
+rules:
+- id: vuln-dcmtk-c34f4e46
+  pattern: "if (!$OPTIONS.singleProcess_ && ($COND != ASC_SHUTDOWNAPPLICATION))\n\
+    {\n    ...\n    $COND = ASC_dropAssociation($ASSOC);\n    if ($COND.bad())\n \
+    \   {\n        $ERROR(\"Cannot Drop Association: \" << $DUMP($TEMP_STR, $COND));\n\
+    \    }\n    $COND = ASC_destroyAssociation(&$ASSOC);\n    if ($COND.bad())\n \
+    \   {\n        $ERROR(\"Cannot Destroy Association: \" << $DUMP($TEMP_STR, $COND));\n\
+    \    }\n}\n"
+  pattern-not: "$COND = ASC_dropAssociation($ASSOC);\nif ($COND.bad())\n{\n    $ERROR(\"\
+    Cannot Drop Association: \" << $DUMP($TEMP_STR, $COND));\n}\n$COND = ASC_destroyAssociation(&$ASSOC);\n\
+    if ($COND.bad())\n{\n    $ERROR(\"Cannot Destroy Association: \" << $DUMP($TEMP_STR,\
+    \ $COND));\n}\n"
+  languages:
+  - cpp
+  message: 'The code conditionally drops and destroys associations based on a check
+    for single process mode and shutdown application condition. This can lead to resource
+    leaks or incomplete cleanup if the conditions are not met. The fix ensures that
+    associations are always dropped and destroyed properly, regardless of the conditions.
+    To fix this, remove the conditional check and always perform the cleanup operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DCMTK/dcmtk/commit/c34f4e46e672ad21accf04da0dc085e43be6f5e1
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

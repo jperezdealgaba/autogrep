@@ -1,0 +1,35 @@
+rules:
+- id: vuln-libjxl-d4e67a64
+  pattern: '$VAR.x = positions_.back().x + UnpackSigned(read_num($CTX));
+
+    $VAR.y = positions_.back().y + UnpackSigned(read_num($CTX));
+
+    '
+  pattern-not: "ssize_t $DELTAX = UnpackSigned(read_num($CTX));\nif ($DELTAX < 0 &&\
+    \ static_cast<size_t>(-$DELTAX) > positions_.back().x) {\n  return JXL_FAILURE(\"\
+    Invalid patch: negative x coordinate (%\" PRIuS \" base x %\" PRIdS \" delta x)\"\
+    , positions_.back().x, $DELTAX);\n}\n$VAR.x = positions_.back().x + $DELTAX;\n\
+    ssize_t $DELTAY = UnpackSigned(read_num($CTX));\nif ($DELTAY < 0 && static_cast<size_t>(-$DELTAY)\
+    \ > positions_.back().y) {\n  return JXL_FAILURE(\"Invalid patch: negative y coordinate\
+    \ (%\" PRIuS \" base y %\" PRIdS \" delta y)\", positions_.back().y, $DELTAY);\n\
+    }\n$VAR.y = positions_.back().y + $DELTAY;\n"
+  languages:
+  - cpp
+  message: 'The code directly adds a signed delta value to a position without checking
+    for potential underflow. This could lead to invalid negative coordinates, causing
+    undefined behavior or security vulnerabilities. To fix this, validate that the
+    delta does not result in a negative coordinate before performing the addition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libjxl/libjxl/commit/d4e67a644d8babe7cb68de122d8b5ccb2ad8f226
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

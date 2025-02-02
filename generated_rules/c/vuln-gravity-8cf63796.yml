@@ -1,0 +1,32 @@
+rules:
+- id: vuln-gravity-8cf63796
+  pattern: "char *$BUFFER = mem_alloc($ALLOC);\n...\nif ($FREE < $REQ + $SEPLEN) {\n\
+    \    $BUFFER = mem_realloc($BUFFER, $ALLOC * 2 + $REQ + $SEPLEN);\n    $ALLOC\
+    \ += $ALLOC + $REQ + $SEPLEN;\n}\n"
+  pattern-not: "char *$_BUFFER = mem_alloc($ALLOC);\n...\nif ($FREE_MEM < $REQ + $SEPLEN)\
+    \ {\n    uint64_t $TO_ALLOC = $ALLOC + ($REQ + $SEPLEN) * 2 + 4096;\n    if ($TO_ALLOC\
+    \ > $MAX_MEMORY_BLOCK) {\n        mem_free($_BUFFER);\n        RETURN_ERROR(\"\
+    Maximum memory block size reached (max %d, requested %lld).\", $MAX_MEMORY_BLOCK,\
+    \ $TO_ALLOC);\n    }\n    $_BUFFER = mem_realloc($_BUFFER, (uint32_t)$TO_ALLOC);\n\
+    \    if (!$_BUFFER) {\n        mem_free($_BUFFER);\n        RETURN_ERROR(\"Not\
+    \ enought memory to re-allocate a buffer for the join operation.\");\n    }\n\
+    \    $ALLOC = (uint32_t)$TO_ALLOC;\n}\n"
+  languages:
+  - c
+  message: 'The code lacks proper sanity checks when reallocating memory, which can
+    lead to excessive memory allocation or memory corruption. This vulnerability can
+    be exploited to cause a denial of service or potentially execute arbitrary code.
+    Always validate the size of the memory block before reallocating and ensure proper
+    error handling for memory allocation failures.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/8cf6379645f458384fc44b627662de5345696072
+    category: security
+    cwe:
+    - 'CWE-789: Uncontrolled Memory Allocation'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

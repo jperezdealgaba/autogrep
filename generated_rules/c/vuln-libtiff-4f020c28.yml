@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libtiff-4f020c28
+  pattern: 'TIFFClose($IN);
+
+    return (-1);
+
+    '
+  pattern-not: "goto $ERROR;\n...\n$ERROR:\n  if ($IN)\n    TIFFClose($IN);\n  return\
+    \ (-1);\n"
+  languages:
+  - c
+  message: 'Detected a potential resource leak vulnerability where TIFF file handles
+    are not properly cleaned up in error paths. This can lead to resource exhaustion
+    and undefined behavior. The issue was fixed by using a centralized error handling
+    block with proper cleanup. Ensure all resources are properly freed in error paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/4f020c28a8374f26b2796900cdd805f3988a176b
+    category: security
+    cwe:
+    - CWE-772
+    owasp: A9:2021 - Security Logging and Monitoring Failures
+    technology:
+    - c

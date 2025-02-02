@@ -1,0 +1,27 @@
+rules:
+- id: vuln-opensc-c3f23b83
+  pattern: '$VAR = $EXPR - 1;
+
+    '
+  pattern-not: '$VAR = $EXPR > 0 ? $EXPR - 1 : 0;
+
+    '
+  languages:
+  - c
+  message: 'Detected potential integer underflow vulnerability. Subtracting 1 from
+    a variable without checking if it is greater than 0 can lead to underflow, which
+    may cause unexpected behavior or security issues. Always ensure the variable is
+    greater than 0 before performing the subtraction. The fix involves using a ternary
+    operator to check the value before subtracting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/c3f23b836e5a1766c36617fe1da30d22f7b63de2
+    category: security
+    cwe:
+    - CWE-191
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

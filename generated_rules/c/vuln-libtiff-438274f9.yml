@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libtiff-438274f9
+  pattern: '$STRIPSPERPLANE = (($TD->td_imagelength + $ROWSPERSTRIP - 1) / $ROWSPERSTRIP);
+
+    '
+  pattern-not: '$STRIPSPERPLANE = TIFFhowmany_32_maxuint_compat($TD->td_imagelength,
+    $ROWSPERSTRIP);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves an integer overflow in the calculation of strips
+    per plane in the TIFF library. The original calculation can lead to an overflow
+    when td_imagelength and rowsperstrip are large, potentially causing memory corruption
+    or other undefined behavior. The fix replaces the calculation with the TIFFhowmany_32_maxuint_compat
+    function, which safely handles the division. To fix this, replace the vulnerable
+    calculation with the safe function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/vadz/libtiff/commit/438274f938e046d33cb0e1230b41da32ffe223e1
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

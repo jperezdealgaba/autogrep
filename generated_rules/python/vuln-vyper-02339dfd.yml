@@ -1,0 +1,22 @@
+rules:
+- id: vuln-vyper-02339dfd
+  pattern: '["if", ["eq", "_calldata_method_id", $METHOD_ID], $RET]
+
+    '
+  pattern-not: '["if", ["and", ["gt", "calldatasize", 0], ["eq", "_calldata_method_id",
+    $METHOD_ID]], $RET]
+
+    '
+  languages:
+  - python
+  message: Detected a vulnerability where a method ID check does not validate calldatasize.
+    This can lead to incorrect function execution when calldata is empty. Ensure that
+    calldatasize is checked when the method ID is 0.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/02339dfda0f3caabad142060d511d10bfe93c520
+    category: security
+    cwe: 'CWE-284: Improper Access Control'
+    owasp: A02:2021-Cryptographic Failures
+    technology:
+    - python

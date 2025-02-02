@@ -1,0 +1,25 @@
+rules:
+- id: vuln-curl-75ca568f
+  pattern: "$TYPE *$FUNC(CURL *$HANDLE, const char *$STRING, int $LENGTH, int *$OLEN)\
+    \ {\n  ...\n  int $STRINDEX = 0;\n  ...\n}\n"
+  pattern-not: "$TYPE *$FUNC(CURL *$HANDLE, const char *$STRING, size_t $LENGTH, int\
+    \ *$OLEN) {\n  ...\n  size_t $STRINDEX = 0;\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of ''int'' instead of ''size_t'' for string length and index variables
+    can lead to integer overflow vulnerabilities. This is particularly dangerous in
+    URL decoding functions where large inputs can cause buffer overflows or incorrect
+    memory allocations. Always use ''size_t'' for variables that represent sizes or
+    indices to avoid such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/75ca568fa1c19de4c5358fed246686de8467c238
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-opensc-40c50a3a
+  pattern: "unsigned char *$BLOB;\n...\nif ($COND) {\n  ...\n}\n"
+  pattern-not: "unsigned char *$BLOB = NULL;\n...\nif ($COND) {\n  free($BLOB);\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected potential memory leak in error handling paths. The code fails
+    to free allocated memory before returning in error conditions, which could lead
+    to memory leaks. Ensure that all allocated memory is properly freed in error handling
+    paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/40c50a3a
+    category: security
+    cwe:
+    - 'CWE-401: Missing Release of Memory after Effective Lifetime'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

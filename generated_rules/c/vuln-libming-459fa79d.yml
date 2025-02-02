@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libming-459fa79d
+  pattern: '$VAR->Password = readBytes($F, $LENGTH);
+
+    '
+  pattern-not: '$VAR->Password = readString($F);
+
+    '
+  languages:
+  - c
+  message: "Detected use of `readBytes` for password handling, which can lead to security\
+    \ vulnerabilities. \nThe function `readBytes` does not properly handle string\
+    \ termination, potentially resulting in buffer overflows or information leaks.\
+    \ \nUse `readString` instead, which ensures proper null-termination of the string.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/459fa79d04dcd240996765727a726e5dc5c38f34
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

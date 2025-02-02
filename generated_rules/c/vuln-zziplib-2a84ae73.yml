@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zziplib-2a84ae73
+  pattern: '$TAIL - $END >= __sizeof($STRUCT) - 2
+
+    '
+  pattern-not: '$TAIL - $END >= __sizeof($STRUCT)
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect boundary check when verifying
+    zip file trailers. The original code subtracts 2 from the size of the trailer
+    structure, which could lead to buffer over-reads or incorrect validation of zip
+    files. This could be exploited to process malformed zip files, potentially leading
+    to crashes or security issues. The fix removes the incorrect subtraction, ensuring
+    proper boundary checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/2a84ae73e93b0c1f4f12f2c58104f8327d10e41b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-126
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

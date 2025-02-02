@@ -1,0 +1,28 @@
+rules:
+- id: vuln-bento4-5eb8cf89
+  pattern: "if ($NAME[0] == $NAME_SIZE - 1) {\n  ...\n}\n"
+  pattern-not: "if ((AP4_UI08)$NAME[0] == (AP4_UI08)($NAME_SIZE - 1)) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potential integer overflow vulnerability due to improper type
+    casting.
+
+    Comparing a character directly with an integer can lead to unexpected behavior
+    if the character value exceeds the expected range.
+
+    To fix this, ensure proper type casting is used when comparing characters with
+    integers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/axiomatic-systems/Bento4/commit/5eb8cf89d724ccb0b4ce5f24171ec7c11f0a7647
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

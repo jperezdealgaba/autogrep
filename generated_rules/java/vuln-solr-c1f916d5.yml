@@ -1,0 +1,25 @@
+rules:
+- id: vuln-solr-c1f916d5
+  pattern: "if (Boolean.getBoolean(\"solr.allow.unsafe.resourceloading\"))\n  return\
+    \ $PATH;\n"
+  pattern-not: "if ($ALLOW_UNSAFE_RESOURCELOADING)\n  return $PATH;\n"
+  languages:
+  - java
+  message: 'Detected unsafe resource loading configuration. The code allows bypassing
+    path safety checks when ''solr.allow.unsafe.resourceloading'' is set to true,
+    which can lead to path traversal vulnerabilities. Use a centralized configuration
+    parameter and ensure proper path validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/solr/commit/c1f916d532e9580f22c09b6ad746d4ea9bcc47a6
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java

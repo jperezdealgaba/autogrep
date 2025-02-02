@@ -1,0 +1,21 @@
+rules:
+- id: vuln-jenkins-94a8789b
+  pattern: 'return Util.getDigestOf($TOKEN.getPlainText());
+
+    '
+  pattern-not: "String $p = $TOKEN.getPlainText();\nif ($p.equals(Util.getDigestOf(Jenkins.getInstance().getSecretKey()+\"\
+    :\"+$USER.getId()))) {\n    $TOKEN = Secret.fromString($p=$API_KEY_SEED.mac($USER.getId()));\n\
+    }\nreturn Util.getDigestOf($p);\n"
+  languages:
+  - java
+  message: Potential insecure handling of API tokens detected. The initial token value
+    may be compromised. Use the updated token generation method that includes the
+    secret key and user ID for enhanced security.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/94a8789b699132dd706021a6be1b78bc47f19602
+    category: security
+    cwe: 'CWE-330: Use of Insufficiently Random Values'
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - java

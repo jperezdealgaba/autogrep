@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gitpod-6771283c
+  pattern: 'redirect = $PROTOCOL !== "http:" && $PROTOCOL !== "https:"
+
+    '
+  pattern-not: 'redirect = $TRUSTED_PROTOCOLS.includes($PROTOCOL)
+
+    '
+  languages:
+  - typescript
+  message: 'The code allows redirects based on a negative check for HTTP and HTTPS
+    protocols, which can lead to unsafe redirects to untrusted protocols. This can
+    be exploited to redirect users to malicious sites or applications. To fix this,
+    use a whitelist of trusted protocols and check if the protocol is included in
+    that list.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gitpod-io/gitpod/commit/6771283c3406586e352337675b79ff2ca50f191b
+    category: security
+    cwe: 'CWE-601: URL Redirection to Untrusted Site'
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Unvalidated_Redirects_and_Forwards
+    technology:
+    - typescript

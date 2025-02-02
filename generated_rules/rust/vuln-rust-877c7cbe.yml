@@ -1,0 +1,33 @@
+rules:
+- id: vuln-rust-877c7cbe
+  pattern: 'unsafe { &mut $VAR[$TAIL..$HEAD] }
+
+    '
+  pattern-not: 'unsafe { RingSlices::ring_slices($VAR, $HEAD, $TAIL).0 }
+
+    '
+  languages:
+  - rust
+  message: 'Direct slicing of buffer regions without proper boundary checks can lead
+    to unsafe memory access.
+
+    This vulnerability occurs when accessing contiguous regions of a buffer without
+    considering wrap-around cases,
+
+    potentially leading to out-of-bounds access or incorrect memory handling.
+
+    Use `RingSlices::ring_slices` to safely handle buffer regions in a circular buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/877c7cbe142a373f93d38a23741dcc3a0a17a2af
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://doc.rust-lang.org/std/collections/struct.VecDeque.html
+    technology:
+    - rust

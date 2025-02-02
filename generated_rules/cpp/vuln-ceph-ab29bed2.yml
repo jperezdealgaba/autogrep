@@ -1,0 +1,33 @@
+rules:
+- id: vuln-ceph-ab29bed2
+  pattern: 'parse_value_and_bound($INPUT, &$OUTPUT, $LOWER_BOUND, $UPPER_BOUND, $DEFAULT_VAL)
+
+    '
+  pattern-not: 'parse_value_and_bound($INPUT, $OUTPUT, $LOWER_BOUND, $UPPER_BOUND,
+    $DEFAULT_VAL)
+
+    '
+  languages:
+  - cpp
+  message: 'The function `parse_value_and_bound` is using a pointer to an integer
+    (`&$OUTPUT`) which can lead to incorrect bounds checking and potential security
+    vulnerabilities. This pattern should be replaced with a direct integer reference
+    (`$OUTPUT`) to ensure proper bounds enforcement.
+
+    This is dangerous because incorrect bounds checking can lead to out-of-bounds
+    access or other security issues. The fix involves changing the function to use
+    a reference instead of a pointer, ensuring that the bounds are correctly applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/ab29bed2fc9f961fe895de1086a8208e21ddaddc
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - cpp

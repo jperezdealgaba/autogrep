@@ -1,0 +1,20 @@
+rules:
+- id: vuln-harfbuzz-7f7ebdc6
+  pattern: '"perf/fonts/Mplus1p-Regular.ttf"'
+  pattern-not: '"test/subset/data/fonts/Mplus1p-Regular.ttf"'
+  languages:
+  - cpp
+  message: 'The code uses an incorrect file path for the font file, which may lead
+    to missing resources or incorrect behavior. This can cause the application to
+    fail or behave unexpectedly when the resource is not found. Update the path to
+    the correct location to ensure the application can access the required resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/behdad/harfbuzz/commit/7f7ebdc6bb73bc24d6aa51f2a2c6b214484f5ee4
+    category: security
+    cwe:
+    - CWE-427
+    technology:
+    - cpp

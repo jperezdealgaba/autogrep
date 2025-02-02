@@ -1,0 +1,28 @@
+rules:
+- id: vuln-krb5-e3b5a5e5
+  pattern: '$FUNC($ARG, 0, $NULL, $NULL, $NULL);
+
+    '
+  pattern-not: '$FUNC($ARG, EINVAL, $NULL, $NULL, $NULL);
+
+    '
+  languages:
+  - c
+  message: 'The code uses a hardcoded error code (0) in a response function, which
+    can mask actual errors. This can lead to incorrect handling of error conditions
+    and potential security issues. Use the appropriate error code (EINVAL) instead
+    of 0 to ensure proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/e3b5a5e5267818c97750b266df50b6a3d4649604
+    category: security
+    cwe:
+    - 'CWE-392: Missing Report of Error Condition'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/392.html
+    technology:
+    - c

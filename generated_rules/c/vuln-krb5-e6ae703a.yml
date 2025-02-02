@@ -1,0 +1,24 @@
+rules:
+- id: vuln-krb5-e6ae703a
+  pattern: "if ($HEADER->buffer.length < $TOKEN_WRAPPER_LEN + 14) {\n  ...\n}\n"
+  pattern-not: "if ($HEADER->buffer.length < $TOKEN_WRAPPER_LEN + 22) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code is vulnerable to a buffer underflow due to insufficient validation
+    of the token length. This can lead to memory corruption or unauthorized access.
+    The patch increases the minimum required length from 14 to 22 to ensure proper
+    validation. Always validate buffer lengths to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/krb5/krb5/commit/e6ae703ae597d798e310368d52b8f38ee11c6a73
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

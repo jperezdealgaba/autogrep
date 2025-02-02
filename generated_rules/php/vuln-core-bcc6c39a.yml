@@ -1,0 +1,40 @@
+rules:
+- id: vuln-core-bcc6c39a
+  pattern: '$content->assign(''message'', $VAR->getMessage());
+
+    $content->assign(''errorClass'', get_class($VAR));
+
+    $content->assign(''errorMsg'', $VAR->getMessage());
+
+    $content->assign(''errorCode'', $VAR->getCode());
+
+    $content->assign(''file'', $VAR->getFile());
+
+    $content->assign(''line'', $VAR->getLine());
+
+    $content->assign(''trace'', $VAR->getTraceAsString());
+
+    '
+  pattern-not: '$content->assign(''debugMode'', \OC::$server->getSystemConfig()->getValue(''debug'',
+    false));
+
+    '
+  languages:
+  - php
+  message: 'The code exposes detailed error information, including stack traces, which
+    can be exploited by attackers to gather sensitive information about the application.
+    This is a security risk as it can lead to information disclosure vulnerabilities.
+    To fix this, ensure that detailed error information is only shown in debug mode
+    and not in production environments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/owncloud/core/commit/bcc6c39ad8c22a00323a114e9c1a0a834983fb35
+    category: security
+    cwe:
+    - CWE-209
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - php

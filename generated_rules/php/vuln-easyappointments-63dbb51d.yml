@@ -1,0 +1,29 @@
+rules:
+- id: vuln-easyappointments-63dbb51d
+  pattern: 'if (!$this->CI->accounts->check_login($USERNAME, $PASSWORD))
+
+    '
+  pattern-not: '$USERDATA = $this->CI->accounts->check_login($USERNAME, $PASSWORD);
+
+    if (empty($USERDATA[''role_slug'']) || $USERDATA[''role_slug''] !== DB_SLUG_ADMIN)
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses the result of a login check without verifying the
+    user''s role, which can lead to unauthorized access. This is dangerous because
+    it bypasses role-based access control, potentially allowing non-admin users to
+    perform admin operations. To fix this, ensure that the user''s role is verified
+    after a successful login.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/alextselegidis/easyappointments/commit/63dbb51decfcc1631c398ecd6d30e3a337845526
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

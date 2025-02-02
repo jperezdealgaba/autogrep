@@ -1,0 +1,24 @@
+rules:
+- id: vuln-curl-192c4f78
+  pattern: "if(('%' == $IN) && ISXDIGIT($STRING[1]) && ISXDIGIT($STRING[2])) {\n \
+    \ ...\n}\n"
+  pattern-not: "if(('%' == $IN) && ($ALLOC > 2) && ISXDIGIT($STRING[1]) && ISXDIGIT($STRING[2]))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a percent-encoded character without verifying if there
+    is sufficient allocated space in the buffer. This can lead to out-of-bounds read
+    vulnerabilities when processing malformed input. To fix this, ensure that the
+    buffer has enough space (greater than 2) before checking for percent-encoded characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/192c4f788d48f82c03e9cef40013f34370e90737
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

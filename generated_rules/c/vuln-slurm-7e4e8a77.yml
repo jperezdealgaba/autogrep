@@ -1,0 +1,31 @@
+rules:
+- id: vuln-slurm-7e4e8a77
+  pattern: 'uint32_t $VAR;
+
+    unpackstr_xmalloc((char **) $OBJ, &$VAR, $BUF);
+
+    '
+  pattern-not: 'safe_unpackstr((char **) $OBJ, $BUF);
+
+    return $SUCCESS;
+
+    '
+  languages:
+  - c
+  message: 'The use of `unpackstr_xmalloc` with an uninitialized `uint32_t` variable
+    can lead to undefined behavior or memory corruption. This function attempts to
+    read a string from a buffer, but the size parameter is uninitialized, which can
+    result in incorrect memory allocation or access. The fix replaces this with `safe_unpackstr`,
+    which handles the string extraction safely and correctly. Always ensure that variables
+    used in memory operations are properly initialized and validated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/SchedMD/slurm/commit/7e4e8a77c97bcdc5fa2803762f25318f40107ed4
+    category: security
+    cwe:
+    - CWE-457
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

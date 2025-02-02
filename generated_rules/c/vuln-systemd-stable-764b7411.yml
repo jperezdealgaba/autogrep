@@ -1,0 +1,49 @@
+rules:
+- id: vuln-systemd-stable-764b7411
+  pattern: 'char *p, *s;
+
+    ...
+
+    p = strdupa($F);
+
+    ...
+
+    p = skip_leading_chars(p, "/");
+
+    ...
+
+    s = unit_name_escape(p);
+
+    '
+  pattern-not: '_cleanup_free_ char *p = NULL;
+
+    ...
+
+    p = strdup($F);
+
+    ...
+
+    s = unit_name_escape(skip_leading_chars(p, "/"));
+
+    '
+  languages:
+  - c
+  message: 'The use of `strdupa` for dynamic string allocation is dangerous because
+    it uses stack memory, which can lead to stack overflow vulnerabilities. Additionally,
+    the code does not properly handle memory cleanup, potentially leading to memory
+    leaks. Replace `strdupa` with `strdup` and ensure proper memory management using
+    `_cleanup_free_` to avoid these issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd-stable/commit/764b74113e36ac5219a4b82a05f311b5a92136ce
+    category: security
+    cwe:
+    - CWE-787
+    - CWE-401
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://man7.org/linux/man-pages/man3/strdupa.3.html
+    technology:
+    - c

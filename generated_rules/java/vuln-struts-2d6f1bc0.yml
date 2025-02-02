@@ -1,0 +1,21 @@
+rules:
+- id: vuln-struts-2d6f1bc0
+  pattern: "if ($ITEM.getSize() == 0) {\n    ...\n}\n"
+  pattern-not: "if ($ITEM.getSize() > $MAX_STRING_LENGTH) {\n    ...\n}\n"
+  languages:
+  - java
+  message: "Detected missing validation for maximum string length in multipart requests.\
+    \ \nThis can lead to denial of service or excessive resource consumption. \nAdd\
+    \ a check to ensure the size of the string parameter does not exceed the configured\
+    \ maximum length.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/2d6f1bc0a6f5ac575a56784ac6461816b67c4f21
+    category: security
+    cwe: CWE-770
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/770.html
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html
+    technology:
+    - java

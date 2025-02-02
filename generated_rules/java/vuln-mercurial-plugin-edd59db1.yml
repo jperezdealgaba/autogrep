@@ -1,0 +1,21 @@
+rules:
+- id: vuln-mercurial-plugin-edd59db1
+  pattern: "public ListBoxModel doFillInstallationItems() {\n  ...\n}\n"
+  pattern-not: "public ListBoxModel doFillInstallationItems(@AncestorInPath Item context)\
+    \ {\n  if (context == null ?\n          !Jenkins.get().hasPermission(Jenkins.ADMINISTER)\
+    \ :\n          !context.hasPermission(Item.EXTENDED_READ)) {\n      return result;\n\
+    \  }\n  ...\n}\n"
+  languages:
+  - java
+  message: "Missing permission check in method 'doFillInstallationItems'. This can\
+    \ lead to unauthorized access to sensitive information. \nAdd a permission check\
+    \ using @AncestorInPath and verify if the user has the required permissions (ADMINISTER\
+    \ or EXTENDED_READ).\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/mercurial-plugin/commit/edd59db1eec7e3c8d467372cd8417ae65eeb29dd
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java

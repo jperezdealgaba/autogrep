@@ -1,0 +1,27 @@
+rules:
+- id: vuln-hadoop-5e2f4339
+  pattern: 'ObjectInputStream $OIS = new ObjectInputStream($BAIS);
+
+    '
+  pattern-not: 'ValidatingObjectInputStream $OIS = new ValidatingObjectInputStream($BAIS);
+
+    $OIS.accept($CLASSES);
+
+    '
+  languages:
+  - java
+  message: Unsafe deserialization detected. Using ObjectInputStream directly can lead
+    to deserialization vulnerabilities. Replace with ValidatingObjectInputStream and
+    explicitly specify allowed classes using the accept method.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/hadoop/commit/5e2f4339fadc88f20543915fc9b0aaeaf4f9e7bf
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data
+    technology:
+    - java

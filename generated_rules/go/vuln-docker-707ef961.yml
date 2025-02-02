@@ -1,0 +1,26 @@
+rules:
+- id: vuln-docker-707ef961
+  pattern: "if err := $SETUP_WORKING_DIRECTORY($ARGS); err != nil {\n    return err\n\
+    }\nif err := system.CloseFdsFrom(3); err != nil {\n    return err\n}\n"
+  pattern-not: "if err := utils.CloseExecFrom(3); err != nil {\n    return err\n}\n\
+    if err := setupWorkingDirectory($ARGS); err != nil {\n    return err\n}\n"
+  languages:
+  - go
+  message: 'The vulnerability involves the incorrect order of file descriptor closure
+    and working directory setup in the LXC driver. This can lead to security issues
+    where file descriptors are not properly closed before setting up the working directory,
+    potentially allowing unintended access to resources. The fix involves using `utils.CloseExecFrom`
+    instead of `system.CloseFdsFrom` and ensuring the correct order of operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/docker/commit/707ef9618b3b26a0534a0af732a22f159eccfaa5
+    category: security
+    cwe:
+    - CWE-362
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - go

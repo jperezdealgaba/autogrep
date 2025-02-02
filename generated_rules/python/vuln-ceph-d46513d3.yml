@@ -1,0 +1,19 @@
+rules:
+- id: vuln-ceph-d46513d3
+  pattern: "if not $LEGACY_MODE and $BASE_PATH.decode('utf-8') != str(Path($SUBPATH).parent):\n\
+    \  ...\n"
+  pattern-not: "if not $LEGACY_MODE and $STATE != SubvolumeStates.STATE_RETAINED and\
+    \ $BASE_PATH.decode('utf-8') != str(Path($SUBPATH).parent):\n  ...\n"
+  languages:
+  - python
+  message: 'Potential security issue detected: Missing state validation before path
+    comparison. This could lead to incorrect handling of subvolumes with retained
+    snapshots. Add a check for SubvolumeStates.STATE_RETAINED before comparing paths.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/d46513d309f338aedb22d7b879e11422da3101ed
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology:
+    - python

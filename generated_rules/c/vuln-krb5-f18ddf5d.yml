@@ -1,0 +1,26 @@
+rules:
+- id: vuln-krb5-f18ddf5d
+  pattern: 'generic_gss_release_oid(&$VAR, &$SC->internal_mech);
+
+    '
+  pattern-not: 'generic_gss_release_oid(&$TMPMIN, &$SC->internal_mech);
+
+    '
+  languages:
+  - c
+  message: 'Missing cleanup of internal mechanism in SPNEGO context. This can lead
+    to memory leaks or use-after-free vulnerabilities when the internal mechanism
+    is not properly released. Ensure that the internal mechanism is correctly released
+    using the appropriate cleanup function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/krb5/krb5/commit/f18ddf5d82de0ab7591a36e465bc24225776940f
+    category: security
+    cwe:
+    - 'CWE-401: Improper Release of Memory Before Removing Last Reference'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

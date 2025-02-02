@@ -1,0 +1,23 @@
+rules:
+- id: vuln-bumsys-1b426f58
+  pattern: '$THISTD.html(`<iledit data-val=''` + $(that).val() + `''>` + $("option:selected",
+    that).text() + `</iledit>`)
+
+    '
+  pattern-not: '$THISTD.html(`<iledit data-val=''` + $(that).val() + `''>` + $("option:selected",
+    that).html() + `</iledit>`)
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unsafe use of .text() instead of .html()
+    when inserting user-controlled data into the DOM. Use .html() to properly escape
+    HTML characters and prevent XSS attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/unilogies/bumsys/commit/1b426f58a513194206d0ea8ab58baf1461e54978
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

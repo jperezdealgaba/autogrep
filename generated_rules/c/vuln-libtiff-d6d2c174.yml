@@ -1,0 +1,41 @@
+rules:
+- id: vuln-libtiff-d6d2c174
+  pattern: '$BUF = (unsigned char *)_TIFFmalloc(($ALPHA?4:3)*$SIZE);
+
+    ...
+
+    _TIFFmemset($BUF, 0, ($ALPHA?4:3)*$SIZE);
+
+    '
+  pattern-not: '$BUFSIZE = TIFFSafeMultiply(tsize_t, $ALPHA?4:3, $SIZE);
+
+    ...
+
+    $BUF = (unsigned char *)_TIFFmalloc($BUFSIZE);
+
+    ...
+
+    _TIFFmemset($BUF, 0, $BUFSIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in memory allocation.
+
+    Direct multiplication of ($ALPHA?4:3)*$SIZE can lead to integer overflow, causing
+    insufficient memory allocation.
+
+    Use TIFFSafeMultiply to safely calculate the buffer size and check for overflow
+    before allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/d6d2c17478b4c36a3bc5f86b970c0060e2f77282
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

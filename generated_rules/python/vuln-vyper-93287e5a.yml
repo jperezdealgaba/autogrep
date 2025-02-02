@@ -1,0 +1,26 @@
+rules:
+- id: vuln-vyper-93287e5a
+  pattern: 'LLLnode.from_list($COMPARE_SEQUENCE, typ="bool", annotation="in comparator")
+
+    '
+  pattern-not: 'LLLnode.from_list($COMPARE_SEQUENCE, typ="bool", annotation=$ANNOTATION)
+
+    '
+  languages:
+  - python
+  message: 'Detected a potential issue where the annotation in LLLnode.from_list is
+    hardcoded as "in comparator". This can lead to loss of context or debugging information.
+    Use the actual source code annotation instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vyperlang/vyper/commit/93287e5ac184b53b395c907d40701f721daf8177
+    category: security
+    cwe: CWE-116
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://docs.vyperlang.org/en/stable/
+    technology:
+    - python
+    - vyper

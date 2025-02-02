@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rust-406cc071
+  pattern: "Ok(ReadDir {\n    cookie: Some(0),\n    buf: vec![0; 128],\n    offset:\
+    \ 0,\n    cap: 0,\n    inner: Arc::new(ReadDirInner { dir, root: $PATH.to_path_buf()\
+    \ }),\n})\n"
+  pattern-not: 'Ok(ReadDir::new($DIR, $PATH.to_path_buf()))
+
+    '
+  languages:
+  - rust
+  message: 'Direct instantiation of `ReadDir` struct can lead to inconsistent state
+    or security issues. Use the `ReadDir::new` constructor method instead, which ensures
+    proper initialization and encapsulation of internal fields.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/406cc071d6cfdfdb678bf3d83d766851de95abaf
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://doc.rust-lang.org/std/fs/struct.ReadDir.html
+    technology:
+    - rust

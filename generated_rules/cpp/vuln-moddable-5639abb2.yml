@@ -1,0 +1,24 @@
+rules:
+- id: vuln-moddable-5639abb2
+  pattern: '#include "servo.h"
+
+    '
+  pattern-not: '#include "Servo.h"
+
+    '
+  languages:
+  - cpp
+  message: 'Incorrect case sensitivity in include directive. Using "servo.h" instead
+    of "Servo.h" can lead to compilation errors or linking issues, especially on case-sensitive
+    filesystems. Ensure the correct case is used for include directives to avoid such
+    problems.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/5639abb24b6d725554969dc0be5822edb54a4a08
+    category: correctness
+    cwe:
+    - CWE-1104
+    technology:
+    - cpp

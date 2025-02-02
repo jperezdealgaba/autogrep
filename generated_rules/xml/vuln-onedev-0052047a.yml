@@ -1,0 +1,32 @@
+rules:
+- id: vuln-onedev-0052047a
+  pattern: '<agent.version>1.3.7</agent.version>
+
+    '
+  pattern-not: '<agent.version>1.3.8</agent.version>
+
+    '
+  languages:
+  - xml
+  message: 'The agent version 1.3.7 contains known vulnerabilities that have been
+    fixed in version 1.3.8.
+
+    Using outdated versions can expose the application to security risks, including
+    potential exploits.
+
+    Update the agent version to 1.3.8 or later to mitigate these vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/0052047a5b5095ac6a6b4a73a522d0272fec3a22
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/937.html
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - xml

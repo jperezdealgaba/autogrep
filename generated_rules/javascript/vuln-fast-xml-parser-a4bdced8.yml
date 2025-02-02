@@ -1,0 +1,25 @@
+rules:
+- id: vuln-fast-xml-parser-a4bdced8
+  pattern: "if(hasBody && \n    $XML[$I+1] === '!' &&\n    $XML[$I+2] === 'E' &&\n\
+    \    $XML[$I+3] === 'N' &&\n    $XML[$I+4] === 'T' &&\n    $XML[$I+5] === 'I'\
+    \ &&\n    $XML[$I+6] === 'T' &&\n    $XML[$I+7] === 'Y'\n){\n    $I += 7;\n  \
+    \  $ENTITY = true;\n}\n"
+  pattern-not: "if(hasBody && isEntity($XML, $I)){\n    $I += 7;\n    [$ENTITYNAME,\
+    \ $VAL, $I] = readEntityExp($XML, $I+1);\n    if($VAL.indexOf(\"&\") === -1)\n\
+    \        $ENTITIES[$ENTITYNAME] = {\n            regx: RegExp(`&${$ENTITYNAME};`,\
+    \ \"g\"),\n            val: $VAL\n        };\n}\n"
+  languages:
+  - javascript
+  message: 'Insecure handling of XML entities detected. The original code directly
+    parses entity definitions without proper validation, which can lead to XML External
+    Entity (XXE) attacks. Use the updated version that includes proper validation
+    and supports only internal entities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NaturalIntelligence/fast-xml-parser/commit/a4bdced80369892ee413bf08e28b78795a2b0d5b
+    category: security
+    cwe: CWE-611
+    owasp: 'A4: XML External Entities (XXE)'
+    technology: javascript

@@ -1,0 +1,40 @@
+rules:
+- id: vuln-gravity-5b73d291
+  pattern: 'if (!$VAR) goto $LABEL;
+
+    if (!$VAR2) $VAR2 = $FUNC();
+
+    if ($VAR3) $FUNC2($VAR2, $FUNC3(...));
+
+    $FUNC4($VAR2, $VAR);
+
+    '
+  pattern-not: "if ($VAR) {\n    if (!$VAR2) $VAR2 = $FUNC();\n    if ($VAR3) $FUNC2($VAR2,\
+    \ $FUNC3(...));\n    $FUNC4($VAR2, $VAR);\n}\nif (!$VAR) goto $LABEL;\n"
+  languages:
+  - c
+  message: 'The code contains a potential null pointer dereference vulnerability.
+
+    The original code executes multiple operations after a null check but before the
+    goto statement, which can lead to undefined behavior if the null condition is
+    true.
+
+    The fix ensures that all operations are performed only if the pointer is not null,
+    and the goto statement is executed only after all operations are complete.
+
+    To fix this, ensure that all operations dependent on the pointer are enclosed
+    within the null check block.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/5b73d291c6969696947d2f264c6f935b8d78e0a8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

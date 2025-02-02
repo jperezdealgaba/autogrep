@@ -1,0 +1,23 @@
+rules:
+- id: vuln-haproxy-3f0e1ec7
+  pattern: "if ((int)$HDR.len < 0 || (int)$HDR.len > $H2C->mfs) {\n  ...\n}\n"
+  pattern-not: "if ((int)$HDR.len < 0 || (int)$HDR.len > global.tune.bufsize) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability due to incorrect size\
+    \ validation. \nThe code checks if the length of a header exceeds the maximum\
+    \ frame size (h2c->mfs), \nbut it should validate against the global buffer size\
+    \ (global.tune.bufsize) instead. \nThis could allow an attacker to send maliciously\
+    \ crafted packets that exceed the \nexpected size, leading to memory corruption\
+    \ or crashes. \nTo fix this, replace 'h2c->mfs' with 'global.tune.bufsize' in\
+    \ the size validation check.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/haproxy/haproxy/commit/3f0e1ec70173593f4c2b3681b26c04a4ed5fc588
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: A2:2017 - Broken Authentication
+    technology:
+    - c

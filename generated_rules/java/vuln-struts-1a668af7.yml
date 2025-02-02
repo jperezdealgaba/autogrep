@@ -1,0 +1,24 @@
+rules:
+- id: vuln-struts-1a668af7
+  pattern: "boolean $MATCHES = !$EXCLUDED_PATTERN.matcher($VALUE).matches();\nif (!$MATCHES)\
+    \ {\n    ...\n}\nreturn $MATCHES;\n"
+  pattern-not: "for (Pattern $EXCLUDED_PATTERN : $EXCLUDED_PATTERNS) {\n    boolean\
+    \ $MATCHES = !$EXCLUDED_PATTERN.matcher($VALUE).matches();\n    if (!$MATCHES)\
+    \ {\n        ...\n        return false;\n    }\n}\nreturn true;\n"
+  languages:
+  - java
+  message: 'Detected a single pattern match vulnerability in cookie validation. The
+    code uses a single regex pattern to validate cookies, which can be bypassed. Use
+    a set of patterns to ensure comprehensive validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/1a668af7f1ffccea4a3b46d8d8c1fe1c7331ff02
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A07:2017
+    technology:
+    - java

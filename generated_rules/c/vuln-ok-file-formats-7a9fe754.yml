@@ -1,0 +1,30 @@
+rules:
+- id: vuln-ok-file-formats-7a9fe754
+  pattern: 'malloc(8 * $VAR)
+
+    '
+  pattern-not: 'malloc($BYTES_PER_STRING)
+
+    '
+  languages:
+  - c
+  message: 'Potential integer overflow vulnerability in memory allocation. The expression
+    ''8 * mo->num_strings'' can overflow if ''mo->num_strings'' is large, leading
+    to insufficient memory allocation. This can result in buffer overflows or memory
+    corruption. To fix this, ensure that the result of the multiplication does not
+    exceed the maximum value of ''size_t'' by using a separate variable to check for
+    overflow before allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/brackeen/ok-file-formats/commit/7a9fe7542c69a0f432060cdf3e86d66bf98b55d2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

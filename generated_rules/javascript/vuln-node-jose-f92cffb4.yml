@@ -1,0 +1,23 @@
+rules:
+- id: vuln-node-jose-f92cffb4
+  pattern: "var $PRIVKEY = ecUtil.convertToForge($KEY, false);\nif (!$PROPS.public)\
+    \ {\n  return Promise.reject(new Error(\"invalid EC public key\"));\n}\nvar $PUBKEY\
+    \ = ecUtil.convertToForge($PROPS.public, true);\nvar $SECRET = $PRIVKEY.computeSecret($PUBKEY);\n"
+  pattern-not: "var $PRIVKEY = ecUtil.convertToForge($KEY, false);\nvar $P = validatePublic($PROPS.public,\
+    \ \"forge\");\n$P = $P.then(function($PUBKEY) {\n  var $SECRET = $PRIVKEY.computeSecret($PUBKEY);\n"
+  languages:
+  - javascript
+  message: 'Missing public key validation in ECDH key exchange. The original code
+    did not validate the public key before using it in computeSecret, which could
+    lead to cryptographic vulnerabilities. The fix introduces a validatePublic function
+    to ensure the public key is valid before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cisco/node-jose/commit/f92cffb4a0398b4b1158be98423369233282e0af
+    category: security
+    cwe: CWE-327
+    owasp: A03:2021 - Cryptographic Failures
+    technology:
+    - javascript

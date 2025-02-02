@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cortex-f608df2e
+  pattern: '{ID: $ID, UploadedAt: $TIME}
+
+    '
+  pattern-not: '&bucketindex.Block{ID: $ID, UploadedAt: $TIME}
+
+    '
+  languages:
+  - go
+  message: 'Detected direct struct initialization instead of using a pointer to the
+    struct. This can lead to issues with struct copying and unintended behavior. Always
+    use a pointer to the struct to ensure proper handling and consistency.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cortexproject/cortex/commit/f608df2e86c2b00327754c6ce45a0fc581adc5df
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://golang.org/doc/effective_go#pointers_vs_values
+    technology:
+    - go

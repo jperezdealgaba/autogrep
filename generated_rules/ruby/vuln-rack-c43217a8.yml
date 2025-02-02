@@ -1,0 +1,28 @@
+rules:
+- id: vuln-rack-c43217a8
+  pattern: 'BUFSIZE = 16384
+
+    '
+  pattern-not: 'BUFSIZE = 1_048_576
+
+    '
+  languages:
+  - ruby
+  message: 'The buffer size is set to a low value (16384) which can lead to performance
+    issues or denial of service when handling large multipart uploads. Increase the
+    buffer size to a more appropriate value, such as 1_048_576, to improve performance
+    and avoid potential DoS attacks.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/rack/rack/commit/c43217a81917de03aa6ceb1aa485ae69b8bb4598
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Insufficient Attack Protection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Insufficient_Attack_Protection.html
+    technology:
+    - ruby

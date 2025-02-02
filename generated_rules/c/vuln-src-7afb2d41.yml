@@ -1,0 +1,24 @@
+rules:
+- id: vuln-src-7afb2d41
+  pattern: "if ($PEERKEY && !EVP_PKEY_cmp($PEERKEY, $LOCALKEY)) {\n  ...\n}\n"
+  pattern-not: "if ($PEERKEY && EVP_PKEY_cmp($PEERKEY, $LOCALKEY) != 1) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code incorrectly checks the result of EVP_PKEY_cmp by using the logical
+    NOT operator (!) instead of comparing the result to 1. This can lead to incorrect
+    validation of cryptographic keys, potentially allowing unauthorized access. The
+    correct approach is to explicitly check if the result equals 1, indicating a successful
+    match.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openbsd/src/commit/7afb2d41c6d373cf965285840b85c45011357115
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - c

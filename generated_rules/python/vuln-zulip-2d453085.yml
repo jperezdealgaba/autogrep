@@ -1,0 +1,23 @@
+rules:
+- id: vuln-zulip-2d453085
+  pattern: "if $LINK.startswith($PREFIX):\n  ...\n"
+  pattern-not: "if (\n  $LINK.startswith($PREFIX)\n  and urllib.parse.urljoin($PREFIX,\
+    \ $LINK[len($PREFIX):])\n  == $LINK\n):\n"
+  languages:
+  - python
+  message: 'Detected potentially unsafe URL prefix check. The original check only
+    verifies if a link starts with a prefix but does not validate the full URL structure,
+    which could lead to security vulnerabilities like path traversal or open redirects.
+    To fix, ensure the full URL is validated using urllib.parse.urljoin.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/2d4530854673d78d2212ec91523135452dbd75fb
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin
+    technology:
+    - python

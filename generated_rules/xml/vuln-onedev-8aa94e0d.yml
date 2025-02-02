@@ -1,0 +1,27 @@
+rules:
+- id: vuln-onedev-8aa94e0d
+  pattern: '<version>7.2.9</version>
+
+    '
+  pattern-not: '<version>7.3.0</version>
+
+    '
+  languages:
+  - xml
+  message: 'Detected an outdated version ''7.2.9'' in the pom.xml file. Using outdated
+    versions can expose the application to known vulnerabilities and bugs. Update
+    to version ''7.3.0'' or later to ensure security and stability.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/8aa94e0daf8447cdf76d4f27bfda0a85a7ea5822
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - xml

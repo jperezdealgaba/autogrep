@@ -1,0 +1,28 @@
+rules:
+- id: vuln-caddy-f6e50890
+  pattern: "if $CERT, $MATCHED, $DEFAULTED := $CFG.getCertificate(\"\"); $MATCHED\
+    \ || !$DEFAULTED {\n    $ERRORF(\"Expected matched=false, defaulted=true; but\
+    \ got matched=%v, defaulted=%v (cert: %v)\", $MATCHED, $DEFAULTED, $CERT)\n}\n"
+  pattern-not: "if $CERT, $MATCHED, $DEFAULTED := $CFG.getCertificate(\"nomatch\"\
+    ); $MATCHED || $DEFAULTED {\n    $ERRORF(\"Expected matched=false, defaulted=false;\
+    \ but got matched=%v, defaulted=%v (cert: %v)\", $MATCHED, $DEFAULTED, $CERT)\n\
+    }\n"
+  languages:
+  - go
+  message: 'When no certificate matches and SNI is NOT provided, a random certificate
+    is returned. This behavior can lead to serving the wrong certificate, which can
+    be dangerous as it may expose sensitive information to unintended recipients.
+    Instead, ensure that no certificate is returned when there is no match, which
+    will trigger a TLS alert.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mholt/caddy/commit/f6e50890b3d81cb04146bd7b2c2b59e99830849a
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - go

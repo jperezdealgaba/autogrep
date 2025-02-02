@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tsmuxer-380cca33
+  pattern: 'return (int64_t)(($EXPR1 - ($EXPR2 != -1 ? $EXPR2 : $EXPR3)) / 90.0 +
+    0.5);
+
+    '
+  pattern-not: "{\n  int64_t $VAR = $EXPR1 - ($EXPR2 != -1 ? $EXPR2 : $EXPR3);\n \
+    \ return $VAR / 90.0 + ($VAR >= 0 ? 0.5 : -0.5);\n}\n"
+  languages:
+  - cpp
+  message: 'The original code performs direct arithmetic operations on timestamps
+    without proper handling of negative values, which can lead to incorrect time calculations.
+    This is dangerous because it can cause synchronization issues and incorrect media
+    playback. The fix involves explicitly handling negative values by using conditional
+    logic to determine the correct rounding direction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/justdan96/tsMuxer/commit/380cca33a2fc68b1f9e7a7c79302b13274ededcd
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

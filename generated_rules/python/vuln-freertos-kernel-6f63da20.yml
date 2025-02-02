@@ -1,0 +1,20 @@
+rules:
+- id: vuln-freertos-kernel-6f63da20
+  pattern: ''' * FreeRTOS Kernel <DEVELOPMENT BRANCH>\n'''
+  pattern-not: ''' * FreeRTOS Kernel V10.5.0\n'''
+  languages:
+  - python
+  message: Detected outdated or development branch version string in FreeRTOS Kernel.
+    This can lead to confusion and potential security risks due to using an unverified
+    or unstable version.
+  severity: WARNING
+  metadata:
+    source-url: https://github.com/FreeRTOS/FreeRTOS-Kernel/commit/6f63da20b3c9e1408e7c8007d3427b75878cbd64
+    category: security
+    cwe:
+    - CWE-1104
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://www.freertos.org/
+    technology:
+    - python
