@@ -1,0 +1,27 @@
+rules:
+- id: vuln-vim-9c23f9bb
+  pattern: 'define_function($EAP, $NAME_ARG)
+
+    '
+  pattern-not: 'define_function($EAP, $NAME_ARG, $LINE_TO_FREE)
+
+    '
+  languages:
+  - c
+  message: 'The function `define_function` is being called without the `line_to_free`
+    parameter, which can lead to memory management issues. This vulnerability can
+    cause use-after-free or double-free errors, potentially leading to crashes or
+    security exploits. Always pass the `line_to_free` parameter to ensure proper memory
+    handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/9c23f9bb5fe435b28245ba8ac65aa0ca6b902c04
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-415
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

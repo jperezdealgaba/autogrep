@@ -1,0 +1,23 @@
+rules:
+- id: vim-double-free-b29f4abc
+  pattern: 'VIM_CLEAR($VAR1);
+
+    VIM_CLEAR($VAR2);
+
+    '
+  pattern-not: "if ($VAR1 != $VAR2)\n    VIM_CLEAR($VAR2);\n$VAR1 = NULL;\n"
+  languages:
+  - c
+  message: "Detected potential double free vulnerability. \nThe code frees two pointers\
+    \ without checking if they point to the same memory location, which can lead to\
+    \ undefined behavior.\nTo fix this, ensure that the pointers are not the same\
+    \ before freeing them and set the first pointer to NULL after freeing the second.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/b29f4abcd4b3382fa746edd1d0562b7b48c
+    category: security
+    cwe:
+    - CWE-415
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
