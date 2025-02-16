@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libmspack-18b6a2cc
+  pattern: 'ENSURE_BITS(16);
+
+    if (bits_left > 16) $VAR -= 2;
+
+    '
+  pattern-not: 'if (bits_left == 0) ENSURE_BITS(16);
+
+    '
+  languages:
+  - c
+  message: 'The code directly calls `ENSURE_BITS(16)` without checking if `bits_left`
+    is zero, which can lead to buffer underflow. This is dangerous because it may
+    cause out-of-bounds memory access, potentially leading to crashes or security
+    vulnerabilities. The fix is to check if `bits_left` is zero before calling `ENSURE_BITS(16)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kyz/libmspack/commit/18b6a2cc0b87536015bedd4f7763e6b02d5aa4f3
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

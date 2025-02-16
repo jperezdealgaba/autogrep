@@ -1,0 +1,28 @@
+rules:
+- id: vuln-invoiceplane-b612068d
+  pattern: "if ($this->mdl_sessions->auth($email_address, $password)) {\n    return\
+    \ true;\n}\n"
+  pattern-not: "if(empty($login_log)||$login_log->log_count < 10)\n{\n    if ($this->mdl_sessions->auth($email_address,\
+    \ $password)) {\n        $this->_login_log_reset($email_address);\n        return\
+    \ true;\n    }\n    else\n    {\n        $this->_login_log_addfailure($email_address);\n\
+    \    }\n}\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to brute force attacks due to missing login attempt
+    tracking and account lockout mechanisms. Without these protections, attackers
+    can repeatedly attempt to guess passwords, increasing the risk of unauthorized
+    access. Implement a login attempt tracking system that locks accounts after a
+    certain number of failed attempts and resets the counter after a successful login
+    or a specified time period.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/InvoicePlane/InvoicePlane/commit/b612068db81c61d016dc5380e76c498373316703
+    category: security
+    cwe:
+    - CWE-307
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php

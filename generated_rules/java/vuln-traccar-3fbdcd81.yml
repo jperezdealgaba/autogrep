@@ -1,0 +1,26 @@
+rules:
+- id: vuln-traccar-3fbdcd81
+  pattern: "if ($UNIQUEID.contains(\"../\") || $UNIQUEID.contains(\"..\\\\\")) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($UNIQUEID.contains(\"..\")) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Incomplete path traversal check detected. The original check for ''../''
+    or ''..\\'' is insufficient as it does not catch all forms of path traversal.
+    Use a more comprehensive check that detects all variations of ''..''.
+
+    This vulnerability can allow attackers to traverse directories and access unauthorized
+    files.
+
+    To fix this, use a more robust check that captures all potential path traversal
+    sequences.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/traccar/traccar/commit/3fbdcd81566bc72e319ec05c77cf8a4120b87b8f
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: java

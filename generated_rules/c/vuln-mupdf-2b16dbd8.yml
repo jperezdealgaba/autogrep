@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mupdf-2b16dbd8
+  pattern: 'strcmp($FUNC($ARG), $TAG)
+
+    '
+  pattern-not: 'fz_xml_is_tag($ARG, $TAG)
+
+    '
+  languages:
+  - c
+  message: 'The use of `strcmp` with `fz_xml_tag` can lead to incorrect XML tag comparisons,
+    potentially causing security vulnerabilities or unexpected behavior. Replace `strcmp(fz_xml_tag(...),
+    "...")` with `fz_xml_is_tag(...)` for safer and more accurate tag comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/2b16dbd8f73269cb15ca61ece75cf8d2d196ed28
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

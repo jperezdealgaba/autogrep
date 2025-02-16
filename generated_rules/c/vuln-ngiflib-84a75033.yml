@@ -1,0 +1,33 @@
+rules:
+- id: vuln-ngiflib-84a75033
+  pattern: 'putc($IMG.palette[$I].b, $FTGA);
+
+    putc($IMG.palette[$I].g, $FTGA);
+
+    putc($IMG.palette[$I].r, $FTGA);
+
+    '
+  pattern-not: 'putc($CURRENT_PALETTE[$I].b, $FTGA);
+
+    putc($CURRENT_PALETTE[$I].g, $FTGA);
+
+    putc($CURRENT_PALETTE[$I].r, $FTGA);
+
+    '
+  languages:
+  - c
+  message: "The code uses an incorrect palette reference which could lead to incorrect\
+    \ image rendering or security vulnerabilities. \nThis occurs when the palette\
+    \ is accessed through an incorrect structure, potentially leading to out-of-bounds\
+    \ memory access or undefined behavior. \nTo fix this, ensure the correct palette\
+    \ structure is used, such as `current_palette` instead of `img->palette`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/miniupnp/ngiflib/commit/84a750338394bbd2f8ff15811e2098bd9634180a
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

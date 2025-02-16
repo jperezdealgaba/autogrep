@@ -1,0 +1,24 @@
+rules:
+- id: vuln-botan-4db001ca
+  pattern: "alignas(64) static const uint8_t $TABLE[256] = {\n  ...\n};\n"
+  pattern-not: "uint8_t $FUNC(char $INPUT) noexcept\n{\n  const uint8_t $C = static_cast<uint8_t>($INPUT);\n\
+    \  ...\n  return $RET;\n}\n"
+  languages:
+  - cpp
+  message: "The code uses a static lookup table for character conversion, which can\
+    \ be vulnerable to timing attacks. \nThe patch replaces this with a constant-time\
+    \ implementation using CT::Mask operations. \nTo fix this, replace static lookup\
+    \ tables with constant-time functions that avoid data-dependent branches.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/4db001ca200cc124bd889482032013fdc0400282
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://www.bearssl.org/constanttime.html
+    technology:
+    - cpp

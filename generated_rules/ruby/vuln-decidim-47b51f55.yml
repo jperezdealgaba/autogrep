@@ -1,0 +1,27 @@
+rules:
+- id: vuln-decidim-47b51f55
+  pattern: 'it_behaves_like "having a rich text editor", $FORM, "full"
+
+    '
+  pattern-not: 'it_behaves_like "having a rich text editor", $FORM, "content"
+
+    '
+  languages:
+  - ruby
+  message: 'The rich text editor is using the deprecated "full" parameter, which may
+    expose security vulnerabilities. Use "content" instead to ensure proper sanitization
+    and security handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/decidim/decidim/commit/47b51f5582763a2b7958fa9853ba851d9f33229f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - ruby

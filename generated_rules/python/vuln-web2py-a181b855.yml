@@ -1,0 +1,25 @@
+rules:
+- id: vuln-web2py-a181b855
+  pattern: '$VAR = request.vars.send
+
+    '
+  pattern-not: '$VAR = prevent_open_redirect(request.vars.send)
+
+    '
+  languages:
+  - python
+  message: 'Detected potential open redirect vulnerability. Directly using `request.vars.send`
+    without validation can allow attackers to redirect users to malicious sites. Use
+    `prevent_open_redirect` to sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/web2py/web2py/commit/a181b855a43cb8b479d276b082cfcde385768451
+    category: security
+    cwe: CWE-601
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/Unvalidated_Redirects_and_Forwards
+    technology:
+    - python

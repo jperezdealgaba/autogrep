@@ -1,0 +1,26 @@
+rules:
+- id: vuln-odoo-d18d606a
+  pattern: '$NAME = os.path.normpath(os.path.join($BASEDIR, $PATH))
+
+    '
+  pattern-not: "$NAME = os.path.normpath(os.path.normcase(os.path.join($BASEDIR, $PATH)))\n\
+    ...\nfor $ADDONS_PATH in $PATHS:\n    $ADDONS_PATH = os.path.normpath(os.path.normcase($ADDONS_PATH))\
+    \ + os.sep\n    if $NAME.startswith($ADDONS_PATH):\n        break\nelse:\n   \
+    \ raise ValueError(\"Unknown path: %s\" % $NAME)\n"
+  languages:
+  - python
+  message: 'Detected unsafe path construction without proper validation. This can
+    lead to path traversal attacks or access to unauthorized files. The fix includes
+    normalizing the path case and validating it against a list of allowed paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/d18d606a55330a6b9fd19596d8b12c4e9e0a4b57
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - python

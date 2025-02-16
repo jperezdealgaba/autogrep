@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libyang-32fb4993
+  pattern: 'lys_getnext_data($MODULE, $PARENT, $NAME, $LEN, $TYPE, $RET)
+
+    '
+  pattern-not: 'lys_getnext_data($MODULE, $PARENT, $NAME, $LEN, $TYPE, $OPTS, $RET)
+
+    '
+  languages:
+  - c
+  message: 'The function `lys_getnext_data` is being called without the `getnext_opts`
+    parameter, which can lead to potential security vulnerabilities. The missing parameter
+    can cause incorrect state checks and unexpected behavior. Always include the `getnext_opts`
+    parameter with the appropriate value (e.g., `LYS_GETNEXT_NOSTATECHECK` or `0`)
+    to ensure proper state validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CESNET/libyang/commit/32fb4993bc8bb49e93e84016af3c10ea53964be5
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-itop-8f61c02c
+  pattern: '$VAR = $this->oFormHandlerHelper->getSecurityHelper()->IsActionAllowed($EXPR1,
+    $EXPR2, $EXPR3);
+
+    '
+  pattern-not: '$VAR = $oSecurityHelper->IsActionAllowed($EXPR1, $EXPR2, $EXPR3);
+
+    '
+  languages:
+  - php
+  message: 'Directly calling `getSecurityHelper()->IsActionAllowed()` without storing
+    the security helper instance in a variable can lead to repeated security checks
+    and potential inconsistencies. This pattern should be avoided in favor of storing
+    the security helper instance and reusing it for consistent security checks.
+
+    To fix this, store the security helper instance in a variable before calling `IsActionAllowed()`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/8f61c02cbe17badff87bff9b8ada85e783c47385
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A01:2021-Broken Access Control
+    references: []
+    technology:
+    - php

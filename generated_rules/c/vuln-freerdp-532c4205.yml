@@ -1,0 +1,31 @@
+rules:
+- id: vuln-freerdp-532c4205
+  pattern: 'update_read_pointer_color($S, $POINTER_COLOR)
+
+    '
+  pattern-not: 'update_read_pointer_color($S, $POINTER_COLOR, $BPP)
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe call to `update_read_pointer_color` without
+    the `bpp` parameter. This can lead to incorrect memory allocation for pointer
+    masks, potentially causing buffer overflows or crashes. The issue was fixed by
+    adding a `bpp` parameter to ensure proper calculation of scanline sizes. Always
+    include the `bpp` parameter when calling this function to prevent memory corruption.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FreeRDP/FreeRDP/commit/532c42052a0b4769071cdcf08f03970de95390ab
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    - 'A1: Injection'
+    references:
+    - https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpbcgr/9cde84cd-5055-4a7e-95ca-37d4391f9d3d
+    technology:
+    - c

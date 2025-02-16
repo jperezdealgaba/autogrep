@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redmine-0f09f161
+  pattern: '$FUNC($ASSIGNEE, $ISSUES, $DAYS).deliver if $ASSIGNEE.is_a?(User) && $ASSIGNEE.active?
+
+    '
+  pattern-not: "if $ASSIGNEE.is_a?(User) && $ASSIGNEE.active? && $ISSUES.present?\n\
+    \  $VISIBLE_ISSUES = $ISSUES.select {|$I| $I.visible?($ASSIGNEE)}\n  $FUNC($ASSIGNEE,\
+    \ $VISIBLE_ISSUES, $DAYS).deliver if $VISIBLE_ISSUES.present?\nend\n"
+  languages:
+  - ruby
+  message: 'The code directly delivers issues to a user without verifying if the issues
+    are visible to them. This can lead to information disclosure, where users receive
+    notifications about issues they should not have access to. To fix this, ensure
+    that only visible issues are delivered by filtering them using `select {|i| i.visible?(assignee)}`
+    and checking if the filtered list is present before delivery.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/0f09f161f64f4190a52166675ff380a15b72a8bc
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-284
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - ruby

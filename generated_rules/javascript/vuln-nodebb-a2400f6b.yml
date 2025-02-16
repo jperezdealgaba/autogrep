@@ -1,0 +1,19 @@
+rules:
+- id: vuln-nodebb-a2400f6b
+  pattern: "if ($STRATEGY.checkState) {\n    ...\n}\n"
+  pattern-not: "if ($STRATEGY.checkState !== false) {\n    ...\n}\n"
+  languages:
+  - javascript
+  message: Insecure state checking detected. The condition 'if (strategy.checkState)'
+    can be bypassed if checkState is undefined or null. Use 'if (strategy.checkState
+    !== false)' to ensure proper state validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/a2400f6baff44cb2996487bcd0cc6e2acc74b3d4
+    category: security
+    cwe: CWE-754
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - javascript

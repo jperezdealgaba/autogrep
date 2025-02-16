@@ -1,0 +1,26 @@
+rules:
+- id: vuln-js-libp2p-noise-99be813b
+  pattern: "if (!$PAYLOAD.identitySig || !$PEERID.pubKey.verify($GENERATED_PAYLOAD,\
+    \ $PAYLOAD.identitySig)) {\n  ...\n}\n"
+  pattern-not: "if (!$PAYLOAD.identitySig || !(await $PEERID.pubKey.verify($GENERATED_PAYLOAD,\
+    \ $PAYLOAD.identitySig))) {\n  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Missing `await` keyword in asynchronous cryptographic verification can
+    lead to incorrect validation of signed payloads. This can allow malicious payloads
+    to bypass verification checks, potentially leading to security vulnerabilities.
+    Always use `await` when calling asynchronous verification methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ChainSafe/js-libp2p-noise/commit/99be813bea1e39533733578d232f6252607596db
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/Top10/A02_2021-Cryptographic_Failures/
+    technology:
+    - typescript

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-ntp-1bb40157
+  pattern: "if (NULL == $SK->secret) {\n  $SK->secret = emalloc($LEN);\n}\n"
+  pattern-not: "if (NULL != $SK->secret) {\n  memset($SK->secret, 0, $SK->secretsize);\n\
+    \  free($SK->secret);\n}\n$SK->secret = emalloc($LEN);\n"
+  languages:
+  - c
+  message: 'This rule detects insecure memory handling in NTP''s authkeys.c where
+    a buffer is allocated without properly clearing or freeing the existing secret.
+    This can lead to sensitive information leakage or use-after-free vulnerabilities.
+    Always ensure that existing buffers are properly cleared and freed before reallocating
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/1bb401576f412532d8cdcca5509b85ad29605913
+    category: security
+    cwe:
+    - CWE-244
+    - CWE-908
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

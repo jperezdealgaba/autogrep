@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libzmq-0900a489
+  pattern: 'memcpy($DST, &$SRC, 8)
+
+    '
+  pattern-not: 'put_uint64($DST, $SRC)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe use of `memcpy` for copying 64-bit values. This can lead
+    to incorrect handling of nonce values, potentially causing security vulnerabilities.
+    Replace `memcpy` with `put_uint64` to ensure proper handling of 64-bit values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/0900a489213d74feb86fc0b343308fe7884a2a3c
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - cpp

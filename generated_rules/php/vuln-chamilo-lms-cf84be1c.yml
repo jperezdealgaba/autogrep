@@ -1,0 +1,28 @@
+rules:
+- id: vuln-chamilo-lms-cf84be1c
+  pattern: '$titleWithLink = $link.$session_img.''<br />''.$invisibility_span_open;
+
+    '
+  pattern-not: '$titleWithLink = Security::remove_XSS($link.$session_img.''<br />''.$invisibility_span_open);
+
+    '
+  languages:
+  - php
+  message: 'Detected potential Cross-Site Scripting (XSS) vulnerability due to unescaped
+    concatenation of strings that may contain user input. This is dangerous because
+    it allows attackers to inject malicious scripts into web pages viewed by other
+    users. To fix this, use the `Security::remove_XSS` function to sanitize the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/cf84be1ca1d9a08ad1341dfbf8df475b13a89072
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

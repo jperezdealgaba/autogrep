@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyfaq-fa26c523
+  pattern: "if ('clear-visits' === $action) {\n  ...\n}\n"
+  pattern-not: "if ('clear-visits' === $action && $clearVisits) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code lacks CSRF token validation for the ''clear-visits'' action,
+    making it vulnerable to CSRF attacks. An attacker could trick a user into performing
+    unauthorized actions. To fix this, ensure that the action is only executed if
+    a valid CSRF token is present in both POST and GET requests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/fa26c52384b010edaf60c525ae5b040f05da9f77
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

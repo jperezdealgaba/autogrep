@@ -1,0 +1,31 @@
+rules:
+- id: vuln-botan-9a23e4e3
+  pattern: 'const size_t $K_BITS = $GROUP.exponent_bits();
+
+    const BigInt $K($RNG, $K_BITS);
+
+    '
+  pattern-not: 'const size_t $K_BITS = $GROUP.p_bits() - 1;
+
+    const BigInt $K($RNG, $K_BITS, false);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of short exponents in ElGamal implementation, which is unsafe
+    when the prime field p - 1 is smooth. This can lead to vulnerabilities in cryptographic
+    operations. Always use full-length exponents to ensure security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/9a23e4e3bc3966340531f2ff608fa9d33b5185a2
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://en.wikipedia.org/wiki/ElGamal_encryption
+    technology:
+    - cpp

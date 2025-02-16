@@ -1,0 +1,27 @@
+rules:
+- id: vuln-phppgadmin-e92a0036
+  pattern: '$appVersion = ''5.0.3'';
+
+    '
+  pattern-not: '$appVersion = ''5.0.4'';
+
+    '
+  languages:
+  - php
+  message: 'The application version is outdated and may contain unpatched vulnerabilities.
+    Using an outdated version can expose the application to known security risks.
+    Update the version to the latest stable release to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phppgadmin/phppgadmin/commit/e92a003624609a445c4cf57c9c3d1fcef0eae47c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities
+    technology:
+    - php

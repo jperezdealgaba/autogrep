@@ -1,0 +1,26 @@
+rules:
+- id: vuln-admin-ui-classic-bundle-363afef2
+  pattern: '$conditionFilters[] = ''id IN ('' . implode('','', $selectedIds) . '')'';
+
+    '
+  pattern-not: "$quotedSelectedIds = [];\nforeach ($selectedIds as $selectedId) {\n\
+    \    if ($selectedId) {\n        $quotedSelectedIds[] = $db->quote($selectedId);\n\
+    \    }\n}\n$conditionFilters[] = 'id IN (' . implode(',', $quotedSelectedIds)\
+    \ . ')';\n"
+  languages:
+  - php
+  message: "Detected a potential SQL injection vulnerability due to unquoted user\
+    \ input in an SQL query. \nThe code directly concatenates user-controlled input\
+    \ (`$selectedIds`) into an SQL query, which can be exploited to inject malicious\
+    \ SQL commands.\nTo fix this, ensure all user inputs are properly escaped using\
+    \ the database's quoting mechanism, as shown in the fixed version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/admin-ui-classic-bundle/commit/363afef29496cc40a8b863c2ca2338979fcf50a8
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

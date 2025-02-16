@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libredwg-3d7053eb
+  pattern: "if (($OBJ = dwg_ref_object($DWG, $DWG->header_vars.$VAR)))\n  $FUNC($DAT,\
+    \ $OBJ);\n"
+  pattern-not: "if (($OBJ = dwg_ref_object($DWG, $DWG->header_vars.$VAR))\n    &&\
+    \ $OBJ->type == $TYPE)\n  $FUNC($DAT, $OBJ);\n"
+  languages:
+  - c
+  message: 'The code directly uses the result of `dwg_ref_object` without checking
+    the object type,
+
+    which could lead to using an object of the wrong type. This could cause undefined
+    behavior
+
+    or security vulnerabilities. Always verify the object type before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/LibreDWG/libredwg/commit/3d7053eb248036dd9a724d08a17523d35617dcf3
+    category: security
+    cwe:
+    - CWE-484
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

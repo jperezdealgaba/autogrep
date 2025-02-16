@@ -1,0 +1,19 @@
+rules:
+- id: vuln-flow-18ee5598
+  pattern: "private boolean isAllowedVAADINBuildUrl(String $FILENAME) {\n  return\
+    \ $FILENAME.startsWith(\"/\" + $VAADIN_BUILD_FILES_PATH);\n}\n"
+  pattern-not: "private boolean isAllowedVAADINBuildOrStaticUrl(String $FILENAME)\
+    \ {\n  return $FILENAME.startsWith(\"/\" + $VAADIN_BUILD_FILES_PATH)\n      ||\
+    \ $FILENAME.startsWith(\"/\" + $VAADIN_STATIC_FILES_PATH);\n}\n"
+  languages:
+  - java
+  message: Insecure file path validation detected. The method only checks for build
+    files but not static files, which could lead to unauthorized access. Update the
+    method to check for both build and static file paths.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/18ee55985eaafba645535560d0ee7954406e2aa3
+    category: security
+    cwe: CWE-22
+    owasp: A01:2021 - Broken Access Control
+    technology: java

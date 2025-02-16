@@ -1,0 +1,24 @@
+rules:
+- id: vuln-dist-datatables-59a8d3f8
+  pattern: '"last-sync": "ea607c6e51e76d13efc341b5d41f5082a33b56e0"'
+  pattern-not: '"last-sync": "e835ddc5b800c47f7e9e32a91cc522f8ca7ced5c"'
+  languages:
+  - json
+  message: 'The ''last-sync'' value in the JSON file is outdated, which can lead to
+    using an incorrect or vulnerable version of the library. This can result in security
+    issues or compatibility problems. Update the ''last-sync'' value to the latest
+    commit hash to ensure you are using the correct and secure version.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/DataTables/Dist-DataTables/commit/59a8d3f8a3c1138ab08704e783bc52bfe88d7c9b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - json

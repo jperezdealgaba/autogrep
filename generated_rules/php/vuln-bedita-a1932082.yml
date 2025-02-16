@@ -1,0 +1,29 @@
+rules:
+- id: vuln-bedita-a1932082
+  pattern: '$headers = (!empty($messages[''headers''])) ? $messages[''headers''] :
+    $this->exception->getHeaders();
+
+    '
+  pattern-not: "$headers = null;\nif (!empty($messages['headers'])) {\n    $headers\
+    \ = $messages['headers'];\n} elseif ($isBeditaAjaxException) {\n    $headers =\
+    \ $this->exception->getHeaders();\n}\n"
+  pattern-inside: "if (empty($messages['output'])) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'The original code directly assigns headers from the exception without
+    checking if the exception is of type ''BeditaAjaxException''. This can lead to
+    potential security issues by exposing sensitive information through headers in
+    non-AJAX error responses. The fix ensures that headers are only set for ''BeditaAjaxException''
+    cases, preventing unintended information disclosure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bedita/bedita/commit/a193208207db66ed8e7c0c22ef1e61c8dc4a2670
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A6:2021-Security Misconfiguration
+    technology:
+    - php

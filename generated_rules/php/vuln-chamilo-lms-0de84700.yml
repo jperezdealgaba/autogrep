@@ -1,0 +1,30 @@
+rules:
+- id: vuln-chamilo-lms-0de84700
+  pattern: "$decoded = str_replace(['-', '_', '.'], ['+', '/', '='], $encoded);\n\
+    $mod4 = strlen($decoded) % 4;\nif ($mod4) {\n    $decoded .= substr('====', $mod4);\n\
+    }\n$b64Decoded = base64_decode($decoded);\nreturn unserialize($b64Decoded);\n"
+  pattern-not: '$decoded = json_decode($encoded);
+
+    return $decoded;
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to unsafe deserialization of user-controlled data.
+    The `unserialize` function is used on base64-decoded input, which can lead to
+    arbitrary object injection and remote code execution. This is especially dangerous
+    when the input is controlled by an attacker. The fix replaces the unsafe deserialization
+    with `json_decode`, which is safer as it does not execute arbitrary code. Always
+    validate and sanitize input data and avoid using `unserialize` on untrusted data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/0de84700648f098c1fbf6b807dee28ec640efe62
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php

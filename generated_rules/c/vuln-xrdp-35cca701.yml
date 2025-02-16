@@ -1,0 +1,53 @@
+rules:
+- id: vuln-xrdp-35cca701
+  pattern: 'int $SIZE;
+
+    int $TOTAL_SIZE;
+
+    ...
+
+    in_uint16_le($S, $CHAN_ID);
+
+    in_uint16_le($S, $CHAN_FLAGS);
+
+    in_uint16_le($S, $SIZE);
+
+    in_uint32_le($S, $TOTAL_SIZE);
+
+    ...
+
+    $RV = libxrdp_send_to_channel($SESSION, $CHAN_ID, $S->p, $SIZE, $TOTAL_SIZE, $CHAN_FLAGS);
+
+    '
+  pattern-not: "unsigned int $SIZE;\nunsigned int $TOTAL_SIZE;\n...\nif (!s_check_rem_and_log($S,\
+    \ 10, \"Reading channel data header\"))\n{\n    $RV = 1;\n}\nelse\n{\n    in_uint16_le($S,\
+    \ $CHAN_ID);\n    in_uint16_le($S, $CHAN_FLAGS);\n    in_uint16_le($S, $SIZE);\n\
+    \    in_uint32_le($S, $TOTAL_SIZE);\n    if (!s_check_rem_and_log($S, $SIZE, \"\
+    Reading channel data data\"))\n    {\n        $RV = 1;\n    }\n    else\n    {\n\
+    \        $RV = libxrdp_send_to_channel($SESSION, $CHAN_ID, $S->p, $SIZE, $TOTAL_SIZE,\
+    \ $CHAN_FLAGS);\n    }\n}\n"
+  languages:
+  - c
+  message: 'The code reads channel data without proper bounds checking, which could
+    lead to buffer overflows or other memory corruption issues. The vulnerability
+    arises because the size and total_size variables are read directly from the input
+    stream without verifying that the input buffer has enough remaining data. This
+    could allow an attacker to craft malicious input that causes the program to read
+    or write beyond the bounds of the buffer. The fix involves using s_check_rem_and_log
+    to validate that enough data is available before processing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/35cca701c753db65d3c05b7ea4fff9bd09e76661
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

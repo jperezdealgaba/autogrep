@@ -1,0 +1,21 @@
+rules:
+- id: vuln-cryptography-b924696b
+  pattern: "while ($ALGORITHM.digest_size // 8) * len($OUTPUT) < $LENGTH:\n  ...\n"
+  pattern-not: "while $ALGORITHM.digest_size * (len($OUTPUT) - 1) < $LENGTH:\n  ...\n"
+  languages:
+  - python
+  message: "Detected a potential integer division vulnerability in HKDF implementation.\
+    \ \nThe original calculation uses integer division which may lead to incorrect\
+    \ \noutput length calculations. This could result in insufficient key material\
+    \ \nbeing generated. Use the fixed version that correctly calculates the required\
+    \ \noutput length without integer division.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/pyca/cryptography/commit/b924696b2e8731f39696584d12cceeb3aeb2d874
+    category: security
+    cwe: CWE-682
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#hkdf
+    technology:
+    - python

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ebics-java-client-05be4206
+  pattern: '<version>1.1-SNAPSHOT</version>
+
+    '
+  pattern-not: '<version>1.2</version>
+
+    '
+  languages:
+  - xml
+  message: 'Using a SNAPSHOT version in production can lead to instability and security
+    risks. SNAPSHOT versions are development builds that may contain bugs or vulnerabilities.
+    Always use a stable release version in production environments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ebics-java/ebics-java-client/commit/05be4206540d748f59f3fff2e5e2e02398b014c4
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - xml

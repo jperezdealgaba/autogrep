@@ -1,0 +1,19 @@
+rules:
+- id: vuln-undertow-85d4478e
+  pattern: "if($C != '\\r' && $C != '\\n') {\n    $BUFFER.put((byte) $C);\n}\n"
+  pattern-not: "byte $B = (byte) $C;\nif($B != '\\r' && $B != '\\n') {\n    $BUFFER.put($B);\n\
+    }\n"
+  languages:
+  - java
+  message: 'Direct casting of a character to a byte without intermediate type conversion
+    can lead to unexpected behavior and potential security vulnerabilities. Always
+    use an intermediate variable to ensure proper type conversion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/85d4478e598105fe94ac152d3e11e388374e8b86
+    category: security
+    cwe: CWE-704
+    owasp: 'A1: Injection'
+    technology: java

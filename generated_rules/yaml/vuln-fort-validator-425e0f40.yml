@@ -1,0 +1,27 @@
+rules:
+- id: vuln-fort-validator-425e0f40
+  pattern: 'fort-latest-version: 1.5.1
+
+    '
+  pattern-not: 'fort-latest-version: 1.5.2
+
+    '
+  languages:
+  - yaml
+  message: 'The version of FORT-validator is outdated and potentially vulnerable.
+    Using an outdated version can expose the system to known security vulnerabilities.
+    Upgrade to version 1.5.2 or later to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NICMx/FORT-validator/commit/425e0f4037b4543fe8044ac96ca71d6d02d7d8c5
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - A9:2021
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - yaml

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-commons-compress-7ce1b079
+  pattern: "if ($HEADER_SIZE >= 0 && $TOTAL_READ + $REST_LEN > $HEADER_SIZE) {\n \
+    \ ...\n}\n"
+  pattern-not: "if ($HEADER_SIZE >= 0 && $REST_LEN > $HEADER_SIZE - $TOTAL_READ) {\n\
+    \  ...\n}\n"
+  languages:
+  - java
+  message: "Potential integer overflow vulnerability in buffer size calculation. The\
+    \ original condition \n`totalRead + restLen > headerSize` could lead to integer\
+    \ overflow, allowing buffer overflows \nor other memory corruption issues. The\
+    \ fixed version uses `restLen > headerSize - totalRead` \nto avoid this risk.\
+    \ Always ensure arithmetic operations do not exceed integer bounds.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-compress/commit/7ce1b0796d6cbe1f41b969583bd49f33ae0efef0
+    category: security
+    cwe: CWE-190
+    owasp: 'A2: Cryptographic Failures'
+    technology:
+    - java

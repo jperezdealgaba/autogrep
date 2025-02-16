@@ -1,0 +1,25 @@
+rules:
+- id: vuln-icms2-3a6b148f
+  pattern: '$this->grid->applyGridFilter($this->model, $filter)
+
+    '
+  pattern-not: '$this->grid->applyGridFilter($this->model, $filter, $this->table_name)
+
+    '
+  languages:
+  - php
+  message: 'The grid filter application is missing the table name parameter, which
+    could lead to SQL injection or incorrect filtering. Always specify the table name
+    when applying grid filters to ensure proper validation and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/instantsoft/icms2/commit/3a6b148fa2c943ee7647e0cd14bf68e026b15548
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

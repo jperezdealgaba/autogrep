@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wordpress-develop-c09ccfbc
+  pattern: '$alias = $sibling[''alias''];
+
+    '
+  pattern-not: '$alias = preg_replace(''/\W/'', ''_'', $sibling[''alias'']);
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of `$sibling[''alias'']` to `$alias` without sanitization
+    can lead to SQL injection or other security vulnerabilities. The alias should
+    be sanitized to remove any non-word characters using `preg_replace(''/\W/'', ''_'',
+    $sibling[''alias''])`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/c09ccfbc547d75b392dbccc1ef0b4442ccd3c957
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

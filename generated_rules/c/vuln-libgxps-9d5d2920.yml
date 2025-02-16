@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libgxps-9d5d2920
+  pattern: 'g_hash_table_add($VAR, g_strdup(archive_entry_pathname($ENTRY)));
+
+    '
+  pattern-not: "$PATHNAME = archive_entry_pathname($ENTRY);\nif ($PATHNAME != NULL)\n\
+    \  g_hash_table_add($VAR, g_strdup($PATHNAME));\n"
+  languages:
+  - c
+  message: 'Directly using the return value of `archive_entry_pathname()` without
+    a NULL check can lead to NULL pointer dereference vulnerabilities. This is dangerous
+    as it can cause crashes or undefined behavior. Always check if the return value
+    is NULL before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/libgxps/commit/9d5d292055250ed298f3b89dc332d6db4003a031
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

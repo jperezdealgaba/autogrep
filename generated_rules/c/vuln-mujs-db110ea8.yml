@@ -1,0 +1,36 @@
+rules:
+- id: vuln-mujs-db110ea8
+  pattern: 'STACK[TOP].type = JS_TLITSTR;
+
+    STACK[TOP].u.litstr = "exception stack overflow";
+
+    ++TOP;
+
+    '
+  pattern-not: '$J->stack[$J->top].type = JS_TLITSTR;
+
+    $J->stack[$J->top].u.litstr = "exception stack overflow";
+
+    ++$J->top;
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects a potential stack overflow vulnerability due to direct
+    manipulation of the stack pointer without proper context. The original code uses
+    a global `STACK` and `TOP` variable, which can lead to unsafe stack operations.
+    The fix involves using a context-specific stack pointer (`J->stack` and `J->top`),
+    which is safer and more maintainable. Ensure stack operations are performed within
+    the correct context to prevent unintended behavior or security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/db110ea88edde20cfdd76a7162de751fefcc1fde
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

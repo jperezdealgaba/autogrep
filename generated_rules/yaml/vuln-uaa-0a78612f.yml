@@ -1,0 +1,30 @@
+rules:
+- id: vuln-uaa-0a78612f
+  pattern: '- ./gradlew -Dspring.profiles.active=$TESTENV jacocoRootReport
+
+    '
+  pattern-not: '- ./gradlew -Dspring.profiles.active=$TESTENV -Djavax.net.ssl.trustStore=$TRAVIS_BUILD_DIR/scripts/ldap/truststore-with-ldap-certs.jks
+    -Djavax.net.ssl.trustStoreType=JKS jacocoRootReport
+
+    '
+  languages:
+  - yaml
+  message: 'The build command is missing SSL trust store configuration, which can
+    lead to insecure SSL connections. This is dangerous because it may allow man-in-the-middle
+    attacks or insecure communication with external services. To fix this, ensure
+    the build command includes the necessary SSL trust store configuration, such as
+    `-Djavax.net.ssl.trustStore` and `-Djavax.net.ssl.trustStoreType`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudfoundry/uaa/commit/0a78612f981c541ad2d997e6a365f2a0b3e799d9
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - yaml

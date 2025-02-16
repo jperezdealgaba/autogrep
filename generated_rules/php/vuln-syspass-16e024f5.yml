@@ -1,0 +1,28 @@
+rules:
+- id: vuln-syspass-16e024f5
+  pattern: "if ($realPath === false || strpos($realPath, $base) !== 0) {\n  ...\n\
+    } else {\n  return $realPath;\n}\n"
+  pattern-not: "if ($realPath === false\n    || strpos($realPath, $base) !== 0\n \
+    \   || !in_array(basename($base), self::$secureDirs, true)\n) {\n  return '';\n\
+    }\nreturn $realPath;\n"
+  languages:
+  - php
+  message: 'Detected an insecure path validation that does not check against a secure
+    directory list.
+
+    This can lead to directory traversal attacks where unauthorized files are accessed.
+
+    To fix, ensure the path is validated against a predefined list of secure directories.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nuxsmin/sysPass/commit/16e024f55b1e372547fdfb6c765f62c8ac6ebba3
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

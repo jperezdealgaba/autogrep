@@ -1,0 +1,33 @@
+rules:
+- id: vuln-mujs-fa3d30fd
+  pattern: '$ALLOC = alloc($CTX, $NULL, (count($NODE) + $NUM) * sizeof($TYPE));
+
+    '
+  pattern-not: '$ALLOC = alloc($CTX, $NULL, $N * sizeof($TYPE));
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects potential integer overflow vulnerabilities in memory
+    allocation due to unchecked arithmetic operations. The original code calculates
+    the size of memory to allocate based on a count function without checking if the
+    result exceeds a safe limit (MAXPROG). This can lead to buffer overflows or memory
+    corruption. The fix introduces bounds checking to ensure the calculated size is
+    within safe limits before allocation. Always validate arithmetic operations that
+    determine memory allocation sizes to prevent overflow vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/fa3d30fd18c348bb4b1f3858fb860f4fcd4b2045
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

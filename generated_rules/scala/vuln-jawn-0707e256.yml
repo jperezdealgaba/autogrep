@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jawn-0707e256
+  pattern: 'private[this] val $VAR = mutable.Map.empty[$TYPE1, $TYPE2]
+
+    '
+  pattern-not: 'private[this] val $VAR = (new HashMap[$TYPE1, $TYPE2]).asScala
+
+    '
+  languages:
+  - scala
+  message: "Using `mutable.Map.empty` can lead to potential thread-safety issues in\
+    \ concurrent environments. \nIt is safer to use `java.util.HashMap` and convert\
+    \ it to a Scala mutable map using `.asScala` \nto ensure thread safety. Replace\
+    \ `mutable.Map.empty` with `(new HashMap[String, J]).asScala`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/typelevel/jawn/commit/0707e2569f43ff6195f90cc0dfc2d0ca79b51dd1
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.scala-lang.org/overviews/collections/thread-safety.html
+    technology:
+    - scala

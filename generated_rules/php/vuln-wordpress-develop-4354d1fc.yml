@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wordpress-develop-4354d1fc
+  pattern: "if ($user_email !== $old_user_data->user_email) {\n  ...\n}\n"
+  pattern-not: "if ($user_email !== $old_user_data->user_email || $user_pass !== $old_user_data->user_pass)\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'This rule detects a vulnerability where changing a user''s email does
+    not invalidate their password reset key. This can allow an attacker to maintain
+    access to an account even after the email has been changed. To fix this, ensure
+    that both email and password changes invalidate the password reset key by adding
+    a check for `$user_pass !== $old_user_data->user_pass` in the condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/4354d1fc5cd55a18bc24555b11db201d5eb87e0c
+    category: security
+    cwe:
+    - CWE-640
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

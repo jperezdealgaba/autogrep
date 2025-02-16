@@ -1,0 +1,33 @@
+rules:
+- id: vuln-odoo-ef6f86dd
+  pattern: '$RECORD = request.env[$OBJECT].browse($RES_ID)
+
+    ...
+
+    $RECORD.check_access_rule(''read'')
+
+    '
+  pattern-not: "$RECORD = request.env[$OBJECT].browse($RES_ID).exists()\nif not $RECORD:\n\
+    \    return False\n$RECORD.check_access_rights('read')\n$RECORD.check_access_rule('read')\n"
+  languages:
+  - python
+  message: 'Detected insecure object access in Odoo. The code directly accesses an
+    object without checking if it exists or verifying access rights. This can lead
+    to security vulnerabilities such as unauthorized access or information disclosure.
+    Always use `.exists()` to verify the object''s existence and check access rights
+    before performing operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/ef6f86dde4628b15aeb5879d268017c4a56f21fc
+    category: security
+    cwe:
+    - CWE-285
+    - CWE-862
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://www.odoo.com/documentation/14.0/developer/reference/backend/security.html
+    technology:
+    - python
+    - odoo

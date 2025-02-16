@@ -1,0 +1,29 @@
+rules:
+- id: vuln-android-90d66c43
+  pattern: "private fun remoceSyncedFolders($CONTEXT: Context, $ACCOUNT: Account,\
+    \ $CLOCK: Clock) {\n    ...\n    filesystemDataProvider.deleteAllEntriesForSyncedFolder(java.lang.Long.toString($SYNCED_FOLDER_ID))\n\
+    \    ...\n}\n"
+  pattern-not: "private fun removeSyncedFolders($CONTEXT: Context, $ACCOUNT: Account,\
+    \ $CLOCK: Clock) {\n    ...\n    filesystemDataProvider.deleteAllEntriesForSyncedFolder($SYNCED_FOLDER_ID.toString())\n\
+    \    ...\n}\n"
+  languages:
+  - kotlin
+  message: 'The method `remoceSyncedFolders` contains a typo in its name and uses
+    `java.lang.Long.toString()` instead of the more efficient `toString()` method.
+    This could lead to confusion and potential bugs in the code. Ensure the method
+    name is corrected to `removeSyncedFolders` and use `toString()` directly on the
+    variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/android/commit/90d66c43394b35657e3441e105b255262083a32a
+    category: security
+    cwe:
+    - CWE-1075
+    owasp:
+    - M7
+    references:
+    - https://cwe.mitre.org/data/definitions/1075.html
+    technology:
+    - kotlin

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rdoc-ffa87887
+  pattern: 'VERSION = ''4.0.0.preview3.1''
+
+    '
+  pattern-not: 'VERSION = ''4.0.0.rc.2''
+
+    '
+  languages:
+  - ruby
+  message: "The version string '4.0.0.preview3.1' is outdated and potentially insecure.\
+    \ \nUsing outdated versions can expose the application to known vulnerabilities.\
+    \ \nUpdate to the latest stable version, such as '4.0.0.rc.2', to ensure security\
+    \ patches are applied.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/rdoc/commit/ffa87887ee0517793df7541629a470e331f9fe60
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

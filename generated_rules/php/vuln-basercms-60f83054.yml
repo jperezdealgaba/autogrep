@@ -1,0 +1,22 @@
+rules:
+- id: vuln-basercms-60f83054
+  pattern: "if (in_array($ext, $exts)) {\n  return true;\n} else {\n  ...\n}\n"
+  pattern-not: "if (!in_array($ext, $exts)) {\n  return false;\n}\n"
+  languages:
+  - php
+  message: "The code contains a logic flaw in file extension validation, which could\
+    \ allow bypassing security checks. \nThe original code returns `true` when the\
+    \ extension is in the allowed list, but does not explicitly handle the case when\
+    \ it is not, potentially leading to security bypass. \nThe fix ensures that the\
+    \ function returns `false` when the extension is not in the allowed list, properly\
+    \ enforcing the security check.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/60f83054d8131b0ace60716cec7e629b5eb3a8f0
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

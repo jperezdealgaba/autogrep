@@ -1,0 +1,23 @@
+rules:
+- id: vuln-web2py-e31a099c
+  pattern: "if $SNEXT and self.settings.prevent_open_redirect_attacks:\n    $ITEMS\
+    \ = $SNEXT.split('/')\n    if '//' in $SNEXT and $ITEMS[2] != request.env.http_host:\n\
+    \        $SNEXT = None\n"
+  pattern-not: "if $NEXT and self.settings.prevent_open_redirect_attacks:\n    $ITEMS\
+    \ = $NEXT.split('/')\n    if '//' in $NEXT and $ITEMS[2] != current.request.env.http_host:\n\
+    \        $NEXT = None\n"
+  languages:
+  - python
+  message: Potential open redirect vulnerability detected. Ensure that the host validation
+    is performed against the correct request environment (current.request.env.http_host)
+    to prevent attackers from redirecting users to arbitrary URLs.
+  severity: ERROR
+  metadata:
+    source-url: github.com/web2py/web2py/commit/e31a099cb3456fef471886339653430ae59056b0
+    category: security
+    cwe: CWE-601
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/11-Client-side_Testing/04-Testing_for_Client-side_URL_Redirect
+    technology:
+    - python

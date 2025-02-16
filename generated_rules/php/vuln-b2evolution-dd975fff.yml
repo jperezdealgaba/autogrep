@@ -1,0 +1,30 @@
+rules:
+- id: vuln-b2evolution-dd975fff
+  pattern: '$site_name_text = ''<img src="''.$Settings->get( ''notification_logo''
+    ).''" alt="''.$Settings->get( ''notification_short_name'' ).''"''.$site_title.''
+    />'';
+
+    '
+  pattern-not: '$site_name_text = ''<img src="''.$Settings->get( ''notification_logo''
+    ).''" alt="''.format_to_output( $Settings->get( ''notification_short_name'' ),
+    ''htmlattr'' ).''"''.$site_title.'' />'';
+
+    '
+  languages:
+  - php
+  message: 'The code directly embeds user-controlled input into an HTML attribute
+    without proper escaping, which can lead to Cross-Site Scripting (XSS) vulnerabilities.
+    Always use appropriate escaping functions like `format_to_output` with the ''htmlattr''
+    context to safely include dynamic content in HTML attributes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/b2evolution/b2evolution/commit/dd975fff7fce81bf12f9c59edb1a99475747c83c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

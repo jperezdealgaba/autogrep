@@ -1,0 +1,20 @@
+rules:
+- id: vuln-jss-5922560a
+  pattern: "synchronized ($VAR) {\n  if ($VAR != null) {\n    try {\n      $VAR.close();\n\
+    \    } finally {\n      $VAR = null;\n    }\n  }\n}\n"
+  pattern-not: "if ($VAR != null) {\n  try {\n    $VAR.close();\n  } finally {\n \
+    \   $VAR = null;\n  }\n}\n"
+  languages:
+  - java
+  message: Potential resource leak due to improper synchronization in resource cleanup.
+    Ensure resources are properly released without unnecessary synchronization blocks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dogtagpki/jss/commit/5922560a78d0dee61af8a33cc9cfbf4cfa291448
+    category: security
+    cwe:
+    - CWE-772
+    owasp:
+    - A9
+    technology:
+    - java

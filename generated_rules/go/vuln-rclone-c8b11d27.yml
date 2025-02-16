@@ -1,0 +1,28 @@
+rules:
+- id: vuln-rclone-c8b11d27
+  pattern: 'rand.Seed(time.Now().Unix())
+
+    '
+  pattern-not: 'random.Seed()
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure random number seeding using `rand.Seed(time.Now().Unix())`.
+    This method uses a predictable seed based on the current time, which can lead
+    to security vulnerabilities. Use a cryptographically secure random seed instead,
+    such as `random.Seed()` from the `github.com/rclone/rclone/lib/random` package.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rclone/rclone/commit/c8b11d27e1fe261fdfba6b8910fda69356c9c777
+    category: security
+    cwe:
+    - CWE-337
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-28924
+    technology:
+    - go

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mupdf-7d52765c
+  pattern: 'fz_colorspace *$FUNC(fz_context *$CTX, enum fz_colorspace_type $TYPE,
+    fz_buffer *$BUF);
+
+    '
+  pattern-not: 'fz_colorspace *$FUNC(fz_context *$CTX, enum fz_colorspace_type $TYPE,
+    fz_buffer *$BUF, fz_colorspace *$ALTERNATE);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `fz_new_icc_colorspace` is missing the `alternate` parameter,
+    which could lead to incorrect color space handling. This vulnerability can cause
+    unexpected behavior or crashes when processing ICC profiles. To fix this, ensure
+    that the `alternate` parameter is included in the function call.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/7d52765c5b8a5c76e459d148cd94dbaf51e562ec
+    category: security
+    cwe:
+    - CWE-170
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/ArtifexSoftware/mupdf/commit/7d52765c5b8a5c76e459d148cd94dbaf51e562ec
+    technology:
+    - cpp

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-aiohttp-1e86b777
+  pattern: "status_line = \"{0} {1} HTTP/{2[0]}.{2[1]}\".format(\n    $METHOD, $PATH,\
+    \ $VERSION\n)\n"
+  pattern-not: "status_line = \"{0} {1} HTTP/{$V.major}.{$V.minor}\".format(\n   \
+    \ $METHOD, $PATH, v=$VERSION\n)\n"
+  languages:
+  - python
+  message: "Detected unsafe HTTP version string formatting that could lead to HTTP\
+    \ header injection. \nThe vulnerability occurs when using tuple indexing for version\
+    \ numbers, which can be manipulated to inject malicious headers. \nUse the HttpVersion\
+    \ object with major and minor attributes instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/1e86b777e61cf4eefc7d92fa57fa19dcc676013b
+    category: security
+    cwe: CWE-113
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html
+    technology:
+    - python

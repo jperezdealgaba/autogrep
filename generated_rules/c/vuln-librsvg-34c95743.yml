@@ -1,0 +1,25 @@
+rules:
+- id: vuln-librsvg-34c95743
+  pattern: '_rsvg_node_init($VAR)
+
+    '
+  pattern-not: '_rsvg_node_init($VAR, $TYPE)
+
+    '
+  languages:
+  - c
+  message: 'The function `_rsvg_node_init` is being called without specifying the
+    node type, which can lead to invalid node initialization and potential security
+    vulnerabilities. Always specify the node type when initializing a node.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/librsvg/commit/34c95743ca692ea0e44778e41a7c0a129363de84
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

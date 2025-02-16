@@ -1,0 +1,24 @@
+rules:
+- id: vuln-mautic-2d648394
+  pattern: '$builder->addEventSubscriber(new CleanFormSubscriber([''description''
+    => ''html'']));
+
+    '
+  pattern-not: '$builder->addEventSubscriber(new CleanFormSubscriber([''description''
+    => ''strict_html'']));
+
+    '
+  languages:
+  - php
+  message: Using 'html' sanitization for the description field can lead to XSS vulnerabilities.
+    Use 'strict_html' to ensure only safe HTML tags are allowed.
+  severity: ERROR
+  metadata:
+    source-url: github.com/mautic/mautic/commit/2d648394e183b1d2d910cea32e89d40a5915b5d4
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,45 @@
+rules:
+- id: vuln-vlc-3a628275
+  pattern: '$BOX->data.p_padb->i_reserved1 = calloc( ($COUNT + 1) / 2, sizeof(uint16_t)
+    );
+
+    $BOX->data.p_padb->i_pad2 = calloc( ($COUNT + 1) / 2, sizeof(uint16_t) );
+
+    $BOX->data.p_padb->i_reserved2 = calloc( ($COUNT + 1) / 2, sizeof(uint16_t) );
+
+    $BOX->data.p_padb->i_pad1 = calloc( ($COUNT + 1) / 2, sizeof(uint16_t) );
+
+    '
+  pattern-not: '$COUNT = $BOX->data.p_padb->i_sample_count;
+
+    $COUNT = ($COUNT + 1) / 2;
+
+    $BOX->data.p_padb->i_reserved1 = calloc( $COUNT, sizeof(uint16_t) );
+
+    $BOX->data.p_padb->i_pad2 = calloc( $COUNT, sizeof(uint16_t) );
+
+    $BOX->data.p_padb->i_reserved2 = calloc( $COUNT, sizeof(uint16_t) );
+
+    $BOX->data.p_padb->i_pad1 = calloc( $COUNT, sizeof(uint16_t) );
+
+    '
+  languages:
+  - c
+  message: 'The code directly uses `(i_sample_count + 1) / 2` in multiple `calloc`
+    calls, which can lead to repeated calculations and potential inconsistencies.
+    This can cause memory allocation issues or incorrect buffer sizes. The fix involves
+    calculating the count once and reusing it, ensuring consistency and reducing redundant
+    computations. Always calculate buffer sizes once and reuse them to avoid potential
+    errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/videolan/vlc/commit/3a6282755277ba9321d405c635e50da935d258a6
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

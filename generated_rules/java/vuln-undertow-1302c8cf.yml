@@ -1,0 +1,23 @@
+rules:
+- id: vuln-undertow-1302c8cf
+  pattern: "while ($RESULT == null || ($RESULT.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_WRAP\
+    \ && $RESULT.getStatus() != SSLEngineResult.Status.BUFFER_OVERFLOW)) {\n  ...\n\
+    }\n"
+  pattern-not: "while ($RESULT == null || ($RESULT.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_WRAP\
+    \ && $RESULT.getStatus() != SSLEngineResult.Status.BUFFER_OVERFLOW && !$ENGINE.isInboundDone()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Incomplete SSL handshake loop condition may lead to infinite loops or unexpected
+    behavior. Ensure the loop condition checks if the engine's inbound processing
+    is done.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/1302c8cf4476936802504efe0d36c58dcd954f78
+    category: security
+    cwe:
+    - CWE-835
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java

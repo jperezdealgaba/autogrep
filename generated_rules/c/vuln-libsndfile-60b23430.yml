@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libsndfile-60b23430
+  pattern: "if (FLAC__stream_decoder_get_state($FSD) >= FLAC__STREAM_DECODER_END_OF_STREAM)\n\
+    {\n    ...\n}\n"
+  pattern-not: "$STATE = FLAC__stream_decoder_get_state($FSD);\nif ($STATE >= FLAC__STREAM_DECODER_END_OF_STREAM)\n\
+    {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses the result of FLAC__stream_decoder_get_state in
+    a comparison without storing it in a variable. This can lead to inconsistent state
+    checks and potential NULL pointer dereferences. Store the state in a variable
+    before comparison to ensure consistent state handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/60b234301adf258786d8b90be5c1d437fc8799e0
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references: https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

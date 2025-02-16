@@ -1,0 +1,31 @@
+rules:
+- id: vuln-shakal-ng-ebd1c2cb
+  pattern: 'return HttpResponseRedirect($REQUEST[''next''])
+
+    '
+  pattern-not: '$URL = $REQUEST.get(''next'')
+
+    check_redirect_url($URL, $REQUEST)
+
+    return HttpResponseRedirect($URL)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe redirect without URL validation. This can lead to open
+    redirect vulnerabilities.
+
+    Always validate redirect URLs using `check_redirect_url()` to ensure they are
+    safe and allowed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LinuxOSsk/Shakal-NG/commit/ebd1c2cba59cbac198bf2fd5a10565994d4f02cb
+    category: security
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.http.url_has_allowed_host_and_scheme
+    technology:
+    - python

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-plane-cd821a93
+  pattern: "{\n  ...,\n  \"$VAR\": {\n    \"description\": \"Next Public Github ID\"\
+    ,\n    \"value\": \"\"\n  },\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"$VAR\": {\n    \"description\": \"Next Public Github\
+    \ ID\",\n    \"value\": \"$NON_EMPTY_VALUE\"\n  },\n  ...\n}\n"
+  languages:
+  - json
+  message: "Detected an empty value for a sensitive configuration key. \nEmpty values\
+    \ for credentials or IDs can lead to authentication failures or security vulnerabilities.\
+    \ \nEnsure that all sensitive configuration keys have valid, non-empty values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/makeplane/plane/commit/cd821a934d2bb4d0a79a0736608d3d9fb70c511d
+    category: security
+    cwe:
+    - 'CWE-259: Use of Hard-coded Password'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - json

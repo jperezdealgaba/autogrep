@@ -1,0 +1,29 @@
+rules:
+- id: vuln-fuel-cms-801cc293
+  pattern: '$_POST[$VAR->key_field()] = $_POST[''id'']
+
+    '
+  pattern-not: '$_POST[$VAR->key_field()] = !empty($id) ? $id : $_POST[''id'']
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of $_POST[''id''] to $_POST[$VAR->key_field()] without
+    validation can lead to security vulnerabilities. This allows potential manipulation
+    of the ID parameter, which could result in unauthorized data access or modification.
+    Always validate or sanitize user inputs, especially when dealing with IDs or other
+    sensitive fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/801cc2935c21c31e072e435b7e85133397ce194e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Injection
+    technology:
+    - php

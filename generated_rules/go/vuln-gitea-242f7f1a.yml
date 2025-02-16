@@ -1,0 +1,21 @@
+rules:
+- id: vuln-gitea-242f7f1a
+  pattern: 'var $VAR = make([]$TYPE, 0, len($ARG))
+
+    '
+  pattern-not: '$VAR := make([]$TYPE, 0, len($ARG))
+
+    '
+  languages:
+  - go
+  message: 'Detected use of `var` keyword for slice initialization. Using `:=` for
+    slice initialization is preferred for consistency and readability. Replace `var
+    $VAR = make([]$TYPE, 0, len($ARG))` with `$VAR := make([]$TYPE, 0, len($ARG))`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/242f7f1a528af0b85ad0dd6fa88ed2d889b92385
+    category: style
+    technology:
+    - go

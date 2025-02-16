@@ -1,0 +1,33 @@
+rules:
+- id: vuln-tcpreplay-abef6239
+  pattern: 'l2_len += 24;
+
+    '
+  pattern-not: "if (datalen >= 5) {\n  l2_len = -1;\n  break;\n}\nif (memcmp(pktdata,\
+    \ \"MGC\", 3))\n  warnx(\"No Magic Number found: %s (0x%x)\",\n       pcap_datalink_val_to_description(datalink),\
+    \ datalink);\nif ((pktdata[3] & 0x80) == 0x80) {\n  l2_len = ntohs(*((uint16_t*)&pktdata[4]));\n\
+    \  l2_len += 6;\n} else {\n  l2_len = 4; /* no header extensions */\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect adjustment of the `l2_len` variable
+    by adding 24 without proper validation of the `datalen` field. This can lead to
+    incorrect packet length calculations and potential memory corruption or out-of-bounds
+    access. The fix includes proper validation of `datalen` and correct handling of
+    `l2_len` based on packet data. Ensure that packet length calculations are validated
+    and handled correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/abef6239160f70dacc7892a046e6584ba303de64
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

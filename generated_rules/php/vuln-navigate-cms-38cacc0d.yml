@@ -1,0 +1,30 @@
+rules:
+- id: vuln-navigate-cms-38cacc0d
+  pattern: '$html[] = ''             <option value="flash" data-class="ui-icon-script"
+    id="nvmb-flash">''.t(186, ''Adobe Flash'').''</option>'';
+
+    '
+  pattern-not: '//        $html[] = ''             <option value="flash" data-class="ui-icon-script"
+    id="nvmb-flash">''.t(186, ''Adobe Flash'').''</option>'';
+
+    '
+  languages:
+  - php
+  message: 'The code contains a reference to Adobe Flash, which is deprecated and
+    poses security risks. Flash content is no longer supported by modern browsers
+    and can be exploited for malicious purposes. Remove any Flash-related code and
+    replace it with modern alternatives.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NavigateCMS/Navigate-CMS/commit/38cacc0d96ea5056d48e613e135a013e26ed53d2
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://helpx.adobe.com/flash-player/end-of-life.html
+    technology:
+    - php

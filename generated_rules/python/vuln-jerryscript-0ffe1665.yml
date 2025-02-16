@@ -8,13 +8,17 @@ rules:
     '
   languages:
   - python
-  message: Detected insecure use of run_pipe() method. This method may lead to vulnerabilities
-    in test execution. Use the secure run() method instead.
+  message: Detected usage of deprecated or unsafe method 'run_pipe()'. Use 'run()'
+    instead to ensure proper execution and security.
   severity: ERROR
   metadata:
-    source-url: github.com/galpeter/jerryscript/commit/0ffe1665bd0ee457dd4c1083811e1592a5e2908d
+    source-url: github.com/jerryscript-project/jerryscript/commit/0ffe1665bd0ee457dd4c1083811e1592a5e2908d
     category: security
-    cwe: 'CWE-665: Improper Initialization'
-    owasp: A12:2017-Security Misconfiguration
+    cwe:
+    - CWE-477
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/jerryscript-project/jerryscript/commit/0ffe1665bd0ee457dd4c1083811e1592a5e2908d
     technology:
     - python

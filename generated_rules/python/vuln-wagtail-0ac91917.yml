@@ -1,0 +1,17 @@
+rules:
+- id: vuln-wagtail-0ac91917
+  pattern: VERSION = (2, 12, 4, 'final', 1)
+  pattern-not: VERSION = (2, 12, 5, 'final', 1)
+  languages:
+  - python
+  message: Detected outdated Wagtail version 2.12.4. This version may contain security
+    vulnerabilities. Upgrade to version 2.12.5 or later to ensure security patches
+    are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/0ac9191705225fd2fb3b5974fc6b6743ba00b5bb
+    category: security
+    cwe: 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

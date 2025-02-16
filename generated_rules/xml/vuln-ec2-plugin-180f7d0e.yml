@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ec2-plugin-180f7d0e
+  pattern: '<version>1.38-SNAPSHOT</version>
+
+    '
+  pattern-not: '<version>1.39-SNAPSHOT</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version 1.38-SNAPSHOT of the Jenkins EC2 plugin contains a vulnerability
+    that has been fixed in version 1.39-SNAPSHOT. Using the vulnerable version can
+    expose your system to security risks. Update to version 1.39-SNAPSHOT or later
+    to mitigate the vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/ec2-plugin/commit/180f7d0eae6031d67259a5d86d9d7d382f9eb05b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - xml

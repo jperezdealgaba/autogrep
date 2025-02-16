@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mupdf-97096297
+  pattern: '$FUNC($CTX, pdf_dict_get($CTX, $OBJ, PDF_NAME($NAME)))
+
+    '
+  pattern-not: "$STR = pdf_dict_get($CTX, $OBJ, PDF_NAME($NAME));\nif ($STR)\n  $FUNC($CTX,\
+    \ $STR)\n"
+  languages:
+  - c
+  message: 'Detected unsafe usage of pdf_dict_get without proper null checking. This
+    can lead to null pointer dereference vulnerabilities. The fix involves assigning
+    the result to a variable and checking if it is non-null before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/97096297d409ec6f206298444ba00719607e8ba8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

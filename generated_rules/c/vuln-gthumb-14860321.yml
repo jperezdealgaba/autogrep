@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gthumb-14860321
+  pattern: "while ($SRCINFO.output_scanline < $SRCINFO.output_height) {\n  ...\n \
+    \ for ($X = 0; $X < $SRCINFO.output_width; $X++) {\n    ...\n  }\n  ...\n}\n"
+  pattern-not: "while ($SRCINFO.output_scanline < $OUTPUT_HEIGHT) {\n  ...\n  for\
+    \ ($X = 0; $X < $OUTPUT_WIDTH; $X++) {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses `srcinfo.output_width` and `srcinfo.output_height`
+    in loop conditions without proper bounds checking, which can lead to potential
+    buffer overflows or out-of-bounds memory access. This is dangerous because it
+    can result in arbitrary code execution or crashes. To fix this, ensure that the
+    loop bounds are constrained by the maximum allowed image size (e.g., `CAIRO_MAX_IMAGE_SIZE`)
+    and use intermediate variables to store the constrained dimensions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/gthumb/commit/14860321ce3235d420498c4f81f21003d1fb78f4
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

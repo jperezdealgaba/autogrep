@@ -1,0 +1,23 @@
+rules:
+- id: vuln-nova-2427d4a9
+  pattern: 'os.path.join($FS, $PATH.lstrip(''/''))
+
+    '
+  pattern-not: '_join_and_check_path_within_fs($FS, $PATH.lstrip(''/''))
+
+    '
+  languages:
+  - python
+  message: Detected unsafe path joining without validation. This can lead to directory
+    traversal attacks. Use _join_and_check_path_within_fs to ensure the path is within
+    the intended filesystem.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/2427d4a99bed35baefd8f17ba422cb7aae8dcca7
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

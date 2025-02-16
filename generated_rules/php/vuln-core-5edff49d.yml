@@ -1,0 +1,28 @@
+rules:
+- id: vuln-core-5edff49d
+  pattern: '$this->view->selected_uuid = $uuid
+
+    '
+  pattern-not: '$this->view->selected_uuid = htmlspecialchars($uuid, ENT_QUOTES |
+    ENT_HTML401)
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped output of a UUID variable, which can lead to Cross-Site\
+    \ Scripting (XSS) vulnerabilities. \nThe variable is directly assigned to a view\
+    \ property without proper escaping, allowing malicious input to be executed in\
+    \ the browser. \nTo fix this, use `htmlspecialchars` with appropriate flags to\
+    \ escape the output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/opnsense/core/commit/5edff49db1cd8b5078611e2f542d91c02af2b25c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

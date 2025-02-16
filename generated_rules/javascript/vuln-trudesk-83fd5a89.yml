@@ -1,0 +1,17 @@
+rules:
+- id: vuln-trudesk-83fd5a89
+  pattern: "$HTTP.put('/api/v1/users/' + $USERNAME, {\n  ...\n})\n"
+  pattern-not: "$HTTP.put('/api/v1/profile/', {\n  ...\n})\n"
+  languages:
+  - javascript
+  message: Insecure API endpoint detected. The endpoint exposes sensitive user information
+    via the URL. Use a fixed endpoint like '/api/v1/profile/' instead of including
+    the username in the URL.
+  severity: ERROR
+  metadata:
+    source-url: github.com/polonel/trudesk/commit/83fd5a89319ba2c2f5934722e39b08aba9b3a4ac
+    category: security
+    cwe: CWE-200
+    owasp: A1:2017-Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology: javascript

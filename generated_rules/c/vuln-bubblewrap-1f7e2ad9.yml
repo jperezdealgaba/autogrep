@@ -1,0 +1,27 @@
+rules:
+- id: vuln-bubblewrap-1f7e2ad9
+  pattern: 'drop_privs($KEEP_CAPS);
+
+    '
+  pattern-not: 'drop_privs($KEEP_CAPS, $CHANGED_UID);
+
+    '
+  languages:
+  - c
+  message: 'Detected a call to `drop_privs` with only one argument, which may lead
+    to privilege escalation vulnerabilities. The function now requires a second argument
+    to properly handle UID changes. This is dangerous because it may allow an attacker
+    to retain elevated privileges in certain scenarios. Always pass both arguments
+    to `drop_privs` to ensure proper privilege dropping.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/projectatomic/bubblewrap/commit/1f7e2ad948c051054b683461885a0215f1806240
+    category: security
+    cwe:
+    - CWE-269
+    owasp:
+    - A04:2021 - Insecure Design
+    technology:
+    - c

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-b2evolution-999b5ad1
+  pattern: 'if( ( substr( $params, 0, 2 ) == ''a:'' ) && ( ! preg_match( ''/(;|{|})O:\+?[0-9]+:"/'',
+    $params ) ) )
+
+    '
+  pattern-not: 'if( ( substr( $params, 0, 2 ) == ''a:'' ) && ( ! preg_match( ''/(s:\d+:"[^"]*"|i:\d+)(;|{|})O:\+?[0-9]+:"/'',
+    $params ) ) )
+
+    '
+  languages:
+  - php
+  message: 'The original regex pattern used to validate serialized data is insufficient
+    and can allow object injection attacks. The pattern fails to properly check for
+    valid serialized strings or integers before allowing object deserialization. This
+    can lead to remote code execution or other security vulnerabilities. Update the
+    regex to include checks for valid serialized strings (s:\d+:"[^"]*") and integers
+    (i:\d+) before allowing object deserialization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/b2evolution/b2evolution/commit/999b5ad1d59760d7e450ceb541f55432fc74cd27
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization
+    technology:
+    - php

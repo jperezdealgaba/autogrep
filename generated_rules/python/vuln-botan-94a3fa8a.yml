@@ -1,0 +1,23 @@
+rules:
+- id: vuln-botan-94a3fa8a
+  pattern: 'release_patch = 11
+
+    '
+  pattern-not: 'release_patch = 12
+
+    '
+  languages:
+  - python
+  message: Outdated version of Botan detected. Using an outdated version may expose
+    the application to known vulnerabilities. Update to the latest version to ensure
+    security.
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/94a3fa8ae0dc4df67f6e9ba780427e651baa9dfd
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://github.com/randombit/botan/commit/94a3fa8ae0dc4df67f6e9ba780427e651baa9dfd
+    technology:
+    - python

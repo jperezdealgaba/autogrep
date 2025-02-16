@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dokuwiki-d3233986
+  pattern: 'pathinfo($_SERVER["PHP_SELF"])
+
+    '
+  pattern-not: 'pathinfo($_SERVER["SCRIPT_NAME"])
+
+    '
+  languages:
+  - php
+  message: 'The use of `$_SERVER["PHP_SELF"]` for file path generation is vulnerable
+    to XSS attacks as it can be manipulated by user input. This can lead to malicious
+    script execution in the browser. Use `$_SERVER["SCRIPT_NAME"]` instead, which
+    is not affected by user input and provides a more secure way to generate file
+    paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dokuwiki/dokuwiki/commit/d3233986baa7dfe44490b805ae2e4296fad59401
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-argo-cd-04c30539
+  pattern: "func loadFileIntoIfExists($PATH string, $DESTINATION *string) error {\n\
+    \    $INFO, $ERR := os.Stat($PATH)\n    ...\n    if $BYTES, $ERR := ioutil.ReadFile($PATH);\
+    \ $ERR != nil {\n        *$DESTINATION = string($BYTES)\n    }\n}\n"
+  pattern-not: "func loadFileIntoIfExists($PATH pathutil.ResolvedFilePath, $DESTINATION\
+    \ *string) error {\n    $STRINGPATH := string($PATH)\n    $INFO, $ERR := os.Stat($STRINGPATH)\n\
+    \    ...\n    $BYTES, $ERR := ioutil.ReadFile($STRINGPATH);\n    if $ERR != nil\
+    \ {\n    *$DESTINATION = string($BYTES)\n}\n"
+  languages:
+  - go
+  message: "Detected a potential security vulnerability where file paths are not properly\
+    \ resolved, which could lead to out-of-bounds file access. \nThe vulnerability\
+    \ occurs when using direct string paths instead of resolved paths, potentially\
+    \ allowing access to files outside the intended directory. \nTo fix this, use\
+    \ the `pathutil.ResolveFilePath` function to ensure the file path is properly\
+    \ resolved and within bounds.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/04c305396458508a31d03d44afea07b1c620d7cd
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - go

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-varnish-cache-fcf5722a
+  pattern: "if ($U < 2 || $U > 19)\n  return(NULL);\nif ($U > 3)\n  $U += $HTTP_ASSO_VALUES[((const\
+    \ uint8_t*)$B)[3]];\nif ($U > 38)\n  return(NULL);\n"
+  pattern-not: "if ($U < GPERF_MIN_WORD_LENGTH || $U > GPERF_MAX_WORD_LENGTH)\n  return\
+    \ (NULL);\n$U += $HTTP_ASSO_VALUES[((const uint8_t *)$B)[$U - 1]] +\n    $HTTP_ASSO_VALUES[((const\
+    \ uint8_t *)$B)[0]];\nif ($U > GPERF_MAX_HASH_VALUE)\n  return (NULL);\n"
+  languages:
+  - c
+  message: 'The code uses hardcoded values for MIN_WORD_LENGTH, MAX_WORD_LENGTH, and
+    MAX_HASH_VALUE instead of using properly defined constants. This can lead to inconsistencies
+    and potential vulnerabilities in hash table operations. Use #define constants
+    (GPERF_MIN_WORD_LENGTH, GPERF_MAX_WORD_LENGTH, GPERF_MAX_HASH_VALUE) to ensure
+    consistent and maintainable hash value calculations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/varnishcache/varnish-cache/commit/fcf5722af75fdbf58dd425dd68d0beaa49bab4f4
+    category: security
+    cwe:
+    - CWE-547
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

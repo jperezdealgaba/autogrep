@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ntp-99e5c6cd
+  pattern: 'sprintf($STATSTR, $FORMAT, ...)
+
+    '
+  pattern-not: 'snprintf($STATSTR, $SIZE, $FORMAT, ...)
+
+    '
+  languages:
+  - c
+  message: 'The use of `sprintf` without a size limit can lead to buffer overflows,
+    which is a security vulnerability. This can be exploited to execute arbitrary
+    code or cause a denial of service. Replace `sprintf` with `snprintf` and specify
+    the buffer size to prevent buffer overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/99e5c6cd07ee70ec93f7b7efd62e54ea2b5d944e
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-cinder-0f9652d9
+  pattern: '$VAR = $RESPONSE.read()
+
+    '
+  pattern-not: '$VAR = $RESPONSE.text
+
+    '
+  languages:
+  - python
+  message: Using `read()` on HTTP responses is unsafe and can lead to improper handling
+    of response data. Use `text` or `raw` properties from the `requests` library instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/cinder/commit/0f9652d92e175a1f7dc3c2a37ab444b8f189375a
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://docs.python-requests.org/en/latest/user/quickstart/#response-content
+    technology:
+    - python

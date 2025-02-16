@@ -1,0 +1,33 @@
+rules:
+- id: vuln-exponent-cms-2ddffb2e
+  pattern: '$move = $router->params[''move''];
+
+    $target = $router->params[''target''];
+
+    '
+  pattern-not: '$move = intval($router->params[''move'']);
+
+    $target = intval($router->params[''target'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected potential integer casting vulnerability in router parameters.
+    Directly assigning router parameters to variables without proper type validation
+    can lead to security issues such as unexpected behavior or type manipulation.
+    Always validate and cast parameters to their expected types (e.g., using intval()
+    for integers) to ensure data integrity and prevent potential exploits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/2ddffb2e7eafe4830e3483a4b437873022c461ba
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

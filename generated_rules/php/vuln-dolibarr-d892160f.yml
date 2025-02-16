@@ -1,0 +1,23 @@
+rules:
+- id: vuln-dolibarr-d892160f
+  pattern: '$object->amount = price2num(GETPOST("amount", ''alpha''));
+
+    '
+  pattern-not: '$object->amount = price2num(GETPOST("amount", ''alpha''), '''', 2);
+
+    '
+  languages:
+  - php
+  message: 'The amount value is not properly sanitized, which could lead to security
+    issues such as SQL injection or incorrect data handling. The `price2num` function
+    should include the precision parameter to ensure proper formatting and validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dolibarr/dolibarr/commit/d892160f4f130385a3ce520f66cb8cf2eb8c5c32
+    category: security
+    cwe: CWE-89
+    owasp: 'A1: Injection'
+    technology:
+    - php

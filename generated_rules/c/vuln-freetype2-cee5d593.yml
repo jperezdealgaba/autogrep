@@ -1,0 +1,21 @@
+rules:
+- id: vuln-freetype2-cee5d593
+  pattern: unsigned long $NEWSIZE = $OLDSIZE + ($OLDSIZE >> 1) + 4;
+  pattern-not: unsigned long $NEWSIZE = $OLDSIZE + ($OLDSIZE >> 1) + 5;
+  languages:
+  - c
+  message: "This pattern detects an integer overflow vulnerability in memory allocation\
+    \ calculations. \nThe original code adds a fixed value of 4, which may lead to\
+    \ insufficient memory allocation. \nThe patch changes this to 5 to prevent potential\
+    \ buffer overflows. \nAlways ensure that memory allocation calculations account\
+    \ for sufficient space to avoid security risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/cee5d593582801f65c5e127d9de9ca24ebcdc747
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-redmine-899fc2e0
+  pattern: '$TEXT.gsub!(%r{<(\/?([!\w]+)[^<>\n]*)(>?)}) {|$M| $ALLOWED_TAGS.include?($2)
+    ? "<#{$1}#{$3}" : "&lt;#{$1}#{''&gt;'' unless $3.blank?}" }
+
+    '
+  pattern-not: "$TEXT.gsub!(%r{<(\\/?([!\\w]+)[^<>\\n]*)(>?)}) do |$M|\n    if $ALLOWED_TAGS.include?($2)\
+    \ && $3.present?\n        \"<#{$1}#{$3}\"\n    else\n        \"&lt;#{$1}#{'&gt;'\
+    \ unless $3.blank?}\"\n    end\nend\n"
+  languages:
+  - ruby
+  message: 'The code is vulnerable to HTML injection due to insufficient validation
+    of HTML tags. The original code only checks if the tag is in the ALLOWED_TAGS
+    list but does not verify if the tag is properly closed. This can lead to XSS attacks.
+    The fix ensures that the tag is both allowed and properly closed before allowing
+    it in the output. Always validate both the tag type and its structure to prevent
+    injection vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/redmine/redmine/commit/899fc2e0cd2bcb4f5f9333b612b160bb9c6e803b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - ruby

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-decidim-5e95894b
+  pattern: 'translatable_attribute $ATTR, $TYPE
+
+    '
+  pattern-not: 'attribute $ATTR, $TYPE
+
+    self.$ATTR = translated_attribute(model.$ATTR)
+
+    '
+  languages:
+  - ruby
+  message: "The use of `translatable_attribute` without proper translation handling\
+    \ can lead to security vulnerabilities. \nThis method does not ensure that the\
+    \ attribute is properly translated, potentially exposing untranslated or unsafe\
+    \ content. \nReplace `translatable_attribute` with `attribute` and explicitly\
+    \ handle translations using `translated_attribute`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/decidim/decidim/commit/5e95894bd79ac7e385cc5e1cbada86c975963a18
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://guides.rubyonrails.org/i18n.html
+    technology:
+    - ruby

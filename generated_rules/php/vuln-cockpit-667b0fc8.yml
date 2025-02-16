@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cockpit-667b0fc8
+  pattern: 'const APP_VERSION = ''2.5.2'';
+
+    '
+  pattern-not: 'const APP_VERSION = ''2.6.0'';
+
+    '
+  languages:
+  - php
+  message: 'Detected an outdated version of Cockpit (2.5.2). This version may contain
+    security vulnerabilities that have been fixed in later releases. Upgrade to version
+    2.6.0 or higher to ensure the application is secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cockpit-HQ/Cockpit/commit/667b0fc83f360440d8e16fa7557e464281a7cb8e
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - php

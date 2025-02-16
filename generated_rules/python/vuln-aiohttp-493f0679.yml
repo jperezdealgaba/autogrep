@@ -1,0 +1,21 @@
+rules:
+- id: vuln-aiohttp-493f0679
+  pattern: '$VAR = re.compile(rb"[\x00-\x1F\x7F()<>@,;:\[\]={} \t\"\\]")
+
+    '
+  pattern-not: '$VAR = re.compile(rb"[\x00-\x1F\x7F-\xFF()<>@,;:\[\]={} \t\"\\]")
+
+    '
+  languages:
+  - python
+  message: Incomplete character range in regex pattern can lead to header injection
+    attacks. Ensure all potentially dangerous characters are included in the pattern.
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/493f06797654c383242f0e8007f6e06b818a1fbc
+    category: security
+    cwe: CWE-113
+    owasp: A6:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A6_2021-Vulnerable_and_Outdated_Components
+    technology: python

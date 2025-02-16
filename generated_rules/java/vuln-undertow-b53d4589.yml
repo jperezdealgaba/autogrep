@@ -1,0 +1,25 @@
+rules:
+- id: vuln-undertow-b53d4589
+  pattern: 'IoUtils.safeClose($EXCHANGE.getRequestChannel())
+
+    '
+  pattern-not: '$EXCHANGE.getConnection().terminateRequestChannel($EXCHANGE)
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe closure of request channel in Undertow. This can lead
+    to resource leaks and improper handling of HTTP requests. Use `terminateRequestChannel`
+    instead of directly closing the channel to ensure proper cleanup and handling
+    of persistent connections.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/b53d4589c586e8bbdcc89ed60f32cd7977e9a4f4
+    category: security
+    cwe:
+    - CWE-404
+    owasp: A9:2017-Insufficient Attack Protection
+    technology:
+    - java

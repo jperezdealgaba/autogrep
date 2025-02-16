@@ -1,0 +1,31 @@
+rules:
+- id: vuln-tcpreplay-b763db76
+  pattern: "if (!$DATA || $PAYLOAD_LEN <= 0 || $PAYLOAD_LEN > 65535) {\n  ...\n}\n"
+  pattern-not: "if (!$DATA || $PAYLOAD_LEN < (int)sizeof(*$IPV4) || $PAYLOAD_LEN >\
+    \ 0xffff) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected an insecure payload length check in packet processing code. The
+    original check allows for invalid payload lengths that could lead to buffer overflows
+    or incorrect packet handling. The vulnerability occurs when the payload length
+    is not properly validated against the minimum required size for the packet type
+    (e.g., IPv4/IPv6 headers). This could allow processing of malformed packets or
+    insufficient data, potentially leading to crashes or security issues. To fix,
+    ensure payload length checks properly validate against the minimum required size
+    for the specific packet type being processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/b763db764f46e7d72f5a8cea13dd917da002c48c
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - c

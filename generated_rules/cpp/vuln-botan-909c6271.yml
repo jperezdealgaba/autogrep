@@ -1,0 +1,31 @@
+rules:
+- id: vuln-botan-909c6271
+  pattern: 'Test::Result result("path check with forged ocsp using self-signed certificate");
+
+    '
+  pattern-not: 'Test::Result result("path check with forged ocsp using self-signed
+    certificate (CVE-2022-43705)");
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential vulnerability related to CVE-2022-43705 in Botan.
+    The code tests a path check with a forged OCSP using a self-signed certificate
+    without the CVE identifier, indicating it may be using an older, vulnerable version.
+    This vulnerability could allow attackers to forge OCSP responses, leading to potential
+    security bypasses. Update the code to include the CVE identifier and ensure the
+    latest security patches are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/909c62717855402e04dbaf8ffc085f444d547aae
+    category: security
+    cwe:
+    - CWE-347
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2022-43705
+    technology:
+    - cpp

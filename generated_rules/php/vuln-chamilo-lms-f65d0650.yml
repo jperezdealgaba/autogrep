@@ -1,0 +1,32 @@
+rules:
+- id: vuln-chamilo-lms-f65d0650
+  pattern: 'preg_replace(''/\.(php.?|phtml.?)(\.){0,1}.*$/i'', ''.phps'', $VAR)
+
+    '
+  pattern-not: 'preg_replace(''/\.(phar.?|php.?|phtml.?)(\.){0,1}.*$/i'', ''.phps'',
+    $VAR)
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability involves insufficient file extension filtering in the
+    file upload functionality. The original code only filters `.php` and `.phtml`
+    extensions, but fails to block `.phar` files, which can also execute PHP code.
+    This can allow attackers to upload malicious files and execute arbitrary code
+    on the server. The fix includes adding `.phar` to the list of filtered extensions.
+    Always ensure all potentially dangerous file extensions are properly filtered
+    in file upload handlers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/f65d065061a77bb2e84f73217079ce3998cf3453
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    technology:
+    - php

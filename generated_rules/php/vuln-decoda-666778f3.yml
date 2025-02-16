@@ -1,0 +1,21 @@
+rules:
+- id: vuln-decoda-666778f3
+  pattern: "if ($VAR1 != $VAR2) {\n  ...\n}\n"
+  pattern-not: "if ($VAR1 !== $VAR2) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Using ''!='' for comparison can lead to type juggling issues, which may
+    result in unexpected behavior or security vulnerabilities. Use ''!=='' for strict
+    type comparison to ensure both value and type are checked.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/milesj/decoda/commit/666778f326dff3bd213be9f624f0fcb337c0b4c9
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - php

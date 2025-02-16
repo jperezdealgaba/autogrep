@@ -1,0 +1,25 @@
+rules:
+- id: vuln-rpm-4d172a19
+  pattern: "if (lstat($PATH, &$STB) == 0) {\n  if (S_ISREG($STB.st_mode) && ($STB.st_mode\
+    \ & 06000) != 0) {\n    ...\n  }\n}\n"
+  pattern-not: "if (lstat($PATH, &$STB) == 0 && S_ISREG($STB.st_mode)) {\n  if (($STB.st_mode\
+    \ & 06000) != 0) {\n    #if WITH_CAP\n    if ($STB.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH))\
+    \ {\n      (void) cap_set_file($PATH, NULL);\n    }\n    #endif\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code checks for setuid/setgid bits without proper capability handling.
+    This can lead to security issues where files with these bits set are not properly
+    managed, potentially allowing privilege escalation. Ensure that files with setuid/setgid
+    bits are properly handled by checking for execute permissions and using capabilities
+    where available.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/4d172a194addc49851e558ea390d3045894e3230
+    category: security
+    cwe:
+    - CWE-269
+    owasp: A04:2021 - Insecure Design
+    technology:
+    - c

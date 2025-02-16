@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wordpress-autosuggest-plugin-dd59cbac
+  pattern: '$data = ''const W3W_AUTOSUGGEST_SETTINGS = '' . json_encode($settings)
+    . '';''
+
+    '
+  pattern-not: '$data = ''const W3W_AUTOSUGGEST_SETTINGS = '' . json_encode($exposed_settings)
+    . '';''
+
+    '
+  languages:
+  - php
+  message: 'Sensitive information is being exposed by directly encoding the entire
+    settings array into JavaScript. This can lead to information disclosure vulnerabilities,
+    especially if sensitive data like API keys are included. The fix involves creating
+    a new array (`$exposed_settings`) with only the necessary settings and encoding
+    that instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/what3words/wordpress-autosuggest-plugin/commit/dd59cbac5f86057d6a73b87007c08b8bfa0c32ac
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - php

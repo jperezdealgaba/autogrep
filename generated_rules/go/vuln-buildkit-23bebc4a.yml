@@ -1,0 +1,28 @@
+rules:
+- id: vuln-buildkit-23bebc4a
+  pattern: "$DIR := filepath.Dir($P)\n$DIRST, $ERR := os.Stat($DIR)\n...\nif $ERR\
+    \ := os.Chtimes($DIR, $ATIME, $MTIME); $ERR != nil {\n  ...\n}\n"
+  pattern-not: "$PARENT := filepath.Dir($P)\nif $REALPATH, $ERR := fs.RootPath($DIR,\
+    \ strings.TrimPrefix($PARENT, $DIR)); $ERR != nil || $REALPATH != $PARENT {\n\
+    \  continue\n}\n$DIRST, $ERR := os.Stat($PARENT)\n...\nif $ERR := os.Chtimes($PARENT,\
+    \ $ATIME, $MTIME); $ERR != nil {\n  ...\n}\n"
+  languages:
+  - go
+  message: "Detected a potential path traversal vulnerability due to improper handling\
+    \ of directory paths. \nThe original code directly uses the directory path derived\
+    \ from a user-controlled input, \nwhich could allow an attacker to manipulate\
+    \ file timestamps in unintended directories. \nThe fix includes additional path\
+    \ validation using `fs.RootPath` to ensure the path is within the intended directory.\
+    \ \nTo fix, ensure all paths are properly validated and sanitized before use.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moby/buildkit/commit/23bebc4a180b84ba18733f545e7559e10c439ac3
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - go

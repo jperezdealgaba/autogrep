@@ -1,0 +1,26 @@
+rules:
+- id: vuln-odoo-a11cb620
+  pattern: '$RES = super($CLASS, $SELF).create($VALS)
+
+    '
+  pattern-not: '$RES = super($CLASS, $SELF).create($VALS)._check_rights()
+
+    '
+  languages:
+  - python
+  message: 'Detected missing access rights check after creating a record. This can
+    lead to unauthorized access or modification of sensitive data. The vulnerability
+    occurs when `super().create()` is called without subsequently verifying the user''s
+    access rights. The fix involves calling `_check_rights()` after record creation
+    to ensure proper access control.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/a11cb62053c93eba377039370cc79933b2ea444a
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology: python

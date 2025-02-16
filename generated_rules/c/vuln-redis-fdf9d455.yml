@@ -1,30 +1,29 @@
 rules:
 - id: vuln-redis-fdf9d455
-  pattern: '$TF = ((c == LUA_SIGNATURE[0]) ? $FUNC1 : $FUNC2)($L, $P->z, ...);
+  pattern: 'tf = ((c == LUA_SIGNATURE[0]) ? luaU_undump : luaY_parser)(L, p->z, ...)
 
     '
-  pattern-not: '$TF = ($FUNC2)($L, $P->z, ...);
+  pattern-not: 'tf = (luaY_parser)(L, p->z, ...)
 
     '
   languages:
   - c
   message: 'Detected a potentially unsafe ternary operator usage in function selection.
+
     This pattern can lead to unexpected behavior or vulnerabilities if the condition
-    is not properly validated. The vulnerability was fixed by directly using `luaY_parser`
-    instead of conditionally selecting between `luaU_undump` and `luaY_parser`. To
-    fix this, ensure that the function selection logic is secure and does not rely
-    on potentially unsafe conditions.
+
+    evaluation is not handled correctly. The fixed version directly uses `luaY_parser`
+
+    to avoid such risks.
 
     '
-  severity: ERROR
+  severity: WARNING
   metadata:
-    source-url: github.com/redis/redis/commit/fdf9d455098f54f7666c702ae464e6ea21e25411
+    source-url: github.com/antirez/redis/commit/fdf9d455098f54f7666c702ae464e6ea21e25411
     category: security
     cwe:
-    - CWE-670
+    - 'CWE-670: Always-Incorrect Control Flow Implementation'
     owasp:
-    - A3:2017-Sensitive Data Exposure
-    references:
-    - https://cwe.mitre.org/data/definitions/670.html
+    - 'A9: Using Components with Known Vulnerabilities'
     technology:
     - c

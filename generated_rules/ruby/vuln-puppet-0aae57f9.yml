@@ -1,0 +1,28 @@
+rules:
+- id: vuln-puppet-0aae57f9
+  pattern: 'File.open($FILE, $MODE) { |$F| ... }
+
+    '
+  pattern-not: 'Puppet::Util.secure_open($FILE, $MODE) { |$F| ... }
+
+    '
+  languages:
+  - ruby
+  message: 'Insecure file opening detected. Using `File.open` directly can lead to
+    symlink attacks or file overwrites by malicious actors. Use `Puppet::Util.secure_open`
+    instead, which safely handles symlinks and ensures secure file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/0aae57f91dc69b22fb674f8de3a13c22edd07128
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - A1: Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/59.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

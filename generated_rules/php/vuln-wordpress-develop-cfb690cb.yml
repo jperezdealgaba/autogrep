@@ -1,0 +1,35 @@
+rules:
+- id: vuln-wordpress-develop-cfb690cb
+  pattern: "$has_kses = (false !== has_filter('content_save_pre', 'wp_filter_post_kses'));\n\
+    if ($has_kses) {\n    kses_remove_filters();\n}\n$has_targeted_link_rel_filters\
+    \ = (false !== has_filter('content_save_pre', 'wp_targeted_link_rel'));\nif ($has_targeted_link_rel_filters)\
+    \ {\n    wp_remove_targeted_link_rel_filters();\n}\n"
+  pattern-not: 'add_filter(''wp_insert_post_data'', array($this, ''preserve_insert_changeset_post_content''),
+    5, 3);
+
+    remove_filter(''wp_insert_post_data'', array($this, ''preserve_insert_changeset_post_content''),
+    5);
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability involves the removal of KSES and targeted link rel filters
+    without proper restoration, which can lead to JSON corruption in post content.
+    This is dangerous because it can result in data loss or corruption, especially
+    when multiple users with different capabilities collaborate on a changeset. The
+    fix involves using a dedicated method to preserve the initial JSON post content
+    and ensure that filters are properly managed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/cfb690cb8efaee32d55b10a7771afb0f1f47aab3
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://core.trac.wordpress.org/ticket/49387
+    technology:
+    - php

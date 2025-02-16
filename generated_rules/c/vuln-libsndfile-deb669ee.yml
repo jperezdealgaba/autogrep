@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libsndfile-deb669ee
+  pattern: "if ($BLOCKALIGN < 7 * $CHANNELS) {\n    psf_log_printf($PSF, \"*** Error\
+    \ blockalign (%d) should be > %d.\\n\", $BLOCKALIGN, 7 * $CHANNELS);\n    ...\n\
+    }\n"
+  pattern-not: "if (2 * $BLOCKALIGN < $SAMPLESPERBLOCK * $CHANNELS) {\n    psf_log_printf($PSF,\
+    \ \"*** Error blockalign (%d) should be >= %d.\\n\", $BLOCKALIGN, $SAMPLESPERBLOCK\
+    \ * $CHANNELS / 2);\n    ...\n}\n"
+  languages:
+  - c
+  message: "The code contains a vulnerability where the block alignment check is insufficient.\
+    \ \nThe original check only ensures that blockalign is greater than 7 times the\
+    \ number of channels, \nbut it should also ensure that blockalign is at least\
+    \ half of samplesperblock times the number of channels. \nThis can lead to incorrect\
+    \ block alignment and potential buffer overflows or data corruption. \nTo fix\
+    \ this, ensure that blockalign is checked against both conditions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/deb669ee8be55a94565f6f8a6b60890c2e7c6f32
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

@@ -1,0 +1,37 @@
+rules:
+- id: vuln-exim-1670ef10
+  pattern: '(void)setgid($GID);
+
+    (void)setuid($UID);
+
+    '
+  pattern-not: '$RV = setgid($GID);
+
+    if ($RV) {...}
+
+    $RV = setuid($UID);
+
+    if ($RV) {...}
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of setgid/setuid without error checking. Failing to
+    check the return value of setgid/setuid can lead to privilege escalation vulnerabilities,
+    as the process may continue running with unintended privileges. Always check the
+    return value of setgid/setuid and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/1670ef10063d7708eb736a482d1ad25b9c59521d
+    category: security
+    cwe:
+    - 'CWE-273: Improper Check for Dropped Privileges'
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://man7.org/linux/man-pages/man2/setgid.2.html
+    - https://man7.org/linux/man-pages/man2/setuid.2.html
+    technology:
+    - c

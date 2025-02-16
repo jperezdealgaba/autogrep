@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mupdf-4dcc6aff
+  pattern: '$MASK_COLORSPACE = fz_device_gray($CTX);
+
+    '
+  pattern-not: '$MASK_COLORSPACE = fz_keep_colorspace($CTX, fz_device_gray($CTX));
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns the result of `fz_device_gray` to a variable
+    without using `fz_keep_colorspace`. This can lead to improper reference counting
+    of the colorspace object, potentially causing use-after-free or memory corruption
+    vulnerabilities. Always use `fz_keep_colorspace` to properly manage the reference
+    count of the colorspace object.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/4dcc6affe04368461310a21238f7e1871a752a05
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-665
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-cloud-init-a378b7e4
+  pattern: 'LOG.debug($DATA)
+
+    LOG.debug(util.json_dumps($METADATA))
+
+    '
+  pattern-not: 'LOG.debug(redacted_data)
+
+    LOG.debug(util.json_dumps(redacted_metadata))
+
+    '
+  languages:
+  - python
+  message: Detected logging of sensitive metadata without proper redaction. This can
+    lead to exposure of sensitive information such as user data or vendor data. Ensure
+    sensitive metadata is properly redacted before logging.
+  severity: ERROR
+  metadata:
+    source-url: github.com/canonical/cloud-init/commit/a378b7e4f47375458651c0972e7cd813f6fe0a6b
+    category: security
+    cwe: CWE-532
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cloudinit.readthedocs.io/en/latest/topics/datasources.html
+    technology:
+    - python

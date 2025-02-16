@@ -1,0 +1,30 @@
+rules:
+- id: vuln-capnproto-2ca8e411
+  pattern: '$SEGMENT->containsInterval($FROM, $TO)
+
+    '
+  pattern-not: '$SEGMENT->checkObject($START, $SIZE)
+
+    '
+  languages:
+  - cpp
+  message: 'The use of `containsInterval` is unsafe as it does not properly validate
+    pointer offsets.
+
+    This can lead to out-of-bounds memory access and potential segfaults. Instead,
+    use
+
+    `checkObject` or `checkOffset` to ensure proper bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/capnproto/capnproto/commit/2ca8e41140ebc618b8fb314b393b0a507568cf21
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

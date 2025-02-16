@@ -1,0 +1,27 @@
+rules:
+- id: vuln-revolution-e8734888
+  pattern: 'preg_replace(''/(\.+\/)+/'', '''', htmlspecialchars($VAR))
+
+    '
+  pattern-not: 'preg_replace(''/[\.]{2,}/'', '''', htmlspecialchars($VAR))
+
+    '
+  languages:
+  - php
+  message: 'The original regex pattern `/(\.+\/)+/` is insufficient to prevent directory
+    traversal attacks. It fails to properly sanitize paths containing sequences of
+    dots and slashes, which could allow attackers to access files outside the intended
+    directory. Use the fixed pattern `/[\.]{2,}/` to ensure that any sequence of two
+    or more dots is removed, effectively mitigating the risk of directory traversal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/modxcms/revolution/commit/e87348884bb05ae25a56d320c9ccff8c08f9628d
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

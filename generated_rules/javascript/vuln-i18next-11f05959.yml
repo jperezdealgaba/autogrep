@@ -1,0 +1,26 @@
+rules:
+- id: vuln-i18next-11f05959
+  pattern: 'this.escapeValue = $OPTIONS.escapeValue;
+
+    '
+  pattern-not: 'this.escapeValue = $OPTIONS.escapeValue !== undefined ? $OPTIONS.escapeValue
+    : true;
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure default value for escapeValue detected. When escapeValue is undefined,
+    it defaults to false, which can lead to XSS vulnerabilities. Always set a secure
+    default value (true) when escapeValue is undefined.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/i18next/i18next/commit/11f059599889d857d497aa0499355be32df0dbb6
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-openclinica-b152cc63
+  pattern: 'String $QUERY = "from " + $DOMAIN_CLASS + " where path = ''" + $PATH +
+    "'' and tagId=" + $TAG_ID;
+
+    '
+  pattern-not: 'String $QUERY = "from " + $DOMAIN_CLASS + " where path = :path and
+    tagId= :tagId";
+
+    $Q.setInteger("tagId", $TAG_ID);
+
+    $Q.setString("path", $PATH);
+
+    '
+  languages:
+  - java
+  message: 'Detected SQL query construction with direct string concatenation of user
+    input, which can lead to SQL injection vulnerabilities. Use parameterized queries
+    instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenClinica/OpenClinica/commit/b152cc63019230c9973965a98e4386ea5322c18f
+    category: security
+    cwe: CWE-89
+    owasp: A01:2021 - Injection
+    technology:
+    - java

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-aiohttp-d5c12ba8
+  pattern: "try:\n    $LENGTH = int($LENGTH_HDR)\nexcept ValueError:\n    ...\n"
+  pattern-not: "if not $LENGTH_HDR.strip(\" \\t\").isdigit():\n    ...\n"
+  languages:
+  - python
+  message: "Potential vulnerability in HTTP header parsing. Content-Length should\
+    \ be validated as a positive integer without leading/trailing whitespace or signs.\
+    \ Use `.strip(' \t').isdigit()` to ensure proper validation."
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/d5c12ba890557a575c313bb3017910d7616fce3d
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A1:2017-Injection
+    references:
+    - https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6-2
+    technology: python

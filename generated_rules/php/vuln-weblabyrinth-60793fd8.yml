@@ -1,0 +1,31 @@
+rules:
+- id: vuln-weblabyrinth-60793fd8
+  pattern: '$this->crawler_info = $this->dbhandle->query("SELECT crawler_ip FROM crawlers
+    WHERE crawler_ip=''$ip'' AND crawler_useragent=''$useragent''");
+
+    '
+  pattern-not: '$this->crawler_info = $this->dbhandle->query("SELECT crawler_ip FROM
+    crawlers WHERE crawler_ip=''$this->ip'' AND crawler_useragent=''$this->useragent''");
+
+    '
+  languages:
+  - php
+  message: 'Detected a SQL injection vulnerability due to unescaped user input in
+    a database query. This can allow attackers to execute arbitrary SQL commands,
+    potentially leading to data breaches or unauthorized access. To fix this, use
+    proper escaping functions like `sqlite_escape_string()` on user inputs before
+    including them in SQL queries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rotelok/weblabyrinth/commit/60793fd8c8c4759596d3510641e96ea40e7f60e9
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

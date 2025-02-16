@@ -1,0 +1,28 @@
+rules:
+- id: vuln-conemu-60683a18
+  pattern: 'const char $CH = *$PC >= 0x20 ? *$PC : L'' '';
+
+    '
+  pattern-not: 'const char $CH = (*$PC == 0x1B || *$PC >= 0x20) ? *$PC : L'' '';
+
+    '
+  languages:
+  - cpp
+  message: 'The code does not properly handle the escape character (0x1B), which can
+    lead to incorrect processing of ANSI escape sequences. This can result in security
+    vulnerabilities such as command injection or misinterpretation of control sequences.
+    To fix this, ensure that the escape character is explicitly checked in the condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Maximus5/ConEmu/commit/60683a186628ffaa7689fcb64b3c38ced69287c1
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://en.wikipedia.org/wiki/ANSI_escape_code
+    technology:
+    - cpp

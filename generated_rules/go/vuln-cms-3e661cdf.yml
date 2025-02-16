@@ -1,0 +1,31 @@
+rules:
+- id: vuln-cms-3e661cdf
+  pattern: 'return "Page with alias ''" + $ALIAS + "'' not found"
+
+    '
+  pattern-not: 'return hb.NewDiv().Text(`Page with alias ''`).Text($ALIAS).Text(`''
+    not found`).ToHTML()
+
+    '
+  languages:
+  - go
+  message: 'Detected a direct string concatenation with user input, which can lead
+    to Cross-Site Scripting (XSS) vulnerabilities. The code directly returns a string
+    that includes user-controlled input (`alias`) without proper sanitization. This
+    can allow an attacker to inject malicious scripts into the output. To fix this,
+    use a safe HTML construction method like `hb.NewDiv()` to properly escape user
+    input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gouniverse/cms/commit/3e661cdfb4beeb9fe2ad507cdb8104c0b17d072c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - go

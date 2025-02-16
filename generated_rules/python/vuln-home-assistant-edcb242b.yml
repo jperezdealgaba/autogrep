@@ -1,0 +1,22 @@
+rules:
+- id: vuln-home-assistant-edcb242b
+  pattern: 'MEDIA_TYPE_VIDEO = ''movie''
+
+    '
+  pattern-not: 'MEDIA_TYPE_MOVIE = ''movie''
+
+    MEDIA_TYPE_VIDEO = ''video''
+
+    '
+  languages:
+  - python
+  message: Incorrect media type definition. MEDIA_TYPE_VIDEO should be 'video' instead
+    of 'movie'. This could lead to incorrect media type handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/home-assistant/home-assistant/commit/edcb242b6d9f90c711b42922121592c5885960eb
+    category: security
+    cwe: CWE-670
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

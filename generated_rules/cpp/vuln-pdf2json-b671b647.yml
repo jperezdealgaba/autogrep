@@ -1,0 +1,28 @@
+rules:
+- id: vuln-pdf2json-b671b647
+  pattern: 'fprintf(stderr, "pdf2json version %s http://flexpaper.devaldi.com/pdf2json/,
+    based on Xpdf version %s\n", "0.69", $XPDF_VERSION);
+
+    '
+  pattern-not: 'fprintf(stderr, "pdf2json version %s http://flexpaper.devaldi.com/pdf2json/,
+    based on Xpdf version %s\n", "0.70", $XPDF_VERSION);
+
+    '
+  languages:
+  - cpp
+  message: 'The version string in the output is outdated and may lead to confusion
+    or security issues. Always ensure the version string reflects the current version
+    of the software to avoid potential security risks and maintain accurate version
+    tracking.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/flexpaper/pdf2json/commit/b671b647a7e487b021744f330b8dd2d6ccfa8103
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

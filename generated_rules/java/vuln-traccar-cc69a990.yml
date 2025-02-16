@@ -1,0 +1,20 @@
+rules:
+- id: vuln-traccar-cc69a990
+  pattern: 'String $JAVA_BINARY = $JAVA_HOME + "\\bin\\java.exe";
+
+    '
+  pattern-not: 'String $JAVA_BINARY = "\"" + $JAVA_HOME + "\\bin\\java.exe\"";
+
+    '
+  languages:
+  - java
+  message: Unquoted file path in command execution. This can lead to command injection
+    or path manipulation vulnerabilities if the path contains spaces or special characters.
+    Always quote file paths in command executions.
+  severity: ERROR
+  metadata:
+    source-url: github.com/traccar/traccar/commit/cc69a9907ac9878db3750aa14ffedb28626455da
+    category: security
+    cwe: CWE-78
+    owasp: OWASP Top 10 2021:A03 - Injection
+    technology: java

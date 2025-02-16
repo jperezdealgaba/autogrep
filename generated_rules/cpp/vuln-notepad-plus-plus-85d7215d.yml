@@ -1,0 +1,29 @@
+rules:
+- id: vuln-notepad-plus-plus-85d7215d
+  pattern: '::LoadLibrary(TEXT("$DLL"))
+
+    '
+  pattern-not: '::LoadLibraryEx(TEXT("$DLL"), nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe usage of LoadLibrary without specifying the search path.
+    This can lead to DLL hijacking vulnerabilities where an attacker could place a
+    malicious DLL in a directory that is searched before the system directory. Use
+    LoadLibraryEx with LOAD_LIBRARY_SEARCH_SYSTEM32 to ensure the DLL is loaded only
+    from the system directory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/notepad-plus-plus/notepad-plus-plus/commit/85d7215d9b3e0d5a8433fc31aec4f2966821051e
+    category: security
+    cwe:
+    - CWE-427
+    owasp:
+    - A08:2021-Software and Data Integrity Failures
+    references:
+    - https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryexw
+    technology:
+    - cpp

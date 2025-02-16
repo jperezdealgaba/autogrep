@@ -1,0 +1,30 @@
+rules:
+- id: vuln-xrdp-4def30ab
+  pattern: "if ($SIZE > $SELF->in_s->size)\n{\n  LOG($LOG_LEVEL_ERROR, \"sesman_data_in:\
+    \ bad message size\");\n  ...\n}\n"
+  pattern-not: "if ($SIZE < $HEADER_SIZE || $SIZE > $SELF->in_s->size)\n{\n  LOG($LOG_LEVEL_ERROR,\
+    \ \"sesman_data_in: bad message size %d\", $SIZE);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to check if the message size is smaller than the required
+    header size,
+
+    which can lead to buffer underflow vulnerabilities. This can cause undefined behavior
+
+    or crashes. Always verify that the message size is within valid bounds, including
+
+    both minimum and maximum limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/4def30ab8ea445cdc06832a44c3ec40a506a0ffa
+    category: security
+    cwe:
+    - 'CWE-129: Improper Validation of Array Index'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - c

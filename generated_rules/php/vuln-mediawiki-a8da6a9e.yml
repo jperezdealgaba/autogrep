@@ -1,0 +1,36 @@
+rules:
+- id: vuln-mediawiki-a8da6a9e
+  pattern: "if (!$this->badFileLookup->isBadFile($VAR1, $VAR2)) {\n  ...\n  $s .=\
+    \ $VAR3 . $this->armorLinks($this->makeImage($VAR4, $VAR5, $VAR6)) . $VAR7;\n\
+    \  continue;\n}\n"
+  pattern-not: "if ($VAR1) {\n  ...\n  # cloak any absolute URLs inside the image\
+    \ markup, so handleExternalLinks() won't touch them\n  $s .= $VAR2 . $this->armorLinks($this->makeImage($VAR3,\
+    \ $VAR4, $VAR5)) . $VAR6;\n  continue;\n}\n"
+  languages:
+  - php
+  message: 'The code fails to properly check for bad files before processing image
+    markup,
+
+    which could lead to security vulnerabilities such as XSS or improper file handling.
+
+    The fix ensures that the bad file check is performed correctly before processing
+
+    the image markup. Always validate file status before processing to prevent potential
+
+    security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/a8da6a9e08ec1d63fcf22dd710ed084bfcf6fbc1
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    - 'A3: Cross-Site Scripting (XSS)'
+    references:
+    - https://www.mediawiki.org/wiki/Security_guidelines
+    technology:
+    - php

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-datadog-api-client-java-592726c4
+  pattern: "paging:\n  after: $VAR\n"
+  pattern-not: "page:\n  cursor: $VAR\n"
+  languages:
+  - yaml
+  message: 'The use of ''paging'' with ''after'' is deprecated and vulnerable. This
+    structure has been replaced with ''page'' and ''cursor'' to improve API consistency
+    and security. Update your code to use ''page'' and ''cursor'' instead of ''paging''
+    and ''after'' to avoid potential issues with API compatibility and security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DataDog/datadog-api-client-java/commit/592726c4c171cf1a01b44113ba3abda801e3d1b4
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'API Security: Improper Assets Management'
+    references:
+    - https://docs.datadoghq.com/api/latest/logs/
+    technology:
+    - yaml

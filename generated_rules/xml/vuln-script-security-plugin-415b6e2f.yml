@@ -1,0 +1,31 @@
+rules:
+- id: vuln-script-security-plugin-415b6e2f
+  pattern: '<version>1.23</version>
+
+    '
+  pattern-not: '<version>1.24</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version 1.23 of the script-security-plugin is vulnerable and should
+    be updated to version 1.24 or later.
+
+    Using an outdated version can expose the application to security vulnerabilities.
+
+    Upgrade to the latest version to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/script-security-plugin/commit/415b6e2f3fa0c2e4bd2f9c4a589a9e1fc9cbac8b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - xml

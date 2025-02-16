@@ -1,0 +1,29 @@
+rules:
+- id: vuln-exim-cf3cd306
+  pattern: 'uschar *$RESULT = store_get(3*(Ustrlen($CODE)/4) + 1);
+
+    *$PTR = $RESULT;
+
+    '
+  pattern-not: "uschar *$RESULT;\n{\n  int $L = Ustrlen($CODE);\n  *$PTR = $RESULT\
+    \ = store_get(1 + $L/4 * 3 + $L%4);\n}\n"
+  languages:
+  - c
+  message: 'This rule detects an incorrect buffer size calculation in base64 decoding.
+    The original code miscalculates the size of the buffer needed to store the decoded
+    data, which can lead to buffer overflows. The fixed version correctly calculates
+    the buffer size by considering the length of the input code and ensuring sufficient
+    space for the decoded output. To fix this, always ensure the buffer size calculation
+    accounts for all possible variations in the input length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/cf3cd306062a08969c41a1cdd32c6855f1abecf1
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

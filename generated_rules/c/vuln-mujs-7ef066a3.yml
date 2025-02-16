@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mujs-7ef066a3
+  pattern: js_pushliteral($J, $OBJ->u.r.source);
+  pattern-not: js_pushstring($J, $OBJ->u.r.source);
+  languages:
+  - c
+  message: 'The use of `js_pushliteral` instead of `js_pushstring` can lead to potential
+    security vulnerabilities.
+
+    `js_pushliteral` may not handle string data correctly, leading to undefined behavior
+    or memory corruption.
+
+    Replace `js_pushliteral` with `js_pushstring` to ensure proper string handling
+    and avoid potential vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/7ef066a3bb95bf83e7c5be50d859e62e58fe8515
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

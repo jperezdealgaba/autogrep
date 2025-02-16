@@ -1,0 +1,23 @@
+rules:
+- id: vuln-p4-plugin-2f2a31d8
+  pattern: '$PROJECT.checkPermission(AbstractProject.BUILD)
+
+    '
+  pattern-not: '$PROJECT.checkPermission(Item.BUILD)
+
+    '
+  languages:
+  - java
+  message: 'Insecure permission check detected. The method `checkPermission(AbstractProject.BUILD)`
+    is vulnerable and should be replaced with `checkPermission(Item.BUILD)` to ensure
+    proper access control. This vulnerability could allow unauthorized users to trigger
+    builds or perform other restricted actions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/p4-plugin/commit/2f2a31d8d36de7abab45820fab3a82f4c682b760
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021 - Broken Access Control
+    technology: java

@@ -1,0 +1,33 @@
+rules:
+- id: vuln-revolution-5ed92c4e
+  pattern: '$text = strip_tags($VAR);
+
+    ...
+
+    $text = strip_tags($text);
+
+    '
+  pattern-not: '$text = $VAR;
+
+    $charset = $this->modx->getOption(''modx_charset'', null, ''UTF-8'');
+
+    $text = htmlentities($text, ENT_QUOTES, $charset);
+
+    '
+  languages:
+  - php
+  message: "The use of `strip_tags` without proper HTML entity encoding can lead to\
+    \ Cross-Site Scripting (XSS) vulnerabilities. \nThe patch replaces `strip_tags`\
+    \ with `htmlentities` to properly encode HTML special characters, preventing XSS\
+    \ attacks. \nEnsure that all user input is properly encoded before being rendered\
+    \ in HTML contexts.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/modxcms/revolution/commit/5ed92c4e35479ef56da674ca905ba771c97fc592
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

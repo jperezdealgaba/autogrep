@@ -1,0 +1,26 @@
+rules:
+- id: vuln-git-lfs-0d31bce1
+  pattern: "func (r *Rewriter) entryKey(e *gitobj.TreeEntry) string {\n  return fmt.Sprintf(\"\
+    %s:%x\", $NAME, $OID)\n}\n"
+  pattern-not: "func (r *Rewriter) entryKey(path string, e *gitobj.TreeEntry) string\
+    \ {\n  return fmt.Sprintf(\"%s:%x\", $PATH, $OID)\n}\n"
+  languages:
+  - go
+  message: 'The `entryKey` function is vulnerable because it generates keys based
+    only on the entry name and OID, which can lead to key collisions. This can cause
+    incorrect caching behavior, potentially leading to data corruption or security
+    issues. The fix adds a `path` parameter to ensure unique keys.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/git-lfs/git-lfs/commit/0d31bce1c1e0d23661c9efebc1d34c432b9bf976
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/330.html
+    technology:
+    - go

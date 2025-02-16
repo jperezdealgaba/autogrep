@@ -1,0 +1,24 @@
+rules:
+- id: vuln-contao-6f3e705f
+  pattern: "if (empty($this->arrFilemounts))\n{\n    ...\n}\n"
+  pattern-not: "if (empty($this->arrFilemounts) && !\\is_array($GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root'])\
+    \ && $GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root'] !== false)\n\
+    {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'The code checks if `arrFilemounts` is empty without validating the `TL_DCA`
+    global configuration. This can lead to unauthorized access if the root directory
+    is not properly checked. To fix this, ensure that the root directory is validated
+    by checking the `TL_DCA` configuration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contao/contao/commit/6f3e705f4ff23f4419563d09d8485793569f31df
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2017-Broken Access Control
+    technology:
+    - php

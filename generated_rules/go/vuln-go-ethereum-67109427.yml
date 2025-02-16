@@ -1,0 +1,29 @@
+rules:
+- id: vuln-go-ethereum-67109427
+  pattern: '$VAR = "unstable"
+
+    '
+  pattern-not: '$VAR = "stable"
+
+    '
+  languages:
+  - go
+  message: 'The version metadata is set to "unstable", which indicates that the software
+    is not production-ready. This can lead to using untested or unreliable versions
+    in production environments, potentially causing system instability or security
+    vulnerabilities. Update the version metadata to "stable" to ensure that only production-ready
+    versions are used.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/671094279e8d27f4b4c3c94bf8b636c26b473976
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - go

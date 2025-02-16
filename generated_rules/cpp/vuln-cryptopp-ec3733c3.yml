@@ -1,0 +1,24 @@
+rules:
+- id: vuln-cryptopp-ec3733c3
+  pattern: 'int $OFF = reinterpret_cast<uintptr_t>($ARRAY) % 8;
+
+    '
+  pattern-not: 'int $OFF = reinterpret_cast<uintptr_t>($ARRAY) % 16;
+
+    '
+  languages:
+  - cpp
+  message: 'The alignment check uses modulo 8, which may lead to insufficient memory
+    alignment on certain architectures. This can cause performance degradation or
+    crashes due to misaligned memory access. Replace the modulo operation with 16
+    to ensure proper alignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weidai11/cryptopp/commit/ec3733c378a9515e4bfd0254c28238dadc020375
+    category: security
+    cwe:
+    - CWE-789
+    technology:
+    - cpp

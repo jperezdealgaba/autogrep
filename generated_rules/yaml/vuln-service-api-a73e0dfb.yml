@@ -1,0 +1,31 @@
+rules:
+- id: vuln-service-api-a73e0dfb
+  pattern: 'script: ./gradlew buildDocker --full-stacktrace --no-build-cache
+
+    '
+  pattern-not: 'script: ./gradlew build --full-stacktrace --no-build-cache
+
+    '
+  languages:
+  - yaml
+  message: 'The use of ''buildDocker'' in the build script can lead to insecure Docker
+    image builds.
+
+    This command may include unnecessary or insecure layers in the Docker image, increasing
+    the attack surface.
+
+    Replace ''buildDocker'' with ''build'' to ensure a secure and minimal build process.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/reportportal/service-api/commit/a73e0dfb4eda844c37139df1f9847013d55f084e
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+    technology:
+    - yaml

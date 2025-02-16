@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jsish-5c90ca03
+  pattern: 'return ($PV->vt == JSI_VT_NUMBER || ($PV->vt == JSI_VT_OBJECT && $PV->d.obj->ot
+    == JSI_OT_NUMBER));
+
+    '
+  pattern-not: 'return ($PV && ($PV->vt == JSI_VT_NUMBER || ($PV->vt == JSI_VT_OBJECT
+    && $PV->d.obj->ot == JSI_OT_NUMBER)));
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential null pointer dereference vulnerability. The code
+    checks the type of a pointer without first verifying that the pointer is not null.
+    This can lead to undefined behavior or crashes if the pointer is null. To fix
+    this, add a null check before accessing the pointer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/5c90ca033c7cc1074ff5f3fb67c2bac498d955bc
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

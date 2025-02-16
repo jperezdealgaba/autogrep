@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mailcow-dockerized-8d9102aa
+  pattern: "if (strpos($custom_params, 'pipemess')) {\n  ...\n}\n"
+  pattern-not: "if (stripos($custom_params, 'pipemess')) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The use of `strpos` for case-sensitive string comparison can lead to security
+    vulnerabilities when case-insensitive comparison is needed. This can allow bypassing
+    certain checks by using different letter cases. Replace `strpos` with `stripos`
+    for case-insensitive comparison to ensure proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mailcow/mailcow-dockerized/commit/8d9102aa088c780ca2f1cc0f39b224d735dc8569
+    category: security
+    cwe:
+    - CWE-178
+    owasp:
+    - OWASP A1
+    references:
+    - https://www.php.net/manual/en/function.strpos.php
+    - https://www.php.net/manual/en/function.stripos.php
+    technology:
+    - php

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-jeecg-boot-f18ced52
+  pattern: '$VALUE.replaceAll("/\\*.*\\*/", "")
+
+    '
+  pattern-not: 'checkSqlAnnotation($VALUE)
+
+    '
+  languages:
+  - java
+  message: Potential SQL injection vulnerability due to improper handling of SQL comments.
+    Use the `checkSqlAnnotation` method to validate and reject SQL comments instead
+    of removing them.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jeecgboot/jeecg-boot/commit/f18ced524c9ec13e876bfb74785a1b112cc8b6bb
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

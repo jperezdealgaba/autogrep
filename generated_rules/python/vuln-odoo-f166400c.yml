@@ -1,0 +1,24 @@
+rules:
+- id: vuln-odoo-f166400c
+  pattern: "def $FUNC(...):\n    ...\n    $RESULTS = self.do_query_unaffected_earnings()\n\
+    \    ...\n"
+  pattern-not: "def $FUNC(...):\n    ...\n    if not (self.env.is_admin() or self.env.user.has_group('account.group_account_user')):\n\
+    \        raise AccessDenied()\n    $RESULTS = self._do_query_unaffected_earnings()\n\
+    \    ...\n"
+  languages:
+  - python
+  message: 'Detected a missing access control check in a method that queries financial
+    data. This can lead to unauthorized access to sensitive financial information.
+    The fix adds a check to verify if the user is an admin or has the required group
+    permissions before executing the query.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/f166400c7ddd1bc571fcad52d18d2371f2c3fd87
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology: python

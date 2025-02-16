@@ -1,0 +1,41 @@
+rules:
+- id: vuln-service-api-da4a012a
+  pattern: 'SAXParserFactory.newInstance().newSAXParser().parse($XML_INPUT_STREAM,
+    $HANDLER)
+
+    '
+  pattern-not: 'SAXParserFactory $SPF = SAXParserFactory.newInstance();
+
+    SAXParser $SAX_PARSER = $SPF.newSAXParser();
+
+    XMLReader $READER = $SAX_PARSER.getXMLReader();
+
+    $SPF.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
+    $READER.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
+    $SPF.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+    $SAX_PARSER.parse($XML_INPUT_STREAM, $HANDLER);
+
+    '
+  languages:
+  - java
+  message: 'XML External Entity (XXE) vulnerability detected. The code directly parses
+    XML without disabling external entity processing, which can lead to XXE attacks.
+    To fix, create a SAXParserFactory, configure it to disable external entities and
+    DOCTYPE declarations, and then parse the XML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/reportportal/service-api/commit/da4a012abdcc69f02f4255d81466f1f473b7f418
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology:
+    - java

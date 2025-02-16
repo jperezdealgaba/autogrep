@@ -1,0 +1,22 @@
+rules:
+- id: vuln-incubator-superset-5198279a
+  pattern: '$DAO.update_charts_owners($DASHBOARD, commit=$COMMIT)
+
+    '
+  pattern-not: '$DAO.create($PROPERTIES, commit=True)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe usage of `update_charts_owners` with manual commit control.
+    This can lead to inconsistent database states if the commit fails or is omitted.
+    Use the safer `create` method with automatic commit instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/incubator-superset/commit/5198279a2ba41ab3e89bd9d7750694179d3f9fe6
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

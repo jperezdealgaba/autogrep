@@ -1,0 +1,34 @@
+rules:
+- id: vuln-navigate-cms-fabb4718
+  pattern: '$url = core_remove_directory_traversal($url);
+
+    $item->load($url);
+
+    '
+  pattern-not: "$url_dtr = core_remove_directory_traversal($url);\nif($url != $url_dtr)\n\
+    {\n    $url = \"\";\n}\nif( strpos($url, 'http://')===0 ||\n    strpos($url, 'https://')===0\n\
+    )\n{\n    $item->load($url);\n}\nelse\n{\n    header(\"HTTP/1.1 404 Not Found\"\
+    );\n    core_terminate();\n}\n"
+  languages:
+  - php
+  message: 'The code directly loads a URL without proper validation, which can lead
+    to directory traversal or loading of malicious external resources. This is dangerous
+    because it can allow attackers to access sensitive files or execute arbitrary
+    code. To fix this, ensure the URL is properly sanitized and validated to be a
+    safe external URL before loading it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NavigateCMS/Navigate-CMS/commit/fabb4718d7c6a4e0bdf02800d55d7de2cf492261
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-918
+    owasp:
+    - A1:2017-Injection
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

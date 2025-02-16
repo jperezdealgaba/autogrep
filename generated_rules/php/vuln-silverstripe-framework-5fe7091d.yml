@@ -1,0 +1,31 @@
+rules:
+- id: vuln-silverstripe-framework-5fe7091d
+  pattern: '$JS_message = Convert::raw2js($message);
+
+    $JS_status = Convert::raw2js($status);
+
+    '
+  pattern-not: '$JS_message = Convert::raw2js(Convert::raw2xml($message));
+
+    $JS_status = Convert::raw2js(Convert::raw2xml($status));
+
+    '
+  languages:
+  - php
+  message: "The code directly applies `raw2js` to user input without proper XML encoding,\
+    \ which can lead to XSS vulnerabilities. \nAttackers can inject malicious JavaScript\
+    \ code that will be executed in the browser. \nTo fix this, always apply `raw2xml`\
+    \ before `raw2js` to ensure proper encoding of user input.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/5fe7091dffa33a161cbc74ae7e73ab8ae4fa144b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

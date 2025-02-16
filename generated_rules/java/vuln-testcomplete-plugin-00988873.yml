@@ -1,0 +1,26 @@
+rules:
+- id: vuln-testcomplete-plugin-00988873
+  pattern: 'return super.newInstance($REQ, $FORMDATA);
+
+    '
+  pattern-not: "$BUILDER = ($TYPE)super.newInstance($REQ, $FORMDATA);\nif (!StringUtils.isEmpty($BUILDER.getCredentialsId()))\
+    \ {\n  $BUILDER.setUserName(\"\");\n  $BUILDER.setUserPassword(\"\");\n}\nreturn\
+    \ $BUILDER;\n"
+  languages:
+  - java
+  message: 'Sensitive credentials are not cleared when creating a new instance of
+    TcTestBuilder.
+
+    This can lead to credential leakage if the instance is reused or improperly handled.
+
+    Clear the username and password fields when credentials are present.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/testcomplete-plugin/commit/00988873c6ea7e8d081380e4262538960efd6bf1
+    category: security
+    cwe: 'CWE-522: Insufficiently Protected Credentials'
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - java

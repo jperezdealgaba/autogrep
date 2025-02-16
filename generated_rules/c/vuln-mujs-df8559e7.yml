@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mujs-df8559e7
+  pattern: 'labeljumps($J, $F, $STMT->jumps, $HERE, $CONT)
+
+    '
+  pattern-not: 'labeljumps($J, $F, $STMT, $HERE, $CONT)
+
+    '
+  languages:
+  - c
+  message: 'The function `labeljumps` is being called with direct access to the `jumps`
+    pointer from a statement structure, which can lead to memory management issues.
+    This pattern should be updated to pass the statement structure itself rather than
+    the `jumps` pointer directly. This ensures proper memory handling and avoids potential
+    use-after-free or double-free vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/df8559e7bdbc6065276e786217eeee70f28fce66
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

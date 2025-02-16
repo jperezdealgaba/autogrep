@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mediawiki-beedb3aa
+  pattern: "public function requiresUnblock() {\n  return false;\n}\n"
+  pattern-not: "public function requiresUnblock() {\n  $block = $this->getUser()->getBlock();\n\
+    \  if ($block && $block->isSitewide()) {\n    return true;\n  }\n  return false;\n\
+    }\n"
+  languages:
+  - php
+  message: 'The method `requiresUnblock()` is returning `false` without checking if
+    the user is blocked. This can allow blocked users to perform actions they should
+    be restricted from, leading to potential security issues. Always check if the
+    user is blocked before allowing them to perform sensitive actions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/beedb3aa1c9e73de7df3913a36f2165a05b9ee3a
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - 'A01: Broken Access Control'
+    references:
+    - https://www.mediawiki.org/wiki/Manual:Blocking_users
+    technology:
+    - php

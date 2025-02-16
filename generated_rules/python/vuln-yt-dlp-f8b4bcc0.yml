@@ -1,0 +1,26 @@
+rules:
+- id: vuln-yt-dlp-f8b4bcc0
+  pattern: '{k: v for k, v in $REQ.headers.items() if k.lower() not in $REMOVE_HEADERS}
+
+    '
+  pattern-not: '{k: v for k, v in $REQ.headers.items() if k.title() not in $REMOVE_HEADERS}
+
+    '
+  languages:
+  - python
+  message: 'Detected potential Cookie header leakage in HTTP requests. The code does
+    not properly remove the Cookie header during redirects, which could lead to sensitive
+    information being exposed. Ensure the Cookie header is explicitly removed from
+    the request headers during redirects.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/yt-dlp/yt-dlp/commit/f8b4bcc0a791274223723488bfbfc23ea3276641
+    category: security
+    cwe: CWE-201
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie
+    technology:
+    - python

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-containerd-1ead8d9d
+  pattern: "if len($DESC.URLs) > 0 {\n    for _, $URL := range $DESC.URLs {\n    \
+    \    $LOG.WithField(\"url\", $URL).Debug(\"adding alternative url\")\n       \
+    \ $URLS = append($URLS, $URL)\n    }\n}\n"
+  pattern-not: "if len($DESC.URLs) > 0 {\n    $DB := *$R.dockerBase\n    $DB.auth\
+    \ = nil\n    $NR := dockerFetcher{\n        dockerBase: &$DB,\n    }\n    for\
+    \ _, $URL := range $DESC.URLs {\n        $LOG.WithField(\"url\", $URL).Debug(\"\
+    trying alternative url\")\n        $RC, $ERR := $NR.open($CTX, $URL, $DESC.MediaType,\
+    \ $OFFSET)\n        if $ERR != nil {\n            $LOG.WithField(\"error\", $ERR).Debug(\"\
+    error trying url\")\n            continue\n        }\n        return $RC, nil\n\
+    \    }\n}\n"
+  languages:
+  - go
+  message: 'Detected insecure handling of alternative URLs in containerd. The original
+    code appends manifest-specified URLs directly without proper authentication, which
+    could lead to unauthorized access or data leakage. The fix creates a new dockerBase
+    instance with authentication disabled before attempting to fetch from alternative
+    URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containerd/containerd/commit/1ead8d9deb3b175bf40413b8c47b3d19c2262726
+    category: security
+    cwe:
+    - 'CWE-287: Improper Authentication'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - go

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-core-geonetwork-d88a609d
+  pattern: 'import org.opengis.referencing.$TYPE;
+
+    '
+  pattern-not: 'import org.geotools.api.referencing.$TYPE;
+
+    '
+  languages:
+  - java
+  message: Usage of deprecated org.opengis.referencing package detected. Upgrade to
+    org.geotools.api.referencing for improved security and compatibility.
+  severity: ERROR
+  metadata:
+    source-url: github.com/geonetwork/core-geonetwork/commit/d88a609d633c681cbc49a07ff2624598650f87d5
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - java

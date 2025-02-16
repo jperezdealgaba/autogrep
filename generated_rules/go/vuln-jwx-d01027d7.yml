@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jwx-d01027d7
+  pattern: "func uncompress($PLAINTEXT []byte) ([]byte, error) {\n  return ioutil.ReadAll(flate.NewReader(bytes.NewReader($PLAINTEXT)))\n\
+    }\n"
+  pattern-not: "func uncompress($SRC []byte, $MAXBUFFERSIZE int64) ([]byte, error)\
+    \ {\n  ...\n  for {\n    $N, $READERR := $R.Read($BUF[:])\n    $SOFAR += int64($N)\n\
+    \    if $SOFAR > $MAXBUFFERSIZE {\n      return nil, errors.New(`compressed payload\
+    \ exceeds maximum allowed size`)\n    }\n    ...\n  }\n}\n"
+  languages:
+  - go
+  message: "The function `uncompress` lacks a maximum buffer size check, which could\
+    \ lead to \nunbounded memory allocation when decompressing maliciously crafted\
+    \ input. This \nvulnerability could be exploited in a denial-of-service attack\
+    \ by sending a \ncompressed payload that expands to a very large size. To fix\
+    \ this, implement a \nmaximum buffer size check during decompression, as shown\
+    \ in the patched version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/lestrrat-go/jwx/commit/d01027d74c7376d66037a10f4f64af9af26a7e34
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/770.html
+    technology:
+    - go

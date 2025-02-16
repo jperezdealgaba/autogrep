@@ -1,0 +1,33 @@
+rules:
+- id: vuln-itop-b8f61362
+  pattern: 'GlobalSearchHelper::AddQueryToHistory($sQuery, $sQueryIconUrl, $sQueryLabel);
+
+    $oP->SetBlockParam(''ibo-global-search.sQuery'', $sQuery);
+
+    '
+  pattern-not: 'GlobalSearchHelper::AddQueryToHistory(utils::EscapeHtml($sQuery),
+    $sQueryIconUrl, $sQueryLabel);
+
+    $oP->SetBlockParam(''ibo-global-search.sQuery'', utils::EscapeHtml($sQuery));
+
+    '
+  languages:
+  - php
+  message: 'Detected potential XSS vulnerability due to unescaped user input being
+    passed to GlobalSearchHelper::AddQueryToHistory and SetBlockParam. This can allow
+    attackers to inject malicious scripts into the application. Always escape user
+    input using utils::EscapeHtml before using it in HTML contexts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/b8f61362f570e1ef8127175331012b7fc8aba802
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Cross-Site_Scripting_(XSS)
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-subrion-d98d9d25
+  pattern: "foreach ([iaAcl::OBJECT_PAGE, iaAcl::OBJECT_ADMIN_PAGE] as $i => $pageType)\
+    \ {\n  ...\n}\n"
+  pattern-not: "$pageTypes = [iaAcl::OBJECT_PAGE];\nif (iaUsers::MEMBERSHIP_GUEST\
+    \ != $settings['group']) {\n  $pageTypes[] = iaAcl::OBJECT_ADMIN_PAGE;\n}\nforeach\
+    \ ($pageTypes as $i => $pageType) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code directly iterates over an array containing both `iaAcl::OBJECT_PAGE`
+    and `iaAcl::OBJECT_ADMIN_PAGE` without proper access control checks. This can
+    lead to unauthorized access to admin pages. The fix involves conditionally adding
+    `iaAcl::OBJECT_ADMIN_PAGE` to the array based on the user''s group membership.
+    Always validate user permissions before granting access to sensitive resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/intelliants/subrion/commit/d98d9d2531ebfe4429743e08ac4ba440c5f60cf8
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

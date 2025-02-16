@@ -1,0 +1,30 @@
+rules:
+- id: vuln-jerryscript-dbba83fe
+  pattern: "if (!ecma_is_value_object ($TYPEDARRAY))\n  return ecma_raise_type_error\
+    \ (ECMA_ERR_ARGUMENT_THIS_NOT_OBJECT);\n"
+  pattern-not: "if (!ecma_is_typedarray ($TYPEDARRAY))\n  return ecma_raise_type_error\
+    \ (ECMA_ERR_ARGUMENT_THIS_NOT_TYPED_ARRAY);\n"
+  languages:
+  - c
+  message: 'The code incorrectly checks if a value is an object instead of a typed
+    array,
+
+    which can lead to incorrect type validation and potential security issues.
+
+    This vulnerability can cause improper handling of typed arrays, leading to
+
+    undefined behavior or type errors. To fix this, use `ecma_is_typedarray` to
+
+    correctly validate typed arrays.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jerryscript-project/jerryscript/commit/dbba83fe4022382eede89d9dd36e8ffbfb1b2316
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

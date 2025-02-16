@@ -1,0 +1,25 @@
+rules:
+- id: vuln-webfinance-abad81af
+  pattern: '$values .= sprintf("''%s'',", $v);
+
+    '
+  pattern-not: '$values .= sprintf("''%s'',", mysql_real_escape_string($v));
+
+    '
+  languages:
+  - php
+  message: "Detected a SQL injection vulnerability due to unescaped user input in\
+    \ a SQL query. \nThis is dangerous because it allows attackers to manipulate the\
+    \ database query, potentially leading to data theft, corruption, or unauthorized\
+    \ access. \nTo fix this, use `mysql_real_escape_string()` or prepared statements\
+    \ to properly escape user input.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/fanzila/WebFinance/commit/abad81af614a9ceef3f29ab22ca6bae517619e06
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

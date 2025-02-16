@@ -1,0 +1,21 @@
+rules:
+- id: vuln-bhima-63faacfa
+  pattern: '"cron": "^3.1.4"'
+  pattern-not: '"cron": "^3.1.5"'
+  languages:
+  - json
+  message: "The package.json file contains a vulnerable version of the 'cron' package\
+    \ (^3.1.4). \nThis version may contain security issues that could be exploited.\
+    \ \nUpgrade to version ^3.1.5 or later to mitigate these risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/IMA-WorldHealth/bhima/commit/63faacfa895ab0a91f9ba93e246e1e24fdd71d28
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://github.com/kelektiv/node-cron/releases
+    technology:
+    - json

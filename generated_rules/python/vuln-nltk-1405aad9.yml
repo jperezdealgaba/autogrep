@@ -1,0 +1,26 @@
+rules:
+- id: vuln-nltk-1405aad9
+  pattern: "for $MATCH in $RE.finditer($TEXT):\n  ...\n  $CONTEXT = $MATCH.group()\
+    \ + $MATCH.group($AFTER)\n"
+  pattern-not: "for $MATCH, $CONTEXT in $OBJ._match_potential_end_contexts($TEXT):\n\
+    \  ...\n"
+  languages:
+  - python
+  message: 'Detected potentially vulnerable regex pattern matching that could lead
+    to ReDoS (Regular Expression Denial of Service). The original implementation uses
+    a single regex match that could be exploited with carefully crafted input. The
+    fix separates the word matching from the punctuation matching and processes matches
+    in reverse order to avoid overlapping matches. To fix this, use the _match_potential_end_contexts
+    method instead of direct regex matching.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nltk/nltk/commit/1405aad979c6b8080dbbc8e0858f89b2e3690341
+    category: security
+    cwe: CWE-400
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - python

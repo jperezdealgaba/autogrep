@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rpm-c815822c
+  pattern: "if (S_ISDIR($FMODE) && S_ISLNK($SB.st_mode) && stat($FN, &$SB) != 0) {\n\
+    \    ...\n}\n"
+  pattern-not: "if (S_ISDIR($FMODE) && S_ISLNK($SB.st_mode)) {\n    struct stat $DSB;\n\
+    \    if (stat($FN, &$DSB) == 0 && S_ISDIR($DSB.st_mode)) {\n        ...\n    }\n\
+    }\n"
+  languages:
+  - c
+  message: "Detected a vulnerability related to improper handling of symbolic links\
+    \ in directory verification. \nThe original code checks if a file is a directory\
+    \ and a symbolic link but fails to properly verify if the symlink points to a\
+    \ valid directory and if the user is legitimate. \nThis could lead to security\
+    \ issues such as privilege escalation or unauthorized access. \nTo fix this, ensure\
+    \ that the symlink points to a valid directory and verify the user's legitimacy\
+    \ before proceeding.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/c815822c8bdb138066ff58c624ae83e3a12ebfa9
+    category: security
+    cwe:
+    - CWE-59
+    - CWE-287
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c

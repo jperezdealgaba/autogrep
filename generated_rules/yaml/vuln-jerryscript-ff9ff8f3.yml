@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jerryscript-ff9ff8f3
+  pattern: '- run: sudo apt install pylint
+
+    '
+  pattern-not: '- run: sudo apt install pylint doxygen
+
+    '
+  languages:
+  - yaml
+  message: 'The workflow is missing the installation of ''doxygen'', which is required
+    for proper documentation generation. This can lead to incomplete or missing documentation,
+    affecting code maintainability and security audits. Ensure ''doxygen'' is installed
+    alongside ''pylint'' to maintain comprehensive documentation.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/jerryscript-project/jerryscript/commit/ff9ff8f36c967890b5ebb240d9fa90d6e351aa01
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - OWASP-ASVS v4.0.3 V1.1.2
+    references:
+    - https://github.com/jerryscript-project/jerryscript/commit/ff9ff8f36c967890b5ebb240d9fa90d6e351aa01
+    technology:
+    - yaml

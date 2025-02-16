@@ -1,0 +1,25 @@
+rules:
+- id: vuln-bluez-b497b594
+  pattern: "if ($ADAPTER->discovery_discoverable)\n  set_discovery_discoverable($ADAPTER,\
+    \ false);\n"
+  pattern-not: "if (!($ADAPTER->current_settings & MGMT_OP_SET_DISCOVERABLE)) {\n\
+    \  ...\n  set_discovery_discoverable($ADAPTER, false);\n}\n"
+  languages:
+  - c
+  message: 'The code unconditionally sets the adapter to non-discoverable without
+    checking if it was set temporarily by discovery. This can lead to incorrect state
+    management and potential security issues where the adapter remains discoverable
+    when it should not. Fix by adding a condition to check `current_settings` before
+    modifying the discoverable state.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/b497b5942a8beb8f89ca1c359c54ad67ec843055
+    category: security
+    cwe:
+    - CWE-284
+    owasp: A9:2017-Insufficient Logging & Monitoring
+    references: https://git.kernel.org/pub/scm/bluetooth/bluez.git/commit/?id=b497b5942a8beb8f89ca1c359c54ad67ec843055
+    technology:
+    - c

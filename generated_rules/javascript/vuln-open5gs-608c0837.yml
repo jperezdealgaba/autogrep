@@ -1,0 +1,23 @@
+rules:
+- id: vuln-open5gs-608c0837
+  pattern: 'const $HOSTNAME = process.env.HOSTNAME || ''0.0.0.0'';
+
+    '
+  pattern-not: 'const $HOSTNAME = process.env.HOSTNAME || ''localhost'';
+
+    '
+  languages:
+  - javascript
+  message: 'Using ''0.0.0.0'' as a default hostname can expose the service to all
+    network interfaces, increasing the attack surface. Use ''localhost'' instead to
+    restrict access to the local machine.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/608c08373de44b19afb0f76c986b713bb3fd6bb2
+    category: security
+    cwe: CWE-284
+    owasp: A1:2017-Injection
+    technology:
+    - javascript

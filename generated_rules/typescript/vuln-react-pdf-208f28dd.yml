@@ -1,0 +1,26 @@
+rules:
+- id: vuln-react-pdf-208f28dd
+  pattern: 'const $VAR: Options = { ...$OPTIONS, isEvalSupported: true };
+
+    '
+  pattern-not: 'const $VAR: Options = { ...$OPTIONS, isEvalSupported: false };
+
+    '
+  languages:
+  - typescript
+  message: 'Detected unsafe use of `isEvalSupported: true` in the options object.
+    This can lead to potential security vulnerabilities by enabling eval, which is
+    dangerous as it can execute arbitrary code. To fix this, set `isEvalSupported`
+    to `false` to disable eval functionality.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wojtekmaj/react-pdf/commit/208f28dd47fe38c33ce4bac4205b2b0a0bb207fe
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - typescript

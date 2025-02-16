@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mesos-2c282f19
+  pattern: "const bool $VAR = $HMAC.get() == $SIGNATURE.get();\nif (!$VAR) {\n  ...\n\
+    }\n"
+  pattern-not: "if (!constantTimeEquals($HMAC.get(), $SIGNATURE.get())) {\n  ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'Detected a direct string comparison that is vulnerable to timing attacks.
+
+    Using direct equality (==) comparison for sensitive data like HMAC signatures
+
+    can expose timing information, allowing attackers to infer the content.
+
+    Replace with a constant-time comparison function like constantTimeEquals().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/mesos/commit/2c282f19755ea7518caf6f43e729524b1c6bdb23
+    category: security
+    cwe:
+    - 'CWE-208: Observable Timing Discrepancy'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - cpp

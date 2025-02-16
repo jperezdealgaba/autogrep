@@ -1,0 +1,26 @@
+rules:
+- id: vuln-dojox-47d1b302
+  pattern: "if (($TOBJ[$X] === undefined || $TOBJ[$X] != $PROPS[$X]) && $PROPS[$X]\
+    \ !== undefined && $OBJ != $PROPS[$X]) {\n  ...\n}\n"
+  pattern-not: "if ($X !== '__proto__' && (($TOBJ[$X] === undefined || $TOBJ[$X] !=\
+    \ $PROPS[$X])) && $PROPS[$X] !== undefined && $OBJ != $PROPS[$X]) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Prototype pollution vulnerability detected. The code checks for property
+    existence and equality but fails to prevent ''__proto__'' property manipulation,
+    which could lead to prototype pollution. Always explicitly check for ''__proto__''
+    before property assignment or comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dojo/dojox/commit/47d1b302b5b23d94e875b77b9b9a8c4f5622c9da
+    category: security
+    cwe:
+    - CWE-1321
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://github.com/HoLyVieR/prototype-pollution-nsec18
+    technology:
+    - javascript

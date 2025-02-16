@@ -1,0 +1,25 @@
+rules:
+- id: vuln-simplr-registration-form-d5884468
+  pattern: 'echo add_query_arg($ARGS);
+
+    '
+  pattern-not: 'echo esc_url(add_query_arg($ARGS));
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped URL output which can lead to XSS vulnerabilities. \n\
+    Always use esc_url() to sanitize URLs before output to prevent malicious code\
+    \ injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wp-plugins/simplr-registration-form/commit/d588446844dd49232ab400ef213ff5b92121c33e
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://developer.wordpress.org/reference/functions/esc_url/
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-decidim-57a4b467
+  pattern: 'skip_before_action :verify_authenticity_token, only: :$ACTION
+
+    '
+  pattern-not: 'skip_before_action :verify_authenticity_token, only: :preview
+
+    '
+  languages:
+  - ruby
+  message: 'The controller is skipping CSRF token verification for a specific action,
+    which can lead to CSRF vulnerabilities. CSRF attacks can allow attackers to perform
+    unauthorized actions on behalf of authenticated users. To fix this, ensure that
+    CSRF token verification is not skipped for any actions that modify state or perform
+    sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/decidim/decidim/commit/57a4b467787448307b5d9b01ce6e2c8502e121ac
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://guides.rubyonrails.org/security.html#cross-site-request-forgery-csrf
+    technology:
+    - ruby

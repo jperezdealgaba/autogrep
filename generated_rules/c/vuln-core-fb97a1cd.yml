@@ -1,0 +1,25 @@
+rules:
+- id: vuln-core-fb97a1cd
+  pattern: "if ($CONDITION && !parse_too_many_nested_mime_parts($CTX)) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($CONDITION && !parse_too_many_nested_mime_parts($CTX) && $CTX->total_parts_count\
+    \ < $CTX->max_total_mime_parts) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code does not check the total number of MIME parts against the maximum
+    allowed limit, which can lead to excessive resource consumption or denial of service.
+    This vulnerability can be exploited by sending a specially crafted message with
+    a large number of nested MIME parts. To fix this, ensure that the total number
+    of MIME parts is checked against the maximum limit using `ctx->total_parts_count
+    < ctx->max_total_mime_parts`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dovecot/core/commit/fb97a1cddbda4019e327fa736972a1c7433fedaa
+    category: security
+    cwe:
+    - CWE-400
+    owasp: 'A1: Injection'
+    technology:
+    - c

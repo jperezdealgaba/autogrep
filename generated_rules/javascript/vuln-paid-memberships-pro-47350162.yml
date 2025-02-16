@@ -1,0 +1,22 @@
+rules:
+- id: vuln-paid-memberships-pro-47350162
+  pattern: "jQuery('#pmpro_cancel .pmpro_btn-submit').click(function() {\n  jQuery('#pmpro_cancel\
+    \ a').unbind('click');\n  jQuery('#pmpro_cancel a').attr('disabled', 'disabled');\n\
+    });\n"
+  pattern-not: "jQuery('#pmpro_cancel #pmpro_form').submit(function() {\n  jQuery('#pmpro_cancel\
+    \ input[type=submit]').attr('disabled', 'disabled');\n  jQuery('#pmpro_cancel\
+    \ a').attr('disabled', 'disabled');\n});\n"
+  languages:
+  - javascript
+  message: "The vulnerability allows multiple clicks on cancel links, potentially\
+    \ leading to unintended repeated actions. \nThis is dangerous because it can cause\
+    \ multiple cancellation requests or other unintended side effects. \nThe fix involves\
+    \ disabling both submit buttons and links upon form submission to prevent multiple\
+    \ clicks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/strangerstudios/paid-memberships-pro/commit/4735016216daabd814572b681a27b93995e17b59
+    category: security
+    cwe: CWE-841
+    owasp: A10:2021-Server-Side Request Forgery (SSRF)
+    technology: javascript

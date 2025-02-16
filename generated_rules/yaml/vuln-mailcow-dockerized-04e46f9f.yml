@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mailcow-dockerized-04e46f9f
+  pattern: 'image: mailcow/dovecot:1.22
+
+    '
+  pattern-not: 'image: mailcow/dovecot:1.23
+
+    '
+  languages:
+  - yaml
+  message: 'The version of the Dovecot image in the docker-compose.yml file is outdated
+    and potentially vulnerable. Using an outdated version of software can expose the
+    system to known security vulnerabilities. Upgrade to the latest version of the
+    Dovecot image to ensure security patches are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mailcow/mailcow-dockerized/commit/04e46f9f5b1e14ba99fe2ec6ca776a69aba9f262
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - yaml

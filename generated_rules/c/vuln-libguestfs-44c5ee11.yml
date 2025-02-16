@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libguestfs-44c5ee11
+  pattern: "if (!$READ_ONLY)\n  $R = guestfs_add_drive($G, $FILENAME);\nelse\n  $R\
+    \ = guestfs_add_drive_ro($G, $FILENAME);\n"
+  pattern-not: "$AD_OPTARGS.bitmask = 0;\nif ($READ_ONLY) {\n  $AD_OPTARGS.bitmask\
+    \ |= $GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK;\n  $AD_OPTARGS.readonly = 1;\n\
+    }\nif ($DRV->format) {\n  $AD_OPTARGS.bitmask |= $GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK;\n\
+    \  $AD_OPTARGS.format = $DRV->format;\n}\n$R = guestfs_add_drive_opts_argv($G,\
+    \ $FILENAME, &$AD_OPTARGS);\n"
+  languages:
+  - c
+  message: 'The code directly calls `guestfs_add_drive` or `guestfs_add_drive_ro`
+    without setting drive options, such as format and read-only flags. This can lead
+    to security vulnerabilities where the drive format is not enforced, potentially
+    allowing unsafe operations. Use `guestfs_add_drive_opts_argv` to properly set
+    drive options and ensure secure handling of drive formats.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libguestfs/libguestfs/commit/44c5ee1163918bd5c9e6aa6c292f0c3bb15b7b25
+    category: security
+    cwe:
+    - CWE-284
+    owasp: 'A6: Security Misconfiguration'
+    references:
+    - https://libguestfs.org/guestfs.3.html
+    technology:
+    - c

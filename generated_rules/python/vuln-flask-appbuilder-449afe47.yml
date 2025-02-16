@@ -1,0 +1,22 @@
+rules:
+- id: vuln-flask-appbuilder-449afe47
+  pattern: 'api_spec.components._responses[$K] = $V
+
+    '
+  pattern-not: "try:\n    api_spec.components.response($K, $V)\nexcept DuplicateComponentNameError:\n\
+    \    pass\n"
+  languages:
+  - python
+  message: Direct assignment to _responses dictionary can lead to overwriting existing
+    responses without proper error handling. Use the response() method with exception
+    handling instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dpgaspar/Flask-AppBuilder/commit/449afe47b17298b57272762332f9c96ea6af0449
+    category: security
+    cwe: CWE-755
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://swagger.io/specification/#responses-object
+    technology:
+    - python

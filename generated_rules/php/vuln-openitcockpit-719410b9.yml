@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openitcockpit-719410b9
+  pattern: "$host = env('HTTP_HOST');\nif (substr($host, 0, 4) == 'dev.') {\n    $environment\
+    \ = self::DEVELOPMENT;\n} else if (substr($host, 0, 4) == 'dev-') {\n    $environment\
+    \ = self::DEVELOPMENT;\n} else if (substr($host, 0, 8) == 'staging.') {\n    $environment\
+    \ = self::STAGING;\n} else {\n    $environment = self::PRODUCTION;\n}\n"
+  pattern-not: "$environment = self::PRODUCTION;\nif (isset($_SERVER['OITC_DEBUG']))\
+    \ {\n    if ($_SERVER['OITC_DEBUG'] === '1') {\n        $environment = self::DEVELOPMENT;\n\
+    \    }\n}\n"
+  languages:
+  - php
+  message: 'Detected a vulnerability where the environment is determined based on
+    the HTTP_HOST header, which can be manipulated by an attacker. This can lead to
+    unintended behavior or exposure of sensitive information. Instead, use a secure
+    method to determine the environment, such as checking a server variable set by
+    the web server configuration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/it-novum/openITCOCKIT/commit/719410b9ffff7d7b29dba7aad58faceb5eff789f
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/HTTP_Header_Injection
+    technology:
+    - php

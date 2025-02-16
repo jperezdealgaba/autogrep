@@ -1,0 +1,27 @@
+rules:
+- id: vuln-nodebb-830f142b
+  pattern: "const Loader = {\n    timesStarted: 0,\n};\n...\nif ($CODE !== 0) {\n\
+    \    if (Loader.timesStarted < $NUM_PROCS * 3) {\n        Loader.timesStarted\
+    \ += 1;\n        if (Loader.crashTimer) {\n            clearTimeout(Loader.crashTimer);\n\
+    \        }\n        Loader.crashTimer = setTimeout(() => {\n            Loader.timesStarted\
+    \ = 0;\n        }, 10000);\n    } else {\n        console.log(`${$NUM_PROCS *\
+    \ 3} restarts in 10 seconds, most likely an error on startup. Halting.`);\n  \
+    \      process.exit();\n    }\n}\n"
+  pattern-not: 'const Loader = {};
+
+    '
+  languages:
+  - javascript
+  message: Potential infinite restart loop vulnerability. The code allows multiple
+    restarts without proper handling, which could lead to a denial of service. Remove
+    the restart counter and handle errors more gracefully.
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/830f142b7aea2e597294a84d52c05aab3a3539ca
+    category: security
+    cwe: CWE-400
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - javascript

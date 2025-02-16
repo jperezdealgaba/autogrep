@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmyfaq-cce47f94
+  pattern: "if ('clear-statistics' === $action) {\n  ...\n}\n"
+  pattern-not: "if ('clear-statistics' === $action && $clearStatistics) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to CSRF (Cross-Site Request Forgery) attacks because
+    it performs sensitive actions without verifying the CSRF token. This allows attackers
+    to trick users into performing unintended actions. To fix this, ensure that all
+    sensitive actions are protected by a CSRF token, and verify the token before performing
+    the action.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/cce47f94375bb0102ab4f210672231dbb854dd0d
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

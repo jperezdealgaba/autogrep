@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redmine-56c8ee04
+  pattern: '$VALUE.collect {|$V| $COLUMN_VALUE($COLUMN, $ITEM, $V)}.compact.join($SEPARATOR).html_safe
+
+    '
+  pattern-not: '$VALUES = $VALUE.collect {|$V| $COLUMN_VALUE($COLUMN, $ITEM, $V)}.compact
+
+    safe_join($VALUES, $SEPARATOR)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unsafe HTML joining of values using `.html_safe`. This can lead
+    to XSS vulnerabilities if the values contain user input. Use `safe_join` instead
+    to safely concatenate HTML-safe strings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/56c8ee0440d8555aa7822d947ba9091c8a791508
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://guides.rubyonrails.org/security.html#cross-site-scripting-xss
+    technology:
+    - ruby

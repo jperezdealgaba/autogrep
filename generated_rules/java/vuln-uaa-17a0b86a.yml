@@ -1,0 +1,28 @@
+rules:
+- id: vuln-uaa-17a0b86a
+  pattern: "if (!$LOCKOUT_POLICY.isLockoutEnabled()) {\n    return new Result(true,\
+    \ 0);\n}\n"
+  pattern-not: "if (!$LOCKOUT_POLICY.isLockoutEnabled()) {\n    return $DISABLED_LOCKOUT_POLICY;\n\
+    }\n"
+  languages:
+  - java
+  message: 'Detected a potential security vulnerability where lockout policy checks
+    are bypassed.
+
+    This can allow attackers to perform brute force attacks without account lockout
+    protection.
+
+    Ensure proper lockout policy enforcement by checking the enabled state before
+    bypassing lockout checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudfoundry/uaa/commit/17a0b86afe1fbd4ed8819267906afa3f76a8dfdc
+    category: security
+    cwe:
+    - CWE-307
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    technology:
+    - java

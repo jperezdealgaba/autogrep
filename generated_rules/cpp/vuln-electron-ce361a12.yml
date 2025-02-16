@@ -1,0 +1,29 @@
+rules:
+- id: vuln-electron-ce361a12
+  pattern: 'std::string $SWITCH_NAME($A, strcspn($A, "="));
+
+    '
+  pattern-not: 'std::string $SWITCH_NAME = base::ToLowerASCII(base::StringPiece($A,
+    strcspn($A, "=")));
+
+    '
+  languages:
+  - cpp
+  message: 'The code constructs a switch name directly from a string without converting
+    it to lowercase, which could lead to inconsistent behavior or security issues
+    due to case sensitivity. This is dangerous because it can cause mismatches in
+    case-sensitive environments, potentially bypassing security checks or causing
+    unexpected behavior. To fix this, use `base::ToLowerASCII` to ensure the switch
+    name is in lowercase.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/electron/electron/commit/ce361a12e355f9e1e99c989f1ea056c9e502dbe7
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - cpp

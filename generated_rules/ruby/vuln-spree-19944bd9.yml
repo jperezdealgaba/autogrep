@@ -1,0 +1,34 @@
+rules:
+- id: vuln-spree-19944bd9
+  pattern: 'return false unless $TOKEN
+
+    $CURRENT_USER = User.find_by_api_key($TOKEN)
+
+    $CURRENT_USER.has_role? ''admin''
+
+    '
+  pattern-not: 'return access_denied unless $TOKEN
+
+    return access_denied unless $CURRENT_USER = User.find_by_api_key($TOKEN)
+
+    '
+  languages:
+  - ruby
+  message: 'Insecure admin role check detected. The code does not properly handle
+    cases where the user is not found or the API key is invalid. This could allow
+    unauthorized access to admin functionality. Fix by properly validating the token
+    and user existence before checking roles.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/railsdog/spree/commit/19944bd999c310d9b10d16a41f48ebac97dc4fac
+    category: security
+    cwe:
+    - CWE-863
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

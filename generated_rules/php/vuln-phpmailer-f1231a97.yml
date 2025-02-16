@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpmailer-f1231a97
+  pattern: "if (!is_readable($PATH)) {\n  ...\n}\n"
+  pattern-not: "if (!self::isPermittedPath($PATH) or !is_readable($PATH)) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected a file access operation without proper path validation. This
+    vulnerability allows attackers to access arbitrary files, including remote URLs
+    and phar resources, which can lead to remote code execution or sensitive data
+    exposure. Always validate file paths using a method like `isPermittedPath` to
+    ensure they are local and safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PHPMailer/PHPMailer/commit/f1231a9771505f4f34da060390d82eadb8448271
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

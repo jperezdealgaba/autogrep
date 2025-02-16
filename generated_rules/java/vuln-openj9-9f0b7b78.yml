@@ -1,0 +1,24 @@
+rules:
+- id: vuln-openj9-9f0b7b78
+  pattern: 'return convertITableIndexToVTableIndex($INTERFACE, (int)$VMSLOT, $RECEIVER)
+    << $SHIFT;
+
+    '
+  pattern-not: "int $RESULT = convertITableIndexToVTableIndex($INTERFACE, (int)$VMSLOT,\
+    \ $RECEIVER) << $SHIFT;\nif ($RESULT < 0) {\n    throw new IllegalAccessError();\n\
+    }\nreturn $RESULT;\n"
+  languages:
+  - java
+  message: 'Potential integer overflow or underflow vulnerability detected. The result
+    of `convertITableIndexToVTableIndex` shifted by `VTABLE_ENTRY_SHIFT` is not checked
+    for negative values, which could lead to unexpected behavior or security issues.
+    Always validate the result before returning it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/eclipse/openj9/commit/9f0b7b785af6b3d73a7e51a9d8e819d105ddf9d2
+    category: security
+    cwe: CWE-190
+    owasp: A03:2021 - Injection
+    technology: java

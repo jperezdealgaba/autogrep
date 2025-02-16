@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libgit2-9a64e62f
+  pattern: 'int $VAR;
+
+    ...
+
+    $VAR = $ERROR != $GIT_ECERTIFICATE;
+
+    '
+  pattern-not: 'int $VAR = ($ERROR == $GIT_OK);
+
+    '
+  languages:
+  - c
+  message: "The variable 'is_valid' was incorrectly initialized, leading to potential\
+    \ security issues. \nThe original code only checked for non-certificate errors,\
+    \ which could allow invalid certificates to be accepted. \nThis vulnerability\
+    \ could lead to man-in-the-middle attacks. \nThe fix ensures that the variable\
+    \ is correctly initialized to check for a successful response (GIT_OK).\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/9a64e62f0f20c9cf9b2e1609f037060eb2d8eb22
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    technology:
+    - c

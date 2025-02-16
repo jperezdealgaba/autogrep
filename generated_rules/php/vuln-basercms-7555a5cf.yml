@@ -1,0 +1,31 @@
+rules:
+- id: vuln-basercms-7555a5cf
+  pattern: '$filePath = WWW_ROOT . ''files'' . DS . $settings[''saveDir''] . DS .
+    $file;
+
+    '
+  pattern-not: "$basePath = realpath(WWW_ROOT . 'files' . DS . $settings['saveDir']);\n\
+    $filePath = realpath($basePath . DS . $file);\nif (strpos($filePath, $basePath)\
+    \ !== 0) {\n    $this->notFound();\n}\n"
+  languages:
+  - php
+  message: 'Detected a path traversal vulnerability due to insufficient path validation.
+
+    The code constructs a file path using user-controlled input without proper validation,
+    allowing an attacker to potentially access files outside the intended directory.
+
+    To fix this, use realpath() to resolve the absolute path and validate that the
+    resolved path is within the intended directory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/7555a5cf0006755dc0223fffc2d882b50a97758b
+    category: security
+    cwe:
+    - 22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

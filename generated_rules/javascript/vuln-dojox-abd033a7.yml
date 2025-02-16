@@ -1,0 +1,21 @@
+rules:
+- id: vuln-dojox-abd033a7
+  pattern: '$VAR.replace("$CHAR", "$REPLACEMENT")
+
+    '
+  pattern-not: '$VAR.replace(/$CHAR/g, "$REPLACEMENT")
+
+    '
+  languages:
+  - javascript
+  message: Incomplete string replacement detected. Using replace() with a string only
+    replaces the first occurrence, which can lead to incomplete sanitization or escaping.
+    Use replace() with a global regex (/g) to replace all occurrences.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dojo/dojox/commit/abd033a787c718abc1a390f480ac3ea61288e5ee
+    category: security
+    cwe: CWE-116
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

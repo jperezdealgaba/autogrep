@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mautic-d1cad766
+  pattern: '$sessionId = $VAR[''sessionId''] ?? ''mautic_''.sha1(uniqid(mt_rand(),
+    true));
+
+    '
+  pattern-not: '$sessionId = $VAR[''sessionId''] ?? ''mautic_''.sha1(uniqid(random_int(),
+    true));
+
+    '
+  languages:
+  - php
+  message: 'The use of `mt_rand()` for generating session IDs is insecure because
+    it produces predictable values. This can lead to session fixation or hijacking
+    attacks. Replace `mt_rand()` with `random_int()` to ensure cryptographically secure
+    random values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mautic/mautic/commit/d1cad766a2de74e6c6b89d6d78c2a5f2e36ba91c
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://www.php.net/manual/en/function.random-int.php
+    technology:
+    - php

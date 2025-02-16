@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpcas-ecdb43ec
+  pattern: 'define("CAS_PGT_STORAGE_FILE_DEFAULT_PATH", ''/tmp'');
+
+    '
+  pattern-not: 'define("CAS_PGT_STORAGE_FILE_DEFAULT_PATH", session_save_path());
+
+    '
+  languages:
+  - php
+  message: 'The default path for PGT storage is set to ''/tmp'', which can be insecure
+    as it is globally writable. This could allow unauthorized access or modification
+    of sensitive data. Use `session_save_path()` to ensure the storage path is secure
+    and appropriate for the current session.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apereo/phpCAS/commit/ecdb43ecb509c98080c34240326d6dc3c1cbe5ec
+    category: security
+    cwe:
+    - 'CWE-377: Insecure Temporary File'
+    owasp:
+    - A04:2021 - Insecure Design
+    technology:
+    - php

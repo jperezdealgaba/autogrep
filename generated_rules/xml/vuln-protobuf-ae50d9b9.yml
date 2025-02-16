@@ -1,0 +1,26 @@
+rules:
+- id: vuln-protobuf-ae50d9b9
+  pattern: '<version>3.15.0-rc-2</version>
+
+    '
+  pattern-not: '<version>3.15.0</version>
+
+    '
+  languages:
+  - xml
+  message: "Detected a potentially vulnerable version of the protobuf library (3.15.0-rc-2).\
+    \ \nUsing release candidate versions in production can lead to instability and\
+    \ security risks. \nUpgrade to the stable version (3.15.0) to ensure reliability\
+    \ and security.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/protocolbuffers/protobuf/commit/ae50d9b9902526efd6c7a1907d09739f959c6297
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://semver.org/
+    technology:
+    - xml

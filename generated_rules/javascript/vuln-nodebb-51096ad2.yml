@@ -1,0 +1,20 @@
+rules:
+- id: vuln-nodebb-51096ad2
+  pattern: 'helpers.connectSocketIO($RES, $CALLBACK)
+
+    '
+  pattern-not: 'helpers.connectSocketIO($RES, $CSRF_TOKEN, $CALLBACK)
+
+    '
+  languages:
+  - javascript
+  message: Missing CSRF token in Socket.IO connection. This can lead to CSRF attacks.
+    Always include a CSRF token in the query parameters.
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/51096ad2345fb1d1380bec0a447113489ef6c359
+    category: security
+    cwe: CWE-352
+    owasp: A2:2017 - Broken Authentication
+    technology:
+    - javascript

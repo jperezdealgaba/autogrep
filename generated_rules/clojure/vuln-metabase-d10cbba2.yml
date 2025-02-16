@@ -1,0 +1,25 @@
+rules:
+- id: vuln-metabase-d10cbba2
+  pattern: '(spell/keys :req-un [::info ::driver] :opt-un [::init])
+
+    '
+  pattern-not: '(spell/keys :req-un [::info ::driver] :opt-un [::contact-info ::init])
+
+    '
+  languages:
+  - clojure
+  message: "The driver manifest file is missing contact information, which is crucial\
+    \ for security and maintenance purposes. \nThis omission can lead to difficulties\
+    \ in contacting the maintainers in case of security vulnerabilities or issues.\
+    \ \nEnsure that the manifest file includes contact information by adding `::contact-info`\
+    \ to the optional keys.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/metabase/metabase/commit/d10cbba281dd086dd6b05badcc7100163271b475
+    category: security
+    cwe: 'CWE-489: Active Debug Code'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/metabase/metabase/commit/d10cbba281dd086dd6b05badcc7100163271b475
+    technology:
+    - clojure

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-sqlparse-e75e3586
+  pattern: '(r"''(''''|\\''|[^''])*''", $TOKEN)
+
+    '
+  pattern-not: '(r"''(''''|\\\\|\\''|[^''])*''", $TOKEN)
+
+    '
+  languages:
+  - python
+  message: 'Detected an incomplete string escape pattern in SQL lexer. The pattern
+    does not properly handle backslash escapes, which can lead to incorrect parsing
+    of SQL strings containing escape sequences. This could potentially be exploited
+    in SQL injection attacks or cause unexpected behavior in SQL parsing. Update the
+    pattern to include proper handling of backslash escapes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/andialbrecht/sqlparse/commit/e75e35869473832a1eb67772b1adfee2db11b85a
+    category: security
+    cwe: CWE-116
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/re.html
+    technology: python

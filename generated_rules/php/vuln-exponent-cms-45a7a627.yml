@@ -1,0 +1,28 @@
+rules:
+- id: vuln-exponent-cms-45a7a627
+  pattern: '$this->order = empty($params[''order'']) ? ''id'' : preg_replace(''/[^a-z\_]/i'','''',$params[''order'']);
+
+    '
+  pattern-not: '$this->order = empty($params[''order'']) ? ''id'' : expString::escape($params[''order'']);
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to SQL injection due to insufficient sanitization
+    of the ''order'' parameter. The use of preg_replace with a limited character set
+    does not fully prevent malicious input from being included in SQL queries. This
+    can allow attackers to manipulate database queries, potentially leading to data
+    leakage or unauthorized access. To fix this, use a proper escaping function like
+    expString::escape to ensure the input is safely sanitized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/45a7a62797e64e8abbae35d4859097c26f1874b1
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

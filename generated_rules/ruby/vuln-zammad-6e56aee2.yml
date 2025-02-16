@@ -1,0 +1,31 @@
+rules:
+- id: vuln-zammad-6e56aee2
+  pattern: 'prepend_before_action -> { authorize! }, only: %i[create selector import_example
+    import_start]
+
+    '
+  pattern-not: 'prepend_before_action -> { authorize! }, only: %i[create selector
+    import_example import_start ticket_customer ticket_history ticket_related ticket_recent
+    ticket_merge ticket_split]
+
+    '
+  languages:
+  - ruby
+  message: 'Missing authorization checks for ticket-related actions. This vulnerability
+    allows unauthorized access to sensitive ticket operations. Ensure all ticket-related
+    actions are properly authorized by adding them to the `only` array in the `prepend_before_action`
+    call.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zammad/zammad/commit/6e56aee25439b7a3211a6704a9d60453ad623ae4
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021
+    references:
+    - https://github.com/zammad/zammad/commit/6e56aee25439b7a3211a6704a9d60453ad623ae4
+    technology:
+    - ruby

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-imagemagick6-f6ffc702
+  pattern: 'GetCacheViewVirtualPixels($VIEW, 0, $Y, $IMAGE->columns, 1, $EXCEPTION)
+
+    '
+  pattern-not: 'GetCacheViewVirtualPixels($VIEW, 0, $Y, MagickMax($IMAGE->columns,
+    $OTHER_IMAGE->columns), 1, $EXCEPTION)
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability in ImageMagick. The
+    code uses the width of a single image without considering the dimensions of other
+    images in the operation. This could lead to buffer overflows when processing images
+    of different sizes. Use MagickMax to ensure the correct width is used for all
+    images involved in the operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ImageMagick/ImageMagick6/commit/f6ffc702c6eecd963587273a429dcd608c648984
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

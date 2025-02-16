@@ -1,0 +1,32 @@
+rules:
+- id: vuln-rsyslog-1ef709cc
+  pattern: 'memcpy($DEST, $SRC, sizeof($TYPE));
+
+    '
+  pattern-not: 'memset($DEST, 0, sizeof($TYPE));
+
+    $DEST->pUsrp = $SRC->pUsrp;
+
+    $DEST->state = $SRC->state;
+
+    $BATCH->iDoneUpTo = 0;
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe use of memcpy without proper initialization. This can
+    lead to invalid or double pointer frees if the destination object contains uninitialized
+    pointers. Instead, use memset to initialize the destination object to zero before
+    copying specific fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rsyslog/rsyslog/commit/1ef709cc97d54f74d3fdeb83788cc4b01f4c6a2a
+    category: security
+    cwe:
+    - CWE-457
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

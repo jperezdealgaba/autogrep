@@ -1,0 +1,33 @@
+rules:
+- id: vuln-quassel-0674fae0
+  pattern: 'throw ExitException{EXIT_FAILURE, tr("--require-ssl is set, but no SSL
+    certificate is available. Exiting.")};
+
+    '
+  pattern-not: "throw ExitException{EXIT_FAILURE, tr(\"--require-ssl is set, but no\
+    \ SSL certificate is available. Exiting.\\n\"\n                              \
+    \       \"Please see https://quassel-irc.org/faq/cert to learn how to enable SSL\
+    \ support.\")};\n"
+  languages:
+  - cpp
+  message: 'The error message for missing SSL certificates does not provide sufficient
+    guidance for users to resolve the issue. This can lead to confusion and potential
+    security misconfigurations. The message should include a link to documentation
+    or instructions on how to enable SSL support.
+
+    To fix this, update the error message to include a reference to the official documentation
+    or a guide on how to enable SSL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/0674fae039bbc79bfe3f7e42b12ec9015b9b879b
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://quassel-irc.org/faq/cert
+    technology:
+    - cpp

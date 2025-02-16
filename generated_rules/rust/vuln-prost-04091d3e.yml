@@ -1,0 +1,27 @@
+rules:
+- id: vuln-prost-04091d3e
+  pattern: 'skip_field($WIRE_TYPE, $TAG, $BUF)
+
+    '
+  pattern-not: 'skip_field($WIRE_TYPE, $TAG, $BUF, $CTX)
+
+    '
+  languages:
+  - rust
+  message: 'The function `skip_field` is being called without the required `ctx` parameter,
+    which can lead to insufficient recursion depth checking and potential stack overflow
+    vulnerabilities. This could allow an attacker to craft malicious input that causes
+    the application to crash. Always include the `ctx` parameter when calling `skip_field`
+    to ensure proper recursion depth checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/danburkert/prost/commit/04091d3e745c27590a5f1b7f581793e4159486b5
+    category: security
+    cwe:
+    - CWE-674
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - rust

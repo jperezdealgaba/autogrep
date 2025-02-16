@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gitea-ea20adaa
+  pattern: 'builder.Expr("id IN (SELECT repo_id FROM `access` WHERE access.user_id
+    = ?)", $OPTS.OwnerID)
+
+    '
+  pattern-not: 'builder.Expr("repository.id IN (SELECT repo_id FROM `access` WHERE
+    access.user_id = ?)", $OPTS.OwnerID)
+
+    '
+  languages:
+  - go
+  message: 'The SQL query uses ''id'' directly without specifying the table name,
+    which can lead to ambiguous column references. This can cause incorrect results
+    or errors if multiple tables have an ''id'' column. Always specify the table name
+    when referencing columns in SQL queries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/ea20adaa84cbff762fcaa7f2d5fa6b7bf56706ec
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - go

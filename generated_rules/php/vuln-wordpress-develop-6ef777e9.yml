@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wordpress-develop-6ef777e9
+  pattern: '$location = trim($LOCATION, " \t\n\r\0\x08\x0B");
+
+    '
+  pattern-not: '$location = wp_sanitize_redirect(trim($LOCATION, " \t\n\r\0\x08\x0B"));
+
+    '
+  languages:
+  - php
+  message: 'Detected a potentially unsafe redirect URL sanitization. Using only `trim()`
+    without proper sanitization can lead to open redirect vulnerabilities. An attacker
+    could craft a malicious URL that redirects users to an untrusted site. To fix
+    this, use `wp_sanitize_redirect()` to properly sanitize the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/6ef777e9a022bee2a80fa671118e7e2657e52693
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/601.html
+    technology:
+    - php

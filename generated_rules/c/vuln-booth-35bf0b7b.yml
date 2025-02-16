@@ -1,0 +1,22 @@
+rules:
+- id: vuln-booth-35bf0b7b
+  pattern: "if (is_auth_req()) {\n  ...\n}\n"
+  pattern-not: "if ($BOOTH_CONF->authfile[0] != '\\0') {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `is_auth_req()` is used to check authentication without verifying
+    the presence of an authfile. This can lead to unauthorized access if the authentication
+    configuration is not properly set. Instead, explicitly check if the authfile is
+    configured by verifying `booth_conf->authfile[0] != ''\0''`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ClusterLabs/booth/commit/35bf0b7b048d715f671eb68974fb6b4af6528c67
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c

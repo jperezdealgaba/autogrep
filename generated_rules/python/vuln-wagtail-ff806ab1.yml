@@ -1,0 +1,24 @@
+rules:
+- id: vuln-wagtail-ff806ab1
+  pattern: "return mark_safe(\n    '<a href=\"%s\">%s <span class=\"meta\">(%s, %s)</span></a>'\n\
+    \    % (\n        $URL,\n        $TITLE,\n        $EXTENSION,\n        $SIZE,\n\
+    \    )\n)\n"
+  pattern-not: "return format_html(\n    '<a href=\"{}\">{} <span class=\"meta\">({},\
+    \ {})</span></a>',\n    $URL,\n    $TITLE,\n    $EXTENSION,\n    $SIZE,\n)\n"
+  languages:
+  - python
+  message: 'Detected unsafe HTML construction using mark_safe(). This can lead to
+    XSS vulnerabilities.
+
+    Use format_html() instead to safely escape HTML content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/ff806ab173a504395fdfb3139eb0a29444ab4b91
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.html.format_html
+    technology: python

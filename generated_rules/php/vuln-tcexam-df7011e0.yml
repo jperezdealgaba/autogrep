@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tcexam-df7011e0
+  pattern: 'echo getFormRowTextInput(''user_email'', $_, $_, $_, $_, ''^([a-zA-Z0-9_\.\-]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$'',
+    $_, $_, $_, $_, ...);
+
+    '
+  pattern-not: 'echo getFormRowTextInput(''user_email'', $_, $_, $_, $_, K_EMAIL_RE_PATTERN,
+    $_, $_, $_, $_, ...);
+
+    '
+  languages:
+  - php
+  message: Hardcoded email regex patterns in form inputs can lead to inconsistent
+    validation and potential security issues. Use a centralized constant (K_EMAIL_RE_PATTERN)
+    for email regex validation to ensure consistency and maintainability.
+  severity: WARNING
+  metadata:
+    source-url: github.com/tecnickcom/tcexam/commit/df7011e0b1e924a2c7f9999a60f101960de971aa
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure.html
+    technology:
+    - php

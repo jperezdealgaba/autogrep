@@ -1,0 +1,31 @@
+rules:
+- id: vuln-pjproject-db323595
+  pattern: 'pj_hash_set_lower($NULL, $TABLE, $DLG->local.info->tag.ptr, (unsigned)$DLG->local.info->tag.slen,
+    ...)
+
+    '
+  pattern-not: 'pj_hash_set_lower($NULL, $TABLE, $DLG_SET->ht_key.ptr, (unsigned)$DLG_SET->ht_key.slen,
+    ...)
+
+    '
+  languages:
+  - c
+  message: 'Direct use of dialog tag as a hash key without verification can lead to
+    hash table corruption. This vulnerability occurs when the dialog tag is used directly
+    in the hash table operations, which can cause issues if the dialog is unregistered
+    or modified. Instead, use a separate hash key (ht_key) that is managed and verified
+    independently.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pjsip/pjproject/commit/db3235953baa56d2fb0e276ca510fefca751643f
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - c

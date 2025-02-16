@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mediawiki-5a4aabb2
+  pattern: "if ($THIS->mParams['exists'] && !$USER->isRegistered()) {\n  ...\n}\n"
+  pattern-not: "if ($THIS->mParams['exists'] && !(\n  $USER->isRegistered() &&\n \
+    \ !($USER->isHidden() && !($THIS->mParent && $THIS->mParent->getUser()->isAllowed('hideuser')))\n\
+    )) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code checks if a user is registered without considering whether the
+    user is hidden and whether the current user has permission to view hidden users.
+    This can lead to security issues where hidden users are treated as unregistered
+    even if they should be accessible to certain users. To fix this, ensure that the
+    check includes a verification for hidden users and the current user''s permissions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/5a4aabb2ce6768ba4fec7eb842e03f5f17635e0a
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

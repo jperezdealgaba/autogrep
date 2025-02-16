@@ -1,0 +1,28 @@
+rules:
+- id: vuln-simplesamlphp-608f24c2
+  pattern: 'sha1(floor(($time - $offset) / ($this->lifetime + $this->skew)).'':''.$this->secretSalt)
+
+    '
+  pattern-not: 'sha1($offset.'':''.floor(($time - $offset) / ($this->lifetime + $this->skew)).'':''.$this->secretSalt)
+
+    '
+  languages:
+  - php
+  message: 'The token generation is vulnerable to time-based attacks due to insufficient
+    entropy in the hash input. The fixed version includes the offset in the hash input
+    to increase entropy and prevent predictable token generation. Update the code
+    to include the offset in the hash input as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/608f24c2d5afd70c2af050785d2b12f878b33c68
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - php

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phpmyfaq-86761811
+  pattern: "if ('$ACTION' == $action && $user->perm->checkRight($user->getUserId(),\
+    \ '$PERMISSION')) {\n  ...\n}\n"
+  pattern-not: "if ('$ACTION' == $action && $user->perm->checkRight($user->getUserId(),\
+    \ '$PERMISSION') && $csrfCheck) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Missing CSRF token validation in form submission or action handling. This
+    vulnerability allows attackers to perform unauthorized actions on behalf of users
+    by tricking them into submitting malicious requests. Always validate CSRF tokens
+    for all state-changing operations to prevent CSRF attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/867618110feb836e168435548d6c2cbb7c65eda3
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php

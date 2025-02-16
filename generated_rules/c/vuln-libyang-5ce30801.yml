@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libyang-5ce30801
+  pattern: 'lys_node_free($NODE, $PRIVATE_DESTRUCTOR, $SHALLOW);
+
+    '
+  pattern-not: 'lys_node_free($CTX, $NODE, $PRIVATE_DESTRUCTOR, $SHALLOW);
+
+    '
+  languages:
+  - c
+  message: 'The function `lys_node_free` is being called without the required `ctx`
+    parameter, which could lead to undefined behavior or memory corruption. This vulnerability
+    was fixed by adding the `ctx` parameter to all calls to `lys_node_free`. Ensure
+    that the `ctx` parameter is always passed to `lys_node_free` to avoid this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CESNET/libyang/commit/5ce30801f9ccc372bbe9b7c98bb5324b15fb010a
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

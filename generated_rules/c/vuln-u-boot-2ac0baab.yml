@@ -1,0 +1,34 @@
+rules:
+- id: vuln-u-boot-2ac0baab
+  pattern: 'strncpy($DEST, $SRC, $SIZE + 1);
+
+    $DEST[$SIZE + 1] = ''\0'';
+
+    '
+  pattern-not: 'strncpy($DEST, $SRC, min_t(u16, $SIZE + 1, FS_DIRENT_NAME_LEN - 1));
+
+    $DEST[min_t(u16, $SIZE + 1, FS_DIRENT_NAME_LEN - 1)] = ''\0'';
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability in string copying.
+    The code directly uses `name_size + 1` as the length for `strncpy`, which could
+    lead to buffer overflow if the source string is longer than the destination buffer.
+    This can be exploited to overwrite adjacent memory, potentially leading to arbitrary
+    code execution or crashes. To fix, use `min_t` to cap the size at `FS_DIRENT_NAME_LEN
+    - 1` to ensure it doesn''t exceed the destination buffer size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/u-boot/u-boot/commit/2ac0baab4aff1a0b45067d0b62f00c15f4e86856
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

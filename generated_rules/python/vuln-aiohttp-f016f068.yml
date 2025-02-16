@@ -1,0 +1,23 @@
+rules:
+- id: vuln-aiohttp-f016f068
+  pattern: "if $TE and \"chunked\" in $TE.lower():\n    $CHUNKED = True\n"
+  pattern-not: "if $TE is not None:\n    $TE_LOWER = $TE.lower()\n    if \"chunked\"\
+    \ in $TE_LOWER:\n        $CHUNKED = True\n    if $HDRS.CONTENT_LENGTH in $HEADERS:\n\
+    \        raise $BAD_HTTP_MESSAGE(\"Content-Length can't be present with Transfer-Encoding\"\
+    )\n"
+  languages:
+  - python
+  message: "Detected unsafe handling of Transfer-Encoding and Content-Length headers.\
+    \ \nWhen both headers are present, it can lead to HTTP request smuggling attacks.\
+    \ \nEnsure that Content-Length is not present when Transfer-Encoding is set to\
+    \ 'chunked'.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/f016f0680e4ace6742b03a70cb0382ce86abe371
+    category: security
+    cwe: CWE-444
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.3.3
+    technology:
+    - python

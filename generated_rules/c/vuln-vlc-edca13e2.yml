@@ -1,0 +1,29 @@
+rules:
+- id: vuln-vlc-edca13e2
+  pattern: '$COUNT = $VAR->data.p_padb->i_sample_count;
+
+    $COUNT = ($COUNT + 1) / 2;
+
+    '
+  pattern-not: '$COUNT = ($VAR->data.p_padb->i_sample_count + 1) / 2;
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects a potential vulnerability where a variable is assigned
+    and then immediately modified in a separate statement. This can lead to confusion
+    and potential errors in code logic. The fix consolidates the operation into a
+    single statement, improving clarity and reducing the risk of errors. Always combine
+    such operations into a single statement to ensure code correctness and maintainability.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/videolan/vlc/commit/edca13e259472872fdfd456cf3ef4a21d1262c11
+    category: security
+    cwe:
+    - CWE-670
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

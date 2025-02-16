@@ -1,0 +1,28 @@
+rules:
+- id: vuln-weave-a0ac81b3
+  pattern: 'hostPID: true
+
+    '
+  pattern-not: 'hostPID: false
+
+    '
+  languages:
+  - yaml
+  message: 'Detected insecure configuration: `hostPID` set to true. This allows containers
+    to share the host''s process namespace, which can lead to privilege escalation
+    and container breakout. Set `hostPID` to false to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weaveworks/weave/commit/a0ac81b3b4cae6d0dcaf3732fd91cedefc89f720
+    category: security
+    cwe:
+    - CWE-269
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://kubernetes.io/docs/concepts/policy/pod-security-policy/#host-namespaces
+    technology:
+    - kubernetes
+    - yaml

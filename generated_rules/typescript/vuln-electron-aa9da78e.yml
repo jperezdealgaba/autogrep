@@ -1,0 +1,28 @@
+rules:
+- id: vuln-electron-aa9da78e
+  pattern: "nativeImage.createThumbnailFromPath = async ($PATH, $SIZE) => {\n  return\
+    \ $DESERIALIZE(await $IPC.invoke($IPC_MESSAGES.NATIVE_IMAGE_CREATE_THUMBNAIL_FROM_PATH,\
+    \ $PATH, $SIZE));\n};\n"
+  pattern-not: "nativeImage.createThumbnailFromPath = async ($PATH, $SIZE) => {\n\
+    \  return $DESERIALIZE(await $IPC.invoke($IPC_MESSAGES.NATIVE_IMAGE_CREATE_THUMBNAIL_FROM_PATH,\
+    \ $PATH, $SIZE));\n};\n"
+  languages:
+  - typescript
+  message: 'The use of `nativeImage.createThumbnailFromPath` via IPC can expose the
+    application to potential security risks by allowing untrusted input to be processed.
+    This method was removed due to security concerns. Ensure that any image processing
+    is done securely and does not expose the application to untrusted input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/electron/electron/commit/aa9da78edb6200988b104914e09995115ee132ee
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://github.com/electron/electron/commit/aa9da78edb6200988b104914e09995115ee132ee
+    technology:
+    - typescript

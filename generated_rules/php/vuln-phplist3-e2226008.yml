@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phplist3-e2226008
+  pattern: 'printf('' %s %s </div>'', $ROW[''name''], ...);
+
+    '
+  pattern-not: 'printf('' %s %s </div>'', htmlspecialchars($ROW[''name'']), ...);
+
+    '
+  languages:
+  - php
+  message: 'The code directly outputs user-controlled data without proper escaping,
+    which can lead to Cross-Site Scripting (XSS) vulnerabilities. Attackers can inject
+    malicious scripts that execute in the context of the victim''s browser. Always
+    use htmlspecialchars() or similar functions to escape user input before outputting
+    it to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpList/phplist3/commit/e22260083e2ae35ae7d57fa5632a9c49db3ce849
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

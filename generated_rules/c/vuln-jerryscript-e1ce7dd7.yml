@@ -1,27 +1,23 @@
 rules:
 - id: vuln-jerryscript-e1ce7dd7
   pattern: "if ($ARRAY_LENGTH > ($UINT32_MAX >> $ELEMENT_SIZE_SHIFT))\n{\n  return\
-    \ ecma_raise_range_error ($ERROR_MSG);\n}\n"
+    \ ecma_raise_range_error($ERROR_MSG);\n}\nuint32_t $BYTE_LENGTH = $ARRAY_LENGTH\
+    \ << $ELEMENT_SIZE_SHIFT;\n"
   pattern-not: "if ($ARRAY_LENGTH <= ($UINT32_MAX >> $ELEMENT_SIZE_SHIFT))\n{\n  $BYTE_LENGTH\
     \ = $ARRAY_LENGTH << $ELEMENT_SIZE_SHIFT;\n}\n"
   languages:
   - c
-  message: 'The code contains a potential integer overflow vulnerability when calculating
-    the byte length of a TypedArray. The original check for array_length > (UINT32_MAX
-    >> element_size_shift) is insufficient to prevent overflow. This can lead to memory
-    corruption or unexpected behavior. The fix involves checking for valid array lengths
-    before performing the shift operation and using proper error handling. Always
-    validate array sizes and use safe arithmetic operations to prevent overflow.
-
-    '
+  message: "The code checks for an overflow condition in a TypedArray length calculation\
+    \ but fails to handle it correctly. \nThis can lead to integer overflow and potentially\
+    \ cause memory corruption or unexpected behavior. \nThe fix should include proper\
+    \ bounds checking and error handling for invalid array lengths.\n"
   severity: ERROR
   metadata:
-    source-url: github.com/galpeter/jerryscript/commit/e1ce7dd7271288be8c0c8136eea9107df73a8ce2
+    source-url: github.com/jerryscript-project/jerryscript/commit/e1ce7dd7271288be8c0c8136eea9107df73a8ce2
     category: security
     cwe:
-    - 'CWE-190: Integer Overflow or Wraparound'
-    owasp: A9:2021-Security Logging and Monitoring Failures
-    references:
-    - https://cwe.mitre.org/data/definitions/190.html
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
     technology:
     - c

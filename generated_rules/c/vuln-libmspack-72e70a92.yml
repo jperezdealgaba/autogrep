@@ -1,0 +1,21 @@
+rules:
+- id: vuln-libmspack-72e70a92
+  pattern: "if ($VAR != 0xFFFFFFFF && $VAR > $LIMIT) {\n  ...\n}\n"
+  pattern-not: "if ($VAR != 0xFFFFFFFF && $VAR >= $LIMIT) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses a ''>'' comparison instead of ''>='' when checking if a
+    value exceeds a limit. This can lead to off-by-one errors and potential out-of-bounds
+    access. Replace ''>'' with ''>='' to properly handle boundary conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/kyz/libmspack/commit/72e70a921f0f07fee748aec2274b30784e1d312a
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

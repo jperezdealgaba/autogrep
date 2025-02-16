@@ -1,0 +1,40 @@
+rules:
+- id: vuln-libmspack-2f084136
+  pattern: "if (memcmp(&$NAME[2], &$CONTENT_NAME[2], 31L) == 0) {\n  if (memcmp(&$NAME[33],\
+    \ &$CONTENT_NAME[33], 8L) == 0) {\n    $CHM->sec1.content = $FI;\n  }\n  else\
+    \ if (memcmp(&$NAME[33], &$CONTROL_NAME[33], 11L) == 0) {\n    $CHM->sec1.control\
+    \ = $FI;\n  }\n  else if (memcmp(&$NAME[33], &$SPANINFO_NAME[33], 8L) == 0) {\n\
+    \    $CHM->sec1.spaninfo = $FI;\n  }\n  else if (memcmp(&$NAME[33], &$RTABLE_NAME[33],\
+    \ 72L) == 0) {\n    $CHM->sec1.rtable = $FI;\n  }\n}\n"
+  pattern-not: "if ($NAME_LEN == 40 && memcmp($NAME, $CONTENT_NAME, 40) == 0) {\n\
+    \  $CHM->sec1.content = $FI;\n}\nelse if ($NAME_LEN == 44 && memcmp($NAME, $CONTROL_NAME,\
+    \ 44) == 0) {\n  $CHM->sec1.control = $FI;\n}\nelse if ($NAME_LEN == 41 && memcmp($NAME,\
+    \ $SPANINFO_NAME, 41) == 0) {\n  $CHM->sec1.spaninfo = $FI;\n}\nelse if ($NAME_LEN\
+    \ == 105 && memcmp($NAME, $RTABLE_NAME, 105) == 0) {\n  $CHM->sec1.rtable = $FI;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potentially unsafe memory comparison using memcmp with hardcoded
+    offsets.
+
+    This can lead to incorrect comparisons and security vulnerabilities if the input
+    lengths are not properly validated.
+
+    Always ensure that the lengths of the strings being compared are explicitly checked
+    before using memcmp.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kyz/libmspack/commit/2f084136cfe0d05e5bf5703f3e83c6d955234b4d
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

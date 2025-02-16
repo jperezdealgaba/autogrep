@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libxml2-7ffcd44d
+  pattern: '$CTXT->xsiAssemble = 0;
+
+    '
+  pattern-not: '$CTXT->xsiAssemble = 1;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where `xsiAssemble` is set to 0, which
+    may lead to improper handling of XML schema instances. This could allow attackers
+    to bypass schema validation or cause unexpected behavior. Ensure `xsiAssemble`
+    is set to 1 to enforce proper schema validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/libxml2/commit/7ffcd44d7e6c46704f8af0321d9314cd26e0e18a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.w3.org/TR/xmlschema-1/
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-go-ethereum-29569375
+  pattern: "func RunPrecompiledContract(p PrecompiledContract, input []byte, contract\
+    \ *Contract) (ret []byte, err error) {\n    gas := p.RequiredGas(input)\n    if\
+    \ contract.UseGas(gas) {\n        return p.Run(input)\n    }\n    return nil,\
+    \ ErrOutOfGas\n}\n"
+  pattern-not: "func RunPrecompiledContract(p PrecompiledContract, input []byte, suppliedGas\
+    \ uint64) (ret []byte, remainingGas uint64, err error) {\n    gasCost := p.RequiredGas(input)\n\
+    \    if suppliedGas < gasCost {\n        return nil, 0, ErrOutOfGas\n    }\n \
+    \   suppliedGas -= gasCost\n    output, err := p.Run(input)\n    return output,\
+    \ suppliedGas, err\n}\n"
+  languages:
+  - go
+  message: 'The RunPrecompiledContract function has a vulnerability where it directly
+    uses the contract''s gas without proper validation. This can lead to gas underflow
+    or incorrect gas accounting. The fixed version properly validates the gas and
+    returns the remaining gas, making it safer and more accurate.
+
+    To fix this, ensure proper gas validation and accounting by using the fixed version
+    that takes suppliedGas as a parameter and returns remainingGas.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/295693759e5ded05fec0b2fb39359965b60da785
+    category: security
+    cwe: 'CWE-682: Incorrect Calculation'
+    owasp: 'A9: Security Misconfiguration'
+    technology: go

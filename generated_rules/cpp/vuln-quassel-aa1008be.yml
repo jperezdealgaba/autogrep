@@ -1,0 +1,21 @@
+rules:
+- id: vuln-quassel-aa1008be
+  pattern: "void $CLASS::initDbSession(QSqlDatabase &$DB) {\n  ...\n}\n"
+  pattern-not: "bool $CLASS::initDbSession(QSqlDatabase &$DB) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "The function `initDbSession` should return a boolean value to indicate\
+    \ success or failure. \nFailing to do so can lead to unhandled database initialization\
+    \ errors, which may result in security vulnerabilities or data corruption.\nTo\
+    \ fix this, change the return type of `initDbSession` to `bool` and ensure it\
+    \ returns `true` on success and `false` on failure.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/aa1008be162cb27da938cce93ba533f54d228869
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - cpp

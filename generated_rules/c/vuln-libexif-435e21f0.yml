@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libexif-435e21f0
+  pattern: "if (($OFFSET + $SIZE < $OFFSET) || ($OFFSET + $SIZE < $SIZE) || ($OFFSET\
+    \ + $SIZE > $BUF_SIZE)) {\n  ...\n}\n"
+  pattern-not: "if (CHECKOVERFLOW($OFFSET, $BUF_SIZE, $SIZE)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potentially unsafe integer overflow check. The condition may
+    not correctly handle all overflow cases, leading to buffer overflows or other
+    memory corruption vulnerabilities. Replace with the CHECKOVERFLOW macro or a safer
+    overflow check that ensures all edge cases are handled correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libexif/libexif/commit/435e21f05001fb03f9f186fa7cbc69454afd00d1
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libsndfile-6be89067
+  pattern: 'byte_count += $FUNC($PSF, $PTR, $SIZE);
+
+    '
+  pattern-not: "$READ_BYTES = $FUNC($PSF, $PTR, $SIZE);\nif ($READ_BYTES > 0 && byte_count\
+    \ > (INT_MAX - $READ_BYTES)) {\n  ...\n} else {\n  byte_count += $READ_BYTES;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Integer overflow vulnerability detected. The code adds the result of a
+    function call directly to `byte_count` without checking for potential overflow,
+    which can lead to undefined behavior or security issues. To fix this, ensure that
+    the addition does not exceed `INT_MAX` by checking the result before adding it
+    to `byte_count`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/6be8906740cdca067f12920bb4a63f728485aff0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

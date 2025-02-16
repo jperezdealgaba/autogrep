@@ -1,0 +1,25 @@
+rules:
+- id: vuln-puppet-0a51b9f1
+  pattern: 'FileTest.expects(:exist?).with($ARG).returns(true)
+
+    '
+  pattern-not: 'FileTest.expects(:exist?).with($ARG).returns(false)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a potentially insecure file existence check that always returns
+    true. This could lead to security vulnerabilities by bypassing file existence
+    validation. Always ensure that file existence checks return the correct boolean
+    value to prevent unauthorized access or incorrect behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/0a51b9f17d1084860088fcc37fb24e0d9e12cf82
+    category: security
+    cwe:
+    - CWE-200
+    owasp: 'A6: Security Misconfiguration'
+    technology:
+    - ruby

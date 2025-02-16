@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libebml-ababb64e
+  pattern: "for ($INIT; $I < $STR.length(); $INC) {\n  $LEAD = static_cast<uint8>($STR[$I]);\n\
+    \  if ($LEAD < 0x80)\n    $I++;\n  else if (($LEAD >> 5) == 0x6)\n    $I += 2;\n\
+    \  else if (($LEAD >> 4) == 0xe)\n    $I += 3;\n  else if (($LEAD >> 3) == 0x1e)\n\
+    \    $I += 4;\n  else\n    break;\n}\n"
+  pattern-not: "for ($INIT; $I < $STR.length(); $INC) {\n  $LEAD = static_cast<uint8>($STR[$I]);\n\
+    \  $CHARLENGTH = UTFCharLength($LEAD);\n  if (($CHARLENGTH < 1) || ($CHARLENGTH\
+    \ > 4))\n    break;\n  if (($I + $CHARLENGTH) > $STR.length())\n    break;\n \
+    \ if ($CHARLENGTH == 1)\n    $I++;\n  else if ($CHARLENGTH == 2)\n    $I += 2;\n\
+    \  else if ($CHARLENGTH == 3)\n    $I += 3;\n  else if ($CHARLENGTH == 4)\n  \
+    \  $I += 4;\n}\n"
+  languages:
+  - cpp
+  message: 'Detected unsafe UTF-8 string iteration without proper length validation.
+    This can lead to out-of-bounds memory access and potential security vulnerabilities.
+    Use a helper function like UTFCharLength and validate the character length before
+    incrementing the index.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/ababb64e0c792ad2a314245233db0833ba12036b
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

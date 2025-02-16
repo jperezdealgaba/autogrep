@@ -1,0 +1,29 @@
+rules:
+- id: vuln-varnish-cache-85e8468b
+  pattern: 'vct_iscrlf(*$VAR)
+
+    '
+  pattern-not: 'vct_iscrlf($VAR)
+
+    '
+  languages:
+  - c
+  message: 'Detected incorrect usage of `vct_iscrlf` with a dereferenced pointer.
+    This can lead to incorrect parsing of HTTP headers, potentially causing security
+    vulnerabilities such as HTTP request smuggling. The function `vct_iscrlf` expects
+    a pointer, not a dereferenced value. Fix by removing the dereference operator
+    (*) when passing the pointer to `vct_iscrlf`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/varnishcache/varnish-cache/commit/85e8468bec9416bd7e16b0d80cb820ecd2b330c3
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://github.com/varnishcache/varnish-cache/commit/85e8468bec9416bd7e16b0d80cb820ecd2b330c3
+    technology:
+    - c

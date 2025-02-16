@@ -1,0 +1,21 @@
+rules:
+- id: vuln-antisamy-32e27350
+  pattern: "for (int $I = 1; $I < $ELE.getChildNodes().getLength(); $I++) {\n  ...\n\
+    }\n"
+  pattern-not: "int $CHILD_NODES_COUNT = $ELE.getChildNodes().getLength();\nfor (int\
+    \ $I = $CHILD_NODES_COUNT - 1; $I >= 1; $I--) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential vulnerability due to incorrect iteration over child nodes. The
+    original code iterates from the start, which can lead to issues when the list
+    is modified during iteration. This can cause skipped elements or unexpected behavior.
+    The fix is to iterate from the end to avoid these issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nahsra/antisamy/commit/32e273507da0e964b58c50fd8a4c94c9d9363af0
+    category: security
+    cwe: CWE-664
+    owasp: A12:2021-Security Misconfiguration
+    technology: java

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-exponent-cms-4327ea96
+  pattern: '$terms = htmlspecialchars($terms);
+
+    '
+  pattern-not: '$terms = expString::escape(htmlspecialchars($terms));
+
+    '
+  languages:
+  - php
+  message: "The use of `htmlspecialchars` without proper escaping can lead to XSS\
+    \ vulnerabilities. \nThe patch adds `expString::escape` to ensure proper escaping\
+    \ of HTML entities. \nAlways use appropriate escaping functions to prevent XSS\
+    \ attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/4327ea96b3de89440693e06d03038121aa1fdcea
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

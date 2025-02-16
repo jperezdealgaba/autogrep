@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libredwg-bcec483e
+  pattern: "for ($I = 0; $I < $INFO->num_sections; ++$I) {\n  ...\n  memcpy(&$DECOMP[$I\
+    \ * $INFO->size], ...);\n  ...\n}\n"
+  pattern-not: "for ($I = $J = 0; $I < $INFO->num_sections; ++$I, ++$J) {\n  ...\n\
+    \  memcpy(&$DECOMP[$J * $INFO->size], ...);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected potential out-of-bounds memory access due to incorrect index
+    usage in a loop.
+
+    This vulnerability can lead to memory corruption or data leakage. The fix involves
+    using
+
+    a separate index variable (`j`) for writing to the `decomp` array to ensure proper
+
+    bounds checking. Always verify array indices to prevent out-of-bounds access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibreDWG/libredwg/commit/bcec483e73819af29787d5ed87fc515e1dfd0411
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

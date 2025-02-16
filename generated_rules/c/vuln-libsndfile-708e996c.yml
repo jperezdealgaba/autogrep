@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libsndfile-708e996c
+  pattern: "if ($PSF->headindex < SIGNED_SIZEOF($PSF->header) - $SIZE) {\n  $PSF->header[$PSF->headindex++]\
+    \ = $X;\n  ...\n}\n"
+  pattern-not: "if ($PSF->header.indx + $SIZE > $PSF->header.len && psf_bump_header_allocation($PSF,\
+    \ $SIZE)) {\n  return $RESULT;\n}\n$PSF->header.ptr[$PSF->header.indx++] = $X;\n"
+  languages:
+  - c
+  message: 'The code lacks proper bounds checking when writing to the header buffer,
+    which could lead to buffer overflow vulnerabilities. The original code only checks
+    against a fixed header size but doesn''t properly handle dynamic buffer allocation.
+    This can be exploited to write beyond the allocated buffer boundaries. The fix
+    introduces proper bounds checking and dynamic buffer reallocation using psf_bump_header_allocation().
+    To fix this issue, always check buffer bounds and use dynamic buffer reallocation
+    when needed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/708e996c87c5fae77b104ccfeb8f6db784c32074
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

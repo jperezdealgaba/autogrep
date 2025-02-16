@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gitlabhq-55196497
+  pattern: "if $ITEMS.respond_to?($PARAMS[:state])\n  $ITEMS.public_send($PARAMS[:state])\n\
+    end\n"
+  pattern-not: "case $PARAMS[:state].to_s\nwhen 'closed'\n  $ITEMS.closed\nwhen 'merged'\n\
+    \  $ITEMS.respond_to?(:merged) ? $ITEMS.merged : $ITEMS.closed\nwhen 'opened'\n\
+    \  $ITEMS.opened\nend\n"
+  languages:
+  - ruby
+  message: 'The code directly uses user-controlled input to call methods via `public_send`,
+    which can lead to unintended method execution and potential security vulnerabilities.
+    This pattern is dangerous because it allows attackers to call arbitrary methods
+    on the object. Instead, use a case statement to explicitly handle valid states
+    and provide a safe default behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gitlabhq/gitlabhq/commit/55196497301eea429913f9c4b1b37c42c2e358ce
+    category: security
+    cwe:
+    - CWE-470
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

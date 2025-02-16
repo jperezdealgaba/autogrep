@@ -1,0 +1,27 @@
+rules:
+- id: vuln-argo-cd-52f917a1
+  pattern: 'image: quay.io/argoproj/argocd:v2.1.14
+
+    '
+  pattern-not: 'image: quay.io/argoproj/argocd:v2.1.15
+
+    '
+  languages:
+  - yaml
+  message: 'Detected an outdated Argo CD image version (v2.1.14). Using outdated versions
+    can expose your deployment to known vulnerabilities and bugs. Update to the latest
+    version (v2.1.15) to ensure security and stability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/52f917a18165416baa418822daae36c5f011e91f
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/argoproj/argo-cd/releases
+    technology:
+    - yaml

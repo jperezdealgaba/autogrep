@@ -1,0 +1,34 @@
+rules:
+- id: vuln-helm-0c87ca54
+  pattern: 'f.BoolVar(&client.Atomic, "atomic", false, "if set, installation process
+    purges chart on fail. The --wait flag will be set automatically if --atomic is
+    used")
+
+    '
+  pattern-not: 'f.BoolVar(&client.Atomic, "atomic", false, "if set, the installation
+    process deletes the installation on failure. The --wait flag will be set automatically
+    if --atomic is used")
+
+    '
+  languages:
+  - go
+  message: 'The description for the --atomic flag in Helm''s installation command
+    uses the term "purges chart on fail," which is ambiguous and could lead to misunderstandings.
+    This could result in incorrect assumptions about the behavior of the --atomic
+    flag, potentially leading to security risks or unintended data loss. The description
+    should be updated to use clear and precise language, such as "deletes the installation
+    on failure," to accurately convey the flag''s functionality.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/helm/helm/commit/0c87ca544f6fc760065d590bed43f25040e276ea
+    category: security
+    cwe:
+    - 'CWE-710: Improper Adherence to Coding Standards'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://helm.sh/docs/helm/helm_install/
+    technology:
+    - go

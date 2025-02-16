@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mattermost-3d6d8a7c
+  pattern: "if $IS_SCHEME_USER && $IS_SCHEME_GUEST {\n  return nil, model.NewAppError(\"\
+    UpdateTeamMemberSchemeRoles\", \"api.team.update_team_member_roles.guest_and_user.app_error\"\
+    , nil, \"\", http.StatusBadRequest)\n}\n"
+  pattern-not: "if isSchemeGuest {\n  return nil, model.NewAppError(\"UpdateTeamMemberSchemeRoles\"\
+    , \"api.team.update_team_member_roles.user_and_guest.app_error\", nil, \"\", http.StatusBadRequest)\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected a vulnerability where a user could be assigned both guest and
+    user roles simultaneously. This could lead to privilege escalation or unexpected
+    behavior. The fix ensures that a user cannot be assigned both roles at the same
+    time. Update the role assignment logic to prevent this scenario.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mattermost/mattermost/commit/3d6d8a7c1f7105558fe266a1b379859a4dba4e9b
+    category: security
+    cwe:
+    - CWE-269
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://mattermost.atlassian.net/browse/MM-56986
+    technology:
+    - go

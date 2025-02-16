@@ -1,0 +1,27 @@
+rules:
+- id: vuln-basercms-d14f5063
+  pattern: '$this->BcBaser->link($VAR[''name''], $VAR[''url''], [''target'' => ''_blank''])
+
+    '
+  pattern-not: '$this->BcBaser->link($VAR[''name''], $VAR[''url''], [''target'' =>
+    ''_blank'', ''escape'' => true])
+
+    '
+  languages:
+  - php
+  message: "Detected a potential XSS vulnerability due to missing URL escaping in\
+    \ link generation. \nWhen creating links with user-controlled input, always set\
+    \ 'escape' => true to prevent \nmalicious JavaScript injection through crafted\
+    \ URLs.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/d14f506385f21d67d5ff3462f204d4c2321b7c54
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

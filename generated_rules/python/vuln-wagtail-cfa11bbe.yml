@@ -1,0 +1,23 @@
+rules:
+- id: vuln-wagtail-cfa11bbe
+  pattern: "with open($PATH, \"rb\") as $FH:\n    $FILE = BytesIO($FH.read())\n"
+  pattern-not: '$FILE = $DATA
+
+    '
+  languages:
+  - python
+  message: Directly reading file content into memory can lead to excessive memory
+    usage and potential denial of service. Use Django's `TemporaryUploadedFile` instead
+    to handle large files efficiently.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/cfa11bbe00dbe7ce8cd4c0bbfe2a898a690df2bf
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://github.com/wagtail/Willow/issues/108
+    technology:
+    - python

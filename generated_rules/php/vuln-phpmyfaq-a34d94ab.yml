@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpmyfaq-a34d94ab
+  pattern: '$link = trim((string) Filter::filterVar($postData[''link''], FILTER_VALIDATE_URL));
+
+    '
+  pattern-not: "$send2friendLink = sprintf(\n    '%sindex.php?action=faq&amp;cat=%d&amp;id=%d&amp;artlang=%s',\n\
+    \    $faqConfig->getDefaultUrl(),\n    $categoryId,\n    $faqId,\n    urlencode($faqLanguage)\n\
+    );\n"
+  languages:
+  - php
+  message: 'The code directly uses user input for URL validation without proper sanitization,
+    which can lead to security vulnerabilities such as XSS or SSRF. Always sanitize
+    user input and use appropriate validation filters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/a34d94ab7b1be9256a9ef898f18ea6bfb63f6f1e
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    - 'A3: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

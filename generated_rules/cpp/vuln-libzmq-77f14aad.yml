@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libzmq-77f14aad
+  pattern: "if (memcmp ($GREETING + 12, $MECHANISM, 20) == 0) {\n  ...\n}\n"
+  pattern-not: "if ($OPTIONS.mechanism == $MECHANISM_TYPE\n&&  memcmp ($GREETING +\
+    \ 12, $MECHANISM, 20) == 0) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The code performs a memcmp check on a mechanism string without first verifying
+    that the mechanism type matches the expected value. This can lead to security
+    vulnerabilities where the mechanism type is not properly validated. Always verify
+    the mechanism type before comparing the mechanism string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/77f14aad95cdf0d2a244ae9b4a025e5ba0adf01a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://rfc.zeromq.org/spec/23/
+    technology:
+    - cpp

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cryptopp-07dbcc3d
+  pattern: 'bits = (m_distance >= COUNTOF($ARRAY)) ? $ARRAY[$INDEX] : $ARRAY[m_distance];
+
+    '
+  pattern-not: "if (m_distance >= COUNTOF($ARRAY))\n  throw BadDistanceErr();\nbits\
+    \ = $ARRAY[m_distance];\n"
+  languages:
+  - cpp
+  message: 'The code directly accesses an array without proper bounds checking, which
+    can lead to out-of-bounds access and potential memory corruption. The vulnerability
+    occurs when `m_distance` is greater than or equal to the size of the array, leading
+    to undefined behavior. The fix involves adding explicit bounds checking and throwing
+    an exception when the index is out of bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weidai11/cryptopp/commit/07dbcc3d9644b18e05c1776db2a57fe04d780965
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - cpp

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-aiohttp-1c335944
+  pattern: '$DIRECTORY.joinpath($FILENAME).resolve()
+
+    '
+  pattern-not: '$DIRECTORY.joinpath($FILENAME)
+
+    normalized_path = Path(os.path.normpath($UNRESOLVED_PATH))
+
+    normalized_path.relative_to($DIRECTORY)
+
+    filepath = normalized_path.resolve()
+
+    '
+  languages:
+  - python
+  message: 'Detected potential directory traversal vulnerability due to unsafe path
+    resolution.
+
+    Directly resolving paths without proper normalization can allow attackers to access
+    files outside the intended directory.
+
+    Ensure paths are normalized and checked against the base directory before resolution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/1c335944d6a8b1298baf179b7c0b3069f10c514b
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: python

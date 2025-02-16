@@ -1,0 +1,28 @@
+rules:
+- id: vuln-navigate-cms-a5e758b4
+  pattern: '$THIS->wrong_path_redirect = $_REQUEST[''wrong_path_redirect''];
+
+    '
+  pattern-not: '$THIS->wrong_path_redirect = core_purify_string($_REQUEST[''wrong_path_redirect'']);
+
+    '
+  languages:
+  - php
+  message: 'The code directly assigns a value from `$_REQUEST` to a property without
+    sanitization, which can lead to Cross-Site Scripting (XSS) vulnerabilities. Always
+    sanitize user input using functions like `core_purify_string` to prevent malicious
+    code injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NavigateCMS/Navigate-CMS/commit/a5e758b490dfb58d617a76acd18c6356a6225e95
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

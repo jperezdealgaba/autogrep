@@ -1,0 +1,24 @@
+rules:
+- id: vuln-steeltoe-c5d4a94e
+  pattern: '$LOGGER.LogError($EXCEPTION, $MESSAGE, $URI.ToMaskedUri())
+
+    '
+  pattern-not: '$LOGGER.LogError($EXCEPTION, $MESSAGE, $URI.ToMaskedString())
+
+    '
+  languages:
+  - csharp
+  message: "Detected use of ToMaskedUri() in logging statements which may expose sensitive\
+    \ information. \nUse ToMaskedString() instead to properly mask URIs containing\
+    \ basic authentication credentials.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/SteeltoeOSS/Steeltoe/commit/c5d4a94e90ccb77f8e851bc681a2e348a95e7ecb
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-532
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - csharp

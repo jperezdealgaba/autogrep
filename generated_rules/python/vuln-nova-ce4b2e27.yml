@@ -1,0 +1,24 @@
+rules:
+- id: vuln-nova-ce4b2e27
+  pattern: 'os.path.realpath(os.path.join($FS, *$ARGS))
+
+    '
+  pattern-not: 'utils.execute(''readlink'', ''-nm'', os.path.join($FS, *$ARGS), run_as_root=True)
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe path resolution using os.path.realpath(). This can lead\
+    \ to path traversal vulnerabilities. \nUse utils.execute with 'readlink -nm' to\
+    \ safely resolve paths and prevent path traversal attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/ce4b2e27be45a85b310237615c47eb53f37bb5f3
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

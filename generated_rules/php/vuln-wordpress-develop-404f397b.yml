@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wordpress-develop-404f397b
+  pattern: 'echo $VAR->get(''Name'') ? $VAR->display(''Name'') : $VAR->get_stylesheet();
+
+    '
+  pattern-not: 'echo $VAR->get(''Name'') ? $VAR->display(''Name'') : esc_html($VAR->get_stylesheet());
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of theme stylesheet, which can lead to Cross-Site
+    Scripting (XSS) vulnerabilities. Always sanitize or escape dynamic content before
+    outputting it to the browser. Use `esc_html()` or similar functions to ensure
+    safe output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/404f397b4012fd9d382e55bf7d206c1317f01148
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://developer.wordpress.org/themes/theme-security/data-sanitization-escaping/
+    technology:
+    - php

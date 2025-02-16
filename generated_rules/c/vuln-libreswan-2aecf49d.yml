@@ -1,0 +1,21 @@
+rules:
+- id: vuln-libreswan-2aecf49d
+  pattern: "if ($SEC_LABEL->len != 0) {\n  ...\n}\n"
+  pattern-not: "if ($SEC_LABEL != NULL && $SEC_LABEL->len > 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a security label''s length without verifying if the
+    label pointer is NULL. This could lead to a NULL pointer dereference vulnerability.
+    Always check if the pointer is NULL before accessing its members.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libreswan/libreswan/commit/2aecf49d1d8fd0e92625bcfad95e0cc996263c57
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2021-Broken Access Control
+    technology:
+    - c

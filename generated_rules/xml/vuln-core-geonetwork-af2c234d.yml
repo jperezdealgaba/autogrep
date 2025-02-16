@@ -1,0 +1,22 @@
+rules:
+- id: vuln-core-geonetwork-af2c234d
+  pattern: '<version>4.4.0-0</version>
+
+    '
+  pattern-not: '<version>4.4.1-SNAPSHOT</version>
+
+    '
+  languages:
+  - xml
+  message: Detected an outdated version '4.4.0-0' in pom.xml. This version may contain
+    vulnerabilities. Upgrade to '4.4.1-SNAPSHOT' to mitigate potential security risks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/geonetwork/core-geonetwork/commit/af2c234d8b6faf20aba0f9d002ae33826781f4b4
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - xml

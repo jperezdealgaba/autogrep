@@ -1,0 +1,27 @@
+rules:
+- id: vuln-chamilo-lms-36149c1f
+  pattern: '$courseId = $courseInfo[''real_id''];
+
+    '
+  pattern-not: "$courseId = $courseInfo['real_id'] ?? 0;\n$documentId = (int) $documentId;\n\
+    if (empty($courseId) || empty($documentId)) {\n    return false;\n}\n"
+  languages:
+  - php
+  message: 'Detected unsafe direct array access without null coalescing or empty checks.
+    This can lead to undefined behavior or security vulnerabilities if the array is
+    empty or the key does not exist. Always use null coalescing operator (??) or check
+    for empty values before accessing array elements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/36149c1ff99973840a809bb865f23e1b23d6df00
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://www.php.net/manual/en/language.operators.comparison.php#language.operators.comparison.coalesce
+    technology:
+    - php

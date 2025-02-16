@@ -1,0 +1,20 @@
+rules:
+- id: vuln-h2database-eb75633d
+  pattern: 'new JdbcConnection($URL, $INFO, $USER, $PASSWORD)
+
+    '
+  pattern-not: 'new JdbcConnection($URL, $INFO, $USER, $PASSWORD, $FORBID_CREATION)
+
+    '
+  languages:
+  - java
+  message: 'Potential security issue: Database creation is not explicitly forbidden.
+    Pass ''false'' as the fifth parameter to JdbcConnection to prevent unauthorized
+    database creation.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/h2database/h2database/commit/eb75633d0dfa86341e6ef77a861665c4a0f16ab8
+    category: security
+    cwe: 'CWE-862: Missing Authorization'
+    owasp: A01:2021 - Broken Access Control
+    technology: java

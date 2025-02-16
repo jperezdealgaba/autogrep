@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redis-874804da
+  pattern: 'if ($C->flags & CLIENT_CLOSE_AFTER_REPLY) break;
+
+    '
+  pattern-not: 'if ($C->flags & (CLIENT_CLOSE_AFTER_REPLY|CLIENT_CLOSE_ASAP)) break;
+
+    '
+  languages:
+  - c
+  message: 'Detected a missing check for CLIENT_CLOSE_ASAP flag in Redis networking
+    code. This vulnerability could allow cross-protocol scripting attacks where an
+    attacker sends HTTP commands (like POST or Host:) to Redis, potentially compromising
+    the instance. The fix involves adding a check for the CLIENT_CLOSE_ASAP flag to
+    terminate connections immediately when such commands are detected.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/antirez/redis/commit/874804da0c014a7d704b3d285aa500098a931f50
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://redis.io/topics/security
+    technology:
+    - c

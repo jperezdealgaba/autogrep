@@ -1,0 +1,29 @@
+rules:
+- id: vuln-contao-1c28e9ac
+  pattern: '$this->Template->canonical = htmlspecialchars($HEADBAG->getCanonicalUriForRequest($REQUEST),
+    $FLAGS);
+
+    '
+  pattern-not: "$this->Template->canonical = htmlspecialchars(\n  str_replace(array('{',\
+    \ '}'), array('%7B', '%7D'), $HEADBAG->getCanonicalUriForRequest($REQUEST)),\n\
+    \  $FLAGS\n);\n"
+  languages:
+  - php
+  message: 'The code directly passes the canonical URI to `htmlspecialchars` without
+    escaping curly braces, which can lead to URL injection vulnerabilities. Attackers
+    could potentially inject malicious content into the URL. To fix this, ensure curly
+    braces are properly escaped using `str_replace` before passing the URI to `htmlspecialchars`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contao/contao/commit/1c28e9ac7a7b915134962a59681a8701a44ccbe2
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

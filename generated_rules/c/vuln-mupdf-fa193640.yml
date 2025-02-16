@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mupdf-fa193640
+  pattern: "if ($ENTRY->ofs <= 0 || $ENTRY->ofs >= $XREF_LEN || pdf_get_xref_entry($CTX,\
+    \ $DOC, $ENTRY->ofs)->type != 'n')\n  fz_throw($CTX, $ERROR, \"invalid reference\
+    \ to an objstm that does not exist: %d (%d 0 R)\", (int)$ENTRY->ofs, $I);\n"
+  pattern-not: "{\n  fz_off_t $OFS = $ENTRY->ofs;\n  if ($OFS <= 0 || $OFS >= $XREF_LEN\
+    \ || pdf_get_xref_entry($CTX, $DOC, $OFS)->type != 'n')\n    fz_throw($CTX, $ERROR,\
+    \ \"invalid reference to an objstm that does not exist: %d (%d 0 R)\", (int)$OFS,\
+    \ $I);\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential use-after-free vulnerability where an XREF entry
+    is accessed after a possible invalidation. The issue occurs because `pdf_get_xref_entry`
+    may solidify the XREF, invalidating the `entry` pointer. This can lead to undefined
+    behavior or crashes. To fix, store the offset in a local variable before making
+    the call to `pdf_get_xref_entry`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/fa1936405b6a84e5c9bb440912c23d532772f958
+    category: security
+    cwe:
+    - CWE-416
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c

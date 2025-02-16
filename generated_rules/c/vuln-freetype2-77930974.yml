@@ -1,0 +1,22 @@
+rules:
+- id: vuln-freetype2-77930974
+  pattern: "if ( !$FACE->goto_table( $FACE, $TTAG_CFF, $STREAM, 0 ) )\n  $NUM_INSTANCES\
+    \ = 0;\n"
+  pattern-not: "if ( $FACE->goto_table( $FACE, $TTAG_glyf, $STREAM, 0 ) &&\n     !$FACE->goto_table(\
+    \ $FACE, $TTAG_CFF, $STREAM, 0 ) )\n  $NUM_INSTANCES = 0;\n"
+  languages:
+  - c
+  message: "The vulnerability occurs due to an insufficient check in the CFF table\
+    \ handling code. \nThe original code only checks for the presence of the CFF table\
+    \ without verifying the \nexistence of the 'glyf' table, which could lead to incorrect\
+    \ handling of font instances. \nThis could potentially cause security issues or\
+    \ crashes when processing malformed font files. \nThe fix adds an additional check\
+    \ for the 'glyf' table before proceeding with the CFF table check.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/779309744222a736eba0f1731e8162fce6288d4e
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    technology:
+    - c

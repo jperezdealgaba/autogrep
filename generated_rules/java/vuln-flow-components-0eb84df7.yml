@@ -1,0 +1,20 @@
+rules:
+- id: vuln-flow-components-0eb84df7
+  pattern: "private static final String EMAIL_PATTERN = \"^[a-zA-Z0-9.!#$%&\u2019\
+    *+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$\";\n"
+  pattern-not: "private static final String EMAIL_PATTERN = \"^\" + \"([a-zA-Z0-9_\\\
+    \\.\\\\-+])+\" // local\n        + \"@\" + \"[a-zA-Z0-9-.]+\" // domain\n    \
+    \    + \"\\\\.\" + \"[a-zA-Z0-9-]{2,}\" // tld\n        + \"$\";\n"
+  languages:
+  - java
+  message: Insecure email validation pattern detected. The pattern may allow invalid
+    or malicious email addresses. Use a more robust pattern that properly validates
+    local, domain, and TLD parts.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow-components/commit/0eb84df737b66ed8502ac4ab6431b38b3d2290c3
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017 - Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology: java

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-icms2-58f8b994
+  pattern: "new fieldString('password1', [\n    'title' => $TITLE,\n    'is_password'\
+    \ => true,\n    'options' => [\n        'min_length' => $MIN,\n        'max_length'\
+    \ => $MAX\n    ]\n])\n"
+  pattern-not: "new fieldString('password1', [\n    'title' => $TITLE,\n    'is_password'\
+    \ => true,\n    'options' => [\n        'min_length' => $MIN,\n        'max_length'\
+    \ => $MAX\n    ],\n    'rules' => [\n        [function ($controller, $data, $value)\
+    \ use ($profile) {\n            if (!$value) {\n                return true;\n\
+    \            }\n            $user = cmsCore::getModel('users')->getUserByAuth($profile['email'],\
+    \ $value);\n            if ($user) {\n                return ERR_NEW_PASS_AS_OLD;\n\
+    \            }\n            return true;\n        }]\n    ]\n])\n"
+  languages:
+  - php
+  message: 'The password change form does not validate that the new password is different
+    from the old password. This allows users to set the same password, which reduces
+    security and may violate password policy requirements. Add a validation rule to
+    ensure the new password is different from the old one.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/instantsoft/icms2/commit/58f8b9941b53b606a1b15a4364005cd2b1965507
+    category: security
+    cwe:
+    - CWE-521
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

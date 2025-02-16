@@ -1,0 +1,34 @@
+rules:
+- id: vuln-silverstripe-framework-fef7c325
+  pattern: 'DataObject::get_one("Folder", "\"Name\" = ''$part'' AND \"ParentID\" =
+    $parentID")
+
+    '
+  pattern-not: "DataObject::get_one(\n  \"Folder\", \n  sprintf(\n    \"\\\"Name\\\
+    \" = '%s' AND \\\"ParentID\\\" = %d\",\n    Convert::raw2sql($part), \n    (int)$parentID\n\
+    \  )\n)\n"
+  languages:
+  - php
+  message: 'Detected SQL injection vulnerability due to unescaped user input in SQL
+    query.
+
+    This is dangerous because it allows attackers to manipulate the query and potentially
+    access or modify sensitive data.
+
+    To fix this, use `sprintf` with proper escaping functions like `Convert::raw2sql`
+    for strings and type casting for integers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/fef7c325357b2fbaccba7f2fd9bc4ed979ba6156
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/89.html
+    technology:
+    - php

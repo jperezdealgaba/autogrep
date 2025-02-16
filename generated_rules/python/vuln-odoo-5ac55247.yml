@@ -1,0 +1,23 @@
+rules:
+- id: vuln-odoo-5ac55247
+  pattern: "if $PAYMENT_TOKEN and $PAYMENT_TOKEN.partner_id != $PARTNER:\n    raise\
+    \ ValidationError(_('Invalid token found! Token partner %s != %s') % ($PAYMENT_TOKEN.partner.name,\
+    \ $PARTNER.name))\n"
+  pattern-not: "if $PAYMENT_TOKEN and $PAYMENT_TOKEN.partner_id != $PARTNER:\n   \
+    \ raise ValidationError(_('Invalid token found!'))\n"
+  languages:
+  - python
+  message: 'Detected a potential information disclosure vulnerability where sensitive
+    partner information is exposed in error messages. This can lead to unauthorized
+    access to sensitive data. The fix removes the detailed error message to prevent
+    information leakage.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/5ac55247b576312ea4f1f274c94d955dd23335d1
+    category: security
+    cwe: 'CWE-209: Information Exposure Through an Error Message'
+    owasp: A3:2017-Sensitive Data Exposure
+    technology:
+    - python

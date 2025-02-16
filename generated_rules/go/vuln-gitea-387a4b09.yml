@@ -1,0 +1,25 @@
+rules:
+- id: vuln-gitea-387a4b09
+  pattern: "if !$VAR.IsTagExist($TAG) {\n  $CTX.Status(404)\n  return\n}\n"
+  pattern-not: "if !$VAR.IsTagExist($TAG) {\n  $CTX.Status(404)\n  return\n}\n"
+  languages:
+  - go
+  message: 'This pattern detects missing validation of tag existence in Go code, which
+    can lead to incorrect HTTP 404 responses. The vulnerability occurs when the code
+    fails to properly check if a tag exists before proceeding, potentially causing
+    incorrect behavior or information leakage. To fix this, ensure proper validation
+    and error handling are in place before returning a 404 status.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/387a4b09c1b62a2a5eb70b89559d5ae53032c989
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - go

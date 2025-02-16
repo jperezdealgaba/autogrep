@@ -1,0 +1,27 @@
+rules:
+- id: vuln-undertow-9bf05b76
+  pattern: '"HttpServerExchange{ " + getRequestMethod().toString() + " " + getRequestURI()
+    + " request " + $REQUEST_HEADERS + " response " + $RESPONSE_HEADERS + ''}''
+
+    '
+  pattern-not: '"HttpServerExchange{ " + getRequestMethod().toString() + " " + getRequestURI()
+    + ''}''
+
+    '
+  languages:
+  - java
+  message: Sensitive information exposure through logging of request and response
+    headers. This can lead to security issues such as session hijacking or information
+    leakage. Remove the logging of headers from the string representation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/9bf05b765e222dd106fee9b46314061b18b7275e
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - java

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-accel-ppp-1b8711cf
+  pattern: 'cli_send($CLIENT, "\t\thard - restart immediatly\r\n");
+
+    '
+  pattern-not: 'cli_send($CLIENT, "\t\thard - restart immediately\r\n");
+
+    '
+  languages:
+  - c
+  message: 'The string "immediatly" contains a typo and should be corrected to "immediately".
+    This could lead to confusion or misinterpretation of the command output. Ensure
+    that all CLI messages use correct spelling to maintain clarity and professionalism.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/accel-ppp/accel-ppp/commit/1b8711cf75a7c278d99840112bc7a396398e0205
+    category: correctness
+    technology:
+    - c

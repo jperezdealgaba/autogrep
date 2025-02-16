@@ -1,0 +1,30 @@
+rules:
+- id: vuln-libredwg-66a3484b
+  pattern: 'LOG_WARN("obj_string_stream overflow");
+
+    '
+  pattern-not: "LOG_ERROR(\"obj_string_stream overflow, bitsize \" FORMAT_RL \" =>\
+    \ \" FORMAT_RL,\n          $OBJ->bitsize, $OBJ->size * 8);\n$STR->byte = $OLD_BYTE;\n\
+    $STR->size = $OLD_SIZE;\n$OBJ->has_strings = 0;\n$OBJ->bitsize = $OBJ->size *\
+    \ 8;\n"
+  languages:
+  - c
+  message: 'Detected a potential overflow vulnerability in the obj_string_stream handling.
+
+    The original code only logs a warning without properly handling the overflow,
+    which could lead to undefined behavior or security issues.
+
+    The fix includes logging an error, restoring the stream state, and properly setting
+    the object''s bitsize.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibreDWG/libredwg/commit/66a3484bda00ff5af2bdb79e41db3b066fdd0d00
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-grin-05ec6fda
+  pattern: 'setup_head(&$GENESIS, $STORE, $HEADER_PMMR, $TXHASHSET)
+
+    '
+  pattern-not: 'setup_head(&$GENESIS, $STORE, $HEADER_PMMR, $TXHASHSET, $RESETTING_PIBD)
+
+    '
+  languages:
+  - rust
+  message: 'The function `setup_head` is being called without the `resetting_pibd`
+    parameter, which can lead to incorrect chain state handling during PIBD (Parallel
+    IBD) failures. This vulnerability can cause the chain to not properly reset to
+    the genesis block, potentially leading to inconsistencies in the blockchain state.
+    Always include the `resetting_pibd` parameter to ensure proper handling of chain
+    resets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/05ec6fda38015a08918f27aa6e380e3c7283405f
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - rust

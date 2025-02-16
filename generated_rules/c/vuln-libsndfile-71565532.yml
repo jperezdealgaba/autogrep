@@ -1,0 +1,37 @@
+rules:
+- id: vuln-libsndfile-71565532
+  pattern: 'int $VAR;
+
+    ...
+
+    $VAR = $EXPR1 * $EXPR2;
+
+    ...
+
+    '
+  pattern-not: 'int_fast32_t $VAR;
+
+    ...
+
+    $VAR = (int_fast32_t) $EXPR1 * $EXPR2;
+
+    ...
+
+    '
+  languages:
+  - c
+  message: 'Detected use of ''int'' instead of ''int_fast32_t'' for arithmetic operations.
+
+    This can lead to integer overflow vulnerabilities due to insufficient range.
+
+    Replace ''int'' with ''int_fast32_t'' for operations involving large values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/71565532463b22c24824101845a533a67bff4c9c
+    category: security
+    cwe:
+    - CWE-190
+    technology:
+    - c

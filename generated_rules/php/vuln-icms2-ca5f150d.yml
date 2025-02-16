@@ -1,0 +1,30 @@
+rules:
+- id: vuln-icms2-ca5f150d
+  pattern: '$this->set(''document_root'', rtrim(PATH, $this->root));
+
+    '
+  pattern-not: '$this->set(''document_root'', preg_replace(''#(.*)(''.preg_quote($this->root).'')$#u'',
+    ''$1'', PATH . DIRECTORY_SEPARATOR));
+
+    '
+  languages:
+  - php
+  message: 'The use of `rtrim` to construct the document root path is vulnerable to
+    path traversal attacks. This can allow an attacker to manipulate the path and
+    potentially access sensitive files. The fix uses `preg_replace` to safely construct
+    the path, ensuring that the root directory is properly handled. Always use secure
+    path manipulation functions to prevent directory traversal vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/instantsoft/icms2/commit/ca5f150da11d9caae86638885137afe35bcc3592
+    category: security
+    cwe:
+    - 22
+    owasp:
+    - A1
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

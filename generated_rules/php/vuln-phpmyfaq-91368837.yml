@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyfaq-91368837
+  pattern: '$response->setData(''The image is too large.'');
+
+    '
+  pattern-not: '$response->setData(''The file is too large or unsupported.'');
+
+    '
+  languages:
+  - php
+  message: 'The code checks for file type restrictions but only excludes ''text/html'',
+    potentially allowing unsafe file types like ''application/octet-stream''. This
+    can lead to security vulnerabilities by allowing malicious file uploads. Update
+    the file type checks to include ''application/octet-stream'' and ensure proper
+    validation of file types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/9136883776af67dfdb0e8cf14f5e0ca22bf4f2e7
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

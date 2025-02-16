@@ -1,0 +1,17 @@
+rules:
+- id: vuln-pyscript-ffee4add
+  pattern: queryTarget($TARGET.value)
+  pattern-not: queryTarget($ELEMENT, $TARGET.value)
+  languages:
+  - javascript
+  message: Potential security vulnerability due to missing context in queryTarget
+    function. Always pass the element context to ensure proper target resolution and
+    prevent potential security issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/pyscript/pyscript/commit/ffee4add4aef446fde99a6991445fd909a91d897
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-core-8b0d2f36
+  pattern: '$DOTCONNECT.executeStatement("delete from " + $TABLE + " where endpoint_id
+    = ''" + $ID + "''");
+
+    '
+  pattern-not: '$DOTCONNECT.setSQL("delete from " + $TABLE + " where endpoint_id =
+    ?").addParam($ID).loadResult();
+
+    '
+  languages:
+  - java
+  message: 'SQL query concatenation with user input detected. This can lead to SQL
+    injection vulnerabilities.
+
+    Use parameterized queries instead of concatenating user input directly into SQL
+    statements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/8b0d2f36fd9ddb7a57ed3896a154f4e087e3d781
+    category: security
+    cwe: CWE-89
+    owasp: A03:2021-Injection
+    technology:
+    - java

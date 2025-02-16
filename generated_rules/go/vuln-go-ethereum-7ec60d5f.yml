@@ -1,0 +1,36 @@
+rules:
+- id: vuln-go-ethereum-7ec60d5f
+  pattern: 'go SendItems($RW, pongMsg)
+
+    '
+  pattern-not: 'select {
+
+    case $P.pingRecv <- struct{}{}:
+
+    case <-$P.closed:
+
+    }
+
+    '
+  languages:
+  - go
+  message: 'The vulnerability involves directly sending a pong message without proper
+    synchronization, which can lead to race conditions or deadlocks. This is dangerous
+    because it can cause the application to hang or behave unpredictably under certain
+    conditions. The fix involves using a channel to synchronize the pong message sending,
+    ensuring proper handling of the ping-pong protocol. Always use proper synchronization
+    mechanisms when dealing with concurrent operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/7ec60d5f0c45bc68fd4e814479df065acec95d60
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - go

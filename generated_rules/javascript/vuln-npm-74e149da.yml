@@ -1,0 +1,30 @@
+rules:
+- id: vuln-npm-74e149da
+  pattern: 'var $VAR = require(''../utils/correct-mkdir.js'')
+
+    ...
+
+    $VAR($PATH, $CALLBACK)
+
+    '
+  pattern-not: 'var $VAR = require(''mkdirp'')
+
+    ...
+
+    $VAR($PATH, $CALLBACK)
+
+    '
+  languages:
+  - javascript
+  message: "The use of 'correct-mkdir.js' for directory creation is deprecated and\
+    \ potentially unsafe. \nIt has been replaced with 'mkdirp' for better reliability\
+    \ and security. \nUpdate the code to use 'mkdirp' instead of 'correct-mkdir.js'.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/npm/npm/commit/74e149da6efe6ed89477faa81fef08eee7999ad0
+    category: security
+    cwe: CWE-665
+    owasp: OWASP-2021_A01
+    references: https://github.com/isaacs/node-mkdirp
+    technology:
+    - javascript

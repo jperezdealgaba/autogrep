@@ -1,0 +1,27 @@
+rules:
+- id: vuln-network-72c52326
+  pattern: '$EXEC = require(''child_process'').exec
+
+    '
+  pattern-not: '$EXEC = require(''child_process'').execFile
+
+    '
+  languages:
+  - javascript
+  message: 'Use of ''exec'' from child_process module detected. ''exec'' is vulnerable
+    to shell injection attacks. Use ''execFile'' instead, which does not spawn a shell
+    by default and is safer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tomas/network/commit/72c523265940fe279eb0050d441522628f8988e5
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
+    technology:
+    - javascript

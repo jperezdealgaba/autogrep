@@ -1,0 +1,31 @@
+rules:
+- id: vuln-webcalendar-7906b492
+  pattern: 'echo ''<div class="row"><div class="col-3">'' . translate(''$TEXT'') .
+    "</div>\n";
+
+    echo ''<div class="col-9">''  . $location . "</div>\n";
+
+    '
+  pattern-not: 'echo ''<div class="row"><div class="col-3">'' . translate(''$TEXT'')
+    . "</div>\n";
+
+    echo ''<div class="col-9">''  . htmlentities($location) . "</div>\n";
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped output of '$location' in PHP code, which can lead to\
+    \ Cross-Site Scripting (XSS) vulnerabilities. \nAttackers can inject malicious\
+    \ scripts into the output, compromising user security. \nAlways sanitize user-controlled\
+    \ data using functions like 'htmlentities' or 'htmlspecialchars' before outputting\
+    \ it to the browser.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/craigk5n/webcalendar/commit/7906b4924c2dc3727c3540682f432ebbb93f810d
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

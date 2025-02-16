@@ -1,0 +1,20 @@
+rules:
+- id: vuln-sanic-9cf38a0a
+  pattern: __version__ = "22.6.0"
+  pattern-not: __version__ = "22.6.1"
+  languages:
+  - python
+  message: Detected outdated Sanic version 22.6.0 which may contain security vulnerabilities.
+    Upgrade to version 22.6.1 or later to ensure security fixes are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/sanic-org/sanic/commit/9cf38a0a837bedb441c6a9fe538932d58f6adfec
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://sanicframework.org/en/guide/release-notes/v22.6.html
+    technology:
+    - python

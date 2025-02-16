@@ -1,0 +1,24 @@
+rules:
+- id: vuln-teampass-cc6abc76
+  pattern: '$STRING = simplePurifier($($FIELD).val(), $BH, $BS, $BSF);
+
+    '
+  pattern-not: "$STRING = simplePurifier(\n  sanitizeDom($CURRENTSTRING),\n  $BH,\n\
+    \  $BS,\n  $BSF\n);\n"
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to missing input sanitization. Directly
+    using user input in simplePurifier without sanitization can lead to DOM-based
+    XSS. Use the sanitizeDom function to sanitize input before processing.
+  severity: ERROR
+  metadata:
+    source-url: github.com/nilsteampassnet/teampass/commit/cc6abc76aa46ed4a27736c1d2f21e432a5d54e6f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

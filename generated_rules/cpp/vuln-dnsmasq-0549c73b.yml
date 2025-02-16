@@ -1,0 +1,30 @@
+rules:
+- id: vuln-dnsmasq-0549c73b
+  pattern: 'unsigned char *do_rfc1035_name(unsigned char *$P, char *$SVAL);
+
+    '
+  pattern-not: 'unsigned char *do_rfc1035_name(unsigned char *$P, char *$SVAL, char
+    *$LIMIT);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `do_rfc1035_name` is missing a buffer limit parameter, which
+    can lead to buffer overflows. This vulnerability occurs because the function does
+    not check the bounds of the input string, potentially allowing an attacker to
+    overwrite adjacent memory. To fix this, add a `limit` parameter to ensure the
+    function does not exceed the intended buffer size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/InfrastructureServices/dnsmasq/commit/0549c73b7ea6b22a3c49beb4d432f185a81efcbc
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - cpp

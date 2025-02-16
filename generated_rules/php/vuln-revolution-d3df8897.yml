@@ -1,0 +1,32 @@
+rules:
+- id: vuln-revolution-d3df8897
+  pattern: '$success = $this->source->chmodContainer($this->getProperty(''dir''),$this->getProperty(''mode''));
+
+    '
+  pattern-not: '$dir = $this->getProperty(''dir'');
+
+    $dir = preg_replace(''/(\.+\/)+/'', '''', htmlspecialchars($dir));
+
+    $success = $this->source->chmodContainer($dir, $this->getProperty(''mode''));
+
+    '
+  languages:
+  - php
+  message: 'Directory traversal vulnerability detected. The code directly uses user
+    input without sanitization, which could allow an attacker to manipulate file paths.
+    Always sanitize user input by removing relative path components and encoding special
+    characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/modxcms/revolution/commit/d3df889703f712e71eb0cdca4f9b316731f51143
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

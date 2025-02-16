@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mybb-6212bc95
+  pattern: '$VAR = addslashes(htmlentities($MYBB->input[''editor'']));
+
+    '
+  pattern-not: '$VAR = preg_replace(''#([^a-zA-z0-9_-]+)#'', '''', $MYBB->input[''editor'']);
+
+    '
+  languages:
+  - php
+  message: "The use of `addslashes(htmlentities(...))` is insecure for sanitizing\
+    \ user input. \nThis can lead to security vulnerabilities such as XSS (Cross-Site\
+    \ Scripting) if the input is not properly sanitized. \nInstead, use `preg_replace`\
+    \ with a strict whitelist of allowed characters to ensure only safe input is processed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/6212bc954d72caf591e141ca36b8df964387bee8
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

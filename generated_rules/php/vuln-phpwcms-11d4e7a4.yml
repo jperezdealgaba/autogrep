@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpwcms-11d4e7a4
+  pattern: '$fileuploaderAllowedExtensions = $phpwcms[''allowed_upload_ext''];
+
+    '
+  pattern-not: '$fileuploaderAllowedExtensions = strtolower($phpwcms[''allowed_upload_ext'']);
+
+    '
+  languages:
+  - php
+  message: 'The file upload extension validation is case-sensitive, which could allow
+    attackers to bypass restrictions by using uppercase extensions. This can lead
+    to the upload of malicious files. Always convert extensions to lowercase before
+    validation to ensure consistent checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/slackero/phpwcms/commit/11d4e7a44f3be669744702d54d4a8d5d33d03231
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

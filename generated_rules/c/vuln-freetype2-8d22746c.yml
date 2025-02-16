@@ -1,0 +1,25 @@
+rules:
+- id: vuln-freetype2-8d22746c
+  pattern: '$VAR = $MASK->end_point;
+
+    '
+  pattern-not: "$VAR = $MASK->end_point > $GLYPH->num_points\n          ? $GLYPH->num_points\n\
+    \          : $MASK->end_point;\n"
+  languages:
+  - c
+  message: 'The code directly assigns `mask->end_point` to a variable without checking
+    if it exceeds `glyph->num_points`. This can lead to out-of-bounds access when
+    `mask->end_point` is greater than `glyph->num_points`, potentially causing memory
+    corruption or crashes. To fix this, ensure that `mask->end_point` is clamped to
+    `glyph->num_points` using a ternary operator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/8d22746c9e5af80ff4304aef440986403a5072e2
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp: 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-chamilo-lms-da61f287
+  pattern: '$name = trim($sname);
+
+    '
+  pattern-not: '$name = html_filter(trim($sname));
+
+    '
+  languages:
+  - php
+  message: 'The code directly assigns a trimmed value to a variable without proper
+    HTML filtering, which can lead to XSS vulnerabilities. Always use a function like
+    `html_filter` to sanitize user input before using it in the application.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/da61f287d2e508a5e940953b474051d0f21e91c0
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

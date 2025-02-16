@@ -1,0 +1,40 @@
+rules:
+- id: vuln-zeppelin-bea51d14
+  pattern: 'DocumentBuilderFactory $FACTORY = DocumentBuilderFactory.newInstance();
+
+    ...
+
+    $BUILDER = $FACTORY.newDocumentBuilder();
+
+    $BUILDER.parse($INPUT);
+
+    '
+  pattern-not: 'DocumentBuilderFactory $FACTORY = newDocumentBuilderFactory();
+
+    ...
+
+    $BUILDER = $FACTORY.newDocumentBuilder();
+
+    $BUILDER.parse($INPUT);
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure XML parsing configuration. Directly using DocumentBuilderFactory.newInstance()
+    without secure features enabled can lead to XXE (XML External Entity) vulnerabilities.
+    Use a secure factory method that disables external entities and DTDs, and enables
+    secure processing features.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/zeppelin/commit/bea51d1467d6103bd8fd68d6a27b14f954d98ec6
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology:
+    - java

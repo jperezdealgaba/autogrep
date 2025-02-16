@@ -1,0 +1,28 @@
+rules:
+- id: vuln-open5gs-2f8ae91b
+  pattern: 'const char *$VAR[argc];
+
+    '
+  pattern-not: 'const char *$VAR[argc+1];
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to insufficient
+    array size.
+
+    The array size should account for the null-terminator to prevent buffer overflows.
+
+    Always ensure the array size is at least argc+1 to safely store all arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/2f8ae91b0b9467f94f128090c88cae91bd73e008
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-wagtail-3c941136
+  pattern: 're.finditer($REGEX, $QUERY_STRING)
+
+    '
+  pattern-not: '$REGEX.finditer($QUERY_STRING)
+
+    '
+  languages:
+  - python
+  message: 'Detected use of re.finditer with a raw string regex pattern. This can
+    lead to inefficient handling of long queries and potential denial of service.
+    Use a compiled regex pattern instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/3c941136f79c48446e3858df46e5b668d7f83797
+    category: security
+    cwe: CWE-400
+    owasp: A1:2017-Injection
+    technology:
+    - python

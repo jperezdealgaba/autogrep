@@ -1,0 +1,30 @@
+rules:
+- id: vuln-wangle-5b3bceca
+  pattern: '$TERM != TerminatorType::NEWLINE && $B == ''\r'' && !$C.isAtEnd() && $C.read<char>()
+    == ''\n''
+
+    '
+  pattern-not: '$TERM != TerminatorType::NEWLINE && $B == ''\r'' && !$C.isAtEnd()
+    && *$C.peekBytes().data() == ''\n''
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly reads a character from the buffer without checking if
+    it is safe to do so, which can lead to undefined behavior or crashes. Instead
+    of using `read<char>()`, use `peekBytes().data()` to safely inspect the buffer
+    contents without modifying the buffer state.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebook/wangle/commit/5b3bceca875e4ea4ed9d14c20b20ce46c92c13c6
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - A1
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - cpp

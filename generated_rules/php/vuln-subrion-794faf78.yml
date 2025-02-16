@@ -1,0 +1,22 @@
+rules:
+- id: vuln-subrion-794faf78
+  pattern: IA_INCLUDES . 'phpimageworkshop/Fonts/arial.ttf'
+  pattern-not: IA_INCLUDES . 'PHPImageWorkshop/Fonts/Arial.ttf'
+  languages:
+  - php
+  message: 'The file path for the font is case-sensitive. Using incorrect case can
+    lead to file not found errors, especially on case-sensitive filesystems. This
+    can cause the application to fail when trying to load the font. Ensure the file
+    path matches the actual file system case.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/intelliants/subrion/commit/794faf7884c050b26abc2a49bb6e7ae3ea20add1
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - php

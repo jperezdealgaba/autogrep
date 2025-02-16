@@ -1,0 +1,20 @@
+rules:
+- id: vuln-core-15fc20ab
+  pattern: 'this.anyMatchFilter($WEBINTERCEPTOR, $REQUEST.getRequestURI())
+
+    '
+  pattern-not: 'this.anyMatchFilter($WEBINTERCEPTOR, $REQUEST.getRequestURI().toLowerCase())
+
+    '
+  languages:
+  - java
+  message: Potential case-sensitive path matching vulnerability. Ensure request URIs
+    are normalized to lowercase to prevent bypass attempts.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/15fc20ab95b8674078f3c32661721ff6a0871a6b
+    category: security
+    cwe: CWE-178
+    owasp: A1:2017-Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology: java

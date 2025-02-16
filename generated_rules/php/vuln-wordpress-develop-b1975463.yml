@@ -1,0 +1,31 @@
+rules:
+- id: vuln-wordpress-develop-b1975463
+  pattern: 'preg_split(''/:|&#0*58;|&#x0*3a;/i'', $VAR, 2)
+
+    '
+  pattern-not: 'preg_split(''/:|&#0*58;|&#x0*3a;|&colon;/i'', $VAR, 2)
+
+    '
+  languages:
+  - php
+  message: 'The use of a regular expression in preg_split that does not account for
+    all variations of colon characters can lead to security vulnerabilities. Specifically,
+    the pattern does not handle the HTML entity ''&colon;'', which could be exploited
+    to bypass input sanitization. This can result in Cross-Site Scripting (XSS) or
+    other injection attacks. To fix this, ensure that all possible representations
+    of colons are included in the regular expression pattern.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/WordPress/wordpress-develop/commit/b1975463dd995da19bb40d3fa0786498717e3c53
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

@@ -1,0 +1,39 @@
+rules:
+- id: vuln-xrdp-60864014
+  pattern: 'int $VAR = 0;
+
+    ...
+
+    $VAR = (int)($EXPR);
+
+    '
+  pattern-not: 'unsigned int $VAR = 0;
+
+    ...
+
+    $VAR = $EXPR;
+
+    '
+  languages:
+  - c
+  message: 'The use of signed integers for buffer size calculations can lead to integer
+    overflow or underflow vulnerabilities. This can be exploited by malicious callers
+    to manipulate memory operations beyond the intended buffer boundaries. To fix
+    this, use unsigned integers for buffer size calculations and add checks to ensure
+    the buffer size is reasonable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/60864014b733c10881c078048560858067fe5d0f
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-191
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/191.html
+    technology:
+    - c

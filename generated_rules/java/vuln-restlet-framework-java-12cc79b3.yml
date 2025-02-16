@@ -1,0 +1,20 @@
+rules:
+- id: vuln-restlet-framework-java-12cc79b3
+  pattern: "if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals($VAR)) {\n  ...\n}\n"
+  pattern-not: "if (VARIANT_OBJECT_XML_SUPPORTED && MediaType.APPLICATION_JAVA_OBJECT_XML.equals($VAR))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Unsafe XML deserialization detected. The usage of `XMLDecoder` with untrusted
+    sources can lead to malicious code execution. Ensure that XML deserialization
+    is controlled by the `VARIANT_OBJECT_XML_SUPPORTED` flag to mitigate this risk.
+  severity: ERROR
+  metadata:
+    source-url: github.com/restlet/restlet-framework-java/commit/12cc79b3953c7bd276e9f1cae2fbfdb9c1a6f070
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - http://blog.diniscruz.com/2013/08/using-xmldecoder-to-execute-server-side.html
+    technology:
+    - java

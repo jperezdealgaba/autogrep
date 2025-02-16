@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mautic-546045ff
+  pattern: '$fileName = $REQUEST->get(''filename'');
+
+    '
+  pattern-not: "$fileName = basename($REQUEST->get('filename'));\nif (!exif_imagetype($fileManager->getCompleteFilePath($fileName)))\
+    \ {\n    return $this->sendJsonResponse(['success'=> false]);\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses user input as a filename without sanitization,
+    which can lead to path traversal or file inclusion vulnerabilities. This is dangerous
+    because an attacker can manipulate the filename to access or upload files outside
+    the intended directory. To fix this, always sanitize user input using functions
+    like `basename()` and validate the file type before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mautic/mautic/commit/546045ff9c74dd8b3dac36c4ab3674380262c65a
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

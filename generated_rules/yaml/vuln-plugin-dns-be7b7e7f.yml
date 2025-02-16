@@ -1,0 +1,28 @@
+rules:
+- id: vuln-plugin-dns-be7b7e7f
+  pattern: 'uses: home-assistant/builder@2021.06.2
+
+    '
+  pattern-not: 'uses: home-assistant/builder@2021.07.0
+
+    '
+  languages:
+  - yaml
+  message: 'Detected use of an outdated version of the home-assistant/builder action
+    (2021.06.2). Using outdated versions can introduce security vulnerabilities and
+    bugs. Update to version 2021.07.0 or later to ensure you have the latest security
+    patches and features.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/home-assistant/plugin-dns/commit/be7b7e7fc4460ef31483882e743ba4e3b62fe8c4
+    category: security
+    cwe:
+    - 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/home-assistant/builder/releases
+    technology:
+    - yaml

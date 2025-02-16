@@ -1,0 +1,24 @@
+rules:
+- id: vuln-phoronix-test-suite-4f18296a
+  pattern: 'if(!PHOROMATIC_USER_IS_VIEWER && isset($PATH[0]) && $PATH[0] == ''delete'')
+
+    '
+  pattern-not: 'if(!PHOROMATIC_USER_IS_VIEWER && isset($PATH[0]) && $PATH[0] == ''delete''
+    && verify_submission_token())
+
+    '
+  languages:
+  - php
+  message: Missing CSRF token verification in sensitive operations. This vulnerability
+    allows attackers to perform unauthorized actions by forging requests. Always verify
+    CSRF tokens for sensitive operations.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phoronix-test-suite/phoronix-test-suite/commit/4f18296a1862fe54a4c58701a1f5ec6bd62a4d94
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

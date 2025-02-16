@@ -1,0 +1,30 @@
+rules:
+- id: vuln-metabase-08a6a5c4
+  pattern: '(annotate/aggregation-name (mbql.u/aggregation-at-index *query* $INDEX))
+
+    '
+  pattern-not: '(annotate/aggregation-name (mbql.u/aggregation-at-index *query* $INDEX
+    *nesting-level*))
+
+    '
+  languages:
+  - clojure
+  message: 'The aggregation query lacks proper nesting-level tracking, which can lead
+    to incorrect query processing in nested MBQL queries. This vulnerability was fixed
+    by introducing a dynamic nesting-level variable to track the depth of nesting.
+    To fix this, ensure that the `aggregation-at-index` function is called with the
+    `*nesting-level*` parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/metabase/metabase/commit/08a6a5c48611f953cacca950c4cbe42a80bb3430
+    category: security
+    cwe:
+    - CWE-1021
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://github.com/metabase/metabase/issues/30112
+    technology:
+    - clojure

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-simplesamlphp-f1e48528
+  pattern: "if ($as === NULL) {\n    ...\n}\n"
+  pattern-not: "$valid_sources = array_map(\n    function($src) {\n        return\
+    \ $src['source'];\n    },\n    $state[self::SOURCESID]\n);\nif ($as === NULL ||\
+    \ !in_array($authId, $valid_sources)) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Missing validation of authentication sources can lead to unauthorized
+    access. The code does not verify if the authentication source is valid, which
+    could allow attackers to bypass security checks. To fix this, ensure that the
+    authentication source is validated against a list of valid sources using `in_array()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/f1e485284dd428ab3cd9500c62e19c7c7234be9a
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

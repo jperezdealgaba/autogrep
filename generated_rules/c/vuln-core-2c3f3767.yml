@@ -1,0 +1,31 @@
+rules:
+- id: vuln-core-2c3f3767
+  pattern: 'tab[$IDX].value = $FUNC(auth_request->user, $ARGS);
+
+    '
+  pattern-not: '$USERNAME = auth_request->user != NULL ? auth_request->user : "";
+
+    tab[$IDX].value = $FUNC($USERNAME, $ARGS);
+
+    '
+  languages:
+  - c
+  message: 'Direct usage of auth_request->user without null-check can lead to null
+    pointer dereference.
+
+    This is dangerous as it can cause crashes or undefined behavior when auth_request->user
+    is NULL.
+
+    Fix by checking for NULL and using a fallback value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dovecot/core/commit/2c3f37672277b1f73f84722802aaa0ab1ab3e413
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

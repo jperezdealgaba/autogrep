@@ -1,0 +1,34 @@
+rules:
+- id: vuln-tcpreplay-46cf964a
+  pattern: 'packet += l2offset;
+
+    l2len -= l2offset;
+
+    pkt_len -= l2offset;
+
+    '
+  pattern-not: 'packet = data + l2len;
+
+    l2len = ...;
+
+    pkt_len = ...;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves incorrect pointer arithmetic when adjusting
+    packet data pointers using `l2offset`. This can lead to memory corruption or invalid
+    memory access. The patch removes the use of `l2offset` and directly uses `data
+    + l2len` for pointer adjustments, ensuring correct memory access. To fix this,
+    avoid using `l2offset` for pointer arithmetic and use `data + l2len` instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/46cf964a7db636da76abeebf10482acf6f682a87
+    category: security
+    cwe:
+    - CWE-119
+    owasp: 'A1: Injection'
+    technology:
+    - c

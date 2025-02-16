@@ -1,0 +1,35 @@
+rules:
+- id: vuln-calibre-web-4545f4a2
+  pattern: 'from cps.editbooks import editbook
+
+    ...
+
+    app.register_blueprint(editbook)
+
+    '
+  pattern-not: 'from cps.editbooks import EditBook
+
+    ...
+
+    app.register_blueprint(EditBook)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe blueprint registration using lowercase class name ''editbook''.
+
+    This can lead to potential security issues due to improper module imports and
+
+    blueprint registration. Always use proper PascalCase for class names and ensure
+
+    the correct module is imported and registered.
+
+    '
+  severity: ERROR
+  metadata:
+    category: security
+    cwe: CWE-710
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    source-url: github.com/janeczku/calibre-web/commit/4545f4a20d9ff90b99bbd4e3e34b6de4441d6367
+    technology:
+    - python

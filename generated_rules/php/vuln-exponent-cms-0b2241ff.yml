@@ -1,0 +1,27 @@
+rules:
+- id: vuln-exponent-cms-0b2241ff
+  pattern: 'new elFinderConnector(new elFinderExponent($opts), true)
+
+    '
+  pattern-not: 'new elFinderConnector(new elFinderExponent($opts))
+
+    '
+  languages:
+  - php
+  message: 'The use of `true` as the second argument in `elFinderConnector` can lead
+    to security vulnerabilities by enabling unsafe features. This can expose the application
+    to potential attacks. Remove the `true` argument to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/0b2241ff1c7d86376fa260c5d4c1714f6cef9c0f
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://github.com/exponentcms/exponent-cms/commit/0b2241ff1c7d86376fa260c5d4c1714f6cef9c0f
+    technology:
+    - php

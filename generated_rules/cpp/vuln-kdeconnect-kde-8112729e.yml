@@ -1,0 +1,24 @@
+rules:
+- id: vuln-kdeconnect-kde-8112729e
+  pattern: "if ($SOCKET->bytesAvailable() > 0) {\n  QMetaObject::invokeMethod($THIS,\
+    \ \"dataReceived\", Qt::QueuedConnection);\n  return;\n}\n"
+  pattern-not: "if ($SOCKET->bytesAvailable() > 0) {\n  $SOCKET->readAll();\n  QMetaObject::invokeMethod($THIS,\
+    \ \"dataReceived\", Qt::QueuedConnection);\n  return;\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly invokes `dataReceived` without ensuring all data is
+    read from the socket. This can lead to data loss or incomplete processing if `readyRead`
+    is not emitted again. To fix this, ensure all available data is read before invoking
+    `dataReceived`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/KDE/kdeconnect-kde/commit/8112729eb0f13e6947984416118531078e65580d
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - cpp

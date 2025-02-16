@@ -1,0 +1,24 @@
+rules:
+- id: vuln-dataease-4128adf5
+  pattern: "if ($PARAMS.toLowerCase().contains($ILLEGAL_PARAM.toLowerCase())) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($PARAMS.toLowerCase().contains($ILLEGAL_PARAM.toLowerCase()) ||\
+    \ URLDecoder.decode($PARAMS).contains($ILLEGAL_PARAM.toLowerCase())) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: 'Potential security vulnerability detected. The code checks for illegal
+    parameters in a case-insensitive manner but does not account for URL-encoded values.
+    This could allow attackers to bypass security checks by encoding parameters. To
+    fix this, decode the parameters before checking for illegal values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dataease/dataease/commit/4128adf5fc4592b55fa1722a53b178967545d46a
+    category: security
+    cwe: CWE-20
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology: java

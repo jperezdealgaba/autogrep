@@ -1,0 +1,24 @@
+rules:
+- id: vuln-librecad-8604f171
+  pattern: "if (9 != $CODE) {\n    DRW_DBG(\"\\nnot a variable in header, code: \"\
+    );\n    DRW_DBG($CODE);\n    DRW_DBG(\"\\n\");\n    return false;\n}\n"
+  pattern-not: "if (NULL == $CURR && 9 != $CODE) {\n    DRW_DBG(\"invalid header code:\
+    \ \");\n    DRW_DBG($CODE);\n    DRW_DBG(\"\\n\");\n    return;\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a missing NULL check before validating header code. This can
+    lead to undefined behavior if the pointer is invalid. The fix ensures that the
+    pointer is checked for NULL before validating the code, preventing potential crashes
+    or security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibreCAD/LibreCAD/commit/8604f171ee380f294102da6154adf77ab754d403
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-jss-4c639ed5
+  pattern: 'private static int JSS_PATCH_VERSION = 7;
+
+    '
+  pattern-not: 'private static int JSS_PATCH_VERSION = 8;
+
+    '
+  pattern-inside: "class $CLASS {\n    ...\n}\n"
+  languages:
+  - java
+  message: Outdated JSS version detected. Using JSS_PATCH_VERSION = 7 may expose the
+    application to known vulnerabilities. Update to JSS_PATCH_VERSION = 8 or higher.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dogtagpki/jss/commit/4c639ed5b59ea7648ac85b8619e4b3cd38e5bdc0
+    category: security
+    cwe: CWE-937
+    owasp: OWASP-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/937.html
+    - https://owasp.org/www-community/vulnerabilities/Using_Components_with_Known_Vulnerabilities
+    technology: java

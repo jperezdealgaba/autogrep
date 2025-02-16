@@ -1,0 +1,27 @@
+rules:
+- id: vuln-basercms-94cbfab7
+  pattern: '$this->BcBaser->link($this->BcBaser->siteConfig[''formal_name''], $URL)
+
+    '
+  pattern-not: '$this->BcBaser->link($this->BcBaser->siteConfig[''formal_name''],
+    $URL, [''escape'' => true])
+
+    '
+  languages:
+  - php
+  message: 'The link function is missing the ''escape'' option, which can lead to
+    cross-site scripting (XSS) vulnerabilities. Always use the ''escape'' option to
+    ensure that user-controlled data is properly escaped before being rendered in
+    HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/94cbfab74c9fd6d04492597a1a684674c3c0e30f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

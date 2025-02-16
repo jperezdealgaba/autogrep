@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mautic-0f21a3aa
+  pattern: '$string = ($textOnly) ? $val : ''<a href="''.$val.''" target="_new">''.$val.''</a>'';
+
+    '
+  pattern-not: '$url = InputHelper::url($val);
+
+    $string = ($textOnly) ? $url : ''<a href="''.$url.''" target="_blank">''.$url.''</a>'';
+
+    '
+  languages:
+  - php
+  message: 'Detected unvalidated URL being used in an HTML anchor tag, which can lead
+    to XSS vulnerabilities.
+
+    The URL should be sanitized using InputHelper::url() to prevent injection of malicious
+    scripts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mautic/mautic/commit/0f21a3aa9c896788e1986fae0d7f166fc7a14c30
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

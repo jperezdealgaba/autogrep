@@ -1,0 +1,28 @@
+rules:
+- id: vuln-fuel-cms-10b7583a
+  pattern: '$fields[] = new Data_table_field($key, $val, ...);
+
+    '
+  pattern-not: '$fields[] = new Data_table_field($key, xss_clean($val), ...);
+
+    '
+  languages:
+  - php
+  message: 'Potential XSS vulnerability detected. User input is being passed directly
+    to Data_table_field without proper sanitization, which could allow attackers to
+    inject malicious scripts. Use xss_clean() or equivalent sanitization function
+    to prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/10b7583a2b7176ec5553c8ddab3c870dd485efc0
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

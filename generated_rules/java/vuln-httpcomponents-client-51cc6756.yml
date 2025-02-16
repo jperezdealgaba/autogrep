@@ -1,0 +1,37 @@
+rules:
+- id: vuln-httpcomponents-client-51cc6756
+  pattern: "final StringTokenizer $ST = new StringTokenizer($SUBJECT_PRINCIPAL, \"\
+    ,+\");\nwhile($ST.hasMoreTokens()) {\n    final String $TOK = $ST.nextToken().trim();\n\
+    \    if ($TOK.length() > 3) {\n        if ($TOK.substring(0, 3).equalsIgnoreCase(\"\
+    CN=\")) {\n            $CN_LIST.add($TOK.substring(3));\n        }\n    }\n}\n"
+  pattern-not: "try {\n    final LdapName $SUBJECT_DN = new LdapName($SUBJECT_PRINCIPAL);\n\
+    \    final List<Rdn> $RDNS = $SUBJECT_DN.getRdns();\n    for (int $I = $RDNS.size()\
+    \ - 1; $I >= 0; $I--) {\n        final Rdn $RDS = $RDNS.get($I);\n        final\
+    \ Attributes $ATTRIBUTES = $RDS.toAttributes();\n        final Attribute $CN =\
+    \ $ATTRIBUTES.get(\"cn\");\n        if ($CN != null) {\n            try {\n  \
+    \              final Object $VALUE = $CN.get();\n                if ($VALUE !=\
+    \ null) {\n                    $CNS.add($VALUE.toString());\n                }\n\
+    \            } catch (NamingException $IGNORE) {\n            }\n        }\n \
+    \   }\n} catch (InvalidNameException $E) {\n    throw new SSLException($SUBJECT_PRINCIPAL\
+    \ + \" is not a valid X500 distinguished name\");\n}\n"
+  languages:
+  - java
+  message: 'Insecure parsing of X.500 distinguished names detected. The old implementation
+    uses StringTokenizer to parse CN (Common Name) fields, which is error-prone and
+    can lead to incorrect parsing of certificate subjects. This can result in improper
+    validation of SSL/TLS certificates, potentially allowing man-in-the-middle attacks.
+    The fix uses LdapName to properly parse the distinguished name according to RFC
+    2253. Replace the vulnerable code with the secure implementation using LdapName
+    and Rdn classes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/httpcomponents-client/commit/51cc67567765d67f878f0dcef61b5ded454d3122
+    category: security
+    cwe:
+    - 'CWE-297: Improper Validation of Certificate with Host Mismatch'
+    owasp:
+    - A2:2017 - Broken Authentication
+    technology:
+    - java

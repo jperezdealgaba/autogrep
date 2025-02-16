@@ -1,0 +1,27 @@
+rules:
+- id: vuln-luci-bc17ef67
+  pattern: 'SimpleForm($FORM, translatef($FORMAT, http.formvalue($JOIN)))
+
+    '
+  pattern-not: 'SimpleForm($FORM, translatef($FORMAT, util.pcdata(http.formvalue($JOIN))))
+
+    '
+  languages:
+  - lua
+  message: 'The code directly uses user input from `http.formvalue()` without proper
+    sanitization, which can lead to XSS vulnerabilities. Always sanitize user input
+    using `util.pcdata()` to prevent malicious script injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openwrt/luci/commit/bc17ef673f734ea8e7e696ba5735588da9111dcd
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - lua

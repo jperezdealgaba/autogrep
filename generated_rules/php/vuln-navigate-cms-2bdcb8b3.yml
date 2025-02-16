@@ -1,0 +1,27 @@
+rules:
+- id: vuln-navigate-cms-2bdcb8b3
+  pattern: "if(!empty($_REQUEST['id']) && file_exists($targetDir.'/'.$_REQUEST['id']))\n\
+    {\n    file_put_contents($targetDir.'/'.$_REQUEST['id'], $image_data);\n}\n"
+  pattern-not: "if(!empty($_REQUEST['id']) && file_exists($targetDir.'/'.$_REQUEST['id']))\n\
+    {\n    file_put_contents($targetDir.'/'.$_REQUEST['id'], $image_data);\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses user-controlled input (`$_REQUEST[''id'']`) in
+    a file path without proper validation or sanitization, which can lead to arbitrary
+    file write vulnerabilities. This could allow an attacker to overwrite any file
+    accessible by the web server, potentially leading to remote code execution or
+    data corruption. To fix this, ensure that the `id` parameter is validated and
+    sanitized before using it in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NavigateCMS/Navigate-CMS/commit/2bdcb8b3c5bb23851a2115db96585f1ac8cb2d1e
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

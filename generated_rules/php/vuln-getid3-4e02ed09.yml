@@ -1,0 +1,31 @@
+rules:
+- id: vuln-getid3-4e02ed09
+  pattern: "if (isset($ThisFileInfo['tags']['id3v1'])) {\n  $ID3v1 = $ThisFileInfo['tags']['id3v1'];\n\
+    \  unset($ThisFileInfo['tags']['id3v1']);\n  $ThisFileInfo['tags']['id3v1'] =\
+    \ $ID3v1;\n  unset($ID3v1);\n}\n"
+  pattern-not: "$processLastTagTypes = array('id3v1','riff');\nforeach ($processLastTagTypes\
+    \ as $processLastTagType) {\n  if (isset($ThisFileInfo['tags'][$processLastTagType]))\
+    \ {\n    $temp = $ThisFileInfo['tags'][$processLastTagType];\n    unset($ThisFileInfo['tags'][$processLastTagType]);\n\
+    \    $ThisFileInfo['tags'][$processLastTagType] = $temp;\n    unset($temp);\n\
+    \  }\n}\n"
+  languages:
+  - php
+  message: 'The code directly handles the ''id3v1'' tag without considering other
+    potentially problematic tag types. This can lead to incorrect tag processing and
+    poor user experience. The fix involves processing problematic tag types last to
+    ensure the most correct entries are prioritized. Use the updated approach to handle
+    multiple tag types in a safer and more user-friendly manner.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/JamesHeinrich/getID3/commit/4e02ed09c081a606c734c6b27d1b504fecfe402f
+    category: security
+    cwe:
+    - CWE-172
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://github.com/JamesHeinrich/getID3/issues/338
+    technology:
+    - php

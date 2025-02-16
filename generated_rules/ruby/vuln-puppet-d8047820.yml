@@ -1,0 +1,26 @@
+rules:
+- id: vuln-puppet-d8047820
+  pattern: '$HOST.gsub("..", ".")
+
+    '
+  pattern-not: "if $HOST =~ Regexp.union(/[#{SEPARATOR}]/, /\\A\\.\\.?\\Z/)\n  raise\
+    \ ArgumentError, \"Invalid node name #{$HOST.inspect}\"\nend\n"
+  languages:
+  - ruby
+  message: "Detected insecure hostname sanitization that could lead to directory traversal.\
+    \ \nThe use of `gsub(\"..\", \".\")` is insufficient to prevent path traversal\
+    \ attacks. \nReplace with proper validation using a regex pattern to reject invalid\
+    \ node names containing path separators or sequences like '..' and '.'.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/d80478208d79a3e6d6cb1fbc525e24817fe8c4c6
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/73.html
+    technology:
+    - ruby

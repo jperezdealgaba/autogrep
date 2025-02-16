@@ -1,0 +1,31 @@
+rules:
+- id: vuln-exponent-cms-9eeed1e8
+  pattern: 'if((isset($this->params[''id'']))) $record = new address(intval($this->params[''id'']));
+
+    else $record = null;
+
+    '
+  pattern-not: "global $user;\n$id = !empty($this->params['id']) ? $this->params['id']\
+    \ : null;\nif ($user->isAdmin() || ($user->id == $id)) {\n    $record = new address($id);\n\
+    } else {\n    flash('error', gt('You do not have the proper permissions to edit\
+    \ this address'));\n    expHistory::back();\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses user-provided input (`$this->params[''id'']`) without
+    proper authorization checks, potentially allowing unauthorized access to edit
+    or delete records. This can lead to privilege escalation or data manipulation
+    by unauthorized users. Ensure that any operation involving user input validates
+    the user''s permissions, typically by checking if the user is an admin or if the
+    user is modifying their own data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/9eeed1e82fb9e6d0d41e7dd10672df48045a9b59
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

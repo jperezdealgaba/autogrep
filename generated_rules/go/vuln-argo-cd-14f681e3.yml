@@ -1,0 +1,28 @@
+rules:
+- id: vuln-argo-cd-14f681e3
+  pattern: '$CLIENT.GetIndex($NOCACHE)
+
+    '
+  pattern-not: '$CLIENT.GetIndex($NOCACHE, $MAXINDEXSIZE)
+
+    '
+  languages:
+  - go
+  message: 'The Helm registry index file size is not limited, which can lead to resource
+    exhaustion attacks. An attacker could send a large index file, causing excessive
+    memory consumption or crashes. To fix this, always specify a maximum size when
+    calling GetIndex using the maxIndexSize parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/14f681e3ee7c38731943b98f92277e88a3db109d
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - A1:2021-Broken Access Control
+    references:
+    - https://helm.sh/docs/topics/registries/
+    technology:
+    - go

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mediawiki-0eaab2ef
+  pattern: "$BE->streamFile(\n  [ 'src' => $FILENAME ],\n  [ 'Cache-Control: private',\
+    \ 'Vary: Cookie' ]\n)\n"
+  pattern-not: "$BE->streamFile([\n  'src' => $FILENAME,\n  'headers' => [ 'Cache-Control:\
+    \ private', 'Vary: Cookie' ]\n])\n"
+  languages:
+  - php
+  message: 'Detected insecure usage of `streamFile` without headers being explicitly
+    passed in an associative array.
+
+    This could lead to improper handling of HTTP headers, potentially causing security
+    issues such as cache poisoning.
+
+    To fix this, ensure headers are passed as part of an associative array within
+    the `streamFile` method.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/0eaab2efa5920a8d6f7cb47c0b3a4b6cf422a84a
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A06:2021 - Vulnerable and Outdated Components
+    technology:
+    - php

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-markdown-it-89c86201
+  pattern: 'var cdata = /<!\[CDATA\[([^\]]+|\][^\]]|\]\][^>])*\]\]>/;
+
+    '
+  pattern-not: 'var cdata = /<!\[CDATA\[[\s\S]*?\]\]>/;
+
+    '
+  languages:
+  - javascript
+  message: "Insecure CDATA regex pattern that could lead to incorrect parsing or security\
+    \ vulnerabilities. \nThe previous pattern could fail to match certain valid CDATA\
+    \ sections or improperly handle nested CDATA. \nUse the updated pattern that correctly\
+    \ matches CDATA sections with any content.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/markdown-it/markdown-it/commit/89c8620157d6e38f9872811620d25138fc9d1b0d
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - A6:2021-Vulnerable and Outdated Components
+    technology:
+    - javascript

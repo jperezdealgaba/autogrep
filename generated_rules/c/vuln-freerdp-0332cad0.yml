@@ -1,0 +1,27 @@
+rules:
+- id: vuln-freerdp-0332cad0
+  pattern: 'WLog_Print($LOG, $LEVEL, "%s Update Data PDU", UPDATE_TYPE_STRINGS[$UPDATETYPE]);
+
+    '
+  pattern-not: 'WLog_Print($LOG, $LEVEL, "%s Update Data PDU", update_type_to_string($UPDATETYPE));
+
+    '
+  languages:
+  - c
+  message: 'The use of a static array `UPDATE_TYPE_STRINGS` for logging update types
+    is dangerous because it can lead to out-of-bounds access if the `updateType` value
+    is outside the array bounds. This could result in undefined behavior or crashes.
+    Use the function `update_type_to_string` instead, which safely handles all possible
+    values of `updateType`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FreeRDP/FreeRDP/commit/0332cad015fdf7fac7e5c6863484f18a554e0fcf
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

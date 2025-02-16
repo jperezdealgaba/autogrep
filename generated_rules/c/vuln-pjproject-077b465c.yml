@@ -1,0 +1,30 @@
+rules:
+- id: vuln-pjproject-077b465c
+  pattern: "int $CHR = *$SCANNER->curptr;\nif (!$CHR) {\n  ...\n}\n++$SCANNER->curptr;\n\
+    if (PJ_SCAN_IS_PROBABLY_SPACE(*$SCANNER->curptr) && $SCANNER->skip_ws) {\n  ...\n\
+    }\n"
+  pattern-not: "register char *$S = $SCANNER->curptr;\nint $CHR;\nif ($S >= $SCANNER->end\
+    \ || !*$S) {\n  ...\n}\n$CHR = *$S;\n++$S;\n$SCANNER->curptr = $S;\nif (PJ_SCAN_CHECK_EOF($S)\
+    \ && PJ_SCAN_IS_PROBABLY_SPACE(*$S) && $SCANNER->skip_ws) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly dereferences the scanner pointer without checking if
+    it has reached the end of the buffer. This can lead to out-of-bounds memory access
+    and potential security vulnerabilities. The fix introduces proper bounds checking
+    by comparing the current pointer with the end of the buffer and verifying the
+    character value. Always ensure pointer bounds are checked before dereferencing
+    to prevent memory corruption or crashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pjsip/pjproject/commit/077b465c33f0aec05a49cd2ca456f9a1b112e896
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

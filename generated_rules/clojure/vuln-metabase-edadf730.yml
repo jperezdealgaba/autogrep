@@ -1,0 +1,34 @@
+rules:
+- id: vuln-metabase-edadf730
+  pattern: "(when-let [{user-id :id, google-auth? :google_auth, is-active? :is_active}\n\
+    \           (db/select-one [User :id :google_auth :is_active] :%lower.email (u/lower-case-en\
+    \ $EMAIL))]\n  (let [reset-token        (user/set-password-reset-token! user-id)\n\
+    \        password-reset-url (str (public-settings/site-url) \"/auth/reset_password/\"\
+    \ reset-token)]\n    (log/info password-reset-url)\n    (messages/send-password-reset-email!\
+    \ $EMAIL google-auth? password-reset-url is-active?)))\n"
+  pattern-not: "(when-let [{user-id :id, google-auth? :google_auth, ldap-auth? :ldap_auth,\
+    \ sso-source :sso_source, is-active? :is_active}\n           (db/select-one [User\
+    \ :id :google_auth :ldap_auth :sso_source :is_active] :%lower.email (u/lower-case-en\
+    \ $EMAIL))]\n  (if (or google-auth? ldap-auth? sso-source)\n    (messages/send-password-reset-email!\
+    \ $EMAIL google-auth? (boolean (or ldap-auth? sso-source)) nil is-active?)\n \
+    \   (let [reset-token        (user/set-password-reset-token! user-id)\n      \
+    \    password-reset-url (str (public-settings/site-url) \"/auth/reset_password/\"\
+    \ reset-token)]\n      (log/info password-reset-url)\n      (messages/send-password-reset-email!\
+    \ $EMAIL false false password-reset-url is-active?))))\n"
+  languages:
+  - clojure
+  message: "The code does not check if the user is authenticated via SSO before generating\
+    \ a password reset token. \nThis could allow users to reset passwords even if\
+    \ they use SSO for authentication, potentially bypassing SSO security controls.\n\
+    To fix this, ensure that SSO authentication is checked before generating a password\
+    \ reset token.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/metabase/metabase/commit/edadf7303c3b068609f57ca073e67885d5c98730
+    category: security
+    cwe:
+    - 'CWE-287: Improper Authentication'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - clojure

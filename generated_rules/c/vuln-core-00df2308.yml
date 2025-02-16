@@ -1,0 +1,24 @@
+rules:
+- id: vuln-core-00df2308
+  pattern: "if ($VAR != NULL) {\n  str_printfa($CMD, \"\\ttag=%s\", $VAR);\n}\n"
+  pattern-not: "if ($VAR != NULL) {\n  str_append($CMD, \"\\ttag=\");\n  str_append_tabescaped($CMD,\
+    \ $VAR);\n}\n"
+  languages:
+  - c
+  message: "Detected use of str_printfa without proper escaping, which can lead to\
+    \ injection vulnerabilities. \nThe tag value should be properly escaped using\
+    \ str_append_tabescaped to prevent any malicious input from being interpreted\
+    \ as part of the command.\nTo fix this, replace str_printfa with str_append and\
+    \ str_append_tabescaped for secure string handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dovecot/core/commit/00df2308b0733e810824545183d73276c416cdd3
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/116.html
+    technology:
+    - c

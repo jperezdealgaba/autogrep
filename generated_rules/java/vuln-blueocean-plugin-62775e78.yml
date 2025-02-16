@@ -1,0 +1,23 @@
+rules:
+- id: vuln-blueocean-plugin-62775e78
+  pattern: 'Export.toJson($OBJECT)
+
+    '
+  pattern-not: 'Export.toJson($OBJECT, true)
+
+    '
+  languages:
+  - java
+  message: 'Potential Cross-Site Scripting (XSS) vulnerability detected. The JSON
+    output is not HTML encoded, which could allow malicious scripts to be injected.
+    Use the `toJson` method with `htmlEncoded` set to `true` to ensure proper HTML
+    escaping.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/blueocean-plugin/commit/62775e78532b756826bb237775b64a5052624b57
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    technology: java

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-puppet-e01e61e8
+  pattern: '{ :acl => "/report", :method => :save, :authenticated => true }
+
+    '
+  pattern-not: '{ :acl => "~ ^\/report\/([^\/]+)$", :method => :save, :allow => ''$1'',
+    :authenticated => true }
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a vulnerability similar to CVE-2013-2275 in Puppet. The ACL configuration
+    for report submission does not properly restrict access to the node matching the
+    certname, potentially allowing unauthorized report submissions. To fix this, update
+    the ACL pattern to include a regex that matches only the specific node and add
+    the `allow` parameter to enforce the restriction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/e01e61e8909ec3ad4c873905a4dd9b952e3f4009
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A01: Broken Access Control'
+    references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2013-2275
+    technology:
+    - ruby

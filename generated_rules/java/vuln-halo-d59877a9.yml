@@ -1,0 +1,21 @@
+rules:
+- id: vuln-halo-d59877a9
+  pattern: "if ($PATH.startsWith($PARENT_PATH.normalize())) {\n  ...\n}\n"
+  pattern-not: "if ($PATH.normalize().startsWith($PARENT_PATH)) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential directory traversal vulnerability. The path check is vulnerable
+    because it normalizes only the parent path, allowing an attacker to bypass the
+    check by using path traversal sequences. Normalize the path being checked instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/halo-dev/halo/commit/d59877a9ce82b53ec27c7f012a5703280e2cfd4f
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java

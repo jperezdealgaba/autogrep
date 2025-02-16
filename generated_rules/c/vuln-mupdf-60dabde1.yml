@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mupdf-60dabde1
+  pattern: 'float $SAMPLES[32];
+
+    '
+  pattern-not: 'float $SAMPLES[FZ_MAX_COLORS];
+
+    '
+  languages:
+  - c
+  message: 'The use of a fixed-size array for color samples can lead to buffer overflows
+    if the number of color components exceeds the array size. This vulnerability can
+    be exploited to execute arbitrary code or cause a denial of service. Replace the
+    fixed-size array with a dynamically sized array or use the FZ_MAX_COLORS constant
+    to ensure the array can handle the maximum number of color components.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/60dabde18d7fe12b19da8b509bdfee9cc886aafc
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

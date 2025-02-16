@@ -1,0 +1,30 @@
+rules:
+- id: vuln-symphony-2-651e1500
+  pattern: '$settings = $_POST[''settings''];
+
+    '
+  pattern-not: '$settings = filter_var_array($_POST[''settings''], FILTER_SANITIZE_STRING);
+
+    '
+  languages:
+  - php
+  message: 'The code directly assigns user input from $_POST[''settings''] to a variable
+    without sanitization, which can lead to security vulnerabilities such as XSS or
+    code injection. Always sanitize user input using functions like filter_var_array()
+    with appropriate filters to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symphonycms/symphony-2/commit/651e150091c61fb60ad1dff2bc2166185a83d9d6
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-89
+    owasp:
+    - A1:2017-Injection
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://www.php.net/manual/en/function.filter-var-array.php
+    technology:
+    - php

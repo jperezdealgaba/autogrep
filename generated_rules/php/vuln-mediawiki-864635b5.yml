@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mediawiki-864635b5
+  pattern: '$VAR = $THIS->specialPage->getLanguage()->userTimeAndDate($TIMESTAMP,
+    $THIS->specialPage->getUser())
+
+    '
+  pattern-not: '$VAR = htmlspecialchars($THIS->specialPage->getLanguage()->userTimeAndDate($TIMESTAMP,
+    $THIS->specialPage->getUser()))
+
+    '
+  languages:
+  - php
+  message: 'The output of `userTimeAndDate` is not properly escaped, which can lead
+    to XSS vulnerabilities. Always use `htmlspecialchars` to escape user-controlled
+    data before rendering it in HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/864635b5debb80d5ac00a8b647eb547a829ea0f8
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

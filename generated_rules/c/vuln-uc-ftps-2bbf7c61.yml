@@ -1,0 +1,23 @@
+rules:
+- id: vuln-uc-ftps-2bbf7c61
+  pattern: "while (($DIG == DEF_NO) && ($ARGS != 0)) {\n  ...\n}\n"
+  pattern-not: "while (($DIG == DEF_NO) && ($ARGS != 0) && (*$ARGS != 0)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potentially unsafe loop condition that does not check if the
+    string is null-terminated. This could lead to out-of-bounds memory access or infinite
+    loops. Always ensure that the string is null-terminated by adding a check like
+    `*$ARGS != 0` in the condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weston-embedded/uC-FTPs/commit/2bbf7c6111766f626923ca5acd29ea827ea5128f
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-125
+    owasp: A1:2017-Injection
+    technology:
+    - c

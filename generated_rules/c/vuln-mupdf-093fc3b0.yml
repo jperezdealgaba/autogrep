@@ -1,0 +1,36 @@
+rules:
+- id: vuln-mupdf-093fc3b0
+  pattern: 'assert($NODE->left == $EMPTY || $TREE[$NODE->left].parent == $NUM);
+
+    assert($NODE->right == $EMPTY || $TREE[$NODE->right].parent == $NUM);
+
+    '
+  pattern-not: "assert(!$NODE->many || $NODE->low == $NODE->high);\nassert($NODE->low\
+    \ <= $NODE->high);\nassert(($NODE->left == $EMPTY) || ($TREE[$NODE->left].parent\
+    \ == $NUM &&\n    $TREE[$NODE->left].high < $NODE->low));\nassert($NODE->right\
+    \ == $EMPTY || ($TREE[$NODE->right].parent == $NUM &&\n    $NODE->high < $TREE[$NODE->right].low));\n"
+  languages:
+  - c
+  message: 'The code contains insufficient assertion checks in a tree traversal operation,
+
+    which could lead to incorrect tree structure validation and potential memory
+
+    corruption or undefined behavior. The original assertions only checked the parent
+
+    relationship but failed to validate the ordering constraints between nodes. The
+
+    fix adds additional checks to ensure proper tree structure by validating the
+
+    ''low'' and ''high'' values of nodes. To fix this, ensure all necessary tree
+
+    structure invariants are properly validated in assertions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/093fc3b098dc5fadef5d8ad4b225db9fb124758b
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    technology:
+    - c

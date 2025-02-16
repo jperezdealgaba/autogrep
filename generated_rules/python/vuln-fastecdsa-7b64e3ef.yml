@@ -1,0 +1,23 @@
+rules:
+- id: vuln-fastecdsa-7b64e3ef
+  pattern: 'release = ''2.1.1''
+
+    '
+  pattern-not: 'release = ''2.1.2''
+
+    '
+  languages:
+  - python
+  message: Outdated version detected. Using an outdated version of the library can
+    expose the application to known vulnerabilities. Update to the latest version
+    to ensure security fixes are applied.
+  severity: WARNING
+  metadata:
+    source-url: github.com/AntonKueltz/fastecdsa/commit/7b64e3efaa806b4daaf73bb5172af3581812f8de
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - python

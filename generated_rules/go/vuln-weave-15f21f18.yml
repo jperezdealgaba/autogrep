@@ -1,0 +1,25 @@
+rules:
+- id: vuln-weave-15f21f18
+  pattern: "func $FUNC($VAR1 string, $VAR2 int) string {\n  return filepath.Join($VAR1,\
+    \ fmt.Sprintf(\"/proc/%d/ns/net\", $VAR2))\n}\n"
+  pattern-not: "func $FUNC($VAR1 string, $VAR2 int) string {\n  return filepath.Join($VAR1,\
+    \ fmt.Sprint($VAR2), \"/ns/net\")\n}\n"
+  languages:
+  - go
+  message: 'The function constructs a path to a network namespace using a hardcoded
+    "/proc" prefix, which can lead to incorrect paths if the root directory is not
+    "/". This can cause issues in containerized environments where the host''s /proc
+    might be mounted elsewhere. Use a configurable path to /proc instead of hardcoding
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weaveworks/weave/commit/15f21f1899060f7716c70a8555a084e836f39a60
+    category: security
+    cwe:
+    - CWE-73
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - go

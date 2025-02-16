@@ -1,0 +1,36 @@
+rules:
+- id: vuln-openj9-b212891e
+  pattern: 'TR_VirtualGuardSelection * $GUARD = new (comp()->trHeapMemory()) TR_VirtualGuardSelection(TR_InterfaceGuard,
+    TR_MethodTest);
+
+    addTarget(comp()->trMemory(), $INLINER, $GUARD, $CALLEE, $RECEIVER_CLASS, $HEAP_ALLOC);
+
+    '
+  pattern-not: 'TR_VirtualGuardSelection * $GUARD = new (comp()->trHeapMemory()) TR_VirtualGuardSelection($KIND,
+    TR_MethodTest);
+
+    addTarget(comp()->trMemory(), $INLINER, $GUARD, $CALLEE, $RECEIVER_CLASS, $HEAP_ALLOC);
+
+    '
+  languages:
+  - cpp
+  message: "The use of TR_InterfaceGuard without proper interface checks can lead\
+    \ to security vulnerabilities. \nThis is dangerous because it may allow incorrect\
+    \ method calls on objects that do not implement the expected interface, potentially\
+    \ leading to undefined behavior or security exploits. \nThe fix ensures that profiled\
+    \ guards are used when the receiver class is not explicitly known to implement\
+    \ the interface, and interface guards are only used when the receiver class is\
+    \ known to implement the interface.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/eclipse-openj9/openj9/commit/b212891e3a58fc4f5c229fb32def147c4ba0bd32
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - cpp

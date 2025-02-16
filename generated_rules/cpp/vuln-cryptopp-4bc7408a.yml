@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cryptopp-4bc7408a
+  pattern: 'T m_array[$S];
+
+    '
+  pattern-not: 'CRYPTOPP_ALIGN_DATA(8) T m_array[$S];
+
+    '
+  languages:
+  - cpp
+  message: "Detected unaligned array declaration which may cause memory alignment\
+    \ issues on some toolchains. \nThis can lead to performance degradation or crashes,\
+    \ especially for 64-bit elements requiring 8-byte alignment. \nEnsure proper alignment\
+    \ by using CRYPTOPP_ALIGN_DATA(8) for array declarations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/weidai11/cryptopp/commit/4bc7408ae2aefac9357c16809541ecbe225b7f3a
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/weidai11/cryptopp/issues/992
+    technology:
+    - cpp

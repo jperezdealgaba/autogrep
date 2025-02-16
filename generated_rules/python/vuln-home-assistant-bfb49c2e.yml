@@ -1,0 +1,17 @@
+rules:
+- id: vuln-home-assistant-bfb49c2e
+  pattern: "$STR += \" \xB7 E{1}\".format($VAR)"
+  pattern-not: "$STR += \" \xB7 E{0}\".format($VAR)"
+  languages:
+  - python
+  message: Detected incorrect string formatting with incorrect index. Using '{1}'
+    instead of '{0}' can lead to incorrect string output or errors. Always use '{0}'
+    to format the first argument.
+  severity: ERROR
+  metadata:
+    source-url: github.com/home-assistant/home-assistant/commit/bfb49c2e58429e5c4860cc4787c92feacf3fcb80
+    category: correctness
+    cwe: CWE-628
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - python

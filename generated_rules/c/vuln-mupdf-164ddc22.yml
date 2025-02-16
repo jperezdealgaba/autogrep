@@ -1,0 +1,39 @@
+rules:
+- id: vuln-mupdf-164ddc22
+  pattern: "$PATH = fz_outline_glyph($CTX, $FONT, $GID, $IDENTITY);\nif ($PATH)\n\
+    {\n  $RECT = fz_bound_path($CTX, $PATH, $NULL, $IDENTITY);\n  $SHIFT.e = -$RECT.x0;\n\
+    \  $SHIFT.f = -$RECT.y0;\n  fz_transform_path($CTX, $PATH, $SHIFT);\n  $OUT =\
+    \ start_def($CTX, $SDEV);\n  fz_write_printf($CTX, $OUT, \"<symbol id=\\\"font_%x_%x\\\
+    \">\\n\", $FNT->id, $GID);\n  fz_write_printf($CTX, $OUT, \"<path\");\n  svg_dev_path($CTX,\
+    \ $SDEV, $PATH);\n  fz_write_printf($CTX, $OUT, \"/>\\n\");\n  fz_drop_path($CTX,\
+    \ $PATH);\n}\n"
+  pattern-not: "$OUT = start_def($CTX, $SDEV);\nfz_write_printf($CTX, $OUT, \"<symbol\
+    \ id=\\\"font_%x_%x\\\">\\n\", $FNT->id, $GID);\nif (fz_font_ft_face($CTX, $FONT))\n\
+    {\n  $PATH = fz_outline_glyph($CTX, $FONT, $GID, $IDENTITY);\n  if ($PATH)\n \
+    \ {\n    $RECT = fz_bound_path($CTX, $PATH, $NULL, $IDENTITY);\n    $SHIFT.e =\
+    \ -$RECT.x0;\n    $SHIFT.f = -$RECT.y0;\n    fz_transform_path($CTX, $PATH, $SHIFT);\n\
+    \    fz_write_printf($CTX, $OUT, \"<path\");\n    svg_dev_path($CTX, $SDEV, $PATH);\n\
+    \    fz_write_printf($CTX, $OUT, \"/>\\n\");\n    fz_drop_path($CTX, $PATH);\n\
+    \  }\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability arises from the incorrect handling of font outlines
+    in the SVG device code. The original code fails to properly check the font type
+    before processing, which can lead to undefined behavior or crashes when dealing
+    with unsupported font types. The fix ensures that the font type is checked before
+    attempting to outline the glyph, preventing potential crashes or other undefined
+    behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/164ddc22ee0d5b63a81d5148f44c37dd132a9356
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

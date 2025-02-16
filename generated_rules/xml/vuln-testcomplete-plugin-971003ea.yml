@@ -1,0 +1,28 @@
+rules:
+- id: vuln-testcomplete-plugin-971003ea
+  pattern: '<version>2.9-SNAPSHOT</version>
+
+    '
+  pattern-not: '<version>2.8.2</version>
+
+    '
+  languages:
+  - xml
+  message: 'Using a SNAPSHOT version in production can lead to instability and security
+    vulnerabilities, as SNAPSHOT versions are not stable and can change unpredictably.
+    It is recommended to use a stable release version instead. Update the version
+    to a stable release like 2.8.2.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/testcomplete-plugin/commit/971003ea578a090ed9a5b9487acb9d2aa93645d3
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - xml

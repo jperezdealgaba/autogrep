@@ -1,0 +1,29 @@
+rules:
+- id: vuln-tcpreplay-b63f1697
+  pattern: "void fix_ipv4_length(struct pcap_pkthdr *$PKTHDR, ipv4_hdr_t *$IP_HDR)\
+    \ {\n  if (!$IP_HDR->ip_len)\n    $IP_HDR->ip_len = htons((uint16_t)$PKTHDR->len);\n\
+    }\n"
+  pattern-not: "int fix_ipv4_length(struct pcap_pkthdr *$PKTHDR, ipv4_hdr_t *$IP_HDR,\
+    \ const size_t $L2LEN) {\n  int $IP_LEN = (int)ntohs($IP_HDR->ip_len);\n  int\
+    \ $IP_LEN_WANT = (int)($PKTHDR->len - $L2LEN);\n\n  if ($PKTHDR->caplen < $L2LEN\
+    \ + sizeof(*$IP_HDR))\n    return -1;\n\n  if ((htons($IP_HDR->ip_off) & (IP_MF\
+    \ | IP_OFFMASK)) == 0 &&\n      $IP_LEN != $IP_LEN_WANT) {\n    $IP_HDR->ip_len\
+    \ = htons($IP_LEN_WANT);\n    return 1;\n  }\n\n  return 0;\n}\n"
+  languages:
+  - c
+  message: 'The original version of `fix_ipv4_length` does not properly validate the
+    IP header length against the packet capture length, which can lead to incorrect
+    IP header length calculations and potential security issues. The fixed version
+    includes proper validation and handling of the IP header length. Use the updated
+    version to ensure correct IP header length calculations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/b63f1697c9eae73c7880882e14f9a0ec9545f19a
+    category: security
+    cwe:
+    - CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - c

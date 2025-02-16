@@ -1,0 +1,22 @@
+rules:
+- id: vuln-chamilo-lms-0c1c29db
+  pattern: 'getFile($ID, $COURSE_INFO, true, $IS_CORRECTION, true)
+
+    '
+  pattern-not: "getFile(\n    $ID,\n    $COURSE_INFO,\n    true,\n    $IS_CORRECTION,\n\
+    \    api_is_course_admin() || api_is_coach()\n)\n"
+  languages:
+  - php
+  message: "Detected a potentially insecure call to `getFile` with hardcoded access\
+    \ control. \nThis could allow unauthorized access to files. \nThe fix requires\
+    \ checking if the user is a course admin or coach using `api_is_course_admin()\
+    \ || api_is_coach()`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/0c1c29db18856a6f25e21d0405dda2c20b35ff3a
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    references: https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control
+    technology:
+    - php

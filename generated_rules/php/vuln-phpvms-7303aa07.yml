@@ -1,0 +1,28 @@
+rules:
+- id: vuln-phpvms-7303aa07
+  pattern: 'if(!Auth::LoggedIn() && !PilotGroups::group_has_perm(Auth::$usergroups,
+    ACCESS_ADMIN))
+
+    '
+  pattern-not: 'if(!Auth::LoggedIn() || !PilotGroups::group_has_perm(Auth::$usergroups,
+    ACCESS_ADMIN))
+
+    '
+  languages:
+  - php
+  message: "The use of `&&` instead of `||` in the condition can lead to improper\
+    \ access control. \nThis vulnerability allows unauthorized access to admin functionality\
+    \ when either the user is not logged in or does not have the required permissions.\
+    \ \nReplace `&&` with `||` to ensure proper access control.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nshahzad/phpVMS/commit/7303aa072061388eba06f0c5a701c688096ebccc
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

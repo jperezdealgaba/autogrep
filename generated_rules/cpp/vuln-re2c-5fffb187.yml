@@ -1,0 +1,26 @@
+rules:
+- id: vuln-re2c-5fffb187
+  pattern: "static void liveness_analyses(const RevDfa& $RDFA, bool* $LIVE) {\n  ...\n\
+    \  if ($S.fallthru) {\n    backprop($RDFA, $LIVE, $S.rule, $I);\n  }\n  ...\n\
+    }\n"
+  pattern-not: "static void liveness_analysis(const RevDfa& $RDFA, bool* $LIVE) {\n\
+    \  std::vector<DfsBackprop> $STACK;\n  ...\n  if (!$S.fallthru) continue;\n  $STACK.push_back({$I,\
+    \ $S.rule, nullptr});\n  while (!$STACK.empty()) {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The function `liveness_analyses` uses a recursive approach for backward
+    propagation, which can lead to stack overflow for large DFAs. This is dangerous
+    as it can cause crashes or undefined behavior. The fixed version uses an iterative
+    approach with a stack to handle large inputs safely. Replace the recursive implementation
+    with an iterative one using a stack.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/skvadrik/re2c/commit/5fffb1870181d6179118586e21ed2889b8b4abc8
+    category: security
+    cwe:
+    - CWE-400
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

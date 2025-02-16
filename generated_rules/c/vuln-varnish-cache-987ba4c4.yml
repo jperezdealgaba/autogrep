@@ -1,0 +1,25 @@
+rules:
+- id: vuln-varnish-cache-987ba4c4
+  pattern: "for ($L = 0; $L <= $DEPTH && $L * 8 < $AE->mask; $L++) {\n  ...\n}\n"
+  pattern-not: "for ($L = 0; $L <= $DEPTH && $L * 8 < $AE->mask - 7; $L++) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'This code contains a potential integer overflow vulnerability due to insufficient
+    bounds checking in a loop condition. The condition `l * 8 < ae->mask` may allow
+    `l` to exceed safe bounds, leading to undefined behavior or memory corruption.
+    The fix adds a proper boundary check by subtracting 7 from `ae->mask` to ensure
+    the loop stays within safe limits. To fix this, update the loop condition to include
+    the boundary check as shown in the patched version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/varnishcache/varnish-cache/commit/987ba4c49facf31978d0e6e395a33f053536feed
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

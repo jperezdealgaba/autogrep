@@ -1,0 +1,37 @@
+rules:
+- id: vuln-keycloak-556146f9
+  pattern: 'TypedQuery<PersistentClientSessionEntity> $QUERY = em.createNamedQuery("findClientSessionsOrderedById",
+    PersistentClientSessionEntity.class);
+
+    $QUERY.setParameter("offline", $OFFLINE);
+
+    $QUERY.setParameter("fromSessionId", $FROM_SESSION_ID);
+
+    $QUERY.setParameter("toSessionId", $TO_SESSION_ID);
+
+    '
+  pattern-not: 'TypedQuery<PersistentClientSessionEntity> $QUERY = em.createNamedQuery("findClientSessionsOrderedByIdExact",
+    PersistentClientSessionEntity.class);
+
+    $QUERY.setParameter("offline", $OFFLINE);
+
+    $QUERY.setParameter("userSessionIds", $USER_SESSION_IDS);
+
+    '
+  pattern-inside: "private Stream<UserSessionModel> loadUserSessionsWithClientSessions(TypedQuery<PersistentUserSessionEntity>\
+    \ $QUERY, String $OFFLINE_STR) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential security issue: Using a range-based query for client sessions
+    can lead to incorrect or excessive data retrieval. Use exact matching with specific
+    session IDs instead.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/keycloak/keycloak/commit/556146f961f7c8ddf64de15e2117a58d045f72b5
+    category: security
+    cwe: CWE-200
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control/
+    technology:
+    - java

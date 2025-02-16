@@ -1,0 +1,48 @@
+rules:
+- id: vuln-cilium-a652c123
+  pattern: '$INPUT := append($GLOBALKEY, $SRCNODEIP...)
+
+    $INPUT = append($INPUT, $SRCBOOTID...)
+
+    $INPUT = append($INPUT, $DSTBOOTID...)
+
+    '
+  pattern-not: '$INPUTLEN := len($GLOBALKEY) + len($SRCNODEIP) + len($DSTNODEIP) +
+    len($SRCBOOTID) + len($DSTBOOTID)
+
+    $INPUT := make([]byte, 0, $INPUTLEN)
+
+    $INPUT = append($INPUT, $GLOBALKEY...)
+
+    $INPUT = append($INPUT, $SRCNODEIP...)
+
+    $INPUT = append($INPUT, $SRCBOOTID[:36]...)
+
+    $INPUT = append($INPUT, $DSTBOOTID[:36]...)
+
+    '
+  languages:
+  - go
+  message: 'Detected potential buffer overflow vulnerability due to unsafe concatenation
+    of byte slices.
+
+    The original code appends multiple byte slices without pre-allocating the required
+    memory,
+
+    which can lead to buffer overflows and undefined behavior. The fix pre-allocates
+    the
+
+    required memory and ensures proper bounds checking by truncating the boot IDs
+    to 36 bytes.
+
+    To fix this, pre-allocate the memory using `make` and ensure proper bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cilium/cilium/commit/a652c123331852cca90c74202f993d4170fd37fa
+    category: security
+    cwe: 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    technology:
+    - go

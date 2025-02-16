@@ -1,0 +1,25 @@
+rules:
+- id: vuln-exponent-cms-99636b21
+  pattern: "if (is_string($VAR) && strrpos($KEY, '_id', -3) !== false) {\n  ...\n\
+    }\n"
+  pattern-not: "if (is_string($VAR) && strlen($KEY) >= 3 && strrpos($KEY, '_id', -3)\
+    \ !== false) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "Detected a potential string manipulation vulnerability due to missing\
+    \ length check before using strrpos. \nThis could lead to unexpected behavior\
+    \ or security issues when the key is shorter than the searched substring. \nAlways\
+    \ verify the string length before using strrpos with a negative offset to prevent\
+    \ out-of-bounds access.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/99636b2118cd9af4eb9920f6b6c228bd824593d2
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.strrpos.php
+    technology:
+    - php

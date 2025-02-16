@@ -1,0 +1,24 @@
+rules:
+- id: vuln-argo-cd-5bbb51ab
+  pattern: "func $FUNC($W http.ResponseWriter, $R *http.Request, $H http.Header, $M\
+    \ util_session.SessionManager) (*terminalSession, error) {\n    ...\n}\n"
+  pattern-not: "func $FUNC($W http.ResponseWriter, $R *http.Request, $H http.Header,\
+    \ $M *util_session.SessionManager) (*terminalSession, error) {\n    ...\n}\n"
+  languages:
+  - go
+  message: "The function parameter `SessionManager` should be passed as a pointer\
+    \ to ensure thread safety. \nPassing it by value can lead to race conditions when\
+    \ accessing shared resources. \nUpdate the parameter type to `*util_session.SessionManager`\
+    \ to fix this issue.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/5bbb51ab423f273dda74ab956469843d2db2e208
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://github.com/argoproj/argo-cd/pull/12345
+    technology:
+    - go

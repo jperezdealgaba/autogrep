@@ -1,0 +1,30 @@
+rules:
+- id: vuln-chamilo-lms-dc7bfce4
+  pattern: 'str_replace([''.htaccess'', ''.HTACCESS''], [''htaccess.txt'', ''htaccess.txt''],
+    $VAR)
+
+    '
+  pattern-not: '$VAR = strtolower($VAR);
+
+    str_replace(''.htaccess'', ''htaccess.txt'', $VAR)
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure handling of .htaccess files. The code does not normalize
+    file names to lowercase before renaming .htaccess files, potentially allowing
+    bypass of access restrictions. This can lead to security vulnerabilities where
+    attackers can upload malicious .htaccess files with different case variations.
+    To fix, ensure all file names are converted to lowercase before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/dc7bfce429fbd843a95a57c184b6992c4d709549
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - php

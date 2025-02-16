@@ -1,0 +1,22 @@
+rules:
+- id: vuln-metersphere-d0f95b50
+  pattern: "@GetMapping(value = \"/md/get/url\")\npublic ResponseEntity<byte[]> getFileByUrl(@RequestParam(\"\
+    url\") String $URL, @RequestParam(value = \"platform\", required = false) String\
+    \ $PLATFORM, @RequestParam(value = \"workspace_id\", required = false) String\
+    \ $WORKSPACE_ID) {\n  return $SERVICE.getMdImageByUrl($URL, $PLATFORM, $WORKSPACE_ID);\n\
+    }\n"
+  pattern-not: "@GetMapping(value = \"/md/get/path\")\npublic ResponseEntity<byte[]>\
+    \ getFileByPath(@RequestParam(\"path\") String $PATH, @RequestParam(value = \"\
+    platform\") String $PLATFORM, @RequestParam(value = \"workspaceId\") String $WORKSPACE_ID)\
+    \ {\n  return $SERVICE.getMdImageByPath($PATH, $PLATFORM, $WORKSPACE_ID);\n}\n"
+  languages:
+  - java
+  message: Potential insecure URL handling detected. Use path-based parameters instead
+    of direct URL handling to prevent security vulnerabilities.
+  severity: ERROR
+  metadata:
+    source-url: github.com/metersphere/metersphere/commit/d0f95b50737c941b29d507a4cc3545f2dc6ab121
+    category: security
+    cwe: 'CWE-939: Improper Authorization in Handler for Custom URL Scheme'
+    owasp: A1:2017-Injection
+    technology: java

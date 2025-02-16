@@ -1,0 +1,28 @@
+rules:
+- id: vuln-core-f904cbdf
+  pattern: '(void)str_unescape($STR + $VAR - 1);
+
+    '
+  pattern-not: '(void)str_unescape($STR);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe string unescaping with incorrect offset. This can lead
+    to incorrect string manipulation and potential security vulnerabilities. The issue
+    arises when using an offset to unescape a string, which may result in processing
+    unintended memory locations. The fix removes the offset to ensure the entire string
+    is properly unescaped.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dovecot/core/commit/f904cbdfec25582bc5e2a7435bf82ff769f2526a
+    category: security
+    cwe:
+    - CWE-119
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

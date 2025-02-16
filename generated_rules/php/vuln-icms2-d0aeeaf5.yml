@@ -1,0 +1,27 @@
+rules:
+- id: vuln-icms2-d0aeeaf5
+  pattern: '$replace_html = ''<ul class="position" rel="'' . $value . ''" id="pos-''
+    . $value . ''"></ul>'';
+
+    '
+  pattern-not: '$replace_html = ''<ul class="position" rel="'' . html($value, false)
+    . ''" id="pos-'' . html($value, false) . ''"></ul>'';
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped user input in HTML output, which can lead to Cross-Site
+    Scripting (XSS) vulnerabilities. Always sanitize user input before including it
+    in HTML output using the `html` function or equivalent.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/instantsoft/icms2/commit/d0aeeaf5979fbdbf80dc3a3227d6c58442ab7487
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libexif-3d40ba70
+  pattern: '(double)$VAR.numerator / $VAR.denominator
+
+    '
+  pattern-not: 'R2D($VAR)
+
+    '
+  languages:
+  - c
+  message: 'The code performs a division operation without checking if the denominator
+    is zero, which can lead to a division-by-zero vulnerability. This can cause undefined
+    behavior or crashes. To fix this, ensure the denominator is checked before performing
+    the division, or use the R2D macro which includes this check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libexif/libexif/commit/3d40ba705fcb2f2f9bb5a496980297e1f706f594
+    category: security
+    cwe:
+    - CWE-369
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/369.html
+    technology:
+    - c

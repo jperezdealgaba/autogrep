@@ -1,0 +1,29 @@
+rules:
+- id: vuln-silverstripe-framework-2b5420ee
+  pattern: '$regex = ''/^\s*'' . implode(''\v*'', str_split(''javascript:'')) . ''/'';
+
+    '
+  pattern-not: '$regex = ''/^\s*'' . implode(''\v*'', str_split(''javascript:''))
+    . ''/i'';
+
+    '
+  languages:
+  - php
+  message: 'The regex pattern used to detect ''javascript:'' URLs is case-sensitive,
+    which can allow bypasses using mixed case (e.g., ''jAvAsCrIpT:''). This can lead
+    to XSS vulnerabilities when the sanitizer fails to detect and remove malicious
+    scripts. To fix this, add the ''i'' modifier to make the regex case-insensitive.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/2b5420ee7d6ea29c1096e8aad952dda83862ef08
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

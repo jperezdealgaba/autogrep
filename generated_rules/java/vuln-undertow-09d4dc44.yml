@@ -1,0 +1,21 @@
+rules:
+- id: vuln-undertow-09d4dc44
+  pattern: 'int $RES = Channels.readBlocking($CHANNEL, $BUFFER);
+
+    '
+  pattern-not: 'int $RES = Channels.readBlocking($CHANNEL, $BUFFER, $TIMEOUT, $TIMEUNIT);
+
+    '
+  languages:
+  - java
+  message: "Missing timeout in blocking read operation can lead to resource exhaustion\
+    \ or denial of service. \nEnsure a timeout is specified for blocking read operations\
+    \ to prevent indefinite blocking.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/09d4dc44da0eb7a0cfa5d943de32e06c7cb2f7d2
+    category: security
+    cwe: CWE-400
+    owasp: A9:2017-Insufficient Logging & Monitoring
+    references: https://github.com/undertow-io/undertow/commit/09d4dc44da0eb7a0cfa5d943de32e06c7cb2f7d2
+    technology: java

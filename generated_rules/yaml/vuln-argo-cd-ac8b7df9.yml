@@ -1,0 +1,25 @@
+rules:
+- id: vuln-argo-cd-ac8b7df9
+  pattern: 'image: quay.io/argoproj/argocd:v2.3.3
+
+    '
+  pattern-not: 'image: quay.io/argoproj/argocd:v2.3.4
+
+    '
+  languages:
+  - yaml
+  message: "Detected an outdated version of the Argo CD image (v2.3.3) which may contain\
+    \ security vulnerabilities. \nUpgrade to v2.3.4 or later to mitigate potential\
+    \ risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/ac8b7df9467ffcc0920b826c62c4b603a7bfed24
+    category: security
+    cwe:
+    - 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/argoproj/argo-cd/releases
+    technology:
+    - yaml

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-dataease-5f611d3e
+  pattern: "@ApiOperation(\"\u5207\u6362\u63D2\u4EF6\u72B6\u6001\")\n@PostMapping(\"\
+    /changeStatus\")\npublic Boolean changeStatus(@RequestBody PluginStatus $PLUGIN_STATUS)\
+    \ {\n    return $SERVICE.changeStatus($PLUGIN_STATUS.getPluginId(), $PLUGIN_STATUS.getStatus());\n\
+    }\n"
+  pattern-not: '@RequiresPermissions("plugin:read")
+
+    @RequiresPermissions("plugin:upload")
+
+    @RequiresPermissions("plugin:uninstall")
+
+    '
+  languages:
+  - java
+  message: 'Missing authorization checks on plugin status change endpoint. This could
+    allow unauthorized users to modify plugin states. Add proper authorization annotations
+    like @RequiresPermissions to restrict access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dataease/dataease/commit/5f611d3e3934816e9ad34e3d21807978001e2c8b
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - java

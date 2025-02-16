@@ -1,0 +1,25 @@
+rules:
+- id: vuln-open5gs-26f14ee7
+  pattern: '"version": "2.2.6"'
+  pattern-not: '"version": "2.2.8"'
+  languages:
+  - json
+  message: 'The package version 2.2.6 contains known vulnerabilities that have been
+    fixed in version 2.2.8.
+
+    Using outdated versions can expose the application to security risks, including
+    potential exploits.
+
+    Update the package to version 2.2.8 or later to mitigate these vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/26f14ee7ca16f2a009b3c911379e8f5bac98fd36
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - A9: Using Components with Known Vulnerabilities
+    technology:
+    - json

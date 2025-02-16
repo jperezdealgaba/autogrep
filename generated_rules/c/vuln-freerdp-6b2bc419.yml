@@ -1,0 +1,36 @@
+rules:
+- id: vuln-freerdp-6b2bc419
+  pattern: "if (Stream_GetRemainingLength($S) < $ICONINFO->cbBitsMask + $ICONINFO->cbBitsColor)\n\
+    \  return $FALSE;\n"
+  pattern-not: "if (Stream_GetRemainingLength($S) < $ICONINFO->cbBitsMask)\n  return\
+    \ $FALSE;\n{\n  if (Stream_GetRemainingLength($S) < $ICONINFO->cbColorTable)\n\
+    \    return $FALSE;\n}\nif (Stream_GetRemainingLength($S) < $ICONINFO->cbBitsColor)\n\
+    \  return $FALSE;\n"
+  languages:
+  - c
+  message: 'The vulnerability arises from an insufficient validation of the remaining
+    stream length.
+
+    The original code checks if the remaining length is less than the sum of `cbBitsMask`
+    and `cbBitsColor`, but it fails to separately validate `cbColorTable`.
+
+    This can lead to buffer overflows or other memory corruption issues.
+
+    To fix this, ensure that each component (`cbBitsMask`, `cbColorTable`, and `cbBitsColor`)
+    is validated individually.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FreeRDP/FreeRDP/commit/6b2bc41935e53b0034fe5948aeeab4f32e80f30f
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

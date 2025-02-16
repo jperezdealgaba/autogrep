@@ -1,0 +1,22 @@
+rules:
+- id: vuln-home-assistant-b70b23ef
+  pattern: 'REQUIREMENTS = [''abodepy==0.12.2'']
+
+    '
+  pattern-not: 'REQUIREMENTS = [''abodepy==0.12.3'']
+
+    '
+  languages:
+  - python
+  message: Using an outdated version of abodepy (0.12.2) which may contain security
+    vulnerabilities. Upgrade to version 0.12.3 to mitigate potential risks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/home-assistant/home-assistant/commit/b70b23ef8350a8c00b5f19b0b3e544f0fb374db9
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - python

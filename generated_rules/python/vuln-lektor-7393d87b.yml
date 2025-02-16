@@ -1,0 +1,27 @@
+rules:
+- id: vuln-lektor-7393d87b
+  pattern: '$PATH = $PATH.strip("/").replace("/", os.path.sep)
+
+    '
+  pattern-not: '$PATH = cleanup_path($PATH)
+
+    assert $PATH.startswith("/")
+
+    $PATH = $PATH[1:].replace("/", os.path.sep)
+
+    '
+  languages:
+  - python
+  message: Detected unsafe path manipulation that could allow path traversal attacks.
+    Use `cleanup_path` and validate paths to prevent directory traversal vulnerabilities.
+  severity: ERROR
+  metadata:
+    source-url: github.com/lektor/lektor/commit/7393d87bd354e43120937789956175064e4610a0
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

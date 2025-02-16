@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mybb-0cd31813
+  pattern: '$my_mailhandler_builtin->additional_parameters = $VAR->settings[''mail_parameters''];
+
+    '
+  pattern-not: '$my_mailhandler_builtin->additional_parameters = $VAR->config[''mail_parameters''];
+
+    '
+  languages:
+  - php
+  message: "Using `settings` instead of `config` for mail parameters can lead to insecure\
+    \ mail handling. \nThe `settings` array may contain untrusted or improperly sanitized\
+    \ data, which could be exploited to inject malicious parameters into the mail\
+    \ handler. \nAlways use the `config` array, which is typically more secure and\
+    \ properly validated.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/0cd318136a10b029bb5c8a8f6dddf39d87519797
+    category: security
+    cwe:
+    - CWE-943
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A03_2021-Injection
+    technology:
+    - php

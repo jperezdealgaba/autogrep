@@ -1,0 +1,30 @@
+rules:
+- id: vuln-open5gs-a5010a61
+  pattern: 'ogs_pool_init(&pool, ogs_app()->pool.gtp_node);
+
+    '
+  pattern-not: 'ogs_pool_init(&pool, ogs_app()->pool.nf);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of deprecated gtp_node pool initialization. This can lead
+    to
+
+    resource allocation issues as the gtp_node pool is being phased out in favor
+
+    of the more general nf pool. Update the code to use the nf pool instead to
+
+    ensure proper resource management and future compatibility.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/a5010a61effce92fe9dfb2cbf8df1f04ddc1de64
+    category: security
+    cwe: 'CWE-770: Allocation of Resources Without Limits or Throttling'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/open5gs/open5gs/wiki/Migration-Guide
+    technology:
+    - c

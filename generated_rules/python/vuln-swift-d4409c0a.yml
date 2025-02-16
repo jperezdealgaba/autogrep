@@ -1,0 +1,33 @@
+rules:
+- id: vuln-swift-d4409c0a
+  pattern: 'env[''swift.authorize''] = lambda req: None
+
+    '
+  pattern-not: 'env[''swift.authorize''] = authorize_same_account($ACCOUNT)
+
+    env[''swift.authorize''] = authorize_same_container($ACCOUNT, $CONTAINER)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure TempURL authorization implementation that does not properly
+    scope access.
+
+    The previous implementation allowed unrestricted access after TempURL validation,
+    which
+
+    could lead to unauthorized access to other resources in the same account or container.
+
+    The fix introduces proper scoping based on the TempURL key type (account or container
+    level).
+
+    Ensure proper authorization scoping is implemented when using TempURLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/swift/commit/d4409c0a046c6ce0e14e18c95efe2cd16cf120e8
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    technology: python

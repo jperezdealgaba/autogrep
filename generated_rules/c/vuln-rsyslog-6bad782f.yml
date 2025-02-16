@@ -1,0 +1,24 @@
+rules:
+- id: vuln-rsyslog-6bad782f
+  pattern: 'unsigned short $VAR;
+
+    '
+  pattern-not: 'size_t $VAR;
+
+    '
+  languages:
+  - c
+  message: "Using 'unsigned short' for size calculations can lead to integer overflow\
+    \ vulnerabilities. \nThis is dangerous because it can result in buffer overflows\
+    \ or incorrect memory allocations. \nTo fix this, use 'size_t' for variables that\
+    \ represent sizes or lengths.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/rsyslog/rsyslog/commit/6bad782f154b7f838c7371bf99c13f6dc4ec4101
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

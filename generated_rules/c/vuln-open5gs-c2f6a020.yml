@@ -1,0 +1,23 @@
+rules:
+- id: vuln-open5gs-c2f6a020
+  pattern: 'ogs_assert($LENGTH == ($POS - $BLK));
+
+    '
+  pattern-not: "if ($LENGTH != ($POS - $BLK)) {\n    ogs_fatal(...);\n    ogs_log_hexdump(...);\n\
+    \    ogs_assert_if_reached();\n}\n"
+  languages:
+  - c
+  message: "The code uses `ogs_assert` to validate the length of a TLV block without\
+    \ proper error handling. \nThis can lead to undefined behavior or crashes if the\
+    \ assertion fails. \nInstead, use proper error handling with logging and graceful\
+    \ termination.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/c2f6a020a7b505e0d55748464406fb9aca062026
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    technology:
+    - c

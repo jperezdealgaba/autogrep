@@ -1,0 +1,30 @@
+rules:
+- id: vuln-nodebb-81e3c1ba
+  pattern: "'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {\n\
+    \  const r = Math.random() * 16 | 0;\n  const v = c === 'x' ? r : ((r & 0x3) |\
+    \ 0x8);\n  return v.toString(16);\n});\n"
+  pattern-not: 'const temp_url = URL.createObjectURL(new Blob());
+
+    const uuid = temp_url.toString();
+
+    URL.revokeObjectURL(temp_url);
+
+    return uuid.split(/[:\/]/g).pop().toLowerCase();
+
+    '
+  languages:
+  - javascript
+  message: Insecure UUID generation using Math.random(). This can lead to predictable
+    UUIDs. Use crypto.randomBytes() or URL.createObjectURL() for secure UUID generation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/81e3c1ba488d03371a5ce8d0ebb5c5803026e0f9
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://github.com/tracker1/node-uuid4
+    technology:
+    - javascript

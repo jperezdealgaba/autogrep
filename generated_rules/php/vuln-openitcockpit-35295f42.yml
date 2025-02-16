@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openitcockpit-35295f42
+  pattern: 'return $this->order;
+
+    '
+  pattern-not: 'return SanitizeOrder::filterOrderArray($this->order);
+
+    '
+  languages:
+  - php
+  message: 'Directly returning order data without sanitization can lead to SQL injection
+    or other security vulnerabilities. Use SanitizeOrder::filterOrderArray to properly
+    sanitize the order data before returning it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/it-novum/openITCOCKPIT/commit/35295f420d719c2359f9174d9b3c88f30e57a66a
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

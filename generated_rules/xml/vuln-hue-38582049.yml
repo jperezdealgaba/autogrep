@@ -1,0 +1,27 @@
+rules:
+- id: vuln-hue-38582049
+  pattern: '<version>4.10.0-SNAPSHOT</version>
+
+    '
+  pattern-not: '<version>4.11.0-SNAPSHOT</version>
+
+    '
+  languages:
+  - xml
+  message: 'Detected an outdated version ''4.10.0-SNAPSHOT'' in the XML configuration.
+    Using outdated versions can expose the application to known vulnerabilities. Upgrade
+    to version ''4.11.0-SNAPSHOT'' or later to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudera/hue/commit/3858204961faa990293f92842c52e367b9ae26a6
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9: Using Components with Known Vulnerabilities
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities
+    technology:
+    - xml

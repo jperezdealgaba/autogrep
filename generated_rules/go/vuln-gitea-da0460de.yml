@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gitea-da0460de
+  pattern: "repo, err := models.GetRepositoryByOwnerAndName($OWNER_NAME, $REPO_NAME)\n\
+    ...\nif err != nil {\n    ...\n}\n"
+  pattern-not: "repo, err := models.GetRepositoryByName($OWNER_ID, $REPO_NAME)\n...\n\
+    if err != nil {\n    ...\n}\n"
+  languages:
+  - go
+  message: "The code directly retrieves a repository by owner name and repository\
+    \ name without verifying the owner's active status. This can lead to unauthorized\
+    \ access to repositories owned by inactive accounts. \nThe vulnerability is dangerous\
+    \ because it bypasses account activation checks, potentially allowing access to\
+    \ restricted resources.\nTo fix this, ensure the owner's active status is checked\
+    \ before retrieving the repository, and use the owner's ID instead of the owner's\
+    \ name for repository lookup.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/da0460dea092194fb6af68e73e1e992d84b552aa
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - go

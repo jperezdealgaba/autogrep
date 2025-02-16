@@ -1,0 +1,27 @@
+rules:
+- id: vuln-silverstripe-framework-61d764c8
+  pattern: '- cron: ''20 14 * * 5''
+
+    '
+  pattern-not: '- cron: ''20 14 * * 6''
+
+    '
+  languages:
+  - yaml
+  message: 'The cron job is scheduled to run on Friday instead of Saturday. This could
+    lead to unintended behavior or missed execution windows. Ensure the cron schedule
+    aligns with the intended timing by updating the day of the week to Saturday.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/61d764c8fc1d33bd5aec5d21f0025eae3407d4ed
+    category: timing
+    cwe:
+    - CWE-835
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://crontab.guru/
+    technology:
+    - yaml

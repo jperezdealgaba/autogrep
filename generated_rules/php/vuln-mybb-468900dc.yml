@@ -1,0 +1,31 @@
+rules:
+- id: vuln-mybb-468900dc
+  pattern: '$table->construct_cell("<strong><a href=\"index.php?module=style-themes&amp;action=edit_stylesheet&amp;file=".htmlspecialchars_uni($filename)."&amp;tid={$theme[''tid'']}\">{$filename}</a></strong>{$inherited}<br
+    />{$attached_to}")
+
+    '
+  pattern-not: '$table->construct_cell("<strong><a href=\"index.php?module=style-themes&amp;action=edit_stylesheet&amp;file=".htmlspecialchars_uni($filename)."&amp;tid={$theme[''tid'']}\">".htmlspecialchars_uni($filename)."</a></strong>{$inherited}<br
+    />{$attached_to}")
+
+    '
+  languages:
+  - php
+  message: 'This rule detects potential Cross-Site Scripting (XSS) vulnerabilities
+    in MyBB where user-controlled input is directly embedded into HTML without proper
+    escaping. The vulnerability occurs when the `$filename` variable is not properly
+    sanitized before being included in the HTML output. This can allow attackers to
+    inject malicious scripts into the page, leading to XSS attacks. To fix this, ensure
+    that all user-controlled input is properly escaped using `htmlspecialchars_uni()`
+    before being included in HTML output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/468900dc9a8a881c7835f78777fea4b2a8753c37
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

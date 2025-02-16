@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gitea-e00e8d8a
+  pattern: '$VAR = sec.Key("DISABLE_GIT_HOOKS").MustBool(false)
+
+    '
+  pattern-not: '$VAR = sec.Key("DISABLE_GIT_HOOKS").MustBool(true)
+
+    '
+  languages:
+  - go
+  message: 'The configuration setting `DISABLE_GIT_HOOKS` is set to `false`, which
+    can allow untrusted git hooks to execute. This is dangerous because it can lead
+    to arbitrary code execution. To fix this, set `DISABLE_GIT_HOOKS` to `true` to
+    prevent the execution of potentially malicious git hooks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/e00e8d8ad391ded1316d9dade4d2542199141be6
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - go

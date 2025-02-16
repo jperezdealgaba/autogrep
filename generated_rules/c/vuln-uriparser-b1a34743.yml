@@ -1,0 +1,26 @@
+rules:
+- id: vuln-uriparser-b1a34743
+  pattern: "if ((uri->hostText.first != NULL)\n        && (uri->hostData.ip4 == NULL)\n\
+    \        && (uri->hostData.ip6 == NULL)) {\n    ...\n}\n"
+  pattern-not: "if (uri->hostText.first != NULL) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential double-free vulnerability in URI host text handling.
+    The code checks for `hostText.first` being non-NULL without considering that `hostData.ipFuture`
+    might share the same memory range, which could lead to freeing the same memory
+    twice. The fix involves ensuring that `hostText` pointers are set to NULL when
+    they reference the same memory as `hostData.ipFuture`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uriparser/uriparser/commit/b1a34743bc1472e055d886e29e9b53f670eb3282
+    category: security
+    cwe:
+    - CWE-415
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/415.html
+    technology:
+    - c

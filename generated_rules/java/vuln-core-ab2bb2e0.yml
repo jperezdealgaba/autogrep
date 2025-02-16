@@ -1,0 +1,20 @@
+rules:
+- id: vuln-core-ab2bb2e0
+  pattern: 'String $VAR = Config.getStringProperty("ASSET_PATH");
+
+    '
+  pattern-not: 'String $VAR = Config.getStringProperty("ASSET_PATH", $DEFAULT_PATH);
+
+    '
+  languages:
+  - java
+  message: Missing default value for configuration property 'ASSET_PATH'. This can
+    lead to null values and potential security issues. Always provide a default value
+    when retrieving configuration properties.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/ab2bb2e00b841d131b8734227f9106e3ac31bb99
+    category: security
+    cwe: CWE-471
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: java

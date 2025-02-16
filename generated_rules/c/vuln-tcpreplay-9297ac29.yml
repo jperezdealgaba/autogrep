@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tcpreplay-9297ac29
+  pattern: 'safe_free($CONFIG->subctx);
+
+    '
+  pattern-not: 'safe_free($CONFIG->subctx);
+
+    free($CONFIG);
+
+    '
+  languages:
+  - c
+  message: "Missing call to free() after safe_free() can lead to memory leaks. \n\
+    This vulnerability occurs when memory allocated for a sub-context is freed without\
+    \ properly releasing the parent context, potentially causing memory exhaustion\
+    \ over time. \nEnsure both the sub-context and its parent context are properly\
+    \ freed to prevent memory leaks.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/9297ac29af91324e3f94580b8ffc2a40a4d59e98
+    category: security
+    cwe:
+    - CWE-401
+    technology:
+    - c

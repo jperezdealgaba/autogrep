@@ -1,0 +1,28 @@
+rules:
+- id: vuln-argo-cd-701ce053
+  pattern: 'jwt.NewValidationHelper(jwt.WithoutClaimsValidation())
+
+    '
+  pattern-not: 'jwt.NewValidationHelper(jwt.WithoutClaimsValidation(), jwt.WithoutAudienceValidation())
+
+    '
+  languages:
+  - go
+  message: 'Detected a JWT validation helper that does not include audience validation.
+    This can lead to security vulnerabilities where tokens intended for one audience
+    are accepted by another. Ensure that both claims and audience validation are enabled
+    in the JWT validation helper.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/701ce05393f93a686b95ccd301afd5d018a63a1b
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://jwt.io/introduction
+    technology:
+    - go

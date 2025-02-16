@@ -1,0 +1,23 @@
+rules:
+- id: vuln-admin-ui-classic-bundle-abd77392
+  pattern: 'pimcore.helpers.deleteConfirm(t(''translation''), Ext.util.Format.htmlEncode($DATA),
+    $FUNC)
+
+    '
+  pattern-not: 'pimcore.helpers.deleteConfirm(t(''translation'').toLowerCase(), Ext.util.Format.htmlEncode($DATA),
+    $FUNC)
+
+    '
+  languages:
+  - javascript
+  message: "Potential security issue due to missing case normalization in translation\
+    \ string. \nThis could lead to inconsistencies or security vulnerabilities in\
+    \ string handling. \nApply .toLowerCase() to ensure consistent case handling.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/pimcore/admin-ui-classic-bundle/commit/abd7739298f974319e3cac3fd4fcd7f995b63e4c
+    category: security
+    cwe: CWE-178
+    owasp: A03:2021-Injection
+    technology:
+    - javascript

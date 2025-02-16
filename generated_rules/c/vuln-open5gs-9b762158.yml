@@ -1,0 +1,30 @@
+rules:
+- id: vuln-open5gs-9b762158
+  pattern: '$MESSAGE->param.discovery_option.$FIELD
+
+    '
+  pattern-not: '$DISCOVERY_OPTION = $MESSAGE->param.discovery_option;
+
+    $DISCOVERY_OPTION->$FIELD
+
+    '
+  languages:
+  - c
+  message: 'Direct access to discovery_option fields without null check can lead to
+    null pointer dereference.
+
+    Always check if discovery_option is not null before accessing its fields.
+
+    This vulnerability was fixed in commit 9b762158a6ef3f8c4f3967d04e01d1a13cc9908a.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/9b762158a6ef3f8c4f3967d04e01d1a13cc9908a
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

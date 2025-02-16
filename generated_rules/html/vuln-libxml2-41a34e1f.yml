@@ -1,0 +1,33 @@
+rules:
+- id: vuln-libxml2-41a34e1f
+  pattern: '<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span
+    class="term"><i><tt>ctxt</tt></i>:</span></td><td>an XPath evaluation context</td></tr><tr><td><span
+    class="term"><i><tt>value</tt></i>:</span></td><td>the XPath object</td></tr><tr><td><span
+    class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of items on the
+    value stack</td></tr></tbody></table></div>
+
+    '
+  pattern-not: '<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span
+    class="term"><i><tt>ctxt</tt></i>:</span></td><td>an XPath evaluation context</td></tr><tr><td><span
+    class="term"><i><tt>value</tt></i>:</span></td><td>the XPath object</td></tr><tr><td><span
+    class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of items on the
+    value stack, or -1 in case of error.</td></tr></tbody></table></div>
+
+    '
+  languages:
+  - html
+  message: "The HTML documentation for the XPath valuePush function does not properly\
+    \ document\nthe error handling behavior when NULL values are passed. This could\
+    \ lead to \nconfusion and improper error handling in code that relies on this\
+    \ documentation.\nThe documentation should clearly state that passing NULL will\
+    \ record a memory\nerror and return -1.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/GNOME/libxml2/commit/41a34e1f4ffae2ce401600dbb5fe43f8fe402641
+    category: documentation
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - html

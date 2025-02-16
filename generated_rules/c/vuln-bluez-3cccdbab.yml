@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bluez-3cccdbab
+  pattern: "if ($REQ->subclass & 0x40) {\n  ...\n}\n"
+  pattern-not: "if ($CLASSIC_BONDED_ONLY || $REQ->subclass & 0x40) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This pattern detects a missing check for classic bonded devices in the
+    Bluetooth input profile, which could allow unauthorized connections. The vulnerability
+    occurs when the code fails to verify if a device is bonded before processing its
+    connection request. This can lead to security risks where unauthenticated devices
+    gain access. The fix requires adding a check for `classic_bonded_only` in conjunction
+    with the existing subclass check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/3cccdbab2324086588df4ccf5f892fb3ce1f1787
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://bluetooth.com
+    technology:
+    - c

@@ -1,38 +1,39 @@
 rules:
 - id: vuln-redis-71536684
-  pattern: 'FILE *$FP = fopen($FILENAME,"w");
+  pattern: 'FILE *$FP = fopen($FILENAME, "w");
 
     '
-  pattern-not: 'mode_t $OLD_UMASK = umask($MASK);
+  pattern-not: 'mode_t $OLD_UMASK = umask($MODE);
 
     FILE *$FP;
 
-    $FP = fopen($FILENAME,"w");
+    $FP = fopen($FILENAME, "w");
 
     umask($OLD_UMASK);
 
-    chmod($FILENAME,$MODE);
+    chmod($FILENAME, $PERMISSIONS);
 
     '
   languages:
   - c
-  message: 'Detected insecure file creation without proper umask and permissions.
-    This can lead to files being created with overly permissive access rights, potentially
-    exposing sensitive data or allowing unauthorized modifications. To fix, set a
-    secure umask before creating the file and explicitly set appropriate permissions
-    using chmod after creation.
+  message: 'Detected insecure file creation without proper permissions. This can lead
+    to
+
+    security vulnerabilities where sensitive files are created with overly permissive
+
+    access rights, allowing unauthorized users to read or modify them. To fix this,
+
+    use umask to restrict permissions during file creation and explicitly set
+
+    appropriate permissions with chmod.
 
     '
   severity: ERROR
   metadata:
-    source-url: github.com/redis/redis/commit/71536684a788dc859e42132a2c5a2b7373414375
+    source-url: github.com/antirez/redis/commit/71536684a788dc859e42132a2c5a2b7373414375
     category: security
     cwe:
-    - CWE-732
-    owasp:
-    - A01:2021-Broken Access Control
-    references:
-    - https://man7.org/linux/man-pages/man2/umask.2.html
-    - https://man7.org/linux/man-pages/man2/chmod.2.html
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp: A05:2021 - Security Misconfiguration
     technology:
     - c

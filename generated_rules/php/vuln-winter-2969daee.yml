@@ -1,0 +1,23 @@
+rules:
+- id: vuln-winter-2969daee
+  pattern: "if ($oldExt !== $newExt && $newExt === 'svg') {\n  ...\n}\n"
+  pattern-not: "if ($oldExt !== $newExt && strtolower($newExt) === 'svg') {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected a case-sensitive file extension comparison for SVG files. This
+    can lead to security vulnerabilities where malicious SVG files with different
+    cases (e.g., .SVG, .sVg) might bypass security checks. Always use case-insensitive
+    comparison (e.g., strtolower()) when checking file extensions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wintercms/winter/commit/2969daeea8dee64d292dbaa3778ea251e2a7e491
+    category: security
+    cwe:
+    - CWE-178
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

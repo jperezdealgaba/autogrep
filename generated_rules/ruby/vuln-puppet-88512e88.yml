@@ -1,0 +1,31 @@
+rules:
+- id: vuln-puppet-88512e88
+  pattern: 'File.chown($UID, nil, $TARGET)
+
+    '
+  pattern-not: "Puppet::Util::SUIDManager.asuser(...) {\n    ...\n    File.chmod($PERM,\
+    \ $TARGET)\n}\n"
+  languages:
+  - ruby
+  message: 'Detected insecure use of File.chown without proper privilege escalation
+    context.
+
+    Directly changing file ownership without switching to the target user can lead
+    to privilege escalation vulnerabilities.
+
+    Ensure file ownership changes are performed within the context of the target user
+    using Puppet::Util::SUIDManager.asuser.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/88512e880bd2a03694b5fef42540dc7b3da05d30
+    category: security
+    cwe:
+    - 'CWE-269: Improper Privilege Management'
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://puppet.com/docs/puppet/7/man/utils.html#suidmanager
+    technology:
+    - ruby

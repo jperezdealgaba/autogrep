@@ -1,0 +1,31 @@
+rules:
+- id: vuln-libredwg-757b87f2
+  pattern: "log_if_error(\"reference_get_object\");\n...\nif (!$HDR)\n{\n  fprintf(stderr,\
+    \ \"Found null ref->obj\\n\");\n  return;\n}\n"
+  pattern-not: 'if (!$HDR || $ERROR) log_error("dwg_ref_get_object");
+
+    ...
+
+    if (!_hdr) log_error("dwg_object_to_BLOCK_HEADER");
+
+    '
+  languages:
+  - c
+  message: 'The code checks for a null header but does not handle the error condition
+    properly, potentially leading to undefined behavior. This vulnerability can cause
+    crashes or other unexpected behavior if the header is null. The fix ensures that
+    both the header and error conditions are checked and logged appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibreDWG/libredwg/commit/757b87f2d01127df1fa890f7a6c8608ffe9cd23e
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

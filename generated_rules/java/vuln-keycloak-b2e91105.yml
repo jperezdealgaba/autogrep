@@ -1,0 +1,25 @@
+rules:
+- id: vuln-keycloak-b2e91105
+  pattern: 'String $REDIRECT = $URI.contains("?") ? $URI.substring(0, $URI.indexOf("?"))
+    : $URI;
+
+    '
+  pattern-not: 'String $REDIRECT = stripOffRedirectForWildcard($URI);
+
+    '
+  languages:
+  - java
+  message: 'Incomplete URI sanitization detected. The current code only removes the
+    query component but leaves userInfo and fragment components, which can be exploited
+    for redirect attacks. Use the ''stripOffRedirectForWildcard'' method to properly
+    remove all unsafe components.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/keycloak/keycloak/commit/b2e91105315ccf2c1df549b4f6c5948322cbfd1b
+    category: security
+    cwe: CWE-601
+    owasp: 'A1: Injection'
+    technology:
+    - java

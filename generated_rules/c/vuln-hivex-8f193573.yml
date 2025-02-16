@@ -1,0 +1,30 @@
+rules:
+- id: vuln-hivex-8f193573
+  pattern: "SET_ERRNO($ERRNO,\n          \"%s, the block at 0x%zx has invalid size\
+    \ %\" PRIu32 \", bad registry\",\n          $FILENAME, $BLKOFF, $SEG_LEN);\n"
+  pattern-not: "SET_ERRNO($ERRNO,\n          \"%s, the block at 0x%zx size %\" PRIu32\
+    \ \" extends beyond the current page, bad registry\",\n          $FILENAME, $BLKOFF,\
+    \ $SEG_LEN);\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability in hivex where block size validation
+    is missing.
+
+    This could lead to processing of invalid registry blocks, potentially causing
+    memory corruption or crashes.
+
+    Ensure proper validation of block sizes, checking for minimum size and alignment,
+    and verify blocks do not extend beyond page boundaries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libguestfs/hivex/commit/8f1935733b10d974a1a4176d38dd151ed98cf381
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

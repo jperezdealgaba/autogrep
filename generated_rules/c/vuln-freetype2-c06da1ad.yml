@@ -1,0 +1,29 @@
+rules:
+- id: vuln-freetype2-c06da1ad
+  pattern: "$PARSER->root.cursor += $STRING_SIZE + 1;\nif ($PARSER->root.cursor >=\
+    \ $LIMIT) {\n  ...\n}\n"
+  pattern-not: "if ($LIMIT - $PARSER->root.cursor < $STRING_SIZE) {\n  ...\n} else\
+    \ {\n  $PARSER->root.cursor += $STRING_SIZE + 1;\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in cursor manipulation.
+
+    The original code increments the cursor without checking if the resulting value
+    exceeds the limit,
+
+    which could lead to buffer overflows or memory corruption.
+
+    To fix this, ensure the cursor increment is validated against the limit before
+    performing the operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/c06da1ad34663da7b6fc39b030dc3ae185b96557
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

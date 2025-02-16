@@ -1,0 +1,26 @@
+rules:
+- id: vuln-dnsmasq-63437ffb
+  pattern: 'memset($BUF + $OFFSET, 0, $SIZE - $OFFSET);
+
+    '
+  pattern-not: 'memset($BUF + $OFFSET, 0, $LIMIT - ((char *)$BUF) - $OFFSET);
+
+    '
+  languages:
+  - c
+  message: "Detected a potential information disclosure vulnerability due to improper\
+    \ buffer clearing. \nThe code does not properly clear the buffer beyond the request,\
+    \ which could expose sensitive information. \nTo fix this, ensure the buffer is\
+    \ cleared correctly by using the proper size calculation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/InfrastructureServices/dnsmasq/commit/63437ffbb58837b214b4b92cb1c54bc5f3279928
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - c

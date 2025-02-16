@@ -1,0 +1,31 @@
+rules:
+- id: vuln-aiohttp-f21c6f2c
+  pattern: '$PAYLOAD = $WRITER.append($DATA)
+
+    ...
+
+    assert $CONTENT_DISPOSITION in $PAYLOAD.headers
+
+    '
+  pattern-not: '$PAYLOAD = $WRITER.append($DATA)
+
+    $PAYLOAD.set_content_disposition("form-data", name=$NAME)
+
+    assert $CONTENT_DISPOSITION in $PAYLOAD.headers
+
+    '
+  languages:
+  - python
+  message: "Detected missing Content-Disposition header in multipart payload. \nThis\
+    \ can lead to incorrect handling of form data by clients or servers. \nEnsure\
+    \ to set Content-Disposition with a proper name attribute for each part.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/f21c6f2ca512a026ce7f0f6c6311f62d6a638866
+    category: security
+    cwe: 'CWE-345: Insufficient Verification of Data Authenticity'
+    owasp: A03:2021 - Injection
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+    technology:
+    - python

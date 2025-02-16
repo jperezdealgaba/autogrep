@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mujs-160ae295
+  pattern: 'count($G, $NODE)
+
+    '
+  pattern-not: 'count($G, $NODE, $DEPTH)
+
+    '
+  languages:
+  - c
+  message: 'The function `count` is called without a depth parameter, which can lead
+    to a stack overflow due to uncontrolled recursion. This vulnerability occurs because
+    the function does not track recursion depth, allowing it to exceed the `REG_MAXREC`
+    limit. To fix this, ensure that the `count` function is always called with a depth
+    parameter to prevent excessive recursion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/160ae29578054dc09fd91e5401ef040d52797e61
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

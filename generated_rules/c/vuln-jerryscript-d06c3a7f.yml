@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jerryscript-d06c3a7f
+  pattern: "ecma_value_t $RESULT = ECMA_VALUE_EMPTY;\n...\n$RESULT = $FUNC($ARG);\n\
+    ...\nif (!ecma_is_value_empty ($RESULT)) {\n  ...\n  if (ECMA_IS_VALUE_ERROR ($RESULT))\
+    \ {\n    return $RESULT;\n  }\n  ...\n}\n"
+  pattern-not: "ecma_value_t $RESULT = $FUNC($ARG);\nif (ECMA_IS_VALUE_ERROR ($RESULT))\
+    \ {\n  return $RESULT;\n}\n"
+  languages:
+  - c
+  message: 'The code incorrectly checks for errors after modifying the result value,
+    which can lead to undefined behavior or security vulnerabilities. The error check
+    should be performed immediately after the function call to ensure proper error
+    handling. Fix this by checking for errors directly after the function call and
+    handling them appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jerryscript-project/jerryscript/commit/d06c3a7f5090034054d03d2d18f8cc1d2fd6bead
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-httpcomponents-client-6e14fc14
+  pattern: "String $TOK = $ST.nextToken();\nint $X = $TOK.indexOf(\"CN=\");\nif ($X\
+    \ >= 0) {\n  $CNLIST.add($TOK.substring($X + 3));\n}\n"
+  pattern-not: "String $TOK = $ST.nextToken().trim();\nif ($TOK.length() > 3) {\n\
+    \  if ($TOK.substring(0, 3).equalsIgnoreCase(\"CN=\")) {\n    $CNLIST.add($TOK.substring(3));\n\
+    \  }\n}\n"
+  languages:
+  - java
+  message: "The code is vulnerable to incorrect handling of CN (Common Name) extraction\
+    \ in SSL certificates. \nThe original code does not properly trim tokens or check\
+    \ for the exact \"CN=\" prefix, which can lead to incorrect or insecure certificate\
+    \ validation. \nThe fix ensures proper trimming and exact prefix matching, improving\
+    \ security and correctness.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/httpcomponents-client/commit/6e14fc146a66e0f3eb362f45f95d1a58ee18886a
+    category: security
+    cwe: CWE-295
+    owasp: A6:2017-Security Misconfiguration
+    technology: java

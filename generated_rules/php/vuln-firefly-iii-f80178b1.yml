@@ -1,0 +1,24 @@
+rules:
+- id: vuln-firefly-iii-f80178b1
+  pattern: "public function delete($VAR) {\n    $this->abRepository->destroyAvailableBudget($VAR);\n\
+    \    ...\n}\n"
+  pattern-not: "public function delete(Request $request) {\n    $id = (int)$request->get('id');\n\
+    \    if (0 !== $id) {\n        $availableBudget = $this->abRepository->findById($id);\n\
+    \        if (null !== $availableBudget) {\n            $this->abRepository->destroyAvailableBudget($availableBudget);\n\
+    \            ...\n        }\n    }\n}\n"
+  languages:
+  - php
+  message: "Directly passing an object to a delete method without proper validation\
+    \ can lead to unauthorized deletions. \nThis is dangerous because it allows attackers\
+    \ to delete resources by manipulating the input. \nThe fix involves validating\
+    \ the input ID and ensuring the resource exists before deletion.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/firefly-iii/firefly-iii/commit/f80178b1b2b7864d17500a131d570c353c9a26f6
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

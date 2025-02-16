@@ -1,0 +1,25 @@
+rules:
+- id: vuln-dnsmasq-74d4fcd7
+  pattern: 'reply_query($FD, $FAMILY, $NOW);
+
+    '
+  pattern-not: 'reply_query($FD, $NOW);
+
+    '
+  languages:
+  - c
+  message: 'The function `reply_query` is being called with an unnecessary `family`
+    parameter, which has been removed in the patch. This could lead to incorrect socket
+    handling and potential security issues. Update the call to remove the `family`
+    parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/InfrastructureServices/dnsmasq/commit/74d4fcd756a85bc1823232ea74334f7ccfb9d5d2
+    category: security
+    cwe:
+    - CWE-676
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

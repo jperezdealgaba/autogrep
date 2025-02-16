@@ -1,0 +1,29 @@
+rules:
+- id: vuln-exim-337e3505
+  pattern: 'log_write(0, LOG_MAIN, (char *)$LOGMSG);
+
+    '
+  pattern-not: 'log_write(0, LOG_MAIN, "DKIM: %s", $LOGMSG);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential log injection vulnerability. The log message is directly
+    passed as a string without proper formatting, which could allow an attacker to
+    inject malicious content into the log. This can lead to log manipulation or other
+    security issues. To fix this, use a format string to explicitly specify the log
+    message format, such as "DKIM: %s".
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/337e3505b0e6cd4309db6bf6062b33fa56e06cf8
+    category: security
+    cwe:
+    - CWE-117
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/117.html
+    technology:
+    - c

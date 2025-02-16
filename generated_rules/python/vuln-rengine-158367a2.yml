@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rengine-158367a2
+  pattern: 'os.system(''rm -rf '' + $PATH)
+
+    '
+  pattern-not: 'os.system(''rm -rf /usr/src/scan_results/'' + $DIR)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe directory deletion using os.system() with user-controlled
+    input. This can lead to arbitrary file deletion or directory traversal attacks.
+
+    Fixed version uses a controlled directory path. Always validate and sanitize paths
+    before performing file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/yogeshojha/rengine/commit/158367a231335026b8dba633a76b44de290ad37c
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python

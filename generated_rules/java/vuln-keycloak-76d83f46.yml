@@ -1,0 +1,20 @@
+rules:
+- id: vuln-keycloak-76d83f46
+  pattern: "if (!AdminPermissions.evaluator($SESSION, $REALM, $AUTH).users().canImpersonate($USER))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!AdminPermissions.evaluator($SESSION, $REALM, $AUTH).users().canImpersonate($USER,\
+    \ $CLIENT)) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Missing client validation in impersonation check. This could allow unauthorized
+    clients to impersonate users. Always validate the requesting client in impersonation
+    checks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/keycloak/keycloak/commit/76d83f46fad94ebcbedaa49e6daad458e2894e52
+    category: security
+    cwe: 'CWE-285: Improper Authorization'
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java
+    - keycloak

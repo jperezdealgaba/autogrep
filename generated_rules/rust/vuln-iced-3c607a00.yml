@@ -1,0 +1,27 @@
+rules:
+- id: vuln-iced-3c607a00
+  pattern: '$SLF.displ_index = $SLF.data_ptr as usize;
+
+    '
+  pattern-not: '$SLF.displ_index = $SLF.data_ptr as u8;
+
+    '
+  languages:
+  - rust
+  message: 'Detected unsafe casting of `data_ptr` to `usize` for `displ_index`. This
+    can lead to integer overflow or truncation issues. The fix involves casting to
+    `u8` instead of `usize` to ensure proper bounds and prevent potential security
+    vulnerabilities. Always use the appropriate type for index calculations to avoid
+    overflow and ensure memory safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/icedland/iced/commit/3c607a003e03b773108401d109167d1840487dce
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-681
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - rust

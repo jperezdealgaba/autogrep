@@ -1,0 +1,24 @@
+rules:
+- id: vuln-nfdump-9f0fe956
+  pattern: 'ConvertCommonV0($RECORD, $BUFFER);
+
+    '
+  pattern-not: "if ( !ConvertCommonV0($RECORD, $BUFFER) ) {\n  $ERROR_HANDLING;\n\
+    \  exit(255);\n}\n"
+  languages:
+  - c
+  message: "Detected a missing error check on the return value of ConvertCommonV0.\
+    \ \nThis can lead to processing corrupted data without proper error handling,\
+    \ \npotentially causing undefined behavior or security issues. \nAlways check\
+    \ the return value of ConvertCommonV0 and handle errors appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phaag/nfdump/commit/9f0fe9563366f62a71d34c92229da3432ec5cf0e
+    category: security
+    cwe:
+    - CWE-252
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c

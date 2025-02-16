@@ -1,0 +1,24 @@
+rules:
+- id: vuln-pupnp-c805c1de
+  pattern: "if ($TABLE && parse_uri($URL, strlen($URL), $PARSED_URL) == $HTTP_SUCCESS)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!$TABLE || !$URL) {\n  return $NULL;\n}\nif (parse_uri($URL, strlen($URL),\
+    \ $PARSED_URL) == $HTTP_SUCCESS) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing NULL checks for table and URL parameters before parsing. This
+    can lead to NULL pointer dereference vulnerabilities if either parameter is NULL.
+    Add explicit NULL checks before calling parse_uri to prevent potential crashes
+    or undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pupnp/pupnp/commit/c805c1de1141cb22f74c0d94dd5664bda37398e0
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

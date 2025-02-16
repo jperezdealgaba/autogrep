@@ -1,0 +1,38 @@
+rules:
+- id: vuln-libplist-4765d9a6
+  pattern: 'uint32_t $STR_J = 0;
+
+    uint32_t $INDEX1;
+
+    ...
+
+    $INDEX1 = UINT_TO_HOST((*$BNODE) + $STR_J, $BPLIST->ref_size);
+
+    '
+  pattern-not: "uint64_t $STR_J = 0;\nuint64_t $INDEX1;\nconst char *const $END_DATA\
+    \ = $BPLIST->data + $BPLIST->size;\nconst char *$INDEX1_PTR = NULL;\n...\n$INDEX1_PTR\
+    \ = (*$BNODE) + $STR_J;\nif ($INDEX1_PTR < $BPLIST->data || $INDEX1_PTR + $BPLIST->ref_size\
+    \ >= $END_DATA) {\n    plist_free($NODE);\n    return NULL;\n}\n$INDEX1 = UINT_TO_HOST($INDEX1_PTR,\
+    \ $BPLIST->ref_size);\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability due to the use of
+    32-bit integers for pointer arithmetic. This can lead to out-of-bounds memory
+    access, causing crashes or security vulnerabilities. Upgrade to 64-bit integers
+    and add bounds checking to prevent this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libimobiledevice/libplist/commit/4765d9a60ca4248a8f89289271ac69cbffcc29bc
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

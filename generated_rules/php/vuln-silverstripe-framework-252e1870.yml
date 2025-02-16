@@ -1,0 +1,29 @@
+rules:
+- id: vuln-silverstripe-framework-252e1870
+  pattern: '$pageLink = $PAGE->AbsoluteLink();
+
+    '
+  pattern-not: '$pageLink = Convert::raw2att($PAGE->AbsoluteLink());
+
+    '
+  pattern-inside: "function $FUNC(...) {\n  ...\n  $pageLink = $PAGE->AbsoluteLink();\n\
+    \  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected unescaped URL output in SilverStripe framework. This vulnerability
+    can lead to XSS (Cross-Site Scripting) attacks if the URL contains malicious input.
+    Always use Convert::raw2att() to properly escape URLs before outputting them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/252e187015a4f4c14470ab39bcf6a5c43b64081e
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://docs.silverstripe.org/en/4/developer_guides/security/secure_coding/#output-escaping
+    technology:
+    - php

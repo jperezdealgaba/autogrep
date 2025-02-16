@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tendermint-a2a6852a
+  pattern: '$EVPOOL.AddEvidenceFromConsensus($EVIDENCE)
+
+    '
+  pattern-not: '$EVPOOL.ReportConflictingVotes($VOTEA, $VOTEB)
+
+    '
+  languages:
+  - go
+  message: 'The use of `AddEvidenceFromConsensus` to add evidence directly to the
+    evidence pool without proper validation can lead to security vulnerabilities.
+    This method bypasses verification and can allow invalid or malicious evidence
+    to be added. Instead, use `ReportConflictingVotes` to report conflicting votes,
+    which will be properly processed into evidence with the correct timestamp and
+    validator set.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tendermint/tendermint/commit/a2a6852ab99e4a0f9e79f0ea8c1726e262e25c76
+    category: security
+    cwe: 'CWE-345: Insufficient Verification of Data Authenticity'
+    owasp: 'A6: Security Misconfiguration'
+    technology:
+    - go

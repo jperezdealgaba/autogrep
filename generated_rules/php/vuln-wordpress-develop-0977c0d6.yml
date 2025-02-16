@@ -1,0 +1,29 @@
+rules:
+- id: vuln-wordpress-develop-0977c0d6
+  pattern: 'wp_editor($POST->post_content, $EDITOR_ID, $EDITOR_ARGS);
+
+    '
+  pattern-not: 'wp_editor(format_to_edit($POST->post_content), $EDITOR_ID, $EDITOR_ARGS);
+
+    '
+  languages:
+  - php
+  message: 'The wp_editor function is being called without properly sanitizing the
+    post content, which could lead to potential XSS vulnerabilities. Always sanitize
+    user input before passing it to wp_editor using format_to_edit or another appropriate
+    sanitization function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/0977c0d6b241479ecedfe19e96be69f727c3f81f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.wordpress.org/reference/functions/wp_editor/
+    - https://developer.wordpress.org/reference/functions/format_to_edit/
+    technology:
+    - php

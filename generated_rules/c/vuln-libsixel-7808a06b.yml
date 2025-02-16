@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libsixel-7808a06b
+  pattern: 'gif_lzw $VAR[4096];
+
+    '
+  pattern-not: 'gif_lzw $VAR[1 << gif_lzw_max_code_size];
+
+    '
+  languages:
+  - c
+  message: "Detected a potentially unsafe fixed-size array declaration for LZW codes.\
+    \ \nThe original code uses a hardcoded size of 4096, which could lead to buffer\
+    \ overflows if the input exceeds this size. \nEnsure the array size is dynamically\
+    \ calculated based on the maximum code size constant.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/saitoha/libsixel/commit/7808a06b88c11dbc502318cdd51fa374f8cd47ee
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

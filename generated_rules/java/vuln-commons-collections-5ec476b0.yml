@@ -1,0 +1,26 @@
+rules:
+- id: vuln-commons-collections-5ec476b0
+  pattern: "if ($DESERIALIZE_PROPERTY == null || !$DESERIALIZE_PROPERTY.equalsIgnoreCase(\"\
+    true\")) {\n  throw new UnsupportedOperationException(\"Deserialization of InvokerTransformer\
+    \ is disabled, \");\n}\n"
+  pattern-not: "if (!\"true\".equalsIgnoreCase($DESERIALIZE_PROPERTY)) {\n  throw\
+    \ new UnsupportedOperationException(\n    \"Deserialization of InvokerTransformer\
+    \ is disabled for security reasons. \" +\n    \"To re-enable it set system property\
+    \ '\" + $DESERIALIZE + \"' to 'true'\");\n}\n"
+  languages:
+  - java
+  message: "Deserialization of InvokerTransformer is disabled for security reasons.\
+    \ \nThe original code allowed deserialization when the property was null, which\
+    \ could lead to remote code execution vulnerabilities. \nTo fix this, ensure the\
+    \ property is explicitly checked for \"true\" and provide a clear security warning.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-collections/commit/5ec476b0b756852db865b2e442180f091f8209ee
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/502.html
+    - https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization
+    technology:
+    - java

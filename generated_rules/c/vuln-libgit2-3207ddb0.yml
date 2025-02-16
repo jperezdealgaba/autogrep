@@ -1,0 +1,48 @@
+rules:
+- id: vuln-libgit2-3207ddb0
+  pattern: 'size_t $VARINT_LEN;
+
+    size_t $STRIP_LEN = git_decode_varint((const unsigned char *)$PATH_PTR, &$VARINT_LEN);
+
+    size_t $LAST_LEN = strlen($LAST);
+
+    size_t $PREFIX_LEN = $LAST_LEN - $STRIP_LEN;
+
+    size_t $SUFFIX_LEN = strlen($PATH_PTR + $VARINT_LEN);
+
+    size_t $PATH_LEN;
+
+    '
+  pattern-not: 'size_t $VARINT_LEN, $LAST_LEN, $PREFIX_LEN, $SUFFIX_LEN, $PATH_LEN;
+
+    uintmax_t $STRIP_LEN;
+
+    $STRIP_LEN = git_decode_varint((const unsigned unsigned char *)$PATH_PTR, &$VARINT_LEN);
+
+    $LAST_LEN = strlen($LAST);
+
+    if ($VARINT_LEN == 0 || $LAST_LEN < $STRIP_LEN)
+
+    $PREFIX_LEN = $LAST_LEN - $STRIP_LEN;
+
+    $SUFFIX_LEN = strlen($PATH_PTR + $VARINT_LEN);
+
+    '
+  languages:
+  - c
+  message: "Detected potential integer underflow vulnerability due to missing bounds\
+    \ check on `strip_len`. \nThis can lead to undefined behavior or memory corruption\
+    \ if `last_len` is less than `strip_len`. \nThe fix includes adding a check to\
+    \ ensure `last_len` is not less than `strip_len` before performing the subtraction.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/3207ddb0103543da8ad2139ec6539f590f9900c1
+    category: security
+    cwe:
+    - CWE-191
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/191.html
+    technology:
+    - c

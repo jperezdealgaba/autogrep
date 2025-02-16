@@ -1,0 +1,34 @@
+rules:
+- id: vuln-mono-035c8587
+  pattern: "if (MONO_TYPE_IS_REFERENCE($TYPE) ||\n    ($TYPE->type == MONO_TYPE_VALUETYPE\
+    \ &&\n     (!mono_type_get_class($TYPE) ||\n      mono_type_get_class($TYPE)->has_references)))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (MONO_TYPE_IS_REFERENCE($TYPE) || $TYPE->type == MONO_TYPE_VALUETYPE)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potentially unsafe array initialization check that may allow
+
+    initialization of arrays containing references. This could lead to
+
+    unexpected behavior or security vulnerabilities. The check should be
+
+    simplified to prevent initialization of arrays with non-primitive types.
+
+    Update the condition to only check for reference types or value types
+
+    without additional constraints.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mono/mono/commit/035c8587c0d8d307e45f1b7171a0d337bb451f1e
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-uc-ftps-83393f61
+  pattern: "if ($VAR.CtrlState == FTPs_STATE_LOGOUT) {\n  ...\n}\n"
+  pattern-not: "if ($VAR.CtrlState != FTPs_STATE_LOGIN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the control state check in the
+    FTP server is incorrectly using == FTPs_STATE_LOGOUT instead of != FTPs_STATE_LOGIN.
+    This could lead to unauthorized access or improper session handling. The fix changes
+    the condition to != FTPs_STATE_LOGIN to ensure proper state validation. Always
+    validate session states correctly to prevent security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weston-embedded/uC-FTPs/commit/83393f6129fc5a77cbdf287c6fd9745cb53d8d04
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c

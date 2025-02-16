@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-ethereum-d990df90
+  pattern: "if $LIMIT > uint32($SIZE/$HASHBYTES) {\n    $LIMIT = uint32($SIZE / $HASHBYTES)\n\
+    }\n"
+  pattern-not: "if $LIMIT > $SIZE/$HASHBYTES {\n    $LIMIT = $SIZE / $HASHBYTES\n\
+    }\n"
+  languages:
+  - go
+  message: "Potential integer overflow vulnerability due to unnecessary uint32 casting.\
+    \ \nThe original code casts the result of division to uint32, which can lead to\
+    \ \nincorrect comparisons and limit calculations if the result exceeds uint32's\
+    \ range. \nThis can cause incorrect dataset generation and potential consensus\
+    \ issues in Ethereum. \nRemove the uint32 casting to ensure proper arithmetic\
+    \ operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/d990df909d7839640143344e79356754384dcdd0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/ethereum/go-ethereum/commit/d990df909d7839640143344e79356754384dcdd0
+    technology:
+    - go

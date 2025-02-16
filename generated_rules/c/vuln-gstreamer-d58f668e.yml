@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gstreamer-d58f668e
+  pattern: "guint16 $SECTION_LENGTH;\n...\nif (G_UNLIKELY ($DATA_SIZE < $MIN_SIZE))\
+    \ {\n  ...\n}\n"
+  pattern-not: "guint16 $SECTION_LENGTH = 0;\n...\nif (G_UNLIKELY ($DATA_SIZE < 3))\
+    \ {\n  ...\n}\nif (G_UNLIKELY ($DATA_SIZE < 11)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability due to missing initialization of section_length
+    and insufficient size checks for MPEG-TS packets. This can lead to undefined behavior
+    or security issues when processing malformed packets. The fix initializes section_length
+    to 0 and adds proper size checks for both short and long packets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gstreamer/gstreamer/commit/d58f668ece8795bddb3316832e1848c7b7cf38ac
+    category: security
+    cwe:
+    - CWE-457
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-grin-391e311f
+  pattern: 'zip::decompress($SRC_FILE, $DEST_PATH)
+
+    '
+  pattern-not: 'zip::decompress($SRC_FILE, $DEST_PATH, $EXPECTED_FUNC)
+
+    '
+  languages:
+  - rust
+  message: 'Detected use of `zip::decompress` without a file validation function.
+    This can lead to path traversal or malicious file extraction vulnerabilities.
+    Always validate file paths before extraction to prevent unauthorized file access
+    or overwrites. Use the `expected` parameter to specify a validation function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/391e311f4c05619bd4b7b0d599a5071ce7753b90
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/434.html
+    technology:
+    - rust

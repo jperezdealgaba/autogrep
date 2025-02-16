@@ -1,0 +1,27 @@
+rules:
+- id: vuln-fuel-cms-89d4abdb
+  pattern: '$return[''navigation''][''inline_create?location=''.urlencode($values[''location'']).''&label=''.$label.''&group_id=''.$group_id.''&parent_id=''.$parent_id]
+    = lang(''navigation_related'');
+
+    '
+  pattern-not: '$return[''navigation''][''inline_create?location=''.urlencode($values[''location'']).''&label=''.htmlentities($label).''&group_id=''.$group_id.''&parent_id=''.$parent_id]
+    = lang(''navigation_related'');
+
+    '
+  languages:
+  - php
+  message: 'The label parameter in the URL is not properly sanitized, which could
+    lead to XSS vulnerabilities. Always use htmlentities or similar functions to sanitize
+    user input before including it in URLs or HTML output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/89d4abdb3ee14a32da3210a0db690101fd25df5b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

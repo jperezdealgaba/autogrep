@@ -1,0 +1,31 @@
+rules:
+- id: vuln-itop-43daa2ef
+  pattern: "$sAuthent = utils::ReadParam('authent', '', false, 'raw_data');\nif (!file_exists(APPROOT.'data/setup/authent')\
+    \ || $sAuthent !== file_get_contents(APPROOT.'data/setup/authent')) {\n  throw\
+    \ new SecurityException('Setup operations are not allowed outside of the setup');\n\
+    \  SetupPage::log_error(\"Setup operations are not allowed outside of the setup\"\
+    );\n}\n"
+  pattern-not: 'SetupUtils::CheckSetupToken();
+
+    '
+  languages:
+  - php
+  message: 'The setup authentication mechanism is vulnerable because it directly compares
+    a user-provided token with a file content without proper session validation. This
+    can lead to unauthorized access to setup operations. The fix introduces a session-based
+    token validation mechanism. Use SetupUtils::CheckSetupToken() instead of manual
+    token validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/43daa2ef088bf928a2386fa19324628c3f19b807
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

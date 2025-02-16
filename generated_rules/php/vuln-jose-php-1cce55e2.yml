@@ -1,0 +1,31 @@
+rules:
+- id: vuln-jose-php-1cce55e2
+  pattern: 'return $this->signature === hash_hmac($this->digest(), $signature_base_string,
+    $public_key_or_secret, true);
+
+    '
+  pattern-not: '$hmac_hash = hash_hmac($this->digest(), $signature_base_string, $public_key_or_secret,
+    true);
+
+    return hash_equals($this->signature, $hmac_hash);
+
+    '
+  languages:
+  - php
+  message: "Detected insecure comparison of HMAC signatures using '==='. This can\
+    \ lead to timing attacks. \nUse 'hash_equals()' instead to perform a constant-time\
+    \ comparison and prevent timing attacks.\nAdditionally, ensure HMAC algorithms\
+    \ are explicitly specified to avoid unexpected algorithm usage.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nov/jose-php/commit/1cce55e27adf0274193eb1cd74b927a398a3df4b
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://www.owasp.org/index.php/Timing_Attack
+    - https://php.net/manual/en/function.hash-equals.php
+    technology:
+    - php

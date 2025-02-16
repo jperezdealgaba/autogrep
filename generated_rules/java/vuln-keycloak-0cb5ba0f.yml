@@ -1,0 +1,23 @@
+rules:
+- id: vuln-keycloak-0cb5ba0f
+  pattern: '$STR = StringUtil.getSystemPropertyAsString($STR);
+
+    '
+  pattern-not: '$STR = StringUtil.getSystemPropertyAsString($STR);
+
+    $STR = StringUtil.getSystemPropertyAsString($STR);
+
+    '
+  languages:
+  - java
+  message: "Potential security vulnerability due to double system property resolution.\
+    \ \nResolving system properties multiple times can lead to inconsistent or unexpected\
+    \ behavior, \nespecially if the property value changes between calls. \nRemove\
+    \ redundant calls to StringUtil.getSystemPropertyAsString.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/keycloak/keycloak/commit/0cb5ba0f6e83162d221681f47b470c3042eef237
+    category: security
+    cwe: CWE-471
+    owasp: A03:2021-Injection
+    technology: java

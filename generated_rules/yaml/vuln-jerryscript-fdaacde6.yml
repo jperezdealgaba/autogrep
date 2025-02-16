@@ -1,0 +1,25 @@
+rules:
+- id: vuln-jerryscript-fdaacde6
+  pattern: 'parallel: true
+
+    '
+  pattern-not: 'parallel: false
+
+    '
+  languages:
+  - yaml
+  message: 'The use of `parallel: true` can lead to I/O errors in msbuild when generating
+    amalgamated files concurrently. This can cause build failures and unstable behavior.
+    To fix this, set `parallel: false` to avoid concurrent file generation conflicts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jerryscript-project/jerryscript/commit/fdaacde6671cf0a370f7f5b50a45a489efc6bb2f
+    category: build
+    cwe:
+    - CWE-362
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - yaml

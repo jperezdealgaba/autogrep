@@ -1,0 +1,25 @@
+rules:
+- id: vuln-fuel-cms-c33ddda5
+  pattern: "protected function _is_valid_csrf()\n{\n    return !empty($_SESSION[$this->form_builder->key_check_name])\
+    \ AND $_SESSION[$this->form_builder->key_check_name] == $this->input->post($this->form_builder->key_check_name);\n\
+    }\n"
+  pattern-not: "protected function _is_valid_csrf()\n{\n    return !empty($_SESSION[$this->_get_csrf_token_name()])\
+    \ AND $_SESSION[$this->_get_csrf_token_name()] == $this->input->post($this->_get_csrf_token_name());\n\
+    }\n"
+  languages:
+  - php
+  message: "The CSRF validation method directly uses form_builder properties without\
+    \ proper token generation and validation, making it vulnerable to CSRF attacks.\
+    \ \nThis can allow attackers to forge requests and perform unauthorized actions.\
+    \ \nUse a secure token generation method like `_generate_csrf_token()` and validate\
+    \ it using `_get_csrf_token_name()` to ensure proper CSRF protection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/c33ddda5df87d7af87fa8c6e4449512c6c2b5f5f
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php

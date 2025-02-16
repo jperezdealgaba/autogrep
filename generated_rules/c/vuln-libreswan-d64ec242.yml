@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libreswan-d64ec242
+  pattern: "if ($ST == NULL ||\n    ($ST->hidden_variables.st_nat_traversal & $NAT_T_WITH_RFC_VALUES)\
+    \ == $LEMPTY) {\n  ...\n}\n"
+  pattern-not: "if (($ST->hidden_variables.st_nat_traversal & $NAT_T_WITH_RFC_VALUES)\
+    \ == $LEMPTY) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code contains a null pointer dereference vulnerability. The check
+    for `st == NULL` was removed, which could lead to a crash if `st` is null. This
+    vulnerability occurs in the handling of NAT traversal in IKEv1. To fix this, ensure
+    proper null checks are in place before accessing structure members.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libreswan/libreswan/commit/d64ec2420a21f76d08106a074cbc6b3795810325
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A1:2017-Injection
+    technology:
+    - c

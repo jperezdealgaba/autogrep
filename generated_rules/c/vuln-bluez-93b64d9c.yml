@@ -1,0 +1,25 @@
+rules:
+- id: vuln-bluez-93b64d9c
+  pattern: "static bool parse_value_arg(DBusMessage *$MSG, uint8_t **$VALUE, size_t\
+    \ *$VALUE_LEN) {\n  ...\n  if ($LEN < 0)\n    return false;\n  ...\n}\n"
+  pattern-not: "static int parse_value_arg(DBusMessageIter *$ITER, uint8_t **$VALUE,\
+    \ int *$LEN) {\n  ...\n  if (dbus_message_iter_get_arg_type($ITER) != DBUS_TYPE_ARRAY)\n\
+    \    return -EINVAL;\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `parse_value_arg` incorrectly handles negative length values
+    by returning `false` instead of an error code. This can lead to undefined behavior
+    when negative values are passed. The fix involves returning a proper error code
+    (`-EINVAL`) and using `DBusMessageIter` for safer message parsing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/93b64d9ca8a2bb663e37904d4b2c702c58a36e4f
+    category: security
+    cwe:
+    - 'CWE-687: Function Call With Incorrectly Specified Argument Value'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

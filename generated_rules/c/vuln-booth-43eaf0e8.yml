@@ -1,0 +1,31 @@
+rules:
+- id: vuln-booth-43eaf0e8
+  pattern: '$TPT->recv($SITE, $MSG + $LEN, $LEN - sizeof(*$HEADER))
+
+    '
+  pattern-not: '$TPT->recv($SITE, $MSG + sizeof(*$HEADER), $LEN - sizeof(*$HEADER))
+
+    '
+  languages:
+  - c
+  message: 'This vulnerability occurs when the `recv` function is called with an incorrect
+    offset calculation, potentially leading to buffer overflows or data corruption.
+    The issue arises because the message pointer is incremented by the message length
+    (`len`) instead of the header size (`sizeof(*header)`), which can cause the function
+    to read beyond the intended memory boundary. To fix this, ensure that the message
+    pointer is incremented by the header size (`sizeof(*header)`) to correctly align
+    the buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ClusterLabs/booth/commit/43eaf0e82b1475a6a5322881cbd8260b6c3f5ef8
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jsish-48b86dbe
+  pattern: 'assert($VP != $RESPTR);
+
+    '
+  pattern-not: "if ($VP == $RESPTR)\n  return Jsi_LogError(\"bad eval\");\n"
+  languages:
+  - c
+  message: 'The use of `assert` for validation can lead to undefined behavior if the
+    assertion fails in production builds. This is dangerous because it can cause the
+    program to terminate abruptly without proper error handling. Replace `assert`
+    with proper error handling to ensure graceful failure and better security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/48b86dbeb287dca8e5451cb6d6a60e98156c5c8b
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/ERR33-C.+Detect+and+handle+standard+library+errors
+    technology:
+    - c

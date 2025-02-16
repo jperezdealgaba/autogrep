@@ -1,0 +1,29 @@
+rules:
+- id: vuln-silverstripe-framework-107706c1
+  pattern: '$variables[''_SERVER''][''REQUEST_METHOD''] = $variables[''_SERVER''][''X-HTTP-Method-Override''];
+
+    '
+  pattern-not: '$this->httpMethod = strtoupper($httpMethod);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe HTTP method override via X-HTTP-Method-Override header.
+    This can lead to web cache poisoning and CSRF vulnerabilities. Instead, validate
+    the HTTP method explicitly using a whitelist of allowed methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/107706c12cd9cf4d1b8b96b6a6e223633209d851
+    category: security
+    cwe:
+    - CWE-352
+    - CWE-113
+    owasp:
+    - A5:2017-Broken Access Control
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.silverstripe.org/download/security-releases/CVE-2019-19326
+    technology:
+    - php

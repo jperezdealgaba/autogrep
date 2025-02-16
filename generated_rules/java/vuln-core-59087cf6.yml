@@ -1,0 +1,31 @@
+rules:
+- id: vuln-core-59087cf6
+  pattern: 'messagesMap.put($MESSAGE_KEY, APILocator.getLanguageAPI().getStringKey($LANG,
+    $MESSAGE_KEY))
+
+    '
+  pattern-not: 'String $MESSAGE = ($LANG != null) ? APILocator.getLanguageAPI().getStringKey($LANG,
+    $MESSAGE_KEY) : LanguageUtil.get($LOCALE, $MESSAGE_KEY) != null ? LanguageUtil.get($LOCALE,
+    $MESSAGE_KEY) : $MESSAGE_KEY;
+
+    $MESSAGE = ($MESSAGE == null) ? $MESSAGE_KEY : $MESSAGE;
+
+    messagesMap.put($MESSAGE_KEY, $MESSAGE)
+
+    '
+  languages:
+  - java
+  message: 'Potential null pointer vulnerability in message retrieval. The original
+    code does not handle cases where `lang` or `locale` might be null, which could
+    lead to runtime exceptions. The fix includes proper null checks and fallback mechanisms
+    to ensure safe message retrieval.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/59087cf60d13e2542299d362651ac72bfa1b0f27
+    category: security
+    cwe: CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references: https://cwe.mitre.org/data/definitions/476.html
+    technology: java

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-minimagick-4cd5081e
+  pattern: "Kernel.open($PATH, \"rb\", $OPTIONS) do |$FILE|\n  $READ($FILE, $EXT)\n\
+    end\n"
+  pattern-not: "if $URI.is_a?(URI::HTTP) || $URI.is_a?(URI::FTP)\n  $URI.open($OPTIONS)\
+    \ { |$FILE| $READ($FILE, $EXT) }\nelse\n  File.open($URI.to_s, \"rb\", $OPTIONS)\
+    \ { |$FILE| $READ($FILE, $EXT) }\nend\n"
+  languages:
+  - ruby
+  message: 'Using `Kernel.open` with untrusted input can lead to remote code execution
+    vulnerabilities.
+
+    The vulnerability arises because `Kernel.open` can execute shell commands if the
+    input starts with a pipe (`|`).
+
+    To fix this, use `URI.open` for HTTP/FTP URLs and `File.open` for local files
+    after validating the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/minimagick/minimagick/commit/4cd5081e58810d3394d27a67219e8e4e0445d851
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A1: Injection
+    references:
+    - https://ruby-doc.org/core/Kernel.html#method-i-open
+    - https://github.com/minimagick/minimagick/commit/4cd5081e58810d3394d27a67219e8e4e0445d851
+    technology:
+    - ruby

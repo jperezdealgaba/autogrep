@@ -1,0 +1,26 @@
+rules:
+- id: vuln-premid-16bd93f5
+  pattern: "{\n  cors: { origin: \"*\" }\n}\n"
+  pattern-not: "{\n  allowRequest: (req, callback) => {\n    const noOriginHeader\
+    \ = req.headers.origin === undefined;\n    callback(null, noOriginHeader);\n \
+    \ }\n}\n"
+  languages:
+  - typescript
+  message: "Detected a vulnerable CORS configuration that allows all origins (`origin:\
+    \ \"*\"`). \nThis is dangerous as it exposes the application to Cross-Origin Resource\
+    \ Sharing (CORS) attacks, \npotentially allowing malicious websites to access\
+    \ sensitive data. \nTo fix this, implement a custom `allowRequest` function that\
+    \ validates the origin header.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/PreMiD/PreMiD/commit/16bd93f56605dc0db9843d22ebcaa8f9f580420d
+    category: security
+    cwe:
+    - CWE-942
+    owasp:
+    - A5:2017-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    - https://portswigger.net/web-security/cors
+    technology:
+    - typescript

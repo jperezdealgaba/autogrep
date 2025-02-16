@@ -1,0 +1,37 @@
+rules:
+- id: vuln-go-ethereum-a5237a27
+  pattern: "if $HEADER := $BLOCKCHAIN.GetHeaderByNumber($ORIGIN.Number.Uint64() +\
+    \ $QUERY.Skip + 1); $HEADER != nil {\n  if $BLOCKCHAIN.GetBlockHashesFromHash($HEADER.Hash(),\
+    \ $QUERY.Skip+1)[$QUERY.Skip] == $QUERY.Origin.Hash {\n    $QUERY.Origin.Hash\
+    \ = $HEADER.Hash()\n  }\n} else {\n  $UNKNOWN = true\n}\n"
+  pattern-not: "var (\n  $CURRENT = $ORIGIN.Number.Uint64()\n  $NEXT = $CURRENT +\
+    \ $QUERY.Skip + 1\n)\nif $NEXT <= $CURRENT {\n  $INFOS, _ := json.MarshalIndent($PEER.Info(),\
+    \ \"\", \"  \")\n  $LOG().Warn(\"GetBlockHeaders skip overflow attack\", \"current\"\
+    , $CURRENT, \"skip\", $QUERY.Skip, \"next\", $NEXT, \"attacker\", $INFOS)\n  $UNKNOWN\
+    \ = true\n} else {\n  if $HEADER := $BLOCKCHAIN.GetHeaderByNumber($NEXT); $HEADER\
+    \ != nil {\n    if $BLOCKCHAIN.GetBlockHashesFromHash($HEADER.Hash(), $QUERY.Skip+1)[$QUERY.Skip]\
+    \ == $QUERY.Origin.Hash {\n      $QUERY.Origin.Hash = $HEADER.Hash()\n    } else\
+    \ {\n      $UNKNOWN = true\n    }\n  }\n}\n"
+  languages:
+  - go
+  message: 'The code is vulnerable to a skip overflow attack in the GetBlockHeaders
+    function. The vulnerability occurs because there is no check to prevent integer
+    overflow when calculating the next block number. This could allow an attacker
+    to manipulate the skip parameter and cause unexpected behavior or crashes. The
+    fix adds a check to ensure that the next block number is greater than the current
+    block number before proceeding with the operation. To fix this, always validate
+    the result of arithmetic operations to prevent integer overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/a5237a27eaf81946a3edb4fafe13ed6359d119e4
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://swcregistry.io/docs/SWC-101
+    technology:
+    - go

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-itop-89145593
+  pattern: '@file_get_contents($sDashboardFile)
+
+    '
+  pattern-not: '@file_get_contents(utils::RealPath($sDashboardFile, APPROOT))
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe file read operation without path validation. This could
+    lead to path traversal attacks, allowing an attacker to read arbitrary files on
+    the server. Always validate and sanitize file paths using utils::RealPath or similar
+    functions before accessing files.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/89145593ef2e077529a6f7ee7cde712db637e1ab
+    category: security
+    cwe:
+    - 22
+    - 23
+    owasp:
+    - 'A1: Injection'
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

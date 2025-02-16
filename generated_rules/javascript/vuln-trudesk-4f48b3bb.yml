@@ -1,0 +1,24 @@
+rules:
+- id: vuln-trudesk-4f48b3bb
+  pattern: '$VAR = $VAR.trim()
+
+    '
+  pattern-not: '$VAR = utils.sanitizeFieldPlainText($VAR.trim())
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability detected. User input should be sanitized using\
+    \ \n`utils.sanitizeFieldPlainText()` to prevent cross-site scripting attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/polonel/trudesk/commit/4f48b3bb86ba66a0085803591065bb6437e864ec
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-nltk-441aecb7
+  pattern: 'version = "3.8.1"
+
+    release = "3.8.1"
+
+    '
+  pattern-not: 'version = "3.8.2"
+
+    release = "3.8.2"
+
+    '
+  languages:
+  - python
+  message: Detected outdated version of NLTK. Using outdated versions can expose the
+    application to known vulnerabilities. Update to the latest version to mitigate
+    security risks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/nltk/nltk/commit/441aecb7d33014bd08672232c6c8bb69c2ceaba2
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://nltk.org/
+    technology: python

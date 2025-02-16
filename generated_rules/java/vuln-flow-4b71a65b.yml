@@ -1,0 +1,23 @@
+rules:
+- id: vuln-flow-4b71a65b
+  pattern: 'final long $START = Long.parseLong($RANGE_MATCHER.group(1));
+
+    final long $END = Long.parseLong($RANGE_MATCHER.group(2));
+
+    '
+  pattern-not: "String $START_GROUP = $RANGE_MATCHER.group(1);\nString $END_GROUP\
+    \ = $RANGE_MATCHER.group(2);\nif ($START_GROUP.isEmpty() && $END_GROUP.isEmpty())\
+    \ {\n    ...\n}\nlong $START = $START_GROUP.isEmpty() ? 0L : Long.parseLong($START_GROUP);\n\
+    long $END = $END_GROUP.isEmpty() ? Long.MAX_VALUE : Long.parseLong($END_GROUP);\n"
+  languages:
+  - java
+  message: Insecure handling of byte range headers detected. Directly parsing byte
+    ranges without validation can lead to security vulnerabilities. Always validate
+    and handle empty ranges appropriately.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/4b71a65b113a143f6c333c1c026cd8b7f214e284
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology: java

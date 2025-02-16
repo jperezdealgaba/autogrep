@@ -1,0 +1,39 @@
+rules:
+- id: vuln-mupdf-b2e7d38e
+  pattern: "if ($IMAGE->mask)\n{\n  if ($GSTATE->blendmode)\n    fz_begin_group($CTX,\
+    \ $DEV, &$BBOX, NULL, 0, 0, $GSTATE->blendmode, 1);\n  fz_clip_image_mask($CTX,\
+    \ $DEV, $IMAGE->mask, &$IMAGE_CTM, &$BBOX);\n}\nelse\n{\n  $GSTATE = pdf_begin_group($CTX,\
+    \ $PR, &$BBOX, &$SOFTMASK);\n}\n"
+  pattern-not: "if ($IMAGE->mask && $GSTATE->blendmode)\n{\n  fz_begin_group($CTX,\
+    \ $DEV, &$BBOX, NULL, 0, 0, $GSTATE->blendmode, 1);\n  fz_try($CTX)\n    fz_clip_image_mask($CTX,\
+    \ $DEV, $IMAGE->mask, &$IMAGE_CTM, &$BBOX);\n  fz_catch($CTX)\n  {\n    fz_end_group($CTX,\
+    \ $DEV);\n    fz_rethrow($CTX);\n  }\n  fz_try($CTX)\n    pdf_show_image_imp($CTX,\
+    \ $PR, $IMAGE, &$IMAGE_CTM, &$BBOX);\n  fz_always($CTX)\n  {\n    fz_pop_clip($CTX,\
+    \ $DEV);\n    fz_end_group($CTX, $DEV);\n  }\n  fz_catch($CTX)\n    fz_rethrow($CTX);\n\
+    }\nelse if ($IMAGE->mask)\n{\n  fz_clip_image_mask($CTX, $DEV, $IMAGE->mask, &$IMAGE_CTM,\
+    \ &$BBOX);\n  fz_try($CTX)\n    pdf_show_image_imp($CTX, $PR, $IMAGE, &$IMAGE_CTM,\
+    \ &$BBOX);\n  fz_always($CTX)\n    fz_pop_clip($CTX, $DEV);\n  fz_catch($CTX)\n\
+    \    fz_rethrow($CTX);\n}\nelse\n{\n  softmask_save softmask = { NULL };\n  $GSTATE\
+    \ = pdf_begin_group($CTX, $PR, &$BBOX, &softmask);\n  fz_try($CTX)\n    pdf_show_image_imp($CTX,\
+    \ $PR, $IMAGE, &$IMAGE_CTM, &$BBOX);\n  fz_always($CTX)\n    pdf_end_group($CTX,\
+    \ $PR, &softmask);\n  fz_catch($CTX)\n    fz_rethrow($CTX);\n}\n"
+  languages:
+  - c
+  message: 'The code lacks proper error handling and resource cleanup when processing
+    image masks.
+
+    This can lead to resource leaks or undefined behavior if an exception is thrown.
+
+    The fix adds proper try-catch blocks to ensure resources are cleaned up correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/b2e7d38e845c7d4922d05e6e41f3a2dc1bc1b14a
+    category: security
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp:
+    - 'A9: Security Logging and Monitoring Failures'
+    technology:
+    - c

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-wagtail-0bacd294
+  pattern: "class $CLASS(BulkAction):\n    models = [$MODEL]\n"
+  pattern-not: "class $CLASS(PermissionCheckedMixin, BulkAction):\n    models = [$MODEL]\n\
+    \    permission_policy = $POLICY\n    any_permission_required = [$PERMS]\n"
+  languages:
+  - python
+  message: Detected a BulkAction class without proper permission checks. This can
+    lead to unauthorized access or modification of user data. Ensure the class inherits
+    from PermissionCheckedMixin and includes permission_policy and any_permission_required
+    fields.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/0bacd29473107d9d7f5b723a15a683449679756d
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://docs.djangoproject.com/en/stable/topics/auth/default/
+    technology:
+    - python

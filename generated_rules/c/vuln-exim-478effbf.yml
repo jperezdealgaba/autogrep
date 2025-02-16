@@ -1,0 +1,29 @@
+rules:
+- id: vuln-exim-478effbf
+  pattern: 'gstring_grow($G, $G->ptr, $WIDTH - ($LIM - $G->ptr))
+
+    '
+  pattern-not: 'gstring_grow($G, $G->ptr, $WIDTH)
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the growth calculation for a string
+    buffer is incorrectly computed by subtracting the difference between two pointers.
+    This can lead to incorrect buffer sizing, potentially causing buffer overflows
+    or underflows. The fix is to directly use the desired width without the unnecessary
+    pointer arithmetic.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/478effbfd9c3cc5a627fc671d4bf94d13670d65f
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

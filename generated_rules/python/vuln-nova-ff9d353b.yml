@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nova-ff9d353b
+  pattern: 'images.fetch($CONTEXT, $IMAGE_ID, $TARGET, $USER_ID, $PROJECT_ID)
+
+    '
+  pattern-not: 'images.fetch_to_raw($CONTEXT, $IMAGE_ID, $TARGET, $USER_ID, $PROJECT_ID)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe image fetching without raw conversion. This can lead to
+    security vulnerabilities if the image format is not validated and converted to
+    raw. Use `fetch_to_raw` instead to ensure the image is converted to a safe format.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/ff9d353b2f4fee469e530fbc8dc231a41f6fed84
+    category: security
+    cwe: CWE-20
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://docs.openstack.org/nova/latest/user/images.html
+    technology:
+    - python

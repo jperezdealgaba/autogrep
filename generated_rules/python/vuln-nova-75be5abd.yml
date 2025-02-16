@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nova-75be5abd
+  pattern: 'utils.execute(''chmod'', ''777'', $TMPDIR, run_as_root=True)
+
+    '
+  pattern-not: 'os.chmod($TMPDIR, 0o701)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure temporary directory permission change using ''chmod
+    777''. This grants excessive permissions and can lead to security vulnerabilities.
+    Use ''os.chmod'' with more restrictive permissions (e.g., 0o701) instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/75be5abd6b3fa0f7f27fe9c805f832cd41d44a5d
+    category: security
+    cwe: CWE-732
+    owasp: A5:2017-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/732.html
+    technology:
+    - python

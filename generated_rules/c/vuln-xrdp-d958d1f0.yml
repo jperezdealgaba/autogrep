@@ -1,0 +1,43 @@
+rules:
+- id: vuln-xrdp-d958d1f0
+  pattern: 'char $BUF[257];
+
+    ...
+
+    $BUF[$SZ] = ''\0'';
+
+    '
+  pattern-not: 'char *$BUF = 0;
+
+    ...
+
+    $BUF = g_new0(char, $SZ);
+
+    $BUF[$SZ] = ''\0'';
+
+    g_free($BUF);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of fixed-size buffer without proper dynamic allocation. This
+    can lead to buffer overflow vulnerabilities if the input size exceeds the buffer
+    capacity. The vulnerability was fixed by replacing the fixed-size buffer with
+    dynamically allocated memory using g_new0 and ensuring proper cleanup with g_free.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/d958d1f0186968200da32bafc3d9be4a4aa7212d
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mupdf-e089b2e2
+  pattern: 'fprintf(stderr, "Unmatched: %s\n", $VAR);
+
+    '
+  pattern-not: 'fprintf(stderr, "Ignoring line without script statement.\n");
+
+    '
+  languages:
+  - c
+  message: "The use of 'Unmatched: %s' in error messages can expose sensitive information\
+    \ or lead to information disclosure. \nThis is dangerous because it may reveal\
+    \ internal state or unexpected input data to potential attackers. \nReplace it\
+    \ with a more generic error message that does not include potentially sensitive\
+    \ data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/e089b2e2c1d38c5696c7dfd741e21f8f3ef22b14
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - c

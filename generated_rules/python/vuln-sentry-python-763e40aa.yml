@@ -1,0 +1,26 @@
+rules:
+- id: vuln-sentry-python-763e40aa
+  pattern: 'lambda $X: dict($X or $ENV)
+
+    '
+  pattern-not: 'lambda $X: dict($X if $X is not None else $ENV)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe environment variable handling in subprocess calls. Using
+    `or` to default to `os.environ` can lead to unintended environment variable inheritance,
+    potentially exposing sensitive information. Use `if $X is not None else $ENV`
+    to explicitly handle `None` values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/getsentry/sentry-python/commit/763e40aa4cb57ecced467f48f78f335c87e9bdff
+    category: security
+    cwe: CWE-200
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://docs.python.org/3/library/subprocess.html#subprocess.Popen
+    technology:
+    - python

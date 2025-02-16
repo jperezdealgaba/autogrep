@@ -1,0 +1,38 @@
+rules:
+- id: vuln-h2o-d67e81d0
+  pattern: "struct st_quicly_pending_path_challenge_t {\n    struct st_quicly_pending_path_challenge_t\
+    \ *next;\n    uint8_t is_response;\n    uint8_t data[QUICLY_PATH_CHALLENGE_DATA_LEN];\n\
+    };\n...\nstruct st_quicly_pending_path_challenge_t *pending;\n...\nif ((pending\
+    \ = malloc(sizeof(struct st_quicly_pending_path_challenge_t))) == NULL)\n    return\
+    \ PTLS_ERROR_NO_MEMORY;\n...\n*conn->egress.path_challenge.tail_ref = pending;\n\
+    conn->egress.path_challenge.tail_ref = &pending->next;\n...\nwhile (conn->egress.path_challenge.head\
+    \ != NULL) {\n    struct st_quicly_pending_path_challenge_t *pending = conn->egress.path_challenge.head;\n\
+    \    conn->egress.path_challenge.head = pending->next;\n    free(pending);\n}\n"
+  pattern-not: "uint8_t send_;\nuint8_t data[QUICLY_PATH_CHALLENGE_DATA_LEN];\n...\n\
+    if ((ret = do_allocate_frame(conn, s, QUICLY_PATH_CHALLENGE_FRAME_CAPACITY, ALLOCATE_FRAME_TYPE_ACK_ELICITING_NO_CC))\
+    \ != 0)\n    return ret;\n...\ns->dst = quicly_encode_path_challenge_frame(s->dst,\
+    \ is_response, data);\n...\nmemcpy(conn->egress.path_response.data, frame.data,\
+    \ QUICLY_PATH_CHALLENGE_DATA_LEN);\nconn->egress.path_response.send_ = 1;\n"
+  languages:
+  - c
+  message: 'The code uses a linked list to manage path challenges, which can lead
+    to memory management issues and potential memory leaks. The patch simplifies the
+    structure and removes the linked list, reducing complexity and the risk of errors.
+    To fix similar issues, avoid using linked lists for managing dynamic data in performance-critical
+    paths and prefer simpler, more direct memory management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/h2o/h2o/commit/d67e81d03be12a9d53dc8271af6530f40164cd35
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-772
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/401.html
+    - https://cwe.mitre.org/data/definitions/772.html
+    technology:
+    - c

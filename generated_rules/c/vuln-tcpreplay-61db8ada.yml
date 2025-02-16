@@ -1,0 +1,28 @@
+rules:
+- id: vuln-tcpreplay-61db8ada
+  pattern: "if (pkthdr->caplen < (bpf_u_int32)TCPR_IPV6_H) {\n  dbgx($X, \"Packet\
+    \ too short for Unique IP feature: %u\", pkthdr->caplen);\n  return;\n}\n"
+  pattern-not: "if (pkthdr->caplen < (bpf_u_int32)(l2_len + sizeof(ipv4_hdr_t))) {\n\
+    \  dbgx($X, \"IP packet too short for Unique IP feature: %u\", pkthdr->caplen);\n\
+    \  return -1;\n}\n"
+  languages:
+  - c
+  message: 'This rule detects insufficient packet length checks in network packet
+    processing code. The vulnerability occurs when the code fails to account for the
+    length of the Layer 2 header when validating packet length, potentially leading
+    to buffer overflows or incorrect packet processing. The fix adds proper length
+    checks that include the Layer 2 header length. To fix this issue, always include
+    the Layer 2 header length in packet length validation checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/61db8adae55e246e0bc9442fbe977fff46154970
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

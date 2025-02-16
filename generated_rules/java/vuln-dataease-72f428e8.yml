@@ -1,0 +1,19 @@
+rules:
+- id: vuln-dataease-72f428e8
+  pattern: "if (CollectionUtils.isEmpty($VAR1) || ObjectUtils.isEmpty($VAR2) || StringUtils.isBlank($VAR2.getName()))\
+    \ {\n    ...\n}\n"
+  pattern-not: "if (CollectionUtils.isEmpty($VAR1) || ObjectUtils.isEmpty($VAR2))\
+    \ {\n    ...\n}\n"
+  languages:
+  - java
+  message: Potential null reference vulnerability. The condition `StringUtils.isBlank($VAR2.getName())`
+    can lead to a NullPointerException if `$VAR2` is null. Ensure proper null checks
+    are in place before accessing methods on objects.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dataease/dataease/commit/72f428e87b5395c03d2f94ef6185fc247ddbc8dc
+    category: security
+    cwe: CWE-476
+    owasp: A1:2017-Injection
+    technology:
+    - java

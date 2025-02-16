@@ -1,0 +1,22 @@
+rules:
+- id: vuln-nova-034762e8
+  pattern: 'self.compute_api.get($CONTEXT, $INSTANCE_ID)[''host'']
+
+    '
+  pattern-not: '$ALL_HOSTS.get($INSTANCE_ID)
+
+    '
+  languages:
+  - python
+  message: 'Detected direct host lookup via compute API which can lead to performance
+    issues and potential security vulnerabilities. Instead, use a cached mapping of
+    all hosts to improve efficiency and security.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: https://github.com/openstack/nova/commit/034762e8060dcf0a11cb039b9d426b0d0bb1801d
+    category: performance
+    cwe: CWE-400
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

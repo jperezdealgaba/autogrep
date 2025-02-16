@@ -1,0 +1,19 @@
+rules:
+- id: vuln-sentry-python-cd2f51b8
+  pattern: "{\n  \"event_id\": uuid.uuid4().hex,\n  ...\n}\n"
+  pattern-not: "{\n  \"event_id\": self.event_id,\n  ...\n}\n"
+  languages:
+  - python
+  message: Detected direct generation of event_id within a context dictionary. This
+    can lead to inconsistencies between profiles and transactions. Use a shared event_id
+    stored in the instance instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/getsentry/sentry-python/commit/cd2f51b8d631c502f9f9c0186187d7b1fb405704
+    category: security
+    cwe: CWE-330
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.sentry.io/platforms/python/performance/
+    technology:
+    - python

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-undertow-7c5b3ab8
+  pattern: 'private static final byte[] END_RESPONSE = {''A'', ''B'', 0, 2, 5, 1};
+
+    '
+  pattern-not: 'private static final byte[] END_RESPONSE = {''A'', ''B'', 0, 2, 5,
+    0};
+
+    '
+  languages:
+  - java
+  message: Incorrect AJP response termination sequence detected. This can lead to
+    improper handling of responses. Update the termination sequence to the correct
+    value.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/7c5b3ab885b5638fd3f1e8a935d5063d68aa2df3
+    category: security
+    cwe: CWE-388
+    owasp: A06:2021-Vulnerable and Outdated Components
+    technology: java

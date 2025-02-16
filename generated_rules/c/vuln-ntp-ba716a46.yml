@@ -1,0 +1,27 @@
+rules:
+- id: vuln-ntp-ba716a46
+  pattern: 'REQUIRE(strlen($VAR) < sizeof($NAME));
+
+    '
+  pattern-not: "if (strlen($VAR) >= sizeof($NAME)) {\n  return 0;\n}\n"
+  languages:
+  - c
+  message: 'The code uses REQUIRE to check if the length of a string is less than
+    the size of a buffer, but this is dangerous because REQUIRE is not a standard
+    C function and may not handle the condition safely. This can lead to buffer overflows
+    if the condition is not met. Replace REQUIRE with an explicit check and handle
+    the condition properly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/ba716a464ecb20618560075f2e4e1051e5b6f24f
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

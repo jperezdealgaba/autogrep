@@ -1,0 +1,29 @@
+rules:
+- id: vuln-contao-9445d509
+  pattern: 'strtolower(substr($VAR, strrpos($VAR, ''.'') + 1))
+
+    '
+  pattern-not: 'Path::getExtension($VAR, true)
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe file extension extraction using `strtolower(substr(...))`.
+    This method can be vulnerable to path manipulation or incorrect extension extraction,
+    potentially leading to security issues like file type spoofing. Use `Symfony\Component\Filesystem\Path::getExtension()`
+    instead, which handles edge cases and ensures correct file extension extraction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contao/contao/commit/9445d509f12a7f1b68a4794dcc5e3e459b363ebb
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://symfony.com/doc/current/components/filesystem.html#path
+    technology:
+    - php

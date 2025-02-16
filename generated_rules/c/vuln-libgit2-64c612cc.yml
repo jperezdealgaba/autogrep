@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libgit2-64c612cc
+  pattern: 'unsigned int $FLAGS = GIT_PATH_REJECT_WORKDIR_DEFAULTS;
+
+    '
+  pattern-not: 'unsigned int $FLAGS = GIT_PATH_REJECT_WORKDIR_DEFAULTS | GIT_PATH_REJECT_DOT_GIT_NTFS;
+
+    '
+  languages:
+  - c
+  message: 'The code is missing the GIT_PATH_REJECT_DOT_GIT_NTFS flag, which is necessary
+    to prevent NTFS alternate data stream vulnerabilities on Windows. This could allow
+    malicious actors to exploit NTFS features to create hidden or malicious files.
+    To fix this, ensure the GIT_PATH_REJECT_DOT_GIT_NTFS flag is included when initializing
+    the flags variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/64c612cc3e25eff5fb02c59ef5a66ba7a14751e4
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://github.com/libgit2/libgit2/commit/64c612cc3e25eff5fb02c59ef5a66ba7a14751e4
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-svgpp-0bc57f2c
+  pattern: 'document_traversal_main::load_document($XML.getRoot(), ...);
+
+    '
+  pattern-not: "if ($XMLElement $ROOT = $XML.getRoot())\n  document_traversal_main::load_document($ROOT,\
+    \ ...);\nelse\n  throw std::runtime_error(\"No root XML element\");\n"
+  languages:
+  - cpp
+  message: 'The code directly uses the result of `getRoot()` without checking if it
+    is valid.
+
+    This can lead to undefined behavior or crashes if the XML document has no root
+    element.
+
+    Always check if the root element exists before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/svgpp/svgpp/commit/0bc57f2cc6d9d86a0fa1ce73e508c2b5994b4b91
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - cpp

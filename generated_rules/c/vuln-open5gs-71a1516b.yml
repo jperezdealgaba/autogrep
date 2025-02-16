@@ -1,0 +1,23 @@
+rules:
+- id: vuln-open5gs-71a1516b
+  pattern: "if ($VAR->version > $OGS_PFCP_VERSION) {\n  ...\n}\n"
+  pattern-not: "if ($VAR->version != $OGS_PFCP_VERSION) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses a greater-than comparison (`>`) to check the version of
+    the PFCP protocol, which is incorrect and can lead to security issues. The correct
+    comparison should be an equality check (`!=`) to ensure compatibility with the
+    exact version. This vulnerability can cause protocol mismatches and potential
+    security vulnerabilities. Replace the `>` comparison with `!=`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/71a1516b0376340d267caa85920cb0a4da261176
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

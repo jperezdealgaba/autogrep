@@ -1,0 +1,32 @@
+rules:
+- id: vuln-grin-eafe730a
+  pattern: "let mut $SET = HashSet::new();\n...\nfor $OUT in &$OUTPUTS {\n    $SET.insert($OUT.commitment());\n\
+    }\nfor $INP in &$INPUTS {\n    if $SET.contains(&$INP.commitment()) {\n      \
+    \  return Err($ERROR);\n    }\n}\n"
+  pattern-not: "let mut $INPUTS = $INPUTS.iter().map(|$X| $X.hash()).peekable();\n\
+    let mut $OUTPUTS = $OUTPUTS.iter().map(|$X| $X.hash()).peekable();\nwhile let\
+    \ (Some($IH), Some($OH)) = ($INPUTS.peek(), $OUTPUTS.peek()) {\n    match $IH.cmp($OH)\
+    \ {\n        Ordering::Less => {\n            $INPUTS.next();\n        }\n   \
+    \     Ordering::Greater => {\n            $OUTPUTS.next();\n        }\n      \
+    \  Ordering::Equal => {\n            return Err($ERROR);\n        }\n    }\n}\n"
+  languages:
+  - rust
+  message: 'Detected inefficient use of HashSet for checking duplicate commitments
+    in transactions.
+
+    This can lead to performance issues and incorrect handling of cut-through transactions.
+
+    The fix involves using sorted iterators and direct comparison, which is more efficient
+    and correct.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/eafe730a65b1de2d5a1df5be53ebb54d5df25ec2
+    category: performance
+    cwe:
+    - CWE-400
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - rust

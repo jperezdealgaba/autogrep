@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mujs-edb50ad6
+  pattern: 'js_setproperty($J, $INDEX, $PROPERTY)
+
+    '
+  pattern-not: 'js_defproperty($J, $INDEX, $PROPERTY, 0)
+
+    '
+  languages:
+  - c
+  message: "The use of `js_setproperty` without specifying property flags can lead\
+    \ to security vulnerabilities. \nThis function does not allow setting property\
+    \ attributes like writable, enumerable, or configurable, \nwhich can result in\
+    \ unintended behavior or security issues. Replace `js_setproperty` with \n`js_defproperty`\
+    \ and specify appropriate flags to ensure proper property attributes are set.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/edb50ad66f7601ca9a3544a0e9045e8a8c60561f
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - A12:2021-Security Misconfiguration
+    technology:
+    - c

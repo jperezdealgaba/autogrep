@@ -1,0 +1,26 @@
+rules:
+- id: vuln-chamilo-lms-841a0739
+  pattern: 'return $CMD . ''"  "'' . $PARAM . ''"'';
+
+    '
+  pattern-not: 'return $CMD . ''  '' . Security::sanitizeExecParam($PARAM);
+
+    '
+  languages:
+  - php
+  message: "Detected potentially unsafe string concatenation in command execution.\
+    \ \nThe original code concatenates user-controlled input directly into a command\
+    \ string without proper sanitization, which could lead to command injection vulnerabilities.\
+    \ \nThe fix uses `Security::sanitizeExecParam` to properly sanitize the input.\
+    \ Always sanitize user-controlled input when used in command execution to prevent\
+    \ injection attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/841a07396fed0ef27c5db13a1b700eac02754fc7
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

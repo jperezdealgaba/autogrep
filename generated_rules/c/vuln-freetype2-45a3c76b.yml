@@ -1,0 +1,34 @@
+rules:
+- id: vuln-freetype2-45a3c76b
+  pattern: '$STREAM->pos + $COUNT > $STREAM->size
+
+    '
+  pattern-not: '$STREAM->size - $STREAM->pos < $COUNT
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects a potential integer overflow vulnerability in stream
+    position calculations.
+
+    The original code adds the position and count directly, which can overflow and
+    lead to incorrect boundary checks.
+
+    The fixed version subtracts the position from the size, which is a safer approach
+    to avoid overflow.
+
+    To fix this, replace the addition-based check with a subtraction-based check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/45a3c76b547511fa9d97aca34b150a0663257375
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

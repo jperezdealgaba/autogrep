@@ -1,0 +1,26 @@
+rules:
+- id: vuln-subiquity-62e12689
+  pattern: 'write_file($PATH, $CONFIG)
+
+    '
+  pattern-not: 'write_file($PATH, $CONFIG, mode=$MODE, group=$GROUP)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure file creation without proper permissions. When writing
+    sensitive data (e.g., password hashes), files should be created with restrictive
+    permissions (e.g., mode=0o400) and appropriate ownership to prevent unauthorized
+    access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CanonicalLtd/subiquity/commit/62e126896fb063808767d74d00886001e38eaa1c
+    category: security
+    cwe: 'CWE-276: Incorrect Default Permissions'
+    owasp: A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/276.html
+    technology:
+    - python

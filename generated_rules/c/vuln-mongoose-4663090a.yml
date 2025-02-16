@@ -1,0 +1,31 @@
+rules:
+- id: vuln-mongoose-4663090a
+  pattern: '$VAR->body.len = (size_t) mg_to64(*$CL);
+
+    '
+  pattern-not: 'int64_t $VAR = mg_to64(*$CL);
+
+    if($VAR < 0) return -1;
+
+    $VAR2->body.len = (size_t) $VAR;
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe conversion of Content-Length value to size_t without checking\
+    \ for negative values. \nThis vulnerability could allow negative Content-Length\
+    \ values to be interpreted as large positive values, \npotentially leading to\
+    \ buffer overflows or other memory corruption issues. \nAlways validate that the\
+    \ Content-Length is non-negative before casting to size_t.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/cesanta/mongoose/commit/4663090a8fb036146dfe77718cff612b0101cb0f
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

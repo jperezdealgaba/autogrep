@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mupdf-8a3257b0
+  pattern: "if (!$GROUP)\n  fz_throw($CTX, FZ_ERROR_SYNTAX, \"cannot load softmask\
+    \ xobject (%d 0 R)\", pdf_to_num($CTX, $OBJ));\n"
+  pattern-not: "if (!pdf_is_stream($CTX, $DICT))\n  fz_throw($CTX, FZ_ERROR_SYNTAX,\
+    \ \"XObject must be a stream\");\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when a softmask xobject is loaded without proper
+    validation, which can lead to syntax errors or unexpected behavior. This is dangerous
+    because it can cause the application to crash or behave unpredictably when processing
+    malformed PDF files. To fix this, ensure that the xobject is validated as a stream
+    before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/8a3257b01faa899dd9b5e35c6bb3403cd709c371
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

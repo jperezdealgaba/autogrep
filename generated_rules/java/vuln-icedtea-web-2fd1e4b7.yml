@@ -1,0 +1,24 @@
+rules:
+- id: vuln-icedtea-web-2fd1e4b7
+  pattern: 'String $UCNAME = $NAME.toUpperCase();
+
+    return $UCNAME.startsWith($META_INF);
+
+    '
+  pattern-not: "if ($NAME.endsWith(\"class\")) {\n    return false;\n}\nreturn $NAME.startsWith($META_INF)\
+    \ && (\n    $NAME.endsWith(\".MF\") ||\n    $NAME.endsWith(\".SF\") ||\n    $NAME.endsWith(\"\
+    .DSA\") ||\n    $NAME.endsWith(\".RSA\") ||\n    $SIG.matcher($NAME).matches()\n\
+    );\n"
+  languages:
+  - java
+  message: Insecure JAR file verification detected. The code only checks if the file
+    name starts with META-INF without proper validation of file extensions. This could
+    allow malicious files to bypass security checks. Ensure that only valid signature
+    files (MF, SF, DSA, RSA) are processed and explicitly exclude class files.
+  severity: ERROR
+  metadata:
+    source-url: github.com/AdoptOpenJDK/IcedTea-Web/commit/2fd1e4b769911f2c6f7f3902f7ea21568ddc2f99
+    category: security
+    cwe: 'CWE-347: Improper Verification of Cryptographic Signature'
+    owasp: A6:2017 - Security Misconfiguration
+    technology: java

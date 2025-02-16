@@ -1,0 +1,23 @@
+rules:
+- id: vuln-e107-d61ebe20
+  pattern: '<core name="post_script">254</core>
+
+    '
+  pattern-not: '<core name="post_script">255</core>
+
+    '
+  languages:
+  - xml
+  message: "The value of the 'post_script' core element is set to an insecure value\
+    \ (254). \nThis could lead to potential security vulnerabilities in the application.\
+    \ \nUpdate the value to 255 to mitigate this issue.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/e107inc/e107/commit/d61ebe2015d459c819c6470b1694673dbefc387a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - xml

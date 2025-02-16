@@ -1,0 +1,22 @@
+rules:
+- id: vuln-wiremock-e3c31bf2
+  pattern: '"version": "3.0.0-beta-14"'
+  pattern-not: '"version": "3.0.0-beta-15"'
+  languages:
+  - json
+  message: "The version \"3.0.0-beta-14\" is vulnerable and should be updated to \"\
+    3.0.0-beta-15\". \nUsing outdated versions can expose the application to known\
+    \ security vulnerabilities. \nAlways ensure that dependencies are updated to the\
+    \ latest secure versions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/holomekc/wiremock/commit/e3c31bf25b319cfe6645d7038beab49b49fef391
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - json

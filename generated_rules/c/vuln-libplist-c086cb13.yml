@@ -1,0 +1,37 @@
+rules:
+- id: vuln-libplist-c086cb13
+  pattern: 'xmlDocPtr $DOC = xmlParseMemory($XML, $LEN);
+
+    xmlNodePtr $NODE = xmlDocGetRootElement($DOC);
+
+    ...
+
+    xmlFreeDoc($DOC);
+
+    '
+  pattern-not: "xmlSetExternalEntityLoader($LOADER);\nxmlDocPtr $DOC = xmlReadMemory($XML,\
+    \ $LEN, $NAME, $OPTIONS, XML_PARSE_NONET);\nif ($DOC) {\n    xmlNodePtr $NODE\
+    \ = xmlDocGetRootElement($DOC);\n    ...\n    xmlFreeDoc($DOC);\n}\n"
+  languages:
+  - c
+  message: 'Detected potential XXE vulnerability due to unsafe XML parsing with xmlParseMemory.
+
+    This function does not disable external entity loading, which can lead to XML
+    External Entity (XXE) attacks.
+
+    To fix this, use xmlReadMemory with XML_PARSE_NONET flag to disable network access
+    and set an external entity loader that returns NULL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libimobiledevice/libplist/commit/c086cb139af7c82845f6d565e636073ff4b37440
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology:
+    - c

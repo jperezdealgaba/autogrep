@@ -1,0 +1,33 @@
+rules:
+- id: vuln-contao-73a2770e
+  pattern: "return HttpClient::create(\n  array_merge_recursive(\n    [\n      'headers'\
+    \ => [\n        'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',\n\
+    \        'user-agent' => $USER_AGENT,\n      ],\n      'max_duration' => 10,\n\
+    \    ],\n    array_merge_recursive($this->getDefaultHttpClientOptions(), $options)\n\
+    \  )\n);\n"
+  pattern-not: "return new ScopingHttpClient(\n  ($this->httpClientFactory)($cleanOptions),\n\
+    \  $scopedOptionsByRegex\n);\n"
+  languages:
+  - php
+  message: 'Detected insecure HTTP client creation without proper scoping of confidential
+    headers.
+
+    This can lead to leakage of sensitive data like cookies and authorization headers
+    to external domains.
+
+    The fix involves using ScopingHttpClient to ensure confidential headers are only
+    sent to trusted domains.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contao/contao/commit/73a2770e2d3535ec9f1b03d54be00e56ebb8ff16
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-201
+    owasp:
+    - A01:2021-Broken Access Control
+    - A02:2021-Cryptographic Failures
+    technology:
+    - php

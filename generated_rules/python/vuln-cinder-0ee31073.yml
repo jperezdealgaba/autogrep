@@ -1,0 +1,22 @@
+rules:
+- id: vuln-cinder-0ee31073
+  pattern: '$DRIVER._delete_volume($VOLUME, $SIZE)
+
+    '
+  pattern-not: '$DRIVER._delete_volume($VOLUME)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure volume deletion that passes size explicitly. This can
+    lead to incorrect volume handling or security issues. Use the fixed version that
+    retrieves size from the volume object itself.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/cinder/commit/0ee31073c5cb432a9cdd2648e99aa802b0ed0a17
+    category: security
+    cwe: CWE-682
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-electron-05b6d91b
+  pattern: 'nodeIntegration = ''true''
+
+    '
+  pattern-not: 'nodeIntegration = ''false''
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure configuration detected: nodeIntegration is set to ''true''. This
+    can expose the application to remote code execution vulnerabilities. Set nodeIntegration
+    to ''false'' to mitigate this risk.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/electron/electron/commit/05b6d91bf4c1e0ee65eeef70cd5d1bd1df125644
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.electronjs.org/docs/latest/tutorial/security#2-do-not-enable-nodejs-integration-for-remote-content
+    technology:
+    - javascript

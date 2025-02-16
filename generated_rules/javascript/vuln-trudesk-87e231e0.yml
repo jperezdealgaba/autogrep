@@ -1,0 +1,21 @@
+rules:
+- id: vuln-trudesk-87e231e0
+  pattern: '$USER.$FIELD = utils.sanitizeFieldPlainText($USER.$FIELD.toLowerCase().trim())
+
+    '
+  pattern-not: '$USER.$FIELD = utils.applyMaxShortTextLength(utils.sanitizeFieldPlainText($USER.$FIELD.toLowerCase().trim()))
+
+    '
+  languages:
+  - javascript
+  message: 'Potential security issue: User input fields should be truncated to a maximum
+    length to prevent buffer overflow or excessive data storage. Use `applyMaxShortTextLength`
+    to limit the text length.'
+  severity: WARNING
+  metadata:
+    source-url: github.com/polonel/trudesk/commit/87e231e04495fb705fe1e03cb56fc4136bafe895
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

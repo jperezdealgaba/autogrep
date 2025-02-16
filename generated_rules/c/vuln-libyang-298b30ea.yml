@@ -1,0 +1,25 @@
+rules:
+- id: vuln-libyang-298b30ea
+  pattern: 'lyxml_parse_elem($CTX, $DATA, $LEN, $PARENT, $OPTIONS)
+
+    '
+  pattern-not: 'lyxml_parse_elem($CTX, $DATA, $LEN, $PARENT, $OPTIONS, $BT_COUNT)
+
+    '
+  languages:
+  - c
+  message: 'Missing recursion limit check in lyxml_parse_elem function. This can lead
+    to stack overflow and potential denial of service. Add a recursion counter parameter
+    and check against LY_RECURSION_LIMIT to prevent excessive recursion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CESNET/libyang/commit/298b30ea4ebee137226acf9bb38678bd82704582
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-exim-3c90bbcd
+  pattern: 'parse_fix_phrase($PHRASE, $LEN, $BUFFER, $BUFFER_SIZE)
+
+    '
+  pattern-not: 'parse_fix_phrase($PHRASE, $LEN)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of deprecated parse_fix_phrase with buffer parameters. This
+    pattern is vulnerable to buffer overflows due to fixed-size buffers. The function
+    has been updated to handle memory allocation internally, removing the risk of
+    buffer overflows. To fix, remove the buffer and buffer_size parameters and use
+    the updated version of parse_fix_phrase.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/3c90bbcdc7cf73298156f7bcd5f5e750e7814e72
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp:
+    - A2:2017-Broken Authentication
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-keycloak-0b8b31a3
+  pattern: '<resteasy.version.latest>3.0.8.Final</resteasy.version.latest>
+
+    '
+  pattern-not: '<resteasy.version.latest>3.0.9.Final</resteasy.version.latest>
+
+    '
+  languages:
+  - xml
+  message: 'The version of Resteasy is outdated and contains known vulnerabilities.
+    Using version 3.0.8.Final can expose the application to security risks. Upgrade
+    to version 3.0.9.Final or later to mitigate these vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/keycloak/keycloak/commit/0b8b31a3ea7d8d7ac8b14a020613fc32aa5e9d9d
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://issues.redhat.com/browse/RESTEASY-XXXX
+    technology:
+    - xml

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-revolution-9f46bd45
+  pattern: '$topicDirectory = $this->directory . ltrim($fileHandler->sanitizePath($topic),
+    ''/'');
+
+    '
+  pattern-not: '$topicDirectory = $this->directory . ltrim($this->sanitizePath($topic),
+    ''/'');
+
+    '
+  languages:
+  - php
+  message: "Detected unsafe path sanitization using an external fileHandler service.\
+    \ \nThis pattern is dangerous because it relies on an external service for path\
+    \ sanitization, \nwhich could introduce vulnerabilities if the service is not\
+    \ properly secured. \nInstead, use the internal sanitizePath method to ensure\
+    \ consistent and secure path handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/modxcms/revolution/commit/9f46bd45f2e12e74593d7db1e65918eb6182e7a8
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

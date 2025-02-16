@@ -1,0 +1,19 @@
+rules:
+- id: vuln-authentik-1cd000df
+  pattern: __version__ = "2023.10.5"
+  pattern-not: __version__ = "2023.10.6"
+  languages:
+  - python
+  message: Outdated version detected. Using outdated versions can expose the application
+    to known vulnerabilities and security risks. Update to the latest version to ensure
+    security patches are applied.
+  severity: WARNING
+  metadata:
+    source-url: github.com/goauthentik/authentik/commit/1cd000dfe204b9605c85e6cebc051586a0329604
+    category: security
+    cwe: CWE-1104
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A9_2021-Security_Misconfiguration
+    technology:
+    - python

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-hivex-77172821
+  pattern: '_get_children($H, $OFFSET, $CHILDREN, $BLOCKS, $FLAGS)
+
+    '
+  pattern-not: '_get_children($H, $OFFSET, $CHILDREN, $BLOCKS, $FLAGS, $DEPTH)
+
+    '
+  languages:
+  - c
+  message: 'The function `_get_children` is called without a depth parameter, which
+    can lead to uncontrolled recursion and potential stack overflow. This vulnerability
+    was patched in commit 771728218dac2fbf6997a7e53225e75a4c6b7255 by introducing
+    a depth limit to prevent excessive recursion. To fix this, ensure that `_get_children`
+    is called with a depth parameter and implement a depth check to limit recursion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libguestfs/hivex/commit/771728218dac2fbf6997a7e53225e75a4c6b7255
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

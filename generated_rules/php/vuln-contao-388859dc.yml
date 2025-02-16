@@ -1,0 +1,31 @@
+rules:
+- id: vuln-contao-388859dc
+  pattern: 'return str_replace(array(''{{'', ''}}''), array(''&#123;&#123;'', ''&#125;&#125;''),
+    (string) $varValue);
+
+    '
+  pattern-not: 'return preg_replace(array(''/^(\s*)\{|\{(\s*)$/'', ''/^(\s*)\}|\}(\s*)$/''),
+    array(''$1&#123;$2'', ''$1&#125;$2''), $varValue);
+
+    '
+  languages:
+  - php
+  message: 'The code fails to properly encode single curly braces at the beginning
+    or end of strings, which can lead to injection vulnerabilities. This is dangerous
+    because it allows attackers to inject arbitrary code or manipulate the output.
+    To fix this, ensure that all curly braces are properly encoded using preg_replace
+    as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contao/contao/commit/388859dcf110ca70e0fae68a2a5579ab6a702919
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

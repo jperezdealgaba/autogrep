@@ -1,0 +1,25 @@
+rules:
+- id: vuln-simplesamlphp-b72c79e3
+  pattern: "if ($_COOKIE[$VAR] !== $VAR2) {\n  ...\n}\n"
+  pattern-not: "if (SimpleSAML\\Utils\\Crypto::secureCompare($VAR2, $_COOKIE[$VAR]))\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected insecure string comparison using ''!==''. This can lead to timing
+    attacks, allowing an attacker to infer the contents of sensitive data. Use `SimpleSAML\Utils\Crypto::secureCompare()`
+    for secure string comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/b72c79e3070f930d758f5c269333d63ed7509e2e
+    category: security
+    cwe:
+    - CWE-208
+    - CWE-203
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Timing_Attack.html
+    technology:
+    - php

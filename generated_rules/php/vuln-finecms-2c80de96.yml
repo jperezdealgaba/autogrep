@@ -1,0 +1,27 @@
+rules:
+- id: vuln-finecms-2c80de96
+  pattern: '$class_method = ucfirst($action) . ''_Action'';
+
+    '
+  pattern-not: '$class_method = ucfirst(strip_tags($action)) . ''_Action'';
+
+    '
+  languages:
+  - php
+  message: 'The code constructs a class method name using user input without proper
+    sanitization, which can lead to security vulnerabilities such as XSS or code injection.
+    Always sanitize user input before using it in dynamic method names.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/andrzuk/FineCMS/commit/2c80de96d403d4a2e81ac4c48f358bdffbe85ea0
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

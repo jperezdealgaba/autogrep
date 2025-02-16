@@ -1,0 +1,27 @@
+rules:
+- id: vuln-bluez-5ab53525
+  pattern: "if (memcmp($STRUCT->$FIELD, $DATA, $LEN)) {\n  ...\n}\n"
+  pattern-not: "if ($LEN == sizeof($STRUCT->$FIELD) && memcmp($STRUCT->$FIELD, $DATA,\
+    \ $LEN)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to missing length
+    check before memcmp.
+
+    This is dangerous because it can lead to out-of-bounds memory access, potentially
+    causing crashes or security exploits.
+
+    To fix this, ensure the length of the data being compared matches the size of
+    the target buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/bluez/bluez/commit/5ab5352531a9cc7058cce569607f3a6831464443
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

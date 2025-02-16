@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gitea-3ee3a4b5
+  pattern: '$VAR = strings.Trim(path.Clean("/"+$TREEPATH), " /")
+
+    '
+  pattern-not: "$VAR = cleanUploadFileName($TREEPATH)\nif len($VAR) == 0 {\n    ctx.Error(500,\
+    \ \"Upload file name is invalid\")\n    return\n}\n"
+  languages:
+  - go
+  message: 'The use of `strings.Trim(path.Clean("/"+$TREEPATH), " /")` for path sanitization
+    is insecure as it does not properly validate the input. This can lead to directory
+    traversal or invalid file names. Use `cleanUploadFileName` instead and check for
+    empty results to ensure the file name is valid.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/3ee3a4b59574887f33451f0f21e6fdca627dfd8b
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/73.html
+    technology:
+    - go

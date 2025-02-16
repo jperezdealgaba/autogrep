@@ -1,0 +1,28 @@
+rules:
+- id: vuln-druid-74cab7a7
+  pattern: "try {\n  ...\n} catch (InvalidKeySpecException | NoSuchAlgorithmException\
+    \ | NoSuchPaddingException | InvalidKeyException | InvalidParameterSpecException\
+    \ | IllegalBlockSizeException | BadPaddingException $EX) {\n  throw new RuntimeException($EX);\n\
+    }\n"
+  pattern-not: "try {\n  ...\n} catch (Exception $EX) {\n  $LOG.noStackTrace().warn($EX,\
+    \ \"Encryption failed\");\n  throw InternalServerError.exception(\"Encryption\
+    \ failed. Check service logs.\");\n}\n"
+  languages:
+  - java
+  message: Improper exception handling in cryptographic operations can lead to information
+    leakage. Instead of throwing generic RuntimeException, use specific error handling
+    and logging.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/druid/commit/74cab7a76c99da457c3a883939cc0b03301b8771
+    category: security
+    cwe:
+    - CWE-209
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/209.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - java

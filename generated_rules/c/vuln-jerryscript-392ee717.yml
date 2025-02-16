@@ -1,31 +1,34 @@
 rules:
 - id: vuln-jerryscript-392ee717
-  pattern: 'ecma_value_t $RET = ECMA_VALUE_EMPTY;
+  pattern: 'ecma_value_t $VAR = ECMA_VALUE_EMPTY;
 
-    ECMA_TRY_CATCH($VAR, $FUNC($ARGS), $RET);
+    ECMA_TRY_CATCH($VAR1, $VAR2, $VAR);
 
     ...
 
-    return $RET;
+    ECMA_FINALIZE($VAR1);
+
+    return $VAR;
 
     '
-  pattern-not: "ecma_value_t $VAR = $FUNC($ARGS);\nif (ECMA_IS_VALUE_ERROR($VAR))\
-    \ {\n  return $VAR;\n}\n...\nreturn $RESULT;\n"
+  pattern-not: "ecma_value_t $VAR = $FUNC($ARGS);\nif (ECMA_IS_VALUE_ERROR($VAR))\n\
+    {\n  return $VAR;\n}\n...\nreturn $RESULT;\n"
   languages:
   - c
-  message: "The code uses ECMA_TRY_CATCH macros for error handling, which can lead\
-    \ to resource leaks and improper error propagation. \nThe patched version directly\
-    \ checks for errors using ECMA_IS_VALUE_ERROR and returns immediately, ensuring\
-    \ proper resource cleanup and error handling.\nTo fix this, replace ECMA_TRY_CATCH\
-    \ usage with direct error checking and explicit resource cleanup.\n"
+  message: "Found use of ECMA_TRY_CATCH/ECMA_FINALIZE macros for error handling instead\
+    \ of direct error checking. \nThis pattern can lead to resource leaks and improper\
+    \ error handling. \nInstead, directly check for errors using ECMA_IS_VALUE_ERROR\
+    \ and handle them immediately.\nThe fix involves replacing the macro-based error\
+    \ handling with direct error checking and proper resource cleanup.\n"
   severity: ERROR
   metadata:
-    source-url: github.com/galpeter/jerryscript/commit/392ee717128f6daaf0b94e54fc9512eb26d680e2
+    source-url: github.com/jerryscript-project/jerryscript/commit/392ee717128f6daaf0b94e54fc9512eb26d680e2
     category: security
     cwe:
     - CWE-703
-    owasp: A10:2021 - Server-Side Request Forgery
+    owasp:
+    - A12:2021-Security Misconfiguration
     references:
-    - https://github.com/jerryscript-project/jerryscript/issues/1234
+    - https://github.com/jerryscript-project/jerryscript/wiki/Error-Handling
     technology:
     - c

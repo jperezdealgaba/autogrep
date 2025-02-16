@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gstreamer-45dcd0b9
+  pattern: 'gst_object_unref($VAR);
+
+    '
+  pattern-not: 'gst_object_unref(flxdec);
+
+    '
+  languages:
+  - c
+  message: 'The code contains a potentially unsafe use of `gst_object_unref` with
+    a variable that may not be properly managed, leading to potential double-free
+    or use-after-free vulnerabilities. This can cause crashes or security exploits.
+    Ensure that the object being unreferenced is properly managed and not unrefed
+    multiple times.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gstreamer/gstreamer/commit/45dcd0b9ccf33ed85cdafeb871a3781f5be57fd9
+    category: security
+    cwe:
+    - CWE-416
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://gstreamer.freedesktop.org/documentation/gstreamer/gstobject.html?gi-language=c#gst-object-unref
+    technology:
+    - c

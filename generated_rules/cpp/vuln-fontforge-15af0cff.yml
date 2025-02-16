@@ -1,0 +1,29 @@
+rules:
+- id: vuln-fontforge-15af0cff
+  pattern: 'char *former_names[FORMER_MAX];
+
+    '
+  pattern-not: 'char *former_names[CV_TABMAX];
+
+    '
+  languages:
+  - cpp
+  message: 'The use of a hardcoded array size ''FORMER_MAX'' can lead to buffer overflow
+    vulnerabilities if the array size is insufficient. This was fixed by increasing
+    the array size to ''CV_TABMAX''. Always ensure that array sizes are large enough
+    to handle expected data and consider using dynamic memory allocation if the size
+    is not known at compile time.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/fontforge/fontforge/commit/15af0cffb26334fa7fdb1b671adbf9f44ca7a2d6
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - cpp

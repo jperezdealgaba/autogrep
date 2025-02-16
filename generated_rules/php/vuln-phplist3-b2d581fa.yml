@@ -1,0 +1,23 @@
+rules:
+- id: vuln-phplist3-b2d581fa
+  pattern: '$ls->addColumn($ADMIN[''loginname''], s(''email''), $ADMIN[''email'']);
+
+    '
+  pattern-not: '$ls->addColumn($ADMIN[''loginname''], s(''email''), htmlspecialchars($ADMIN[''email'']));
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped output of email\
+    \ data. \nThis can allow attackers to inject malicious scripts into the application.\
+    \ \nAlways use htmlspecialchars() to escape output before rendering it in HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpList/phplist3/commit/b2d581fa9d474927f3e85e1d0f020f69b95c3312
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

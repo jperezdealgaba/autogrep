@@ -1,0 +1,27 @@
+rules:
+- id: vuln-udisks-ad2ce671
+  pattern: 'udisks_error($MSG, ...)
+
+    '
+  pattern-not: 'udisks_critical($MSG, ...)
+
+    '
+  languages:
+  - c
+  message: 'The use of `udisks_error` instead of `udisks_critical` for critical errors
+    can lead to insufficient logging severity, potentially masking critical system
+    issues. This can prevent proper monitoring and alerting for critical failures.
+    Replace `udisks_error` with `udisks_critical` for errors that indicate critical
+    system failures or security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/storaged-project/udisks/commit/ad2ce6714e911be58011dd6b838ec0f6fd0f950f
+    category: security
+    cwe:
+    - 'CWE-778: Insufficient Logging'
+    owasp:
+    - 'A09: Security Logging and Monitoring Failures'
+    technology:
+    - c

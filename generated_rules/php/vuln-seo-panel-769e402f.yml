@@ -1,0 +1,29 @@
+rules:
+- id: vuln-seo-panel-769e402f
+  pattern: '$THIS->listWebsites()
+
+    '
+  pattern-not: '$THIS->listWebsites([])
+
+    '
+  languages:
+  - php
+  message: 'The method `listWebsites()` is being called without any parameters, which
+    can lead to security vulnerabilities if the method relies on user input. This
+    can result in unvalidated or unsanitized data being processed, potentially leading
+    to issues like cross-site scripting (XSS) or other injection attacks. Always pass
+    an empty array or validated parameters to ensure safe handling of data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/seopanel/Seo-Panel/commit/769e402ff763baf6e05962bb922543e89b160d60
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

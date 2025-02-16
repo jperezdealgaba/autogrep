@@ -1,0 +1,46 @@
+rules:
+- id: vuln-libgit2-9844d38b
+  pattern: 'if ($CMD & $MASK1) $VAR1 = *$DELTA++;
+
+    if ($CMD & $MASK2) $VAR1 |= *$DELTA++ << $SHIFT1;
+
+    if ($CMD & $MASK3) $VAR1 |= *$DELTA++ << $SHIFT2;
+
+    if ($CMD & $MASK4) $VAR1 |= ((unsigned) *$DELTA++ << $SHIFT3);
+
+    '
+  pattern-not: '#define ADD_DELTA($O, $SHIFT) { if ($DELTA < $DELTA_END) ($O) |= ((unsigned)
+    *$DELTA++ << $SHIFT); else goto fail; }
+
+    if ($CMD & $MASK1) ADD_DELTA($VAR1, $SHIFT1);
+
+    if ($CMD & $MASK2) ADD_DELTA($VAR1, $SHIFT2);
+
+    if ($CMD & $MASK3) ADD_DELTA($VAR1, $SHIFT3);
+
+    if ($CMD & $MASK4) ADD_DELTA($VAR1, $SHIFT4);
+
+    #undef ADD_DELTA
+
+    '
+  languages:
+  - c
+  message: 'The code performs bitwise operations on a delta buffer without checking
+    bounds, which could lead to out-of-bounds memory access. This vulnerability could
+    be exploited to cause a crash or potentially execute arbitrary code. The fix introduces
+    a bounds check using the ADD_DELTA macro to ensure that the delta buffer is not
+    accessed beyond its end.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libgit2/libgit2/commit/9844d38bed10e9ff17174434b3421b227ae710f3
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

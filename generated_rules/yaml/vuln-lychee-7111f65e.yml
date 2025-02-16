@@ -1,0 +1,26 @@
+rules:
+- id: vuln-lychee-7111f65e
+  pattern: "steps:\n  ...\n  - name: Apply tests\n    run: XDEBUG_MODE=coverage vendor/bin/phpunit\n\
+    \  ...\n"
+  pattern-not: "steps:\n  ...\n  - name: Apply tests ${{ matrix.test-suite }}\n  \
+    \  run: XDEBUG_MODE=coverage vendor/bin/phpunit --testsuite ${{ matrix.test-suite\
+    \ }}\n  ...\n"
+  languages:
+  - yaml
+  message: "The workflow is missing the `--testsuite` parameter in the PHPUnit command,\
+    \ which could lead to incomplete test coverage. \nThis is dangerous because it\
+    \ might miss critical test cases, potentially allowing undetected bugs to slip\
+    \ into production. \nTo fix this, ensure the PHPUnit command includes the `--testsuite`\
+    \ parameter to specify the test suite being executed.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/LycheeOrg/Lychee/commit/7111f65e98742f78d3362eb478cd96c02a577679
+    category: security
+    cwe:
+    - CWE-489
+    owasp:
+    - OWASP-ASVS
+    references:
+    - https://phpunit.de/manual/current/en/textui.html
+    technology:
+    - yaml

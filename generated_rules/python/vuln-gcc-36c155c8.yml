@@ -1,0 +1,24 @@
+rules:
+- id: vuln-gcc-36c155c8
+  pattern: '$VAR.decode()
+
+    '
+  pattern-not: '$VAR
+
+    '
+  languages:
+  - python
+  message: 'Detected unnecessary decode() call on a string. This can lead to decoding
+    errors or unexpected behavior. Remove the decode() call to fix the issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gcc-mirror/gcc/commit/36c155c893954040236832e80756ba79cca61185
+    category: security
+    cwe: CWE-704
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/stdtypes.html#str.decode
+    technology:
+    - python

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mybb-c3c474a5
+  pattern: '$ret[''success''][] = array($attachedfile[''aid''], get_attachment_icon(get_extension($filename)),
+    $filename, get_friendly_size($FILE[''size'']));
+
+    '
+  pattern-not: '$ret[''success''][] = array($attachedfile[''aid''], get_attachment_icon(get_extension($filename)),
+    htmlspecialchars_uni($filename), get_friendly_size($FILE[''size'']));
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped filename in array construction, which can lead to XSS\
+    \ vulnerabilities. \nThe filename should be sanitized using `htmlspecialchars_uni()`\
+    \ to prevent malicious input from being interpreted as HTML.\nThis is dangerous\
+    \ because an attacker could inject arbitrary HTML or JavaScript, potentially leading\
+    \ to account compromise or data theft.\nFix the issue by applying `htmlspecialchars_uni()`\
+    \ to the filename before including it in the array.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/c3c474a5b70f9fb4bb368b5b58c623b1c9e2fc16
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

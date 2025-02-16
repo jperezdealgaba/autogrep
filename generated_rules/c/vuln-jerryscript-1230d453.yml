@@ -1,27 +1,29 @@
 rules:
 - id: vuln-jerryscript-1230d453
-  pattern: "#if ENABLED (JERRY_ES2015)\n  if ($CONTEXT->source_p[0] == LIT_CHAR_ASTERISK)\n\
-    \  {\n    $CONTEXT->token.type = LEXER_MULTIPLY;\n  }\n#endif /* ENABLED (JERRY_ES2015)\
-    \ */\n"
-  pattern-not: "#if ENABLED (JERRY_ES2015)\n  if ($CONTEXT->source_p[0] == LIT_CHAR_ASTERISK)\n\
-    \  {\n    $CONTEXT->token.type = LEXER_MULTIPLY;\n    lexer_consume_next_character($CONTEXT);\n\
-    \    return;\n  }\n#endif /* ENABLED (JERRY_ES2015) */\n"
+  pattern: "#if ENABLED (JERRY_ES2015)\n    if ($CONTEXT_P->source_p[0] == LIT_CHAR_ASTERISK)\n\
+    \    {\n      $CONTEXT_P->token.type = LEXER_MULTIPLY;\n    }\n#endif /* ENABLED\
+    \ (JERRY_ES2015) */\n"
+  pattern-not: "#if ENABLED (JERRY_ES2015)\n    if ($CONTEXT_P->source_p[0] == LIT_CHAR_ASTERISK)\n\
+    \    {\n      $CONTEXT_P->token.type = LEXER_MULTIPLY;\n      lexer_consume_next_character\
+    \ ($CONTEXT_P);\n      return;\n    }\n#endif /* ENABLED (JERRY_ES2015) */\n"
   languages:
   - c
-  message: 'Detected a vulnerability where the parser fails to properly consume the
-    next character after encountering an asterisk. This could lead to incorrect tokenization
-    and potential security issues in the JavaScript parser. The fix ensures that the
-    next character is consumed and the function returns immediately after setting
-    the token type.
+  message: 'The vulnerability arises from missing a critical call to `lexer_consume_next_character`
+    and a `return` statement after setting the token type to `LEXER_MULTIPLY`. This
+    can lead to incorrect parsing behavior and potential security issues in the lexer.
+    To fix this, ensure that `lexer_consume_next_character` is called and the function
+    returns immediately after setting the token type.
 
     '
   severity: ERROR
   metadata:
-    source-url: github.com/galpeter/jerryscript/commit/1230d4532c215abe8679a3c6ecda6152c502ae60
+    source-url: github.com/jerryscript-project/jerryscript/commit/1230d4532c215abe8679a3c6ecda6152c502ae60
     category: security
     cwe:
-    - CWE-172
+    - 'CWE-682: Incorrect Calculation'
     owasp:
-    - A9:2017-Using Components with Known Vulnerabilities
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/jerryscript-project/jerryscript/commit/1230d4532c215abe8679a3c6ecda6152c502ae60
     technology:
     - c

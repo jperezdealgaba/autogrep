@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpmyfaq-cb648f0d
+  pattern: 'echo ''<td><span data-tag-id="''.$key.''">''.$tag.''</span></td>'';
+
+    '
+  pattern-not: 'echo ''<td><span data-tag-id="''.$key.''">''.PMF_String::htmlspecialchars($tag).''</span></td>'';
+
+    '
+  languages:
+  - php
+  message: 'The code directly outputs user-controlled input ($tag) without proper
+    escaping, which can lead to Cross-Site Scripting (XSS) vulnerabilities. Attackers
+    can inject malicious scripts that execute in the context of the user''s browser,
+    potentially stealing sensitive information or performing unauthorized actions.
+    To fix this, always sanitize user input using functions like `htmlspecialchars`
+    or `htmlentities` before outputting it to the browser.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/cb648f0d5690b81647dd5c9efe942ebf6cce7da9
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

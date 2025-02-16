@@ -1,0 +1,28 @@
+rules:
+- id: vuln-heimdal-6dd3eb83
+  pattern: '$FUNC(..., rep->kdc_rep.ticket.sname, rep->kdc_rep.ticket.realm, ...)
+
+    '
+  pattern-not: '$FUNC(..., rep->enc_part.sname, rep->enc_part.srealm, ...)
+
+    '
+  languages:
+  - c
+  message: 'The code uses incorrect structure fields `kdc_rep.ticket.sname` and `kdc_rep.ticket.realm`
+    instead of `enc_part.sname` and `enc_part.srealm`. This could lead to incorrect
+    data handling or security vulnerabilities. Update the code to use the correct
+    fields `enc_part.sname` and `enc_part.srealm`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/heimdal/heimdal/commit/6dd3eb836bbb80a00ffced4ad57077a1cdf227ea
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

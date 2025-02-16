@@ -1,0 +1,31 @@
+rules:
+- id: vuln-exponent-cms-1965e371
+  pattern: '$section = $this->url_style=="sef" ? $this->getPageByName($_REQUEST[''section''])->id
+    : intval($_REQUEST[''section'']);
+
+    '
+  pattern-not: '$section = $this->url_style=="sef" ? $this->getPageByName(expString::escape($_REQUEST[''section'']))->id
+    : intval($_REQUEST[''section'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where user input from $_REQUEST[''section'']
+    is used directly without proper escaping. This could lead to security issues such
+    as SQL injection or XSS. Always sanitize or escape user input before using it
+    in queries or other sensitive operations. Use expString::escape() or equivalent
+    functions to sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/1965e3719986406576898668855b8afbab43ed2c
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

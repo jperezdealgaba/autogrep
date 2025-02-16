@@ -1,0 +1,35 @@
+rules:
+- id: vuln-re2c-a3473fd7
+  pattern: 'nfa_t *$NFA = new nfa_t($RE);
+
+    '
+  pattern-not: 'size_t $SIZE, $DEPTH;
+
+    compute_size_and_depth($RE.res, &$SIZE, &$DEPTH);
+
+    if ($DEPTH > MAX_NFA_DEPTH || $SIZE > MAX_NFA_STATES) return $ERROR;
+
+    nfa_t *$NFA = new nfa_t($RE, $SIZE);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe instantiation of nfa_t without size and depth validation.
+
+    This can lead to excessive memory consumption or stack overflow due to uncontrolled
+    NFA growth.
+
+    Always validate NFA size and depth before instantiation using compute_size_and_depth
+    and MAX_NFA_DEPTH/MAX_NFA_STATES constants.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/skvadrik/re2c/commit/a3473fd7be829cb33907cb08612f955133c70a96
+    category: security
+    cwe:
+    - CWE-400
+    - CWE-770
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

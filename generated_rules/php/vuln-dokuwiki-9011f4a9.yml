@@ -1,0 +1,28 @@
+rules:
+- id: vuln-dokuwiki-9011f4a9
+  pattern: 'if($name) $this->doc .= '' ''.$lang[''by''].'' ''.$name;
+
+    '
+  pattern-not: 'if($name) $this->doc .= '' ''.$lang[''by''].'' ''.hsc($name);
+
+    '
+  languages:
+  - php
+  message: 'The code directly concatenates user input ($name) into the HTML output
+    without proper escaping, which can lead to Cross-Site Scripting (XSS) vulnerabilities.
+    To fix this, use the `hsc()` function to escape the input before including it
+    in the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dokuwiki/dokuwiki/commit/9011f4a9a5c330a1692698b6b302b1c8c346b0ab
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

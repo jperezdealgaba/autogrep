@@ -1,0 +1,24 @@
+rules:
+- id: vuln-publiccms-d8d7626c
+  pattern: '<version.publiccms>V4.0.202204.a</version.publiccms>
+
+    '
+  pattern-not: '<version.publiccms>V4.0.202204.b</version.publiccms>
+
+    '
+  languages:
+  - xml
+  message: "Detected an outdated version of PublicCMS (V4.0.202204.a) which may contain\
+    \ security vulnerabilities. \nUsing outdated versions can expose the application\
+    \ to known exploits and security risks. \nUpgrade to the latest version (V4.0.202204.b)\
+    \ to mitigate these risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/sanluan/PublicCMS/commit/d8d7626cf51e4968fb384e1637a3c0c9921f33e9
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - xml

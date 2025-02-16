@@ -1,0 +1,47 @@
+rules:
+- id: vuln-mediawiki-fe45ba87
+  pattern: '$changes = 0;
+
+    ...
+
+    $user->setOption($VARNAME, $VARNAME2);
+
+    $changes++;
+
+    '
+  pattern-not: '$changes = array();
+
+    ...
+
+    $changes[$VARNAME] = $VARNAME2;
+
+    ...
+
+    $user->setOption($VARNAME, $VARNAME2);
+
+    '
+  languages:
+  - php
+  message: 'Detected a vulnerability where user preferences are modified without proper
+    validation or tracking.
+
+    The original code used a simple counter to track changes, which could lead to
+    unvalidated or untracked modifications.
+
+    The fix introduces a validation step and tracks changes in an array, ensuring
+    proper handling of user preferences.
+
+    To fix this, replace the counter with an array to track changes and add validation
+    before applying them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/fe45ba87528d855b4f12785016280451bd7893cf
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A07:2021 - Identification and Authentication Failures
+    technology:
+    - php

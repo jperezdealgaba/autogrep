@@ -1,0 +1,23 @@
+rules:
+- id: vuln-bmoor-7d4a086a
+  pattern: "{\n  ...,\n  \"version\": \"0.8.11\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"0.8.12\",\n  ...\n}\n"
+  languages:
+  - json
+  message: 'The package version is outdated and contains known vulnerabilities. Using
+    outdated versions can expose the application to security risks. Update the package
+    to the latest secure version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/b-heilman/bmoor/commit/7d4a086a1dc3ef11ed0b323824d02348734b7da5
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A9_2021-Security_Misconfiguration
+    technology:
+    - json

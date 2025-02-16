@@ -1,0 +1,43 @@
+rules:
+- id: vuln-u-boot-8f8c04bf
+  pattern: 'int $ALEN;
+
+    int $J;
+
+    int $COUNT;
+
+    int $NBYTES;
+
+    int $LINEBYTES;
+
+    '
+  pattern-not: 'uint $ALEN;
+
+    uint $J;
+
+    uint $COUNT;
+
+    uint $NBYTES;
+
+    uint $LINEBYTES;
+
+    '
+  languages:
+  - c
+  message: 'Using `int` instead of `uint` for variables that should not hold negative
+    values can lead to unexpected behavior and potential security vulnerabilities.
+    This is particularly dangerous in low-level operations like I2C communication
+    where data integrity is critical. Replace `int` with `uint` for variables that
+    should only store non-negative values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/u-boot/u-boot/commit/8f8c04bf1ebbd2f72f1643e7ad9617dafa6e5409
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

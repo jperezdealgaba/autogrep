@@ -1,0 +1,38 @@
+rules:
+- id: vuln-phpcas-02163311
+  pattern: "$php_is_for_sissies = split(\"\\?\", $_SERVER['REQUEST_URI'], 2);\n$final_uri\
+    \ .= $php_is_for_sissies[0];\nif(sizeof($php_is_for_sissies) > 1){\n  $cgi_params\
+    \ = '?' . $php_is_for_sissies[1];\n} else {\n  $cgi_params = '?';\n}\n$cgi_params\
+    \ = preg_replace('/&ticket=[^&]*/','',$cgi_params);\n$cgi_params = preg_replace('/\\\
+    ?ticket=[^&;]*/','?',$cgi_params);\n$cgi_params = preg_replace('/\\?%26/','?',$cgi_params);\n\
+    $cgi_params = preg_replace('/\\?&/','?',$cgi_params);\n$cgi_params = preg_replace('/\\\
+    ?$/','',$cgi_params);\n$final_uri .= $cgi_params;\n"
+  pattern-not: "$baseurl = split(\"\\?\", $_SERVER['REQUEST_URI'], 2);\n$final_uri\
+    \ .= $baseurl[0];\n$query_string = '';\nif ($_GET) {\n  $kv = array();\n  foreach\
+    \ ($_GET as $key => $value) {\n    if($key !== \"ticket\"){\n      $kv[] = urlencode($key).\
+    \ \"=\" . urlencode($value);\n    }\n  }\n  $query_string = join(\"&\", $kv);\n\
+    }\nif($query_string){\n  $final_uri .= \"?\" . $query_string;\n}\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to improper handling of URL parameters, specifically
+    the ''ticket'' parameter. The original code uses `preg_replace` to remove the
+    ''ticket'' parameter from the URL, which can be bypassed or manipulated. This
+    could lead to security issues such as parameter injection or improper validation
+    of URLs. The fix properly iterates through the `$_GET` parameters, explicitly
+    excluding the ''ticket'' parameter and safely encoding the remaining parameters.
+    To fix this, ensure that URL parameters are handled securely by iterating through
+    `$_GET` and properly encoding each parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apereo/phpCAS/commit/021633112198b37555b35340cde884d1016d9e47
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

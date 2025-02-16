@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libebml-b66ca475
+  pattern: "do {\n  ...\n} while ( $MAXSIZE > $EXPR - $SIZEIDX + $POSSIBLEIDLENGTH\
+    \ );\n"
+  pattern-not: "do {\n  ...\n} while ( $MAXSIZE >= $READSIZE );\n"
+  languages:
+  - cpp
+  message: "This rule detects a potential integer overflow vulnerability in loop conditions.\
+    \ \nThe original code compares the result of an arithmetic expression with a maximum\
+    \ size, which could lead to overflow. \nThis is dangerous as it can cause unexpected\
+    \ behavior, including infinite loops or memory corruption. \nThe fix replaces\
+    \ the arithmetic comparison with a simpler and safer condition using '>='.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/b66ca475be967547af9a3784e720fbbacd381be6
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

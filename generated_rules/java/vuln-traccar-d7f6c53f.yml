@@ -1,0 +1,56 @@
+rules:
+- id: vuln-traccar-d7f6c53f
+  pattern: 'DocumentBuilderFactory.newInstance().newDocumentBuilder()
+
+    '
+  pattern-not: 'DocumentBuilderFactory $BUILDER = DocumentBuilderFactory.newInstance();
+
+    $BUILDER.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+    $BUILDER.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
+    $BUILDER.setFeature("http://xml.org/sax/features/external-parameter-entities",
+    false);
+
+    $BUILDER.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",
+    false);
+
+    $BUILDER.setXIncludeAware(false);
+
+    $BUILDER.setExpandEntityReferences(false);
+
+    $BUILDER.newDocumentBuilder()
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure XML parsing configuration. The DocumentBuilderFactory
+    is instantiated without security features enabled, which can lead to XML External
+    Entity (XXE) attacks. To mitigate this, configure the DocumentBuilderFactory with
+    the following security features:
+
+    - disallow-doctype-decl: true
+
+    - external-general-entities: false
+
+    - external-parameter-entities: false
+
+    - load-external-dtd: false
+
+    - setXIncludeAware(false)
+
+    - setExpandEntityReferences(false)
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/traccar/traccar/commit/d7f6c53fd88635885914013649b6807ec53227bf
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology:
+    - java

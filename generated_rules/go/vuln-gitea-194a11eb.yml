@@ -1,0 +1,35 @@
+rules:
+- id: vuln-gitea-194a11eb
+  pattern: 'SendIssueCommentMail($ISSUE, $DOER, $CONTENT, $COMMENT, $TOS)
+
+    ...
+
+    SendIssueMentionMail($ISSUE, $DOER, $CONTENT, $COMMENT, getUserEmailsByNames($E,
+    $TOS))
+
+    '
+  pattern-not: "for _, $TO := range $TOS {\n    SendIssueCommentMail($ISSUE, $DOER,\
+    \ $CONTENT, $COMMENT, []string{$TO})\n}\n...\n$EMAILS := getUserEmailsByNames($E,\
+    \ $TOS)\nfor _, $TO := range $EMAILS {\n    SendIssueMentionMail($ISSUE, $DOER,\
+    \ $CONTENT, $COMMENT, []string{$TO})\n}\n"
+  languages:
+  - go
+  message: 'Detected a potential security vulnerability where email addresses are
+    passed directly to SendIssueCommentMail and SendIssueMentionMail functions without
+    being properly iterated over. This could lead to unintended email delivery or
+    information leakage. The fix involves iterating over each recipient and sending
+    the email individually to ensure proper handling of recipients.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/194a11eb110cd98fc2ba52861abf7770db6885a3
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - go

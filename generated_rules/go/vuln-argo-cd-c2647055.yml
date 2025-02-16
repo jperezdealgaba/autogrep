@@ -1,0 +1,29 @@
+rules:
+- id: vuln-argo-cd-c2647055
+  pattern: "$CLUSTER, $ERR := $SERVER.getClusterWith403IfNotExist($CTX, $QUERY)\n\
+    ...\nif $ENFORCE_ERR := $SERVER.enf.EnforceErr($CTX.Value(\"claims\"), $RESOURCE,\
+    \ $ACTION, $OBJECT); $ENFORCE_ERR != nil {\n    return nil, $ENFORCE_ERR\n}\n"
+  pattern-not: '$CLUSTER, $ERR := $SERVER.getClusterAndVerifyAccess($CTX, $QUERY,
+    $ACTION)
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure direct access to cluster resources without proper access
+    verification. This can lead to unauthorized access to cluster information. The
+    vulnerability occurs when `getClusterWith403IfNotExist` is used directly without
+    verifying user permissions using `getClusterAndVerifyAccess`. To fix this, ensure
+    all cluster access operations use `getClusterAndVerifyAccess` to properly verify
+    user permissions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/c2647055c261a550e5da075793260f6524e65ad9
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - 'A01: Broken Access Control'
+    technology:
+    - go

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-pixelfed-7e47d6dc
+  pattern: 'abort_if(!$request->user(), 403);
+
+    '
+  pattern-not: 'abort_if(!$request->user() || !$request->user()->token(), 403);
+
+    abort_unless($request->user()->tokenCan(''...''), 403);
+
+    '
+  languages:
+  - php
+  message: 'Incomplete authorization check detected. The code only verifies the presence
+    of a user but does not validate the access token or its permissions. This can
+    lead to unauthorized access if the token is invalid or lacks required permissions.
+    To fix this, ensure both the user and token are validated, and check that the
+    token has the necessary permissions using `tokenCan()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pixelfed/pixelfed/commit/7e47d6dccb0393a2e95c42813c562c854882b037
+    category: security
+    cwe:
+    - 285
+    - 862
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php

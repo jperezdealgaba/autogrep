@@ -1,0 +1,22 @@
+rules:
+- id: vuln-nova-4054cc4a
+  pattern: '_get_inst_type($FLAVOR_ID, read_deleted="no")
+
+    '
+  pattern-not: '_get_inst_type($FLAVOR_ID, ctxt=$CONTEXT, read_deleted="no")
+
+    '
+  languages:
+  - python
+  message: "Detected a missing context parameter in `_get_inst_type` function call.\
+    \ \nThis can lead to security vulnerabilities as the context is essential for\
+    \ proper access control and auditing. \nAlways pass the context parameter to ensure\
+    \ proper security checks are performed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/4054cc4a22a1fea997dec76afb5646fd6c6ea6b9
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    technology:
+    - python

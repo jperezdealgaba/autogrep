@@ -1,0 +1,24 @@
+rules:
+- id: vuln-mutt-e0131852
+  pattern: "if (!$DLEN)\n    break;\n"
+  pattern-not: "if ($DLEN < 2)\n    break;\n"
+  languages:
+  - c
+  message: "The vulnerability occurs due to insufficient boundary checking when handling\
+    \ string lengths. \nThe original code fails to account for the required space\
+    \ for both the pre/post quote characters and the trailing null, which can lead\
+    \ to buffer underflow or incorrect string termination. \nThis can result in memory\
+    \ corruption or undefined behavior. \nThe fix ensures proper length checking by\
+    \ verifying that there is enough space for both quote characters and the null\
+    \ terminator.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/muttmua/mutt/commit/e0131852c6059107939893016c8ff56b6e42865d
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-contao-b794e14f
+  pattern: 'StringUtil::convertEncoding(StringUtil::specialchars(basename($VAR)),
+    $VAR2)
+
+    '
+  pattern-not: 'StringUtil::convertEncoding(StringUtil::specialchars(basename($VAR),
+    false, true), $VAR2)
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to encoding issues due to missing flags in the
+    `specialchars` function call. This can lead to improper handling of special characters,
+    potentially causing security issues such as XSS. The fix is to include the `false`
+    and `true` flags in the `specialchars` function to ensure proper encoding and
+    escaping.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contao/contao/commit/b794e14fff070101bf6a885da9b1a83395093b4d
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Cross-Site_Scripting_(XSS)
+    technology:
+    - php

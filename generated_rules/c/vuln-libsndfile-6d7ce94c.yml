@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libsndfile-6d7ce94c
+  pattern: '$VAR->instrument->loop_count &= $MASK;
+
+    '
+  pattern-not: "if ($VAR->instrument->loop_count > ARRAY_LEN ($VAR->instrument->loops))\n\
+    \  $VAR->instrument->loop_count = ARRAY_LEN ($VAR->instrument->loops);\n"
+  languages:
+  - c
+  message: "The code performs a bitwise AND operation to limit the loop count, which\
+    \ does not prevent reading past the array bounds. This can lead to out-of-bounds\
+    \ access and potential memory corruption. \nThe fix ensures that the loop count\
+    \ does not exceed the length of the loops array, preventing out-of-bounds access.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/6d7ce94c020cc720a6b28719d1a7879181790008
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

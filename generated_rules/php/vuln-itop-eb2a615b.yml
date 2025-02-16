@@ -1,0 +1,26 @@
+rules:
+- id: vuln-itop-eb2a615b
+  pattern: "if (false === $bTrustContent) {\n  ...\n}\n"
+  pattern-not: "if ($bIsContentCheckEnabled && (false === $bTrustContent)) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code directly checks the `$bTrustContent` flag without verifying if
+    content checking is enabled. This could allow untrusted TWIG content to be processed
+    even when content checking is intended to be enforced. Ensure that content checking
+    is always enabled when `$bTrustContent` is false by verifying the `$bIsContentCheckEnabled`
+    flag.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/eb2a615bd28100442c7f6171707bb40884af2305
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A03_2021-Injection.html
+    technology:
+    - php

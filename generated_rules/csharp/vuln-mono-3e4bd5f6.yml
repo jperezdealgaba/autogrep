@@ -1,0 +1,39 @@
+rules:
+- id: vuln-mono-3e4bd5f6
+  pattern: 'if (!$FILEINFO.Exists)
+
+    ...
+
+    '
+  pattern-not: 'if (!$FILEINFO.Exists || !ValidFileName($FILENAME))
+
+    ...
+
+    '
+  languages:
+  - csharp
+  message: 'Detected a vulnerability where file existence is checked without validating
+    the file name.
+
+    This can lead to security issues such as directory traversal or handling of malicious
+    files.
+
+    Ensure to validate the file name using a method like ValidFileName before checking
+    file existence.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mono/mono/commit/3e4bd5f6e0dfc74907b40cdefcf91ee3a791876b
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - csharp

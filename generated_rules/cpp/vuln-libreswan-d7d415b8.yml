@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libreswan-d7d415b8
+  pattern: 'log_diag($RC_FLAGS, $LOGGER, $DIAG, $FMT, ...)
+
+    '
+  pattern-not: 'llog_diag($RC_FLAGS, $LOGGER, $DIAG, $FMT, ...)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of deprecated ''log_diag'' function. This function has been
+    replaced with ''llog_diag'' to prevent potential security issues. Using the outdated
+    function may lead to undefined behavior or vulnerabilities in the logging mechanism.
+    Replace all instances of ''log_diag'' with ''llog_diag'' to ensure proper functionality
+    and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libreswan/libreswan/commit/d7d415b8ae9652e1aeadb80508b0f9cf91306a60
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://libreswan.org/security/
+    technology:
+    - cpp

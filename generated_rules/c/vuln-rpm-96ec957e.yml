@@ -1,0 +1,28 @@
+rules:
+- id: vuln-rpm-96ec957e
+  pattern: 'mkdir($PATH, $MODE)
+
+    '
+  pattern-not: 'mkdirat($DIRFD, $PATH, $MODE)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of insecure `mkdir` function which is vulnerable to TOCTOU
+    (Time-of-Check to Time-of-Use) attacks. Use `mkdirat` instead to safely create
+    directories relative to a directory file descriptor.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/96ec957e281220f8e137a2d5eb23b83a6377d556
+    category: security
+    cwe:
+    - CWE-367
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://man7.org/linux/man-pages/man2/mkdir.2.html
+    - https://man7.org/linux/man-pages/man2/mkdirat.2.html
+    technology:
+    - c

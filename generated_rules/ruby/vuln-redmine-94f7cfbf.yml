@@ -1,0 +1,33 @@
+rules:
+- id: vuln-redmine-94f7cfbf
+  pattern: '$OBJECT.map {|$O| $FORMAT_OBJECT($O, $HTML) }.join('', '').html_safe
+
+    '
+  pattern-not: '$FORMATTED_OBJECTS = $OBJECT.map {|$O| $FORMAT_OBJECT($O, $HTML) }
+
+    $HTML ? safe_join($FORMATTED_OBJECTS, '', '') : $FORMATTED_OBJECTS.join('', '')
+
+    '
+  languages:
+  - ruby
+  message: 'Directly using `.html_safe` on joined strings can lead to XSS vulnerabilities.
+
+    The vulnerability occurs because HTML entities are not properly escaped before
+    marking the content as safe.
+
+    Instead, use `safe_join` to safely join HTML-safe strings, which properly handles
+    escaping and joining.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/94f7cfbf990028348b9262578acbc53a94fce448
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://guides.rubyonrails.org/security.html#cross-site-scripting-xss
+    technology:
+    - ruby

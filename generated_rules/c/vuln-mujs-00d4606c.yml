@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mujs-00d4606c
+  pattern: "if (!js_regexec($PROG, $TEXT, $M, $OPTS)) {\n  ...\n}\n"
+  pattern-not: "$RESULT = js_regexec($PROG, $TEXT, $M, $OPTS);\nif ($RESULT < 0)\n\
+    \  js_error($J, \"regexec failed\");\nif ($RESULT == 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses the result of js_regexec without proper error handling.
+
+    This can lead to undefined behavior if js_regexec fails. The function should
+
+    always check for negative return values and handle them appropriately by
+
+    calling js_error. This vulnerability can cause crashes or other unexpected
+
+    behavior in the application. To fix this, always check the return value of
+
+    js_regexec and handle errors properly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/00d4606c3baf813b7b1c176823b2729bf51002a2
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

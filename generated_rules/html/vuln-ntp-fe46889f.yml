@@ -1,0 +1,34 @@
+rules:
+- id: vuln-ntp-fe46889f
+  pattern: "<dt id=\"enable\"><tt>enable [auth | bclient | calibrate | kernel | mode7\
+    \ | monitor | ntp | stats]</tt><br>\n  <tt>disable [auth | bclient | calibrate\
+    \ | kernel | mode7 | monitor | ntp | stats]</tt></dt>\n"
+  pattern-not: '<dt id="enable"><tt>enable [auth | bclient | calibrate | kernel |
+    mode7 | monitor | ntp | stats | unpeer_crypto_early | unpeer_crypto_nak_early
+    | unpeer_digest_early]</tt></dt>
+
+    <dt><tt>disable [auth | bclient | calibrate | kernel | mode7 | monitor | ntp |
+    stats | unpeer_crypto_early | unpeer_crypto_nak_early | unpeer_digest_early]</tt></dt>
+
+    '
+  languages:
+  - html
+  message: 'The HTML configuration is missing critical security options (`unpeer_crypto_early`,
+    `unpeer_crypto_nak_early`, `unpeer_digest_early`) which can prevent DoS attacks.
+    Without these options, the server is vulnerable to crypto-related DoS attacks.
+    Add the missing options to both `enable` and `disable` commands to mitigate this
+    vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/fe46889f7baa75fc8e6c0fcde87706d396ce1461
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2016-1541
+    technology:
+    - html

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libical-6b9438d7
+  pattern: '$STRUCT.$FIELD = $EXPR + $OFFSET;
+
+    '
+  pattern-not: '$STRUCT.$FIELD = icalmemory_tmp_copy($EXPR + $OFFSET);
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment of pointer arithmetic result to a struct field can lead
+    to memory safety issues. This is dangerous because it may result in use-after-free
+    or invalid memory access vulnerabilities. To fix this, use `icalmemory_tmp_copy`
+    to create a safe copy of the string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libical/libical/commit/6b9438d746cec6e4e632d78c5244f4be6314d1c9
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

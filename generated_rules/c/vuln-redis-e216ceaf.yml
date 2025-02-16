@@ -1,0 +1,28 @@
+rules:
+- id: vuln-redis-e216ceaf
+  pattern: "if (($RUNLEN + $IDX) > HLL_REGISTERS) {\n    ...\n    return C_ERR;\n\
+    }\n"
+  pattern-not: 'if (($RUNLEN + $IDX) > HLL_REGISTERS) break;
+
+    '
+  languages:
+  - c
+  message: "Detected a potential integer overflow vulnerability in Redis. The original\
+    \ code \nreturns an error when an overflow condition is detected, but this can\
+    \ lead to \nundefined behavior or security issues. The fix replaces the error\
+    \ return with \na break statement to properly handle the overflow condition. This\
+    \ vulnerability \ncould be exploited to cause unexpected behavior or crashes in\
+    \ the application. \nTo fix this, ensure that overflow conditions are handled\
+    \ gracefully by breaking \nout of the loop or using appropriate boundary checks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/antirez/redis/commit/e216ceaf0e099536fe3658a29dcb725d812364e0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

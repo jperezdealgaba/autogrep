@@ -1,0 +1,26 @@
+rules:
+- id: vuln-simplesamlphp-4bc62965
+  pattern: "for ($i = 0; $i < $len; ++$i) {\n  $diff |= $known[$i] ^ $user[$i];\n\
+    }\n"
+  pattern-not: "for ($i = 0; $i < $len; $i++) {\n  $diff |= ord($known[$i]) ^ ord($user[$i]);\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code performs a byte-by-byte comparison without using the `ord()`
+    function, which can lead to timing attacks. Timing attacks can allow an attacker
+    to infer the contents of sensitive data by measuring the time taken to perform
+    operations. Always use `ord()` to ensure consistent timing when comparing strings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/4bc629658e7b7d17c9ac3fe0da7dc5df71f1b85e
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Time-based_Security_Flaws
+    technology:
+    - php

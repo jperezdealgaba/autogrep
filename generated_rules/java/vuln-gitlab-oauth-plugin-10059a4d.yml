@@ -1,0 +1,32 @@
+rules:
+- id: vuln-gitlab-oauth-plugin-10059a4d
+  pattern: "public HttpResponse doCommenceLogin(StaplerRequest $REQUEST, @Header(\"\
+    Referer\") final String $REFERER) throws IOException {\n    ...\n    parameters.add(new\
+    \ BasicNameValuePair(\"redirect_uri\", buildRedirectUrl($REQUEST, $REFERER)));\n\
+    \    ...\n}\n"
+  pattern-not: "public HttpResponse doCommenceLogin(StaplerRequest $REQUEST, @QueryParameter\
+    \ String $FROM, @Header(\"Referer\") final String $REFERER) throws IOException\
+    \ {\n    ...\n    if ($FROM != null && Util.isSafeToRedirectTo($FROM)) {\n   \
+    \     $REDIRECT = $FROM;\n    } else if ($REFERER != null && ($REFERER.startsWith(Jenkins.getInstance().getRootUrl())\
+    \ || Util.isSafeToRedirectTo($REFERER))) {\n        $REDIRECT = $REFERER;\n  \
+    \  } else {\n        $REDIRECT = Jenkins.getInstance().getRootUrl();\n    }\n\
+    \    parameters.add(new BasicNameValuePair(\"redirect_uri\", buildRedirectUrl($REQUEST,\
+    \ $REDIRECT)));\n    ...\n}\n"
+  languages:
+  - java
+  message: "Detected unsafe redirect URL handling in GitLab OAuth plugin. The vulnerability\
+    \ allows for open redirects \nby using untrusted referer URLs without proper validation.\
+    \ This could enable phishing attacks by redirecting \nusers to malicious sites.\
+    \ The fix includes validating the referer URL using `Util.isSafeToRedirectTo()`\
+    \ and \nfalling back to a safe default URL. Always validate and sanitize redirect\
+    \ URLs to prevent open redirect vulnerabilities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/gitlab-oauth-plugin/commit/10059a4d4e121e0c3b13f6e6f74843565bb0b49a
+    category: security
+    cwe: CWE-601
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/Open_redirect
+    technology:
+    - java

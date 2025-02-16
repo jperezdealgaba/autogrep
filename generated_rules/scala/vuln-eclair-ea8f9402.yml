@@ -1,0 +1,30 @@
+rules:
+- id: vuln-eclair-ea8f9402
+  pattern: 'new NodeRelay($NODE_PARAMS, $ROUTER, $REGISTER, $RELAY_ID, $PAYMENT_HASH,
+    $CONTEXT, $FSM_FACTORY)()
+
+    '
+  pattern-not: 'new NodeRelay($NODE_PARAMS, $PARENT, $ROUTER, $REGISTER, $RELAY_ID,
+    $PAYMENT_HASH, $CONTEXT, $FSM_FACTORY)()
+
+    '
+  languages:
+  - scala
+  message: 'The NodeRelay constructor is missing the parent ActorRef parameter, which
+    is crucial for proper actor lifecycle management and preventing race conditions.
+    This can lead to improper handling of payment relays and potential memory leaks.
+    Always include the parent ActorRef when initializing NodeRelay to ensure proper
+    cleanup and coordination.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ACINQ/eclair/commit/ea8f94022e734aaca189ae1288fc00197907a19f
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A04:2021 - Insecure Design
+    technology:
+    - scala
+    - akka

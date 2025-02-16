@@ -1,0 +1,22 @@
+rules:
+- id: vuln-mujs-833b6f16
+  pattern: "while (($P >= '0') && ($P <= '9')) {\n  ...\n}\n"
+  pattern-not: "while (($P >= '0') && ($P <= '9') && $EXP < INT_MAX/10) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: "Detected a potential integer overflow vulnerability in a numeric parsing\
+    \ loop. \nThe loop continues reading digits without checking if the accumulated\
+    \ value exceeds INT_MAX, which can lead to integer overflow and undefined behavior.\
+    \ \nTo fix this, add a check to ensure the accumulated value does not exceed INT_MAX/10\
+    \ before multiplying by 10 and adding the new digit.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/833b6f1672b4f2991a63c4d05318f0b84ef4d550
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c

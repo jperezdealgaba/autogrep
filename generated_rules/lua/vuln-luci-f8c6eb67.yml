@@ -1,0 +1,22 @@
+rules:
+- id: vuln-luci-f8c6eb67
+  pattern: "if $C and require_post_security($C.target) then\n  ...\nend\n"
+  pattern-not: "if $C and require_post_security($C.target, $ARGS) then\n  ...\nend\n"
+  languages:
+  - lua
+  message: 'The function `require_post_security` is being called without passing the
+    `args` parameter, which can lead to security vulnerabilities. This issue was fixed
+    by adding the `args` parameter to ensure proper security checks are performed.
+    Always pass the `args` parameter to `require_post_security` to maintain security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openwrt/luci/commit/f8c6eb67cd9da09ee20248fec6ab742069635e47
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - lua

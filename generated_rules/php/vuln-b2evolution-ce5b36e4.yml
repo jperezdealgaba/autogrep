@@ -1,0 +1,28 @@
+rules:
+- id: vuln-b2evolution-ce5b36e4
+  pattern: 'preg_match_all(''/(!?)(\[((?:[^][]+|(?2))*)\])\(([^"]*?)( "([^"]+)")?\)/'',
+    $TEXT, $MATCHES, PREG_SET_ORDER)
+
+    '
+  pattern-not: 'preg_match_all(''/(!?)(\[((?:[^][]+|(?2))*)\])\((https?:\/\/|\/)([^"]*?)(
+    "([^"]+)")?\)/'', $TEXT, $MATCHES, PREG_SET_ORDER)
+
+    '
+  languages:
+  - php
+  message: 'Detected a potentially unsafe URL handling in markdown parsing. The code
+    allows any URL format, which could lead to security vulnerabilities such as XSS
+    or phishing attacks. Ensure URLs for links and images are restricted to those
+    beginning with http://, https://, or /.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/b2evolution/b2evolution/commit/ce5b36e44b714b18b0bcd34c6db0187b8d13bab8
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A3: Cross-Site Scripting (XSS)'
+    technology:
+    - php

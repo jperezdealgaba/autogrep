@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gitea-0c3f9503
+  pattern: 'filepath.Dir($VAR)
+
+    '
+  pattern-not: 'path.Dir($VAR)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of `filepath.Dir` instead of `path.Dir`. The `filepath.Dir`
+    function is platform-dependent and may cause inconsistencies in path handling
+    across different operating systems. Use `path.Dir` for consistent path manipulation,
+    especially in web contexts where paths are typically URL-based and should be handled
+    uniformly regardless of the underlying OS.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/0c3f95034a91a448ae0d96d88a0d8b0f53a9b4a7
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/path
+    - https://pkg.go.dev/path/filepath
+    technology:
+    - go

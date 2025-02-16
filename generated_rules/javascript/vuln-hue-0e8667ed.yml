@@ -1,0 +1,26 @@
+rules:
+- id: vuln-hue-0e8667ed
+  pattern: 'notebook.sessions()[0].type(self.type())
+
+    '
+  pattern-not: 'notebook.sessions()[0].type($DATA.handle.session_type || self.type())
+
+    '
+  languages:
+  - javascript
+  message: 'Potential security vulnerability due to direct use of self.type() without
+    considering session type from data.handle. This could lead to inconsistent session
+    handling. Always prefer using data.handle.session_type as the primary source when
+    available.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudera/hue/commit/0e8667ed22f76d4cce8211ffc6c04b849479b2eb
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - javascript

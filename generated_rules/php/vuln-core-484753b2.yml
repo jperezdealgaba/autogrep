@@ -1,0 +1,30 @@
+rules:
+- id: vuln-core-484753b2
+  pattern: '$CONFIG[''widgets''][''column_count''] = $_POST[''column_count''];
+
+    '
+  pattern-not: '$CONFIG[''widgets''][''column_count''] = filter_var($_POST[''column_count''],
+    FILTER_SANITIZE_NUMBER_INT);
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of $_POST data to a variable without proper sanitization
+    can lead to security vulnerabilities such as XSS or SQL injection. Always sanitize
+    user input using functions like filter_var() with appropriate filters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opnsense/core/commit/484753b2abe3fd0fcdb73d8bf00c3fc3709eb8b7
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://www.php.net/manual/en/function.filter-var.php
+    technology:
+    - php

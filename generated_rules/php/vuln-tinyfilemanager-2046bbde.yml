@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tinyfilemanager-2046bbde
+  pattern: '$fullPath = $path . ''/'' . $_REQUEST[''fullpath''];
+
+    '
+  pattern-not: '$fullPath = $path . ''/'' . str_replace("./","_",$_REQUEST[''fullpath'']);
+
+    '
+  languages:
+  - php
+  message: "Detected potential path traversal vulnerability due to unsanitized user\
+    \ input in file path construction. \nThis can allow attackers to access unauthorized\
+    \ files by manipulating the 'fullpath' parameter. \nTo fix, sanitize user input\
+    \ using functions like `str_replace` to remove dangerous sequences like './'.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/prasathmani/tinyfilemanager/commit/2046bbde72ed76af0cfdcae082de629bcc4b44c7
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

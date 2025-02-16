@@ -1,0 +1,31 @@
+rules:
+- id: vuln-wangle-3b17ba10
+  pattern: 'auto $SOCKET = std::dynamic_pointer_cast<folly::AsyncSocket>($EXPR);
+
+    '
+  pattern-not: 'auto $SOCKET = std::dynamic_pointer_cast<folly::AsyncTransportWrapper>($EXPR);
+
+    CHECK($SOCKET);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potentially unsafe dynamic cast to `folly::AsyncSocket` without
+    a subsequent null check. This can lead to null pointer dereferences if the cast
+    fails. The fix involves casting to `folly::AsyncTransportWrapper` and adding a
+    null check using `CHECK` to ensure the cast was successful. This prevents crashes
+    and undefined behavior in case of a failed cast.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebook/wangle/commit/3b17ba10a82c71e7808760e027ac6af687e06074
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.cppreference.com/w/cpp/memory/shared_ptr/dynamic_pointer_cast
+    technology:
+    - cpp

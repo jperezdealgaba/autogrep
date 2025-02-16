@@ -1,0 +1,38 @@
+rules:
+- id: vuln-tinyfilemanager-a0c595a8
+  pattern: '$path = $_POST[''path''];
+
+    $date = date("dMy-His");
+
+    $newFile = $file . ''-'' . $date . ''.bak'';
+
+    copy($path . ''/'' . $file, $path . ''/'' . $newFile) or die("Unable to backup");
+
+    '
+  pattern-not: "$dir = fm_clean_path($_POST['path']);\n$path = FM_ROOT_PATH.'/'.$dir;\n\
+    if($dir) {\n    $date = date(\"dMy-His\");\n    $newFile = $file . '-' . $date\
+    \ . '.bak';\n    copy($path . '/' . $file, $path . '/' . $newFile) or die(\"Unable\
+    \ to backup\");\n    echo \"Backup $newFile Created\";\n} else {\n    echo \"\
+    Error! Not allowed\";\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses user-controlled input from $_POST[''path''] without
+    proper validation or sanitization, which can lead to path traversal vulnerabilities.
+    This allows an attacker to manipulate the file path and potentially access or
+    modify files outside the intended directory. To fix this, always sanitize user
+    input using a function like `fm_clean_path` and ensure the path is within the
+    allowed directory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/prasathmani/tinyfilemanager/commit/a0c595a8e11e55a43eeaa68e1a3ce76365f29d06
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

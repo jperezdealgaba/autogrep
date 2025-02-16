@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mediawiki-7f9fe1b2
+  pattern: 'throw new MWException("Invalid message parameter: " . serialize($PARAM));
+
+    '
+  pattern-not: "trigger_error(\n  \"Invalid message parameter: \" . htmlspecialchars(serialize($PARAM)),\n\
+    \  E_USER_WARNING\n);\nreturn array('before', '[INVALID]');\n"
+  languages:
+  - php
+  message: 'The code directly throws an exception with a serialized parameter, which
+    can lead to information disclosure or other security issues. The vulnerability
+    occurs because sensitive data might be exposed in error messages. The fix involves
+    using `trigger_error` with `htmlspecialchars` to sanitize the output and return
+    a safe fallback value. This approach prevents sensitive data exposure and ensures
+    proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/wikimedia/mediawiki/commit/7f9fe1b29df6ecee9a9c90f6806d7bf8848ff0b1
+    category: security
+    cwe:
+    - CWE-209
+    owasp:
+    - 'A3: Sensitive Data Exposure'
+    technology:
+    - php

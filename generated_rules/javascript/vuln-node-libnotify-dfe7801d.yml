@@ -1,0 +1,25 @@
+rules:
+- id: vuln-node-libnotify-dfe7801d
+  pattern: 'child_process.exec($ARGS.join('' ''), $CALLBACK)
+
+    '
+  pattern-not: 'child_process.execFile($CMD, $ARGS, {}, $CALLBACK)
+
+    '
+  languages:
+  - javascript
+  message: "Detected unsafe use of child_process.exec with concatenated arguments.\
+    \ \nThis can lead to command injection vulnerabilities. \nUse child_process.execFile\
+    \ with separate arguments instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mytrile/node-libnotify/commit/dfe7801d73a0dda10663a0ff3d0ec8b4d5f0d448
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
+    technology:
+    - javascript

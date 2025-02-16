@@ -1,0 +1,23 @@
+rules:
+- id: vuln-flow-ad15179e
+  pattern: "if ($VAR1 == null || !$VAR1.equals($VAR2)) {\n  ...\n}\n"
+  pattern-not: "if ($VAR1 == null || !MessageDigest.isEqual(\n        $VAR1.getBytes(StandardCharsets.UTF_8),\n\
+    \        $VAR2.getBytes(StandardCharsets.UTF_8))) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential timing attack vulnerability detected. Using String.equals()
+    for sensitive data comparison can expose the application to timing attacks. Use
+    MessageDigest.isEqual() for time-constant comparison to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/ad15179ea795fb7cda3503ec3529659e89de6dec
+    category: security
+    cwe: CWE-208
+    owasp: A02:2021 - Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html#isEqual-byte:A-byte:A-
+    technology:
+    - java

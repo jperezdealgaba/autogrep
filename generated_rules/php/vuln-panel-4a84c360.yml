@@ -1,0 +1,24 @@
+rules:
+- id: vuln-panel-4a84c360
+  pattern: '$this->cache->put($TOKEN, $USER->id, $EXPIRE);
+
+    '
+  pattern-not: "$request->session()->put('auth_confirmation_token', [\n  'user_id'\
+    \ => $USER->id,\n  'token_value' => $TOKEN,\n  'expires_at' => $EXPIRE,\n]);\n"
+  languages:
+  - php
+  message: "Storing sensitive authentication tokens in cache without proper session\
+    \ management can lead to security vulnerabilities. \nUse session storage with\
+    \ proper expiration and validation instead of cache to ensure secure token handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pterodactyl/panel/commit/4a84c36009be10dbd83051ac1771662c056e4977
+    category: security
+    cwe:
+    - CWE-798
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

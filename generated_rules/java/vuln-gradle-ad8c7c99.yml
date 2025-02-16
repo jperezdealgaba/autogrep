@@ -1,0 +1,19 @@
+rules:
+- id: vuln-gradle-ad8c7c99
+  pattern: 'GUtil.addToCollection($COLLECTION, Cast.uncheckedNonnullCast(new Iterable<?>[]{$VALUES}))
+
+    '
+  pattern-not: 'GUtil.addToCollection($COLLECTION, $VALUES)
+
+    '
+  languages:
+  - java
+  message: Unnecessary unsafe type casting detected. Directly pass the values to avoid
+    potential ClassCastException or type safety issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/gradle/gradle/commit/ad8c7c993bda8c2660ddd36584b2d2a035cc2e8c
+    category: type-safety
+    cwe: CWE-483
+    technology:
+    - java

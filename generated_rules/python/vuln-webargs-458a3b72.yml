@@ -1,0 +1,21 @@
+rules:
+- id: vuln-webargs-458a3b72
+  pattern: '$VAR = core.dict2schema($ARGMAP)()
+
+    '
+  pattern-not: '$VAR = core.dict2schema($ARGMAP, $SCHEMA_CLS)()
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe schema creation without specifying a custom schema class.\
+    \ \nThis can lead to unintended behavior or security issues when custom schema\
+    \ classes are required. \nAlways pass the schema class explicitly to ensure proper\
+    \ schema validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/marshmallow-code/webargs/commit/458a3b72192dccf4a819cfd9f33d9fd002982938
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

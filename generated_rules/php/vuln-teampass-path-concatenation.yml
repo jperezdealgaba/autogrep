@@ -1,0 +1,25 @@
+rules:
+- id: vuln-teampass-path-concatenation
+  pattern: '$path .= ''>'' . htmlspecialchars(stripslashes(htmlspecialchars_decode($VAR,
+    ENT_QUOTES)), ENT_QUOTES)
+
+    '
+  pattern-not: '$path .= ''/'' . htmlspecialchars(stripslashes(htmlspecialchars_decode($VAR,
+    ENT_QUOTES)), ENT_QUOTES)
+
+    '
+  languages:
+  - php
+  message: "Using '>' character in path concatenation can lead to XSS vulnerabilities.\
+    \ \nThis is dangerous because it allows injection of HTML/JS code into the generated\
+    \ path. \nReplace '>' with a safer separator like '/' to prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nilsteampassnet/teampass/commit/0af3574caba27a61b16dc25c94fa51ae12d2d967
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A3: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-ant-d591851a
+  pattern: '$PATH = Files.createTempFile($PREFIX, $SUFFIX);
+
+    $PATH.toFile().deleteOnExit();
+
+    '
+  pattern-not: '$PATH = FileUtils.getFileUtils().createTempFile($PREFIX, $SUFFIX,
+    $DIR, $CREATE_PARENT, $DELETE_ON_EXIT).toPath();
+
+    '
+  languages:
+  - java
+  message: 'Insecure temporary file creation detected. Using `Files.createTempFile`
+    without proper handling can lead to race conditions and security vulnerabilities.
+    Use `FileUtils.createTempFile` with appropriate parameters to ensure secure file
+    creation and deletion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ant/commit/d591851ae3921172bb825b5a5344afa3de0e28ca
+    category: security
+    cwe:
+    - CWE-377
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/377.html
+    technology:
+    - java

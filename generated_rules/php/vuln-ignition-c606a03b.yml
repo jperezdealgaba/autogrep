@@ -1,0 +1,32 @@
+rules:
+- id: vuln-ignition-c606a03b
+  pattern: "class $CLASS implements RunnableSolution {\n    public function run(array\
+    \ $parameters = []): void {\n        $output = $this->fixTypo($parameters);\n\
+    \        if ($output === false) {\n            return;\n        }\n        file_put_contents($parameters['viewFile'],\
+    \ $output);\n    }\n    protected function fixTypo(array $parameters = []) {\n\
+    \        ...\n    }\n}\n"
+  pattern-not: "class $CLASS implements Solution {\n    public function isRunnable():\
+    \ bool {\n        return false;\n    }\n}\n"
+  languages:
+  - php
+  message: 'The code implements the `RunnableSolution` interface, which allows for
+    potentially unsafe file modifications. This can lead to arbitrary file writes
+    if the `run` method is called with malicious input. The vulnerability was fixed
+    by removing the `RunnableSolution` implementation and disabling the `isRunnable`
+    method. To fix this, ensure that file operations are properly validated and avoid
+    implementing `RunnableSolution` unless absolutely necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/facade/ignition/commit/c606a03b164eab2cbeac6b0bf8cfced0f4678989
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ec2-plugin-78c3c49a
+  pattern: 'logInfo($COMPUTER, $LISTENER, "Using key: " + $KEY.getKeyName() + "\n"
+    + $KEY.getKeyFingerprint() + "\n" + $KEY.getKeyMaterial().substring(0, 160));
+
+    '
+  pattern-not: 'logInfo($COMPUTER, $LISTENER, String.format("Using private key %s
+    (SHA-1 fingerprint %s)", $KEY.getKeyName(), $KEY.getKeyFingerprint()));
+
+    '
+  languages:
+  - java
+  message: "Sensitive key material is being logged in plaintext, which can expose\
+    \ private keys to unauthorized users. \nThis vulnerability can lead to unauthorized\
+    \ access to EC2 instances. \nUse a secure logging method that does not expose\
+    \ sensitive information, such as logging only the key name and fingerprint.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/ec2-plugin/commit/78c3c49a227ac8eccb8b1be7193d5605363fe251
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - java

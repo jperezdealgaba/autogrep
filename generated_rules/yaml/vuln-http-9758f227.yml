@@ -1,0 +1,22 @@
+rules:
+- id: vuln-http-9758f227
+  pattern: 'Max: 100
+
+    '
+  pattern-not: 'Max: 110
+
+    '
+  languages:
+  - yaml
+  message: 'The ''Max'' value in the .rubocop.yml file is set to 100, which is too
+    restrictive and can lead to unnecessary code refactoring. Increasing the value
+    to 110 allows for more flexibility and reduces the risk of introducing bugs during
+    refactoring. Update the ''Max'' value to 110 to avoid this issue.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/httprb/http/commit/9758f2277f822d23f26d6d898a4a976b77355e6c
+    category: best-practice
+    technology:
+    - yaml

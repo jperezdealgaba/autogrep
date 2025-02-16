@@ -1,0 +1,34 @@
+rules:
+- id: vuln-eclair-5d662fc3
+  pattern: 'final case class PublishAsap(tx: Transaction)
+
+    '
+  pattern-not: 'final case class PublishAsap(tx: Transaction, strategy: PublishStrategy)
+
+    '
+  languages:
+  - scala
+  message: 'The PublishAsap case class is missing a strategy parameter, which is required
+
+    to properly handle transaction publishing with appropriate feerate management.
+
+    Without this, transactions may be published with suboptimal fees, leading to
+
+    delays or failures in confirmation. The fix adds a PublishStrategy parameter
+
+    to control the feerate and other publishing behavior. Always include a proper
+
+    publishing strategy when creating transactions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ACINQ/eclair/commit/5d662fc3d7aa91ed7906aa21e0f9c2ffc5cf4b78
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - scala
+    - bitcoin

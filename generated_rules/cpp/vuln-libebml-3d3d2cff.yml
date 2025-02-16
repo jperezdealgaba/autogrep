@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libebml-3d3d2cff
+  pattern: "if ($READFULLY != $SCOPE_NO_DATA) {\n  ...\n  $INPUT.readFully($BUFFER,\
+    \ $GETSIZE);\n  ...\n}\n"
+  pattern-not: "if ($READFULLY == $SCOPE_NO_DATA)\n  return $GETSIZE;\n...\n$INPUT.readFully($BUFFER,\
+    \ $GETSIZE);\n...\n"
+  languages:
+  - cpp
+  message: 'The code reads data without properly checking if the read operation should
+    be skipped when SCOPE_NO_DATA is encountered. This can lead to unexpected behavior
+    or crashes when reading invalid data. The fix ensures that SCOPE_NO_DATA is checked
+    first and returns early if encountered.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/3d3d2cff9b012059fa7cb536399b582cc796e04f
+    category: security
+    cwe:
+    - CWE-119
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    references: []
+    technology:
+    - cpp

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-restlet-framework-java-3838f794
+  pattern: "if (MediaType.APPLICATION_JAVA_OBJECT.equals($VAR)) {\n    ...\n}\n"
+  pattern-not: "if (VARIANT_OBJECT_BINARY_SUPPORTED && MediaType.APPLICATION_JAVA_OBJECT.equals($VAR))\
+    \ {\n    ...\n}\n"
+  languages:
+  - java
+  message: Unsafe deserialization of Java objects detected. Deserialization from untrusted
+    sources can lead to malicious code execution. Ensure that deserialization is only
+    performed when VARIANT_OBJECT_BINARY_SUPPORTED is true.
+  severity: ERROR
+  metadata:
+    source-url: github.com/restlet/restlet-framework-java/commit/3838f79467f8246bcc6e273f067a066be6d0eedd
+    category: security
+    cwe: CWE-502
+    owasp: A08:2021 - Software and Data Integrity Failures
+    references: https://github.com/restlet/restlet-framework-java/issues/778
+    technology: java

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libxml2-bf227135
+  pattern: "if ($VAR < 0xC0) {\n  ...\n}\n"
+  pattern-not: "if (((cur[0] & 0xC0) != 0xC0) ||\n    ((cur[1] & 0xC0) != 0x80) ||\n\
+    \    (((cur[0] & 0xE0) == 0xE0) && ((cur[2] & 0xC0) != 0x80)) ||\n    (((cur[0]\
+    \ & 0xF0) == 0xF0) && ((cur[3] & 0xC0) != 0x80)) ||\n    (((cur[0] & 0xF8) ==\
+    \ 0xF8))) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for invalid UTF-8 sequences by only verifying if the first
+    byte is less than 0xC0, which is insufficient. This can lead to incorrect validation
+    of UTF-8 encoded characters, potentially causing security vulnerabilities such
+    as injection attacks or memory corruption. The fix involves a more comprehensive
+    check that verifies the structure of the UTF-8 sequence according to the UTF-8
+    encoding rules.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/libxml2/commit/bf22713507fe1fc3a2c4b525cf0a88c2dc87a3a2
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://en.wikipedia.org/wiki/UTF-8
+    technology:
+    - c

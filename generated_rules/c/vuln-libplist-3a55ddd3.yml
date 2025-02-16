@@ -1,0 +1,41 @@
+rules:
+- id: vuln-libplist-3a55ddd3
+  pattern: "int $W1, $W2, $W3, $W4;\n...\nwhile (...) {\n  $W1 = $TABLE[(int)$DATA[$N]];\n\
+    \  $W2 = $TABLE[(int)$DATA[$N+1]];\n  $W3 = $TABLE[(int)$DATA[$N+2]];\n  $W4 =\
+    \ $TABLE[(int)$DATA[$N+3]];\n  ...\n  if ($W2 >= 0) {\n    $TARGET[$I++] = (char)(($W1*4\
+    \ + ($W2 >> 4)) & 255);\n  }\n  if ($W3 >= 0) {\n    $TARGET[$I++] = (char)(($W2*16\
+    \ + ($W3 >> 2)) & 255);\n  }\n  if ($W4 >= 0) {\n    $TARGET[$I++] = (char)(($W3*64\
+    \ + $W4) & 255);\n  }\n}\n"
+  pattern-not: "int $WV, $W1, $W2, $W3, $W4;\nint $TMPVAL[4];\nint $TMPCNT = 0;\n\
+    ...\nif (($WV = $TABLE[(int)(unsigned char)*$PTR++]) == -1) {\n  continue;\n}\n\
+    $TMPVAL[$TMPCNT++] = $WV;\nif ($TMPCNT == 4) {\n  $TMPCNT = 0;\n  $W1 = $TMPVAL[0];\n\
+    \  $W2 = $TMPVAL[1];\n  $W3 = $TMPVAL[2];\n  $W4 = $TMPVAL[3];\n  if ($W2 >= 0)\
+    \ {\n    $OUTBUF[$P++] = (unsigned char)((($W1 << 2) + ($W2 >> 4)) & 0xFF);\n\
+    \  }\n  if ($W3 >= 0) {\n    $OUTBUF[$P++] = (unsigned char)((($W2 << 4) + ($W3\
+    \ >> 2)) & 0xFF);\n  }\n  if ($W4 >= 0) {\n    $OUTBUF[$P++] = (unsigned char)((($W3\
+    \ << 6) + $W4) & 0xFF);\n  }\n}\n"
+  languages:
+  - c
+  message: 'The original base64 decoding implementation processes input in fixed-size
+    blocks without proper validation, which can lead to out-of-bounds memory access
+    or incorrect decoding. The vulnerability arises from directly accessing the input
+    data without checking for invalid characters or buffer boundaries. The fix introduces
+    proper character validation and processes input in a safer manner using temporary
+    storage and explicit checks. To fix this, ensure that all input characters are
+    validated before processing and use temporary storage to handle decoded values
+    safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libimobiledevice/libplist/commit/3a55ddd3c4c11ce75a86afbefd085d8d397ff957
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://en.wikipedia.org/wiki/Base64
+    technology:
+    - c

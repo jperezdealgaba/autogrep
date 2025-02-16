@@ -1,0 +1,52 @@
+rules:
+- id: vuln-re2c-4d9c8093
+  pattern: "static bool nullable(const RESpec &spec, const RE *re, bool &trail) {\n\
+    \    ...\n    switch (re->type) {\n        case RE::NIL: return true;\n      \
+    \  case RE::SYM: return false;\n        case RE::ITER:\n            return nullable(spec,\
+    \ re->iter.re, trail);\n        case RE::TAG:\n            trail |= trailing(spec.tags[re->tag.idx]);\n\
+    \            return true;\n        case RE::ALT:\n            return nullable(spec,\
+    \ re->alt.re1, trail)\n                || nullable(spec, re->alt.re2, trail);\n\
+    \        case RE::CAT:\n            return nullable(spec, re->cat.re1, trail)\n\
+    \                && nullable(spec, re->cat.re2, trail);\n    }\n    return false;\n\
+    }\n"
+  pattern-not: "static bool nullable(const RESpec &spec, std::vector<StackItem> &stack,\
+    \ const RE *re0) {\n    ...\n    while (!stack.empty()) {\n        const StackItem\
+    \ i = stack.back();\n        stack.pop_back();\n        const RE *re = i.re;\n\
+    \        if (re->type == RE::NIL) {\n            null = true;\n        }\n   \
+    \     else if (re->type == RE::SYM) {\n            null = false;\n        }\n\
+    \        else if (re->type == RE::TAG) {\n            null = true;\n         \
+    \   if (trailing(spec.tags[re->tag.idx])) {\n                DASSERT(stack.size()\
+    \ == 1 && stack.back().re->type == RE::CAT);\n                stack.pop_back();\n\
+    \                break;\n            }\n        }\n        else if (re->type ==\
+    \ RE::ALT) {\n            if (i.succ == 0) {\n                StackItem k = {re,\
+    \ 1};\n                stack.push_back(k);\n                StackItem j = {re->alt.re1,\
+    \ 0};\n                stack.push_back(j);\n            }\n            else if\
+    \ (!null) {\n                StackItem j = {re->alt.re2, 0};\n               \
+    \ stack.push_back(j);\n            }\n        }\n        else if (re->type ==\
+    \ RE::CAT) {\n            if (i.succ == 0) {\n                StackItem k = {re,\
+    \ 1};\n                stack.push_back(k);\n                StackItem j = {re->cat.re1,\
+    \ 0};\n                stack.push_back(j);\n            }\n            else if\
+    \ (null) {\n                StackItem j = {re->cat.re2, 0};\n                stack.push_back(j);\n\
+    \            }\n        }\n        else if (re->type == RE::ITER) {\n        \
+    \    StackItem j = {re->iter.re, 0};\n            stack.push_back(j);\n      \
+    \  }\n    }\n    return null;\n}\n"
+  languages:
+  - cpp
+  message: 'The original implementation of the `nullable` function uses recursion
+    to traverse the RE structure, which can lead to stack overflow for deeply nested
+    regular expressions. This is dangerous because it can cause the application to
+    crash unexpectedly. The fix replaces the recursive approach with an iterative
+    one using a stack data structure, which is more robust and can handle deeper nesting
+    without risk of stack overflow. To fix this, replace the recursive implementation
+    with an iterative one using a stack.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/skvadrik/re2c/commit/4d9c809355b574f2a58eac119f5e076c48e4d1e2
+    category: security
+    cwe:
+    - CWE-400
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

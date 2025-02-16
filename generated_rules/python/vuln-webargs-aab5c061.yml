@@ -1,0 +1,23 @@
+rules:
+- id: vuln-webargs-aab5c061
+  pattern: '$REQ._get_data_for_json(cache=True)
+
+    '
+  pattern-not: '$REQ.get_data(cache=True)
+
+    '
+  languages:
+  - python
+  message: "Detected use of deprecated and potentially unsafe '_get_data_for_json'\
+    \ method. \nThis method is not recommended and may lead to security issues. \n\
+    Use 'get_data' method instead for proper handling of request data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/marshmallow-code/webargs/commit/aab5c061e2877050d53bf2998acf40744329e527
+    category: security
+    cwe: CWE-749
+    owasp: A6:2021-Vulnerable and Outdated Components
+    references:
+    - https://flask.palletsprojects.com/en/2.3.x/api/#flask.Request.get_data
+    technology:
+    - python

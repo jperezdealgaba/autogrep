@@ -1,0 +1,24 @@
+rules:
+- id: vuln-blueocean-plugin-659a66af
+  pattern: "<dependency>\n  <groupId>$GROUP</groupId>\n  <artifactId>$ARTIFACT</artifactId>\n\
+    \  <version>3.141.59</version>\n</dependency>\n"
+  pattern-not: "<dependency>\n  <groupId>$GROUP</groupId>\n  <artifactId>$ARTIFACT</artifactId>\n\
+    \  <version>${selenium.version}</version>\n</dependency>\n"
+  languages:
+  - xml
+  message: "Hardcoding dependency versions in XML files can lead to inconsistencies\
+    \ and security vulnerabilities. \nUse property variables to manage versions centrally,\
+    \ ensuring all dependencies are updated uniformly.\nThis practice reduces the\
+    \ risk of using outdated or vulnerable dependencies.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/blueocean-plugin/commit/659a66aff0d0ad693eab9d2807985d591e102aab
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9: Using Components with Known Vulnerabilities
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities.html
+    technology:
+    - xml

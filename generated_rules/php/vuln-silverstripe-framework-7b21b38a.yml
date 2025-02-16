@@ -1,0 +1,28 @@
+rules:
+- id: vuln-silverstripe-framework-7b21b38a
+  pattern: '$VAR->setCanBeEmpty(true)
+
+    '
+  pattern-not: '$VAR->setCanBeEmpty(false)
+
+    '
+  languages:
+  - php
+  message: 'Detected a security vulnerability where a password field can be set to
+    empty. This is dangerous because it allows users to set empty passwords, bypassing
+    password strength requirements and increasing the risk of unauthorized access.
+    To fix this, ensure that passwords cannot be empty by setting `setCanBeEmpty(false)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/7b21b38ac4532d06565dfcefad50540ebd2b50f4
+    category: security
+    cwe:
+    - 'CWE-521: Weak Password Requirements'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

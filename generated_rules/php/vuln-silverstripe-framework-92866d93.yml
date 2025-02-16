@@ -1,0 +1,27 @@
+rules:
+- id: vuln-silverstripe-framework-92866d93
+  pattern: '$htmlValue = ''<p>standard text</p><table><th></th><tr><td>Header</td></tr><tbody></tbody></table>''
+
+    '
+  pattern-not: '$htmlValue = ''<p>standard text</p><table><tbody><tr><th></th></tr><tr><td>Header</td></tr></tbody><tbody></tbody></table>''
+
+    '
+  languages:
+  - php
+  message: 'The HTML table structure is invalid, which can lead to rendering issues
+    and potential security vulnerabilities. Tables should have proper nesting of <tbody>
+    and <tr> elements. Ensure that <th> elements are correctly placed inside <tr>
+    and that <tbody> is properly structured. Fix by placing <th> inside <tr> and ensuring
+    <tbody> wraps all rows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/92866d93266d6fb47c669f1b8d38ec1d138f062c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - php

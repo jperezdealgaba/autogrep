@@ -1,0 +1,27 @@
+rules:
+- id: vuln-script-security-plugin-3228c88e
+  pattern: "private static final List<Class<? extends Annotation>> BLOCKED_TRANSFORMS\
+    \ = ImmutableList.of($CLASS1.class, $CLASS2.class);\n...\nfor (Class<? extends\
+    \ Annotation> blockedAnnotation : BLOCKED_TRANSFORMS) {\n    if (blockedAnnotation.getSimpleName().equals($VAR.getName()))\
+    \ {\n        throw new SecurityException(\"Annotation \" + blockedAnnotation.getSimpleName()\
+    \ + \" cannot be used in the sandbox.\");\n    }\n}\n"
+  pattern-not: "private static final List<String> BLOCKED_TRANSFORMS = ImmutableList.of($CLASS1.class.getCanonicalName(),\
+    \ $CLASS2.class.getCanonicalName());\n...\nfor (String blockedAnnotation : getBlockedTransforms())\
+    \ {\n    if (blockedAnnotation.equals($VAR.getName()) || blockedAnnotation.endsWith(\"\
+    .\" + $VAR.getName())) {\n        throw new SecurityException(\"Annotation \"\
+    \ + $VAR.getName() + \" cannot be used in the sandbox.\");\n    }\n}\n"
+  languages:
+  - java
+  message: Insecure annotation handling detected. The original code used simple class
+    names for blocked annotations, which could be bypassed using fully qualified class
+    names or imports. Use canonical names and check for both exact matches and suffix
+    matches to prevent bypass.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/script-security-plugin/commit/3228c88e84f0b2f24845b6466cae35617e082059
+    category: security
+    cwe: CWE-470
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/470.html
+    technology: java

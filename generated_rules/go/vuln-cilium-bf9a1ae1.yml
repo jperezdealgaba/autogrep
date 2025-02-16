@@ -1,0 +1,30 @@
+rules:
+- id: vuln-cilium-bf9a1ae1
+  pattern: "func dumpEnvoy($ROOTDIR string, $RESOURCE string, $FILENAME string) error\
+    \ {\n  ...\n  return downloadToFile($CLIENT, $RESOURCE, filepath.Join($ROOTDIR,\
+    \ $FILENAME))\n}\n"
+  pattern-not: "func dumpEnvoy($ROOTDIR string, $RESOURCE string, $FILENAME string,\
+    \ $POSTPROCESS postProcessFunc) error {\n  ...\n  return downloadToFileWithPostProcess($CLIENT,\
+    \ $RESOURCE, filepath.Join($ROOTDIR, $FILENAME), $POSTPROCESS)\n}\n"
+  languages:
+  - go
+  message: 'The function `dumpEnvoy` is vulnerable because it does not apply post-processing
+    to sensitive data before writing it to a file. This can lead to exposure of sensitive
+    information such as API keys, certificates, and private keys. The fix involves
+    using `downloadToFileWithPostProcess` to apply a post-processing function that
+    masks sensitive data. Always ensure sensitive data is properly masked or redacted
+    before writing it to a file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cilium/cilium/commit/bf9a1ae1b2d2b2c9cca329d7aa96aa4858032a61
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/cilium/cilium/commit/bf9a1ae1b2d2b2c9cca329d7aa96aa4858032a61
+    technology:
+    - go

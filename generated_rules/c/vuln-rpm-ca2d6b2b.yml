@@ -1,0 +1,28 @@
+rules:
+- id: vuln-rpm-ca2d6b2b
+  pattern: "if ($FLAGS & $CPIO_SBIT_CHECK) {\n    struct stat $STB;\n    if (lstat($PATH,\
+    \ &$STB) == 0 && S_ISREG($STB.st_mode) && ($STB.st_mode & 06000) != 0)\n     \
+    \   chmod($PATH, $STB.st_mode & 0777);\n}\n"
+  pattern-not: "if ($FLAGS & $CPIO_SBIT_CHECK)\n    removeSBITS($PATH);\n"
+  languages:
+  - c
+  message: 'Detected insecure handling of file permissions with SUID/SGID bits. The
+    code directly modifies file permissions without proper encapsulation, which can
+    lead to race conditions or inconsistent state. The vulnerability was fixed by
+    encapsulating the permission check and modification logic in a separate function
+    (removeSBITS) and calling it twice to ensure proper handling. To fix this, refactor
+    the code to use a dedicated function for permission modifications and ensure atomic
+    operations where necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/ca2d6b2b484f1501eafdde02e1688409340d2383
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

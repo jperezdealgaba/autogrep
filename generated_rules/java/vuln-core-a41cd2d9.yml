@@ -1,0 +1,22 @@
+rules:
+- id: vuln-core-a41cd2d9
+  pattern: '"content_type_workflow_action_mapping"
+
+    '
+  pattern-not: '"workflow_action_mappings"
+
+    '
+  languages:
+  - java
+  message: Usage of deprecated table name 'content_type_workflow_action_mapping' detected.
+    This table has been renamed to 'workflow_action_mappings'. Update all references
+    to use the new table name to ensure database consistency and prevent potential
+    runtime errors.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/a41cd2d9f42e462cbc081fa35f2b01423da856b0
+    category: security
+    cwe: CWE-477
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - java

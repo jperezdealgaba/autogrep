@@ -1,0 +1,21 @@
+rules:
+- id: vuln-useragent-b18cf7c2
+  pattern: "if (code >= 48 && code <= 57) {\n  ...\n}\n"
+  pattern-not: "if ((code >= 48 && code <= 57) || (code >= 97 && code <= 122)) {\n\
+    \  ...\n}\n"
+  languages:
+  - javascript
+  message: Incomplete character range validation detected. The original code only
+    checks for numeric characters (0-9), potentially missing valid alphabetic characters
+    (a-z). This could lead to incorrect parsing or validation of user input. Update
+    the condition to include the full range of valid characters.
+  severity: ERROR
+  metadata:
+    source-url: github.com/3rd-Eden/useragent/commit/b18cf7c2a13c994ea8d6d0d132feef4eb8193c36
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - javascript

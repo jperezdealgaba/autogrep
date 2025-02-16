@@ -1,0 +1,20 @@
+rules:
+- id: vuln-yt-dlp-f04b5bed
+  pattern: 'smuggle_url($URL, {''http_headers'': $HEADERS})
+
+    '
+  pattern-not: 'smuggle_url($URL, {''referer'': $REFERER})
+
+    '
+  languages:
+  - python
+  message: Detected use of 'http_headers' in smuggle_url. This can lead to security
+    vulnerabilities. Use 'referer' instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/yt-dlp/yt-dlp/commit/f04b5bedad7b281bee9814686bba1762bae092eb
+    category: security
+    cwe: CWE-113
+    owasp: A6:2021-Vulnerable and Outdated Components
+    technology:
+    - python

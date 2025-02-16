@@ -1,0 +1,24 @@
+rules:
+- id: vuln-flow-components-1aa6bc94
+  pattern: "Set<T> $SELECTED_ITEMS = presentationToModel($THIS, ...);\nif ($SELECTED_ITEMS\
+    \ == null || $SELECTED_ITEMS.isEmpty()) {\n    return true;\n}\nreturn $SELECTED_ITEMS.stream().allMatch($ITEM_ENABLED_PROVIDER);\n"
+  pattern-not: "Set<T> $VALUE = presentationToModel($THIS, ...);\nSet<T> $OLD_VALUE\
+    \ = getValue();\nreturn getCheckboxItems().filter(CheckBoxItem::isDisabledBoolean)\n\
+    \        .noneMatch($ITEM -> $OLD_VALUE.contains($ITEM.getItem()) != $VALUE\n\
+    \                .contains($ITEM.getItem()));\n"
+  languages:
+  - java
+  message: 'Insecure handling of disabled items in CheckboxGroup. The original code
+    did not properly check if disabled items changed their value, potentially allowing
+    disabled items to be selected. The fix ensures that disabled items cannot change
+    their value by comparing the old and new values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow-components/commit/1aa6bc94c763023bc3fc5849c2a1e8cab3bf6766
+    category: security
+    cwe: CWE-284
+    owasp: A05:2021 - Security Misconfiguration
+    technology:
+    - java

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-libyang-dc668d29
+  pattern: "if (!strcmp($MOD->name, \"yang\") && (strcmp($M->revision, $MOD->revision)\
+    \ > 0)) {\n    LOGVRB(\"Internal module \\\"%s@%s\\\" is already implemented in\
+    \ revision \\\"%s\\\", using it instead.\",\n          $MOD->name, $MOD->revision\
+    \ ? $MOD->revision : \"<none>\", $M->revision ? $M->revision : \"<none>\");\n\
+    } else {\n    LOGERR($MOD->ctx, $LY_EDENIED, \"Module \\\"%s@%s\\\" is already\
+    \ implemented in revision \\\"%s\\\".\",\n          $MOD->name, $MOD->revision\
+    \ ? $MOD->revision : \"<none>\", $M->revision ? $M->revision : \"<none>\");\n\
+    \    return $LY_EDENIED;\n}\n"
+  pattern-not: "LOGERR($MOD->ctx, $LY_EDENIED, \"Module \\\"%s@%s\\\" is already implemented\
+    \ in revision \\\"%s\\\".\",\n      $MOD->name, $MOD->revision ? $MOD->revision\
+    \ : \"<none>\", $M->revision ? $M->revision : \"<none>\");\nreturn $LY_EDENIED;\n"
+  languages:
+  - c
+  message: 'The code previously had a conditional block that allowed bypassing an
+    error condition when a module with the name "yang" was found with a newer revision.
+    This could lead to inconsistent module states or security issues by allowing the
+    use of outdated or incorrect module revisions. The fix ensures that the error
+    condition is always enforced, preventing potential security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CESNET/libyang/commit/dc668d296f9f05aeab6315d44cff3208641e3096
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

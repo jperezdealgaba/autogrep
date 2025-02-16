@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bootstrap-sass-989f4e8f
+  pattern: 'VERSION = ''3.2.0.2''
+
+    '
+  pattern-not: 'VERSION = ''3.2.0.4''
+
+    '
+  languages:
+  - ruby
+  message: "The version 3.2.0.2 of bootstrap-sass contains a security vulnerability.\
+    \ \nIt is dangerous because it may expose the application to known exploits. \n\
+    Upgrade to version 3.2.0.4 or later to mitigate this issue.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/twbs/bootstrap-sass/commit/989f4e8f146da7f19362bbd85dc4c8e26b2bd43e
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

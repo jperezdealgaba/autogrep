@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libsixel-1377517a
+  pattern: '$CONTEXT->param = $CONTEXT->param * 10 + $P - ''0'';
+
+    '
+  pattern-not: "$STATUS = safe_addition_for_params($CONTEXT, $P);\nif (SIXEL_FAILED($STATUS))\
+    \ {\n    goto $END;\n}\n"
+  languages:
+  - c
+  message: 'Detected an unsafe integer addition that could lead to integer overflow.
+    This vulnerability occurs when performing unchecked arithmetic operations, which
+    can result in undefined behavior or security issues. The fix involves using a
+    safe addition function that checks for overflow conditions before performing the
+    operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saitoha/libsixel/commit/1377517ad69bf35b7a5da0292ce45172210aaf5d
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

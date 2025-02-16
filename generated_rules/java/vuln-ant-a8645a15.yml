@@ -1,0 +1,21 @@
+rules:
+- id: vuln-ant-a8645a15
+  pattern: 'File.createTempFile($PREFIX, $SUFFIX, new File($PARENT))
+
+    '
+  pattern-not: 'Files.createTempFile($PARENT_PATH, $PREFIX, $SUFFIX, $ATTRIBUTES).toFile()
+
+    '
+  languages:
+  - java
+  message: "Insecure temporary file creation detected. The file may be accessible\
+    \ by other users on the system. \nUse `Files.createTempFile` with appropriate\
+    \ POSIX file attributes to ensure the file is only \nreadable and writable by\
+    \ the current user.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ant/commit/a8645a151bc706259fb1789ef587d05482d98612
+    category: security
+    cwe: CWE-377
+    owasp: A06:2021 - Vulnerable and Outdated Components
+    technology: java

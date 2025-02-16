@@ -1,0 +1,26 @@
+rules:
+- id: vuln-nova-25e761ac
+  pattern: '$DATA = images.qemu_img_info($PATH)
+
+    $DRIVER_FORMAT = $DATA.file_format or ''raw''
+
+    '
+  pattern-not: '$DRIVER_FORMAT = self.resolve_driver_format()
+
+    '
+  languages:
+  - python
+  message: "Directly using qemu_img_info to determine driver format without proper\
+    \ validation can lead to security vulnerabilities. \nThe patch introduces a safer\
+    \ approach using resolve_driver_format() which validates the disk format through\
+    \ a secure disk info file.\nAlways use the resolve_driver_format() method to ensure\
+    \ proper validation and prevent format manipulation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/25e761acd56d4c820273fc0245ada06c500c1637
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A1:2017-Injection
+    technology:
+    - python
+    - openstack

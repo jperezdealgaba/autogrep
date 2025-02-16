@@ -1,0 +1,23 @@
+rules:
+- id: vuln-publiccms-2b411dc2
+  pattern: '@Column(name = "attached", length = 300)
+
+    '
+  pattern-not: '@Column(name = "attached", length = 50)
+
+    '
+  languages:
+  - java
+  message: Potential security vulnerability due to excessive length in column definition.
+    Reduce the length to 50 to prevent possible buffer overflow or data truncation
+    issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/sanluan/PublicCMS/commit/2b411dc2821c69539138aaf7632b938b659a58fa
+    category: security
+    cwe:
+    - CWE-130
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java

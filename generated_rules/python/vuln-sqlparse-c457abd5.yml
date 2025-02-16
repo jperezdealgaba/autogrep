@@ -1,0 +1,24 @@
+rules:
+- id: vuln-sqlparse-c457abd5
+  pattern: 'sqlparse.parse(r"$STRING")
+
+    '
+  pattern-not: 'sqlparse.parse("$STRING")
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe string parsing in SQL queries using raw strings (r-prefix).\
+    \ \nThis can lead to incorrect handling of escape sequences, potentially causing\
+    \ \nsecurity vulnerabilities or unexpected behavior. Use regular strings instead\
+    \ \nof raw strings for proper escape sequence handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/andialbrecht/sqlparse/commit/c457abd5f097dd13fb21543381e7cfafe7d31cfb
+    category: security
+    cwe: CWE-116
+    owasp: A03:2021-Injection
+    references:
+    - https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals
+    technology:
+    - python

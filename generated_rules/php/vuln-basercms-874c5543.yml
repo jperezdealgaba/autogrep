@@ -1,0 +1,26 @@
+rules:
+- id: vuln-basercms-874c5543
+  pattern: '$controller->Security->csrfCheck = false;
+
+    '
+  pattern-not: '$controller->Security->csrfCheck = true;
+
+    '
+  languages:
+  - php
+  message: "Disabling CSRF protection in a controller can expose the application to\
+    \ CSRF attacks. \nCSRF (Cross-Site Request Forgery) attacks allow attackers to\
+    \ perform unauthorized actions on behalf of an authenticated user. \nEnsure that\
+    \ CSRF protection is always enabled in controllers to prevent such attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/874c55433fead93e0be9df96fd28740f8047c8b6
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

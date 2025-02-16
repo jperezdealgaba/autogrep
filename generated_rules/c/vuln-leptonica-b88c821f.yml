@@ -1,0 +1,25 @@
+rules:
+- id: vuln-leptonica-b88c821f
+  pattern: 'pixGetWordBoxesInTextlines($PIX, 1, $X, $Y, $W, $H, $BOXA, $NAI)
+
+    '
+  pattern-not: 'pixGetWordBoxesInTextlines($PIX, $X, $Y, $W, $H, $BOXA, $NAI)
+
+    '
+  languages:
+  - c
+  message: "The function `pixGetWordBoxesInTextlines` was called with an incorrect\
+    \ first parameter (reduction factor). \nThis parameter was removed in the patch,\
+    \ indicating it was either unnecessary or incorrect. \nUsing the old version could\
+    \ lead to incorrect text line detection or processing errors. \nUpdate the call\
+    \ to remove the first parameter and ensure proper text line detection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/DanBloomberg/leptonica/commit/b88c821f8d347bce0aea86d606c710303919f3d2
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - c

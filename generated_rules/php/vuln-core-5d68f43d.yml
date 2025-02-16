@@ -1,0 +1,32 @@
+rules:
+- id: vuln-core-5d68f43d
+  pattern: '$backend = new Backend();
+
+    $backend->configdRun(''system halt'', true);
+
+    return [''status'' => ''ok''];
+
+    '
+  pattern-not: "if ($this->request->isPost()) {\n  (new Backend())->configdRun('system\
+    \ halt', true);\n  return ['status' => 'ok'];\n} else {\n  return ['status' =>\
+    \ 'failed'];\n}\n"
+  languages:
+  - php
+  message: 'The code directly executes system halt/reboot commands without checking
+    the HTTP request method. This can lead to CSRF vulnerabilities where an attacker
+    can trigger these actions via a malicious link or form submission. Always validate
+    that the request is a POST request before performing sensitive actions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opnsense/core/commit/5d68f43d1f254144831881fc87d885eed120cf3c
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

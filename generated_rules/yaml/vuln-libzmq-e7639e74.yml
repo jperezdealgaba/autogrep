@@ -1,0 +1,34 @@
+rules:
+- id: vuln-libzmq-e7639e74
+  pattern: 'if [ $TRAVIS_OS_NAME == "osx" ] ; then sudo sysctl -w kern.maxfiles=64000
+    ; sudo sysctl -w kern.maxfilesperproc=64000 ; sudo launchctl limit maxfiles 64000
+    64000 ; fi ; ulimit -n 64000
+
+    '
+  pattern-not: 'if [ $TRAVIS_OS_NAME == "osx" ] ; then sudo sysctl -w kern.maxfiles=64000
+    ; sudo sysctl -w kern.maxfilesperproc=64000 ; sudo launchctl limit maxfiles 64000
+    64000 ; fi
+
+    '
+  languages:
+  - yaml
+  message: 'The command ''ulimit -n 64000'' is executed without proper context or
+    checks, which can lead to resource exhaustion and potential denial of service.
+    This command should be executed with caution and only when necessary. The patch
+    removes this command to mitigate the risk. Always ensure that resource limits
+    are set appropriately and only when required.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/e7639e7467354b089c1335bd3435de37ac084d44
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - yaml

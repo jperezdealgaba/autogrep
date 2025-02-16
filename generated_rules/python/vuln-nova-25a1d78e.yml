@@ -1,0 +1,20 @@
+rules:
+- id: vuln-nova-25a1d78e
+  pattern: 'assertFlavorsMatchAllocation($FLAVOR, $FLAVOR, $ALLOCATION)
+
+    '
+  pattern-not: 'assertFlavorMatchesAllocation($FLAVOR, $ALLOCATION)
+
+    '
+  languages:
+  - python
+  message: Detected incorrect allocation check during instance rebuild. This can lead
+    to double allocation of resources. Use the correct assertion to verify resource
+    allocation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/25a1d78e83065c5bea5d8e0a017fd9d0914d41d9
+    category: security
+    cwe: 'CWE-665: Improper Initialization'
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

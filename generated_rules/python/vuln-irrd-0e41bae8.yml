@@ -1,0 +1,21 @@
+rules:
+- id: vuln-irrd-0e41bae8
+  pattern: "if not any([$HASH in $INPUT for $HASH in $PASSWORD_HASHERS_ALL.keys()]):\n\
+    \  ...\n"
+  pattern-not: "if not any([$HASH.lower() in $INPUT_LOWER for $HASH in $PASSWORD_HASHERS_ALL.keys()]):\n\
+    \  ...\n"
+  languages:
+  - python
+  message: 'Detected insecure password hash comparison that is case-sensitive. This
+    can lead to bypassing password authentication by using different letter cases.
+    Ensure the comparison is case-insensitive by converting both the input and the
+    hashes to lowercase.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irrdnet/irrd/commit/0e41bae8d3d27316381a2fc7b466597230e35ec6
+    category: security
+    cwe: CWE-620
+    owasp: A2:2017-Broken Authentication
+    technology: python

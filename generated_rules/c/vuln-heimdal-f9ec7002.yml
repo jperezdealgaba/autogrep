@@ -1,0 +1,28 @@
+rules:
+- id: vuln-heimdal-f9ec7002
+  pattern: "if ($PREFERRED_MECH_TYPE == GSS_C_NO_OID) {\n    HEIMDAL_MUTEX_unlock(&$CTX->ctx_id_mutex);\n\
+    \    free_NegotiationToken(&$NT);\n    return $RET;\n}\n$CTX->preferred_mech_type\
+    \ = $PREFERRED_MECH_TYPE;\n"
+  pattern-not: "if ($PREFERRED_MECH_TYPE == GSS_C_NO_OID) {\n    send_reject($MINOR_STATUS,\
+    \ $OUTPUT_TOKEN);\n    HEIMDAL_MUTEX_unlock(&$CTX->ctx_id_mutex);\n    free_NegotiationToken(&$NT);\n\
+    \    return $RET;\n}\n$CTX->preferred_mech_type = $PREFERRED_MECH_TYPE;\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when the code fails to properly handle the case
+    where `preferred_mech_type` is `GSS_C_NO_OID`. This can lead to incorrect state
+    management and potential security issues. The patch adds a call to `send_reject`
+    to properly handle this case. Ensure that all error paths are correctly managed
+    to avoid security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/heimdal/heimdal/commit/f9ec7002cdd526ae84fbacbf153162e118f22580
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/heimdal/heimdal/commit/f9ec7002cdd526ae84fbacbf153162e118f22580
+    technology:
+    - c

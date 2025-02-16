@@ -1,0 +1,30 @@
+rules:
+- id: vuln-cryptopp-04b2a20c
+  pattern: 'AdditionFunction add(*this);
+
+    '
+  pattern-not: 'AdditionFunction add(GetField(), m_a, m_b, m_R);
+
+    '
+  languages:
+  - cpp
+  message: 'The AdditionFunction constructor was incorrectly using ''this'' directly,
+    which could lead to undefined behavior or incorrect initialization. The fix explicitly
+    passes the required parameters (GetField(), m_a, m_b, m_R) to ensure proper initialization.
+    This vulnerability could result in incorrect elliptic curve calculations, potentially
+    compromising cryptographic security. Always ensure constructors are properly initialized
+    with explicit parameters rather than relying on implicit ''this'' usage.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weidai11/cryptopp/commit/04b2a20c5da517672173a9102b0d3fbda8b44b42
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://eprint.iacr.org/2015/1060.pdf
+    technology:
+    - cpp

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-nova-b83cae02
+  pattern: 'map(operator.methodcaller(''refresh_connection_info'', *$ARGS, **$KWARGS),
+    $DEVICES)
+
+    '
+  pattern-not: "for $DEVICE in $DEVICES:\n    if hasattr($DEVICE, 'refresh_connection_info'):\n\
+    \        $DEVICE.refresh_connection_info(*$ARGS, **$KWARGS)\n"
+  languages:
+  - python
+  message: 'Detected unsafe use of `map` with `operator.methodcaller` to call `refresh_connection_info`
+    on all devices without checking if they support the method. This can lead to attribute
+    errors or unintended behavior. Use a for-loop with `hasattr` check instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/b83cae02ece4c338e09c3606c6ae69b715bd6f8c
+    category: security
+    cwe: 'CWE-476: NULL Pointer Dereference'
+    owasp: A10:2021-Server-Side Request Forgery
+    technology:
+    - python

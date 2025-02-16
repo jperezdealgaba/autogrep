@@ -1,0 +1,27 @@
+rules:
+- id: vuln-olingo-odata4-9f9aebde
+  pattern: '$LOCATION = URI.create($HEADER);
+
+    '
+  pattern-not: '$LOCATION = createLocation($HEADER);
+
+    '
+  languages:
+  - java
+  message: 'Directly creating a URI from a header without validation can lead to security
+    issues such as scheme, host, or port mismatches. Use a custom method like createLocation
+    to validate the URI before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/olingo-odata4/commit/9f9aebde557b791f275d6156d8bec12ac334425d
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - java

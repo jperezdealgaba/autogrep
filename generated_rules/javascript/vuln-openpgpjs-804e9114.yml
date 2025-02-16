@@ -1,0 +1,27 @@
+rules:
+- id: vuln-openpgpjs-804e9114
+  pattern: '$PACKET.preferredSymmetricAlgorithms = [];
+
+    $PACKET.preferredSymmetricAlgorithms.push($ALGO1);
+
+    $PACKET.preferredSymmetricAlgorithms.push($ALGO2);
+
+    $PACKET.preferredSymmetricAlgorithms.push($ALGO3);
+
+    '
+  pattern-not: '$PACKET.preferredSymmetricAlgorithms = createdPreferredAlgos([$ALGO1,
+    $ALGO2, $ALGO3], $CONFIG);
+
+    '
+  languages:
+  - javascript
+  message: Insecure algorithm preference ordering detected. Use the `createdPreferredAlgos`
+    function to ensure secure and configurable algorithm ordering.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openpgpjs/openpgpjs/commit/804e91140a83cdc1e2d8477b690a756162fd8102
+    category: security
+    cwe: CWE-327
+    owasp: A6:2017-Security Misconfiguration
+    references: https://www.chromium.org/blink/webcrypto#TOC-AES-support
+    technology: javascript

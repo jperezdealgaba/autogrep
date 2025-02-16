@@ -1,0 +1,28 @@
+rules:
+- id: vuln-core-000030fe
+  pattern: "$RET = var_expand($PATH, $KEY->key->key, $TABLE, &$ERROR);\nif ($RET <=\
+    \ 0) {\n  auth_request_log_error($AUTH, $SUBSYS, \"Failed to expand key %s: %s\"\
+    , $KEY->key->key, $ERROR);\n  return -1;\n}\n"
+  pattern-not: 'str_append($PATH, $KEY->key->key);
+
+    '
+  languages:
+  - c
+  message: 'The use of `var_expand` without proper input validation can lead to security
+    vulnerabilities such as path traversal or command injection. This is dangerous
+    because it allows attackers to manipulate the path or key values, potentially
+    leading to unauthorized access or other malicious activities. The fix involves
+    directly appending the key value using `str_append` without expansion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dovecot/core/commit/000030feb7a30f193197f1aab8a7b04a26b42735
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

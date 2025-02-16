@@ -1,0 +1,19 @@
+rules:
+- id: vuln-sentry-python-f6af7a09
+  pattern: '"starlette" in _get_installed_modules() and mechanism_type == "asgi"'
+  pattern-not: mechanism_type == "asgi" and "starlette" in _get_installed_modules()
+  languages:
+  - python
+  message: Detected potentially unsafe order of conditions in ASGI integration. The
+    original order could lead to incorrect behavior if `_get_installed_modules()`
+    raises an exception. The fix ensures `mechanism_type` is checked first, which
+    is a safer and more logical order.
+  severity: WARNING
+  metadata:
+    source-url: github.com/getsentry/sentry-python/commit/f6af7a091c5c0a93c00621219adb8ab2cac94df9
+    category: security
+    cwe: CWE-703
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology: python

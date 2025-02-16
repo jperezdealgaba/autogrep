@@ -1,0 +1,24 @@
+rules:
+- id: vuln-nodebb-ec58700f
+  pattern: 'api.users.generateExport($SOCKET, { type: $TYPE, ...$DATA })
+
+    '
+  pattern-not: 'api.users.generateExport($SOCKET, { type: $TYPE, uid: $DATA.uid })
+
+    '
+  languages:
+  - javascript
+  message: "Potential security vulnerability due to uncontrolled data spread in API\
+    \ call. \nThe patch restricts the data passed to the API to only the required\
+    \ fields, \npreventing potential injection of unwanted data. Always validate and\
+    \ limit \nthe data passed to sensitive API calls.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/ec58700f6dff8e5b4af1544f6205ec362b593092
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Injection_Flaws
+    technology:
+    - javascript

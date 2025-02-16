@@ -1,0 +1,26 @@
+rules:
+- id: vuln-puppet-bab9310d
+  pattern: 'Puppet::SSL::CertificateFactory.new($CERT_TYPE, $CSR, $ISSUER, $SERIAL)
+
+    '
+  pattern-not: 'Puppet::SSL::CertificateFactory.build($CERT_TYPE, $CSR, $ISSUER, $SERIAL)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `Puppet::SSL::CertificateFactory.new` is vulnerable as it directly
+    exposes instance variables and lacks proper encapsulation. This can lead to improper
+    certificate generation and potential security issues. Instead, use the `build`
+    method which provides a safer, more controlled way to generate certificates.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/bab9310d2800dd3c24e002f9d85c808ee38c9d3c
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - ruby

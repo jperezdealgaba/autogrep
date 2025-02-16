@@ -1,0 +1,25 @@
+rules:
+- id: vuln-decidim-89990eff
+  pattern: '$VAR.started?
+
+    '
+  pattern-not: '$VAR.blocked?
+
+    '
+  languages:
+  - ruby
+  message: 'Detected use of `started?` method instead of `blocked?`. This could allow
+    operations on an election that has already started, which is insecure. Replace
+    `started?` with `blocked?` to ensure proper election state validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/decidim/decidim/commit/89990eff4ab70391aec4a7151203ea6347334d85
+    category: security
+    cwe:
+    - CWE-841
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - ruby

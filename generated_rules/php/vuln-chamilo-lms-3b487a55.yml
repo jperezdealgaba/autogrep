@@ -1,0 +1,26 @@
+rules:
+- id: vuln-chamilo-lms-3b487a55
+  pattern: "public function postUnsupported()\n{\n    $name = $_FILES['bigUploadFile']['name'];\n\
+    \    $size = $_FILES['bigUploadFile']['size'];\n    $tempName = $_FILES['bigUploadFile']['tmp_name'];\n\
+    \n    if (filesize($tempName) > $this->maxSize) {\n        return get_lang('UplFileTooBig');\n\
+    \    }\n\n    if (move_uploaded_file($tempName, $this->getMainDirectory().$name))\
+    \ {\n        return get_lang('FileUploadSucces');\n    } else {\n        return\
+    \ get_lang('UplUnableToSaveFile');\n    }\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses user-controlled file names in the move_uploaded_file
+    function, which can lead to path traversal vulnerabilities. An attacker could
+    manipulate the file name to upload files to arbitrary directories. To fix this,
+    validate and sanitize the file name before using it in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/3b487a55076fb06f96809b790a35dcdd42f8ec49
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

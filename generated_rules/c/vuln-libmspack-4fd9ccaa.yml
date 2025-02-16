@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libmspack-4fd9ccaa
+  pattern: '#define TOLOWER($X) ((($X)<0||($X)>256)?($X):mspack_tolower_map[($X)])
+
+    '
+  pattern-not: '#define TOLOWER($X) ((($X)<0||($X)>255)?($X):mspack_tolower_map[($X)])
+
+    '
+  languages:
+  - c
+  message: 'The TOLOWER macro has an off-by-one error in its bounds check, allowing
+    an out-of-bounds array access when the input is exactly 256. This can lead to
+    undefined behavior, memory corruption, or potential security vulnerabilities.
+    Fix the condition to check for values greater than 255 instead of 256.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kyz/libmspack/commit/4fd9ccaa54e1aebde1e4b95fb0163b699fd7bcc8
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

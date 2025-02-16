@@ -1,0 +1,30 @@
+rules:
+- id: vuln-gnumeric-e022d704
+  pattern: 'static char *$VAR[] = {(char *) "gnumeric", NULL};
+
+    '
+  pattern-not: 'static char *$VAR[] = {(char *) "/dev/null/python/is/buggy/gnumeric",
+    NULL};
+
+    '
+  languages:
+  - c
+  message: 'The use of a hardcoded executable path "gnumeric" in the plugin_argv array
+    is dangerous as it can lead to command injection or execution of unintended binaries.
+    This vulnerability can be exploited if an attacker can control the environment
+    or substitute the binary. To fix this, use a secure, non-hardcoded path or validate
+    the path before execution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnome/gnumeric/commit/e022d70427f6e7fde38ed5cbbd024d1ae01714ae
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - c

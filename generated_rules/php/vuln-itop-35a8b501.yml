@@ -1,0 +1,26 @@
+rules:
+- id: vuln-itop-35a8b501
+  pattern: '$VAR = substr(md5($APPROOT.uniqid()), $START, $LENGTH);
+
+    '
+  pattern-not: '$VAR = bin2hex(random_bytes($LENGTH));
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure token generation using md5 and uniqid. This approach
+    is cryptographically weak and predictable, making it vulnerable to brute force
+    attacks. Use cryptographically secure random number generators like `random_bytes`
+    instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/35a8b501c9e4e767ec4b36c2586f34d4ab66d229
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A2:2017-Cryptographic Failures
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-drogon-9ffe1b26
+  pattern: "trantor::utils::Hash256 $HASH;\nauto $RANDBYTE = [&$HASH]() {\n    static\
+    \ size_t $I = 0;\n    ...\n};\n"
+  pattern-not: "auto $RANDBYTE = []() {\n    thread_local trantor::utils::Hash256\
+    \ $HASH;\n    thread_local size_t $I = 0;\n    ...\n};\n"
+  languages:
+  - cpp
+  message: 'Detected a potential thread-safety issue due to the use of a static variable
+    in a lambda function. This can lead to race conditions and undefined behavior
+    in multi-threaded environments. The fix involves using ''thread_local'' instead
+    of ''static'' to ensure thread safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/drogonframework/drogon/commit/9ffe1b267be10574ee7a5403bbc405985a29c7af
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://en.cppreference.com/w/cpp/language/storage_duration#Thread_local_storage
+    technology:
+    - cpp

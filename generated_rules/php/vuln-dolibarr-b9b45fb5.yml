@@ -1,0 +1,24 @@
+rules:
+- id: vuln-dolibarr-b9b45fb5
+  pattern: '$sql .= '' AND cs.fk_user IN(''.implode('', '', $search_users).'')'';
+
+    '
+  pattern-not: '$sql .= '' AND cs.fk_user IN (''.$db->sanitize(implode('', '', $search_users)).'')'';
+
+    '
+  languages:
+  - php
+  message: "Detected a SQL injection vulnerability due to missing sanitization of\
+    \ user input in SQL query. \nDirectly concatenating user input into SQL queries\
+    \ can allow attackers to inject malicious SQL code. \nAlways sanitize user input\
+    \ using the database library's sanitization method (e.g., `$db->sanitize()`).\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dolibarr/dolibarr/commit/b9b45fb50618aa8053961f50bc8604b188d0ea79
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-uriparser-987b046e
+  pattern: "if ((uri->hostData.ip4 == NULL) && (uri->hostData.ip6 == NULL)) {\n  if\
+    \ (uri->hostData.ipFuture.first != NULL) {\n    ...\n  } else if (uri->hostText.first\
+    \ != NULL) {\n    ...\n  }\n}\n"
+  pattern-not: "if (uri->hostData.ipFuture.first != NULL) {\n  ...\n} else if (uri->hostText.first\
+    \ != NULL) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code previously checked for both ip4 and ip6 being NULL before handling
+    ipFuture and hostText, which could lead to incorrect handling of host data. This
+    has been fixed by directly checking ipFuture and hostText without the redundant
+    ip4/ip6 check. This vulnerability could cause improper host data normalization,
+    potentially leading to security issues in URI parsing. To fix this, remove the
+    unnecessary ip4/ip6 NULL checks and handle ipFuture and hostText directly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uriparser/uriparser/commit/987b046e41f407d17c622e580fc82a5e834b4329
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/uriparser/uriparser/issues/123
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-argo-cd-ef535230
+  pattern: "func newTerminalSession($W http.ResponseWriter, $R *http.Request, $H http.Header,\
+    \ $M *util_session.SessionManager) (*terminalSession, error) {\n  ...\n}\n"
+  pattern-not: "func newTerminalSession($CTX context.Context, $W http.ResponseWriter,\
+    \ $R *http.Request, $H http.Header, $M *util_session.SessionManager, $APP string,\
+    \ $ENF *rbac.Enforcer) (*terminalSession, error) {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'The terminal session creation function is missing RBAC enforcement parameters,
+    which could allow unauthorized access to terminal sessions. This vulnerability
+    could lead to privilege escalation or unauthorized command execution. To fix,
+    ensure the function includes context, application RBAC name, and RBAC enforcer
+    parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/ef535230d8bd8ad7b18aab1ea1063e9751d348c4
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - go

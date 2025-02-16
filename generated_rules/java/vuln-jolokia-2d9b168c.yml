@@ -1,0 +1,23 @@
+rules:
+- id: vuln-jolokia-2d9b168c
+  pattern: '$RESTRICTOR.isCorsAccessAllowed($ORIGIN)
+
+    '
+  pattern-not: '$RESTRICTOR.isOriginAllowed($ORIGIN, $STRICT_CHECKING)
+
+    '
+  languages:
+  - java
+  message: Insecure CORS access check detected. The method `isCorsAccessAllowed` does
+    not perform strict origin validation, which can lead to CORS misconfiguration.
+    Use `isOriginAllowed` with strict checking enabled to properly validate origins.
+  severity: ERROR
+  metadata:
+    source-url: github.com/rhuss/jolokia/commit/2d9b168cfbbf5a6d16fa6e8a5b34503e3dc42364
+    category: security
+    cwe:
+    - CWE-346
+    owasp:
+    - 'A5: Security Misconfiguration'
+    technology:
+    - java

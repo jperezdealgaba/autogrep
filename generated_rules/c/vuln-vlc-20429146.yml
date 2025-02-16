@@ -1,0 +1,20 @@
+rules:
+- id: vuln-vlc-20429146
+  pattern: 'char $VAR[len + 1];
+
+    '
+  pattern-not: "char *$VAR = malloc(len + 1);\nif(!$VAR)\n    return $ERR;\nfree($VAR);\n"
+  languages:
+  - c
+  message: "Detected a potentially unsafe stack allocation of a variable-length array\
+    \ (VLA). \nThis can lead to stack overflow if the length is too large. \nInstead,\
+    \ use dynamic memory allocation with proper error checking and cleanup.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/videolan/vlc/commit/204291467724867b79735c0ee3aeb0dbc2200f97
+    category: security
+    cwe:
+    - 'CWE-789: Uncontrolled Memory Allocation'
+    owasp: 'A1: Injection'
+    technology:
+    - c

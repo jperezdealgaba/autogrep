@@ -1,0 +1,26 @@
+rules:
+- id: vuln-odoo-a1b92ad2
+  pattern: 're.compile(r"^(\w+)\((.*)\)$")
+
+    '
+  pattern-not: 're.compile(r"^([a-zA-Z]\w+)\((.*)\)$")
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure regular expression pattern in onchange_v7. The original
+    pattern allows for potentially unsafe method names that don''t start with a letter.
+    This could lead to security vulnerabilities if untrusted input is processed. Use
+    the fixed pattern that enforces method names to start with a letter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/a1b92ad2b8aa2873e8707ef13660771fd75dba8e
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/re.html
+    technology:
+    - python

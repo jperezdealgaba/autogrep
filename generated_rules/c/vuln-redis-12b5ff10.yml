@@ -1,0 +1,27 @@
+rules:
+- id: vuln-redis-12b5ff10
+  pattern: 'int $VAR[HLL_Q+2] = {0};
+
+    '
+  pattern-not: 'int $VAR[64] = {0};
+
+    '
+  languages:
+  - c
+  message: 'The array `reghisto` was originally declared with a size of `HLL_Q+2`,
+    which could lead to buffer overflows if the input exceeds this size. This vulnerability
+    can result in memory corruption and potential security exploits. To fix this,
+    the array should be declared with a safe size, such as 64, to handle all possible
+    inputs without overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/antirez/redis/commit/12b5ff109508c2a192f700c7738da7e7f09670f1
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

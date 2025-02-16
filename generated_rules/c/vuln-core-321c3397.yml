@@ -1,0 +1,25 @@
+rules:
+- id: vuln-core-321c3397
+  pattern: "while (!$CONN->closing && $RET != 0) {\n  ...\n}\n"
+  pattern-not: "while (!$CONN->closing && !$CONN->input_locked && $RET != 0) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential STARTTLS command insertion vulnerability. The code
+    allows processing commands without checking if the input is locked, which can
+    lead to command injection after a STARTTLS command. To fix this, ensure that the
+    input is locked when processing commands after STARTTLS.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dovecot/core/commit/321c339756f9b2b98fb7326359d1333adebb5295
+    category: security
+    cwe:
+    - CWE-77
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://www.ietf.org/rfc/rfc3207.txt
+    technology:
+    - c

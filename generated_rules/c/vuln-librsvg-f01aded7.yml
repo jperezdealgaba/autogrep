@@ -1,0 +1,34 @@
+rules:
+- id: vuln-librsvg-f01aded7
+  pattern: "if ($URI) {\n    if ($HANDLE->priv->base_uri)\n        g_free ($HANDLE->priv->base_uri);\n\
+    \    $HANDLE->priv->base_uri = $URI;\n}\n"
+  pattern-not: '$FILE = g_file_new_for_uri ($URI ? $URI : "data:");
+
+    rsvg_handle_set_base_gfile ($HANDLE, $FILE);
+
+    g_object_unref ($FILE);
+
+    g_free ($URI);
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns a URI to a handle without proper validation,
+    which can lead to security vulnerabilities such as URI scheme manipulation. This
+    can allow unauthorized access to resources. The fix involves using `g_file_new_for_uri`
+    to properly handle the URI and ensuring that the URI scheme is validated before
+    processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/librsvg/commit/f01aded72c38f0e18bc7ff67dee800e380251c8e
+    category: security
+    cwe:
+    - CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

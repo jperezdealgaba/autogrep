@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jerryscript-42523bd6
+  pattern: 'ecma_raise_standard_error($ERROR_TYPE, ecma_get_error_msg($MSG))
+
+    '
+  pattern-not: 'ecma_raise_standard_error($ERROR_TYPE, $MSG)
+
+    '
+  languages:
+  - c
+  message: 'The code directly passes a string message to ecma_raise_standard_error,
+    which can lead to potential security vulnerabilities. Instead, it should use predefined
+    error codes from ecma_errors.h. This ensures consistent error handling and reduces
+    the risk of injection attacks or memory corruption.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jerryscript-project/jerryscript/commit/42523bd6e2b114755498c9f68fd78545f9b33476
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

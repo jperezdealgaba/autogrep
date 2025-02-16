@@ -1,0 +1,24 @@
+rules:
+- id: vuln-wordpress-develop-1d1d5be7
+  pattern: "if (!empty($request['sticky']) && !current_user_can($post_type->cap->edit_others_posts))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!empty($request['sticky']) && !current_user_can($post_type->cap->edit_others_posts)\
+    \ && !current_user_can($post_type->cap->publish_posts)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code is missing a check for the ''publish_posts'' capability when
+    handling sticky posts. This could allow users without the necessary permissions
+    to modify sticky posts, leading to unauthorized changes. To fix this, ensure the
+    ''publish_posts'' capability is checked alongside ''edit_others_posts''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/1d1d5be7aa94608c04516cac4238e8c22b93c1d9
+    category: security
+    cwe: 'CWE-285: Improper Authorization'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control/
+    technology:
+    - php

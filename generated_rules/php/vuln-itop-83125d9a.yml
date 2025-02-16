@@ -1,0 +1,33 @@
+rules:
+- id: vuln-itop-83125d9a
+  pattern: '$sWizardHelperJsVar = (!is_null($this->m_aData[''m_sWizHelperJsVarName'']))
+    ? utils::Sanitize($this->m_aData[''m_sWizHelperJsVarName''], utils::ENUM_SANITIZATION_FILTER_PARAMETER)
+    : ''oWizardHelper''.$this->GetFormPrefix();
+
+    '
+  pattern-not: '$sWizardHelperJsVar = (!is_null($this->m_aData[''m_sWizHelperJsVarName'']))
+    ? utils::Sanitize($this->m_aData[''m_sWizHelperJsVarName''], '''', utils::ENUM_SANITIZATION_FILTER_PARAMETER)
+    : ''oWizardHelper''.$this->GetFormPrefix();
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to XSS due to improper sanitization of JavaScript
+    variable names. The `utils::Sanitize` function is being used without the necessary
+    parameters to properly sanitize the input. This can lead to injection of malicious
+    scripts. To fix this, ensure that the `utils::Sanitize` function is called with
+    the correct parameters to properly sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/83125d9ae16cfb2527b9d0ab0805a68b863244a0
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

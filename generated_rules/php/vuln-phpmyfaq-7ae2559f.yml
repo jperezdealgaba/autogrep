@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phpmyfaq-7ae2559f
+  pattern: "$VAR['edit']['records.attachmentsPath'] = str_replace(\n    '../',\n \
+    \   '',\n    $VAR['edit']['records.attachmentsPath']\n);\n"
+  pattern-not: "if (false !== realpath($VAR['edit']['records.attachmentsPath'])) {\n\
+    \    $VAR['edit']['records.attachmentsPath'] = str_replace(\n        Request::createFromGlobals()->server->get('DOCUMENT_ROOT')\
+    \ . DIRECTORY_SEPARATOR,\n        '',\n        realpath($VAR['edit']['records.attachmentsPath'])\n\
+    \    );\n} else {\n    unset($VAR['edit']['records.attachmentsPath']);\n}\n"
+  languages:
+  - php
+  message: 'Detected insecure path manipulation without proper validation. This vulnerability
+    allows attackers to potentially access sensitive files by manipulating the path.
+    Use `realpath()` to validate the path and ensure it is within the document root
+    before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/7ae2559f079cd5fc9948b6fdfb87581f93840f62
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

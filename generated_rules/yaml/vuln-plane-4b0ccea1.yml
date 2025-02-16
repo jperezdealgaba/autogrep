@@ -1,0 +1,29 @@
+rules:
+- id: vuln-plane-4b0ccea1
+  pattern: 'branches: [ ''develop'', ''hot-fix'', ''stage-release'' ]
+
+    '
+  pattern-not: 'branches: [ ''develop'', ''preview'', ''master'' ]
+
+    '
+  languages:
+  - yaml
+  message: 'The workflow configuration includes outdated or insecure branch names
+    (''hot-fix'', ''stage-release''). This could lead to unintended code execution
+    or security vulnerabilities. Update the branch list to include only the approved
+    branches (''develop'', ''preview'', ''master'').
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/makeplane/plane/commit/4b0ccea1461b7ca38761dfe0d0f07c2f94425005
+    category: security
+    cwe:
+    - CWE-676
+    - CWE-1286
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+    technology:
+    - yaml

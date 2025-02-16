@@ -1,0 +1,28 @@
+rules:
+- id: vuln-commons-compress-ef5d70b6
+  pattern: 'final byte[] $LINK_ARRAY = new byte[(int) $ZIPLONG.getValue($TMP, $OFFSET)];
+
+    final int $LINK_ARRAY_LENGTH = $LINK_ARRAY.length;
+
+    '
+  pattern-not: "final int $LINK_ARRAY_LENGTH = (int) $ZIPLONG.getValue($TMP, $OFFSET);\n\
+    if ($LINK_ARRAY_LENGTH < 0 || $LINK_ARRAY_LENGTH > $TMP.length - $THRESHOLD) {\n\
+    \  throw new $EXCEPTION($MESSAGE);\n}\nfinal byte[] $LINK_ARRAY = new byte[$LINK_ARRAY_LENGTH];\n"
+  languages:
+  - java
+  message: 'Unsafe array size calculation detected. The size of the array is directly
+    derived from untrusted input without proper validation, which can lead to out-of-bounds
+    memory access or resource exhaustion. Validate the array size against reasonable
+    bounds before allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-compress/commit/ef5d70b625000e38404194aaab311b771c44efda
+    category: security
+    cwe:
+    - CWE-130
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-mailcow-dockerized-d373164e
+  pattern: '$pdo->query("UPDATE `imapsync` SET `custom_params` = '''' WHERE `custom_params`
+    LIKE ''%pipemess%'' OR `custom_params` LIKE ''%pipemes%'';");
+
+    '
+  pattern-not: "$pdo->query(\"UPDATE `imapsync` SET `custom_params` = '' \n  WHERE\
+    \ `custom_params` LIKE '%pipemess%' \n    OR custom_params LIKE '%skipmess%' \n\
+    \    OR custom_params LIKE '%delete2foldersonly%' \n    OR custom_params LIKE\
+    \ '%delete2foldersbutnot%' \n    OR custom_params LIKE '%regexflag%' \n    OR\
+    \ custom_params LIKE '%pipemess%' \n    OR custom_params LIKE '%regextrans2%'\
+    \ \n    OR custom_params LIKE '%maxlinelengthcmd%';\");\n"
+  languages:
+  - php
+  message: "The SQL query in the code is missing important checks for potentially\
+    \ dangerous parameters in the `custom_params` field. \nThis could allow malicious\
+    \ parameters to be processed, leading to security vulnerabilities such as data\
+    \ manipulation or unauthorized access. \nEnsure all relevant parameters are checked\
+    \ and sanitized in the query.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mailcow/mailcow-dockerized/commit/d373164e13a14e058f82c9f1918a5612f375a9f9
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A01:2021
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

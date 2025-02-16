@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tcpreplay-682d559d
+  pattern: "if (ntohs($IP_HDR->ip_len) < ($IP_HDR->ip_hl << 2)) {\n  ...\n}\n"
+  pattern-not: "if (ntohs($IP_HDR->ip_len) < ($IP_HDR->ip_hl << 2)) {\n  tcpedit_setwarn($TCPEDIT,\
+    \ \"Unable to checksum IPv4 packet with invalid length %u\", $IP_HDR->ip_len);\n\
+    \  return TCPEDIT_WARN;\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing validation check for IPv4 packet length. This vulnerability
+    can lead to processing of packets with invalid lengths, potentially causing memory
+    corruption or other undefined behavior. Ensure proper validation of packet length
+    before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/682d559d65fd9826aa53b7c7cfe8e4882bb2c6da
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

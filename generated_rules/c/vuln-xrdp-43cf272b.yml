@@ -1,0 +1,26 @@
+rules:
+- id: vuln-xrdp-43cf272b
+  pattern: 'g_sprintf($BUF, $FORMAT, ...)
+
+    '
+  pattern-not: 'g_snprintf($BUF, sizeof($BUF), $FORMAT, ...)
+
+    '
+  languages:
+  - c
+  message: "Detected use of `g_sprintf` which is vulnerable to buffer overflows. \n\
+    This function does not check the length of the destination buffer, \npotentially\
+    \ leading to memory corruption. Use `g_snprintf` instead, \nwhich includes a buffer\
+    \ size parameter to prevent overflows.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/43cf272b1138462c1bdfc48ef7e9142208194382
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

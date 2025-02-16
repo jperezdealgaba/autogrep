@@ -1,0 +1,31 @@
+rules:
+- id: vuln-jsish-9c9dbe59
+  pattern: 'if (Jsi_ObjArraySizer($INTERP, $OBJ, $N) <= 0)
+
+    ...
+
+    $OBJ->arr[$N] = (Jsi_Value*)Jsi_TreeValueGet($HPTR);
+
+    '
+  pattern-not: "if (Jsi_ObjArraySizer($INTERP, $OBJ, $N+1) <= 0)\n...\nJsi_Value*\
+    \ $V = (Jsi_Value*)Jsi_TreeValueGet($HPTR);\n$OBJ->arr[$N] = $V;\nif ($V)\n  \
+    \  Jsi_IncrRefCount($INTERP, $V);\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where the array size is not properly
+    incremented before assignment, which could lead to out-of-bounds access. Additionally,
+    the reference count for the assigned value is not incremented, which could lead
+    to use-after-free or memory corruption issues. To fix this, ensure the array size
+    is incremented by 1 and increment the reference count of the value being assigned.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/9c9dbe59760a660e21d69d5cf6007c9ccbb5c9a3
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-416
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

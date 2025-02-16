@@ -1,0 +1,41 @@
+rules:
+- id: vuln-chamilo-lms-ea5791ff
+  pattern: '$ch = curl_init();
+
+    curl_setopt_array($ch, $defaults);
+
+    ob_start();
+
+    $result = curl_exec($ch);
+
+    ob_get_clean();
+
+    curl_close($ch);
+
+    return $result;
+
+    '
+  pattern-not: "$client = new Client(['defaults' => $defaults]);\ntry {\n  $response\
+    \ = $client->get($url);\n  if (200 !== $response->getStatusCode()) {\n    return\
+    \ false;\n  }\n  return true;\n} catch (Exception $e) {\n  return false;\n}\n"
+  languages:
+  - php
+  message: 'The use of cURL without proper error handling and timeout settings can
+    lead to security vulnerabilities such as SSRF (Server-Side Request Forgery) or
+    DoS (Denial of Service). The code does not properly handle redirects, timeouts,
+    or exceptions, which can be exploited by attackers. Consider using GuzzleHttp
+    with proper configuration for handling redirects, timeouts, and exceptions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/ea5791ff8ce6ea45148a171b0da5348a7c415e6f
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    technology:
+    - php

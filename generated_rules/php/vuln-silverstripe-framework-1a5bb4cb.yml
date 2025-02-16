@@ -1,0 +1,31 @@
+rules:
+- id: vuln-silverstripe-framework-1a5bb4cb
+  pattern: 'preg_match(''%^\s*/{2,}%'', $URL ?? '''')
+
+    '
+  pattern-not: 'preg_match(''%^\s*(\\\\|/){2,}%'', $URL ?? '''')
+
+    '
+  languages:
+  - php
+  message: 'The regex pattern used to validate URLs is incomplete and does not properly
+    handle backslashes,
+
+    which could lead to security issues such as URL misinterpretation or injection
+    attacks.
+
+    Update the regex pattern to account for both forward and backward slashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/1a5bb4cbece1721203977910b8ecd8b79c18dc77
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

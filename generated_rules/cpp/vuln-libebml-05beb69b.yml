@@ -1,0 +1,21 @@
+rules:
+- id: vuln-libebml-05beb69b
+  pattern: "do {\n  ...\n} while (!$FOUND && $MAX_SIZE > $READ_SIZE);\n"
+  pattern-not: "do {\n  ...\n  if ($MAX_SIZE <= $READ_SIZE) {\n    $FOUND = false;\n\
+    \    break;\n  }\n} while (!$FOUND);\n"
+  languages:
+  - cpp
+  message: 'The code contains a vulnerability where the loop condition does not properly
+    handle the case when `MaxDataSize` is less than or equal to `ReadSize`. This can
+    lead to incorrect behavior or infinite loops. The fix ensures that the loop breaks
+    when `MaxDataSize` is less than or equal to `ReadSize`, preventing potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/05beb69ba60acce09f73ed491bb76f332849c3a0
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    technology:
+    - cpp

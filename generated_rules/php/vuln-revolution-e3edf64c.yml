@@ -1,0 +1,30 @@
+rules:
+- id: vuln-revolution-e3edf64c
+  pattern: '$topicDirectory = $this->directory . ltrim(basename($topic), ''/'');
+
+    '
+  pattern-not: '$topicDirectory = $this->directory . ltrim($fileHandler->sanitizePath($topic),
+    ''/'');
+
+    '
+  languages:
+  - php
+  message: 'The code uses `basename()` directly on user-controlled input, which can
+    lead to path traversal vulnerabilities. This is dangerous because an attacker
+    could manipulate the `$topic` variable to access unauthorized directories or files.
+    To fix this, use a sanitization function like `sanitizePath()` from a file handler
+    service to ensure the path is safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/modxcms/revolution/commit/e3edf64c14a4afa9845541b225cec91b4d9830d7
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php

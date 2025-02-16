@@ -1,0 +1,27 @@
+rules:
+- id: vuln-thin-7bd02791
+  pattern: '$REQUEST.forwarded_for || $SOCKET_ADDRESS
+
+    '
+  pattern-not: '$SOCKET_ADDRESS
+
+    '
+  languages:
+  - ruby
+  message: 'Detected the use of HTTP_X_FORWARDED_FOR header for client IP address
+    resolution, which can be easily spoofed. This can lead to IP spoofing and security
+    bypass. Use the socket address directly instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/macournoyer/thin/commit/7bd027914c5ffd36bb408ef47dc749de3b6e063a
+    category: security
+    cwe:
+    - CWE-350
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    technology:
+    - ruby

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phoronix-test-suite-d3880d9d
+  pattern: "if(isset($_REQUEST[$VAR]) && !empty($_REQUEST[$VAR]))\n  foreach(pts_arrays::to_array($_REQUEST[$VAR])\
+    \ as $VAL)\n    ...\n"
+  pattern-not: "if(isset($_POST[$VAR]) && !empty($_POST[$VAR]))\n  foreach(pts_arrays::to_array($_POST[$VAR])\
+    \ as $VAL)\n    ...\n"
+  languages:
+  - php
+  message: "Detected use of $_REQUEST superglobal, which can lead to security vulnerabilities.\
+    \ \nUsing $_REQUEST combines data from GET, POST, and COOKIE requests, making\
+    \ it \nharder to validate input sources and potentially leading to security issues.\
+    \ \nInstead, use $_GET or $_POST explicitly depending on the expected input source,\
+    \ \nand validate the input properly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phoronix-test-suite/phoronix-test-suite/commit/d3880d9d3ba795138444da83f1153c3c3ac27640
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - php

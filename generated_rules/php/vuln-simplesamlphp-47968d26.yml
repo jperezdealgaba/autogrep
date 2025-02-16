@@ -1,0 +1,21 @@
+rules:
+- id: vuln-simplesamlphp-47968d26
+  pattern: "if (substr($PATH, -4) === '.php') {\n  ...\n}\n"
+  pattern-not: "if (mb_strtolower(substr($PATH, -4), 'UTF-8') === '.php') {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: "Detected a case-sensitive file extension check that can be bypassed using\
+    \ case manipulation. \nThis vulnerability allows attackers to potentially execute\
+    \ malicious PHP files with different \ncase extensions (e.g., .Php, .pHp). Use\
+    \ mb_strtolower() with UTF-8 encoding to perform a \ncase-insensitive comparison.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/47968d26a2fd3ed52da70dc09210921d612ce44e
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

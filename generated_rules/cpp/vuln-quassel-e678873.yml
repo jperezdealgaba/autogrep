@@ -1,0 +1,27 @@
+rules:
+- id: vuln-quassel-e678873
+  pattern: 'return 0;
+
+    '
+  pattern-not: 'return nullptr;
+
+    '
+  languages:
+  - cpp
+  message: "Returning 0 instead of nullptr in C++ can lead to type safety issues and\
+    \ potential null pointer dereferences. \nThis is dangerous because it can cause\
+    \ undefined behavior or crashes when the returned value is used as a pointer.\
+    \ \nAlways use nullptr for pointer types in C++ to ensure type safety and avoid\
+    \ such issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/e678873
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.cppreference.com/w/cpp/language/nullptr
+    technology:
+    - cpp

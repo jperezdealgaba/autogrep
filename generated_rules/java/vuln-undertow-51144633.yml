@@ -1,0 +1,28 @@
+rules:
+- id: vuln-undertow-51144633
+  pattern: 'return "HttpServerExchange{ " + getRequestMethod().toString() + " " +
+    getRequestURI() + ''}'';
+
+    '
+  pattern-not: 'return "HttpServerExchange{ " + getRequestMethod().toString() + "
+    " + getRequestURI() + " request " + requestHeaders + " response " + responseHeaders
+    + ''}'';
+
+    '
+  languages:
+  - java
+  message: 'Insecure logging of HTTP exchange detected. The original implementation
+    logs only the request method and URI, potentially omitting critical security information.
+    This can lead to incomplete audit trails and difficulty in diagnosing security
+    incidents. The fix includes logging request and response headers to provide a
+    more comprehensive audit trail. Ensure that all relevant security-related information
+    is included in logs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/51144633f22ba0e73ee1f435db72025720395797
+    category: security
+    cwe: CWE-778
+    owasp: A10:2021 - Insufficient Logging & Monitoring
+    technology: java

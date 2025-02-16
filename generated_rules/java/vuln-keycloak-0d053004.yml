@@ -1,0 +1,28 @@
+rules:
+- id: vuln-keycloak-0d053004
+  pattern: "if ($CONFIG.getComponentId() != null && ComponentRepresentation.SECRET_VALUE.equals($BIND_CREDENTIAL))\
+    \ {\n    $BIND_CREDENTIAL = $REALM.getComponent($CONFIG.getComponentId()).getConfig().getFirst($LDAP_CONSTANTS.BIND_CREDENTIAL);\n\
+    }\n"
+  pattern-not: "if ($CONFIG.getComponentId() != null && !$LDAP_CONSTANTS.AUTH_TYPE.equals($LDAP_CONSTANTS.AUTH_TYPE_NONE)\n\
+    \        && ComponentRepresentation.SECRET_VALUE.equals($BIND_CREDENTIAL)) {\n\
+    \    $COMPONENT = $REALM.getComponent($CONFIG.getComponentId());\n    if ($COMPONENT\
+    \ != null) {\n        $LDAP_CONFIG = new LDAPConfig($COMPONENT.getConfig());\n\
+    \        if (Objects.equals(URI.create($CONFIG.getConnectionUrl()), URI.create($LDAP_CONFIG.getConnectionUrl()))\n\
+    \                && Objects.equals(LDAPDn.fromString($CONFIG.getBindDn()), LDAPDn.fromString($LDAP_CONFIG.getBindDN())))\
+    \ {\n            $BIND_CREDENTIAL = $LDAP_CONFIG.getBindCredential();\n      \
+    \  }\n    }\n}\n"
+  languages:
+  - java
+  message: 'LDAP authentication credentials are not properly validated when reusing
+    component credentials. This can lead to unauthorized access if the connection
+    URL or bind DN is modified. Ensure that the connection URL and bind DN are validated
+    when reusing credentials.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/keycloak/keycloak/commit/0d0530046b9cb4b0d74d2fdefc9bd04f1d20cac0
+    category: security
+    cwe: CWE-287
+    owasp: 'A2: Broken Authentication'
+    technology: java

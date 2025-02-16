@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libsndfile-2ccb23fe
+  pattern: 'sfe_copy_data_fp($OUTFILE, $INFILE, $CHANNELS, $NORMALIZE);
+
+    '
+  pattern-not: "if (sfe_copy_data_fp($OUTFILE, $INFILE, $CHANNELS, $NORMALIZE) !=\
+    \ 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `sfe_copy_data_fp` is called without checking its return
+    value, which can lead to unhandled errors. This can cause the program to continue
+    execution even when an error occurs, potentially leading to undefined behavior
+    or security vulnerabilities. Always check the return value of `sfe_copy_data_fp`
+    and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/2ccb23fe724d1d946b4e0c51b791cc655da6962e
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp: A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    - https://owasp.org/www-project-top-ten/2021/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/
+    technology:
+    - c

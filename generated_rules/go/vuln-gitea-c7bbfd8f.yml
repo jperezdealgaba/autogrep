@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gitea-c7bbfd8f
+  pattern: 'template.HTML($DESC_PATTERN.ReplaceAllStringFunc(markup.Sanitize($DESCRIPTION),
+    $SANITIZE_FUNC))
+
+    '
+  pattern-not: 'template.HTML(markup.Sanitize(string($DESC)))
+
+    '
+  languages:
+  - go
+  message: 'The code uses a custom sanitization function with `ReplaceAllStringFunc`,
+    which may not properly sanitize HTML content, leading to potential XSS vulnerabilities.
+    The fix uses `RenderDescriptionHTML` with a proper link processor to safely handle
+    HTML content. Always use established sanitization methods to prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/c7bbfd8f5eb097c6910e142415fcdf48fc3c9814
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - go

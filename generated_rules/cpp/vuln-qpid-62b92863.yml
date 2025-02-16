@@ -1,0 +1,33 @@
+rules:
+- id: vuln-qpid-62b92863
+  pattern: 'SaslAuthenticator::createAuthenticator($CONNECTION, $IS_SHADOW)
+
+    '
+  pattern-not: 'SaslAuthenticator::createAuthenticator($CONNECTION)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of deprecated ''isShadow'' parameter in SaslAuthenticator::createAuthenticator.
+
+    This vulnerability could allow unauthenticated connections to bypass security
+    checks.
+
+    The fix involves using the ''isAuthenticated'' method instead of ''isShadow''
+    to determine if a connection is authenticated.
+
+    Update the code to use the new authentication mechanism.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/qpid/commit/62b928632b4779ec841070bfe0b7e9c50506a0c1
+    category: security
+    cwe:
+    - 'CWE-287: Improper Authentication'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/287.html
+    technology:
+    - cpp

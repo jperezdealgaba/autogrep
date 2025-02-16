@@ -1,0 +1,30 @@
+rules:
+- id: vuln-exim-12fb3842
+  pattern: 'return string_copyn_taint($X, $Y, $Z);
+
+    '
+  pattern-not: 'uschar *$RECORD = string_copyn_taint($X, $Y, $Z);
+
+    return $RECORD;
+
+    '
+  languages:
+  - c
+  message: 'Directly returning the result of `string_copyn_taint` can lead to memory
+    management issues and potential taint propagation vulnerabilities. Instead, store
+    the result in a variable and return that variable to ensure proper handling of
+    the tainted data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/12fb3842f81bcbd4a4519d5728f2d7e0e3ca1445
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - c

@@ -1,0 +1,37 @@
+rules:
+- id: vuln-flatcore-cms-49602a45
+  pattern: '$fc_upload_img_types = array(''gif'',''jpg'',''jpe'',''jpeg'',''png'',''svg'',''ico'',''webp'');
+
+    $fc_upload_file_types = array(''pdf'',''doc'',''docx'',''ppt'',''pptx'',''xls'',''xlsx'',''mp3'',''mp4'',''m4a'',''wav'',''mpg'',''mov'',''avi'',''xml'',''epub'',''ogg'');
+
+    '
+  pattern-not: '$fc_upload_img_types = array(''gif'',''jpg'',''jpe'',''jpeg'',''png'',''ico'',''webp'');
+
+    $fc_upload_file_types = array(''pdf'',''doc'',''docx'',''ppt'',''pptx'',''xls'',''xlsx'',''mp3'',''mp4'',''m4a'',''wav'',''mpg'',''mov'',''avi'',''epub'',''ogg'');
+
+    '
+  languages:
+  - php
+  message: 'The code allows uploading of potentially dangerous file types (SVG and
+    XML), which can lead to security vulnerabilities like XSS or XXE attacks. SVG
+    files can contain malicious scripts, and XML files can be exploited for XXE attacks.
+    To fix this, remove ''svg'' from the allowed image types and ''xml'' from the
+    allowed file types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatCore/flatCore-CMS/commit/49602a45f208f8a1f24d86691ddb92c41bb25d9f
+    category: security
+    cwe:
+    - CWE-434
+    - CWE-611
+    owasp:
+    - A1:2017-Injection
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    - https://owasp.org/www-community/attacks/Cross_Site_Scripting
+    - https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+    technology:
+    - php

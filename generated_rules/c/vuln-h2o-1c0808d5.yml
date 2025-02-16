@@ -1,0 +1,26 @@
+rules:
+- id: vuln-h2o-1c0808d5
+  pattern: "void $FUNC(h2o_http2_conn_t *$CONN) {\n    ...\n    close_connection($CONN);\n\
+    \    return;\n    ...\n}\n"
+  pattern-not: "int $FUNC(h2o_http2_conn_t *$CONN) {\n    ...\n    return close_connection($CONN);\n\
+    \    ...\n}\n"
+  languages:
+  - c
+  message: 'The function `close_connection` is called without checking its return
+    value, which could lead to undefined behavior or resource leaks. The function
+    was changed to return an integer to indicate success or failure, but the calling
+    code does not handle this return value. This could result in ignoring critical
+    errors during connection closure. To fix this, ensure that the return value of
+    `close_connection` is checked and handled appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/h2o/h2o/commit/1c0808d580da09fdec5a9a74ff09e103ea058dd4
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

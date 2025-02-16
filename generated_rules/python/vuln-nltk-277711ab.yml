@@ -1,0 +1,28 @@
+rules:
+- id: vuln-nltk-277711ab
+  pattern: 're.compile(r"\((?!.*\()(.*)\)$")
+
+    '
+  pattern-not: 're.compile(r"\(([^\(]*)\)$")
+
+    '
+  languages:
+  - python
+  message: 'Detected a vulnerable regex pattern that could lead to incorrect parsing
+    of nested parentheses. The original pattern fails to properly handle nested parentheses,
+    which could result in incorrect matches or security issues. Use the fixed pattern
+    that correctly matches content within the outermost parentheses.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nltk/nltk/commit/277711ab1dec729e626b27aab6fa35ea5efbd7e6
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/re.html
+    technology:
+    - python

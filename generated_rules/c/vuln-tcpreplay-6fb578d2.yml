@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tcpreplay-6fb578d2
+  pattern: "if (memcmp($PKTDATA, \"MGC\", 3)) {\n  warnx(\"No Magic Number found:\
+    \ %s (0x%x)\", ...);\n}\n"
+  pattern-not: "if (memcmp($PKTDATA, JUNIPER_PCAP_MAGIC, 3)) {\n  warnx(\"No Magic\
+    \ Number found during protocol lookup: %s (0x%x)\", ...);\n  return 0;\n}\n"
+  languages:
+  - c
+  message: 'The code uses a hardcoded string "MGC" for magic number comparison, which
+    can lead to inconsistent error handling and potential security issues. The fixed
+    version uses a defined constant JUNIPER_PCAP_MAGIC and ensures proper error handling
+    by returning 0 when the magic number is not found. Always use defined constants
+    for such comparisons and ensure consistent error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/6fb578d20feccffd4bae9f3d0216d1c3507bd805
+    category: security
+    cwe:
+    - CWE-547
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/547.html
+    technology:
+    - c

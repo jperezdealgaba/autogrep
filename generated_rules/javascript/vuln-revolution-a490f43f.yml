@@ -1,0 +1,24 @@
+rules:
+- id: vuln-revolution-a490f43f
+  pattern: 'Ext.getCmp(''modx-resource-header'').getEl().update(''<h2>''+Ext.util.Format.stripTags($TITLE)+''</h2>'');
+
+    '
+  pattern-not: '$TITLE = Ext.util.Format.stripTags($TITLE);
+
+    $TITLE = Ext.util.Format.htmlEncode($TITLE);
+
+    Ext.getCmp(''modx-resource-header'').getEl().update(''<h2>''+$TITLE+''</h2>'');
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to insufficient HTML encoding. Use Ext.util.Format.htmlEncode()
+    after stripTags() to properly sanitize the title.
+  severity: ERROR
+  metadata:
+    source-url: github.com/modxcms/revolution/commit/a490f43f4a537ce054e8cf37cee9841bcc8d688b
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-community/attacks/xss/
+    technology: javascript

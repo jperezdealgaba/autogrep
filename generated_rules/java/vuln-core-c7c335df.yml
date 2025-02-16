@@ -1,0 +1,20 @@
+rules:
+- id: vuln-core-c7c335df
+  pattern: '$VAR = $NAME.trim().toLowerCase()
+
+    '
+  pattern-not: '$VAR = $NAME.trim()
+
+    '
+  languages:
+  - java
+  message: Potential case-sensitivity issue in string handling. Avoid using toLowerCase()
+    on untrusted input as it may lead to security vulnerabilities. Consider using
+    a case-insensitive comparison instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/dotCMS/core/commit/c7c335df37f1573651943c268b96a0898d32a17d
+    category: security
+    cwe: 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp: "A03:2021 \u2013 Injection"
+    technology: java

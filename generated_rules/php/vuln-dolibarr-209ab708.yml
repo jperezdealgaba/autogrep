@@ -1,0 +1,24 @@
+rules:
+- id: vuln-dolibarr-209ab708
+  pattern: '$VAR = get_exdir(0, 0, 0, 0, $OBJECT, ''user'').$OBJECT->photo;
+
+    '
+  pattern-not: '$VAR = get_exdir(0, 0, 0, 0, $OBJECT, ''user'').''photos/''.$OBJECT->photo;
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure file path construction for user photos, which could
+    lead to unauthorized access. The file path should include a ''photos'' directory
+    to properly restrict access. Update the code to include ''photos/'' in the path.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dolibarr/dolibarr/commit/209ab708d4b65fbd88ba4340d60b7822cb72651a
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: 'A1: Injection'
+    technology:
+    - php

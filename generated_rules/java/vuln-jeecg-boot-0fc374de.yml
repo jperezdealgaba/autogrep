@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jeecg-boot-0fc374de
+  pattern: 'String $XSS_STR = "and |extractvalue|updatexml|exec |insert |select |delete
+    |update |drop |count |chr |mid |master |truncate |char |declare |;|or |+|user()";
+
+    '
+  pattern-not: 'String $XSS_STR = "and |extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|exec
+    |insert |select |delete |update |drop |count |chr |mid |master |truncate |char
+    |declare |;|or |+|user()";
+
+    '
+  languages:
+  - java
+  message: 'Incomplete SQL injection blacklist detected. The blacklist is missing
+    critical SQL injection patterns like ''geohash'' and ''gtid_subset''. This could
+    allow attackers to bypass security checks and execute malicious SQL queries. Update
+    the blacklist to include all known SQL injection patterns.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jeecgboot/jeecg-boot/commit/0fc374de4745eac52620eeb8caf6a7b76127529a
+    category: security
+    cwe: CWE-89
+    owasp: A01:2021 - Broken Access Control
+    technology: java

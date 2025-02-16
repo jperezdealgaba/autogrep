@@ -1,0 +1,20 @@
+rules:
+- id: vuln-simplesamlphp-a2326d75
+  pattern: "if (!$OBJ->verify($KEY)) {\n  ...\n}\n"
+  pattern-not: "if ($OBJ->verify($KEY) !== 1) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "The XML signature verification is vulnerable to type juggling attacks.\
+    \ \nUsing a loose comparison (!) instead of a strict comparison (!==) can lead\
+    \ to \nfalse positives when the verify method returns values other than 1 or 0.\
+    \ \nAlways use strict comparison (=== or !==) when verifying cryptographic signatures.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/a2326d75dd14accaac162dd2cb30aaefcc1f9205
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - php

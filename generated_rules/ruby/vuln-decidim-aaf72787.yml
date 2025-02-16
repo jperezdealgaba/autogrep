@@ -1,0 +1,28 @@
+rules:
+- id: vuln-decidim-aaf72787
+  pattern: '$FILENAME = $FUNCTION($ATTACHMENT)
+
+    return $FILENAME if $FILENAME.length <= $MAX_LENGTH
+
+    '
+  pattern-not: '$FILENAME = $FUNCTION($ATTACHMENT)
+
+    return decidim_html_escape($FILENAME).html_safe if $FILENAME.length <= $MAX_LENGTH
+
+    '
+  languages:
+  - ruby
+  message: "The code returns a filename without proper HTML escaping, which can lead\
+    \ to XSS vulnerabilities. \nAlways escape user-controlled input before rendering\
+    \ it in HTML to prevent malicious scripts from executing. \nUse `decidim_html_escape`\
+    \ to safely escape the filename.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/decidim/decidim/commit/aaf72787cf18beeeb6a771c1f7cbb7654b073423
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - ruby

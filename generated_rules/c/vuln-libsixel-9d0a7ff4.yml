@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libsixel-9d0a7ff4
+  pattern: "if ($DIRTY && $MOD_Y == 5) {\n  ...\n}\n"
+  pattern-not: "if ($DIRTY && ($MOD_Y == 5 || $Y >= $HEIGHT)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code is vulnerable to a boundary check issue where it fails to validate
+    the ''y'' coordinate against the image height. This can lead to out-of-bounds
+    memory access, potentially causing crashes or security vulnerabilities. The fix
+    adds a check for ''y >= height'' and properly handles the case when ''y >= orig_height''
+    by jumping to the ''end'' label. To fix this, ensure all boundary conditions are
+    properly validated before accessing memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saitoha/libsixel/commit/9d0a7ff417b66d80a4bff714de1f27b24742f55a
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

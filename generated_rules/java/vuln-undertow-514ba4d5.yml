@@ -1,0 +1,23 @@
+rules:
+- id: vuln-undertow-514ba4d5
+  pattern: 'handle($EXCHANGE, decode($CHARSET, $ATTRNAME, $DODECODE), decode($CHARSET,
+    $STRING.substring($STRINGSTART, $STRING.length()), $DODECODE))
+
+    '
+  pattern-not: 'handle($EXCHANGE, decode($CHARSET, $ATTRNAME, $DODECODE), decode($CHARSET,
+    $STRING.substring($STRINGSTART, $I), $DODECODE))
+
+    '
+  languages:
+  - java
+  message: Potential URL decoding vulnerability due to incorrect substring bounds.
+    Using string.length() instead of a specific index can lead to incorrect URL decoding.
+    Use the correct index to avoid processing unintended parts of the string.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/514ba4d5be7d925934487b431141bcb7b9cc41ff
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - java

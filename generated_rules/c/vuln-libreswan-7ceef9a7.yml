@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libreswan-7ceef9a7
+  pattern: "for ($NR = 0; $NR < $ISAT_NUM; ) {\n  ...\n  $TS = &$TSS->ts[$NR];\n \
+    \ ...\n  if ($START_PORT > $END_PORT) {\n    ...\n  }\n  ...\n}\n"
+  pattern-not: "for (unsigned $N = 0; $N < $ISAT_NUM; $N++) {\n  ...\n  if ($START_PORT\
+    \ > $END_PORT) {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The original code uses a manual counter increment in a for-loop without
+    proper bounds checking, which can lead to array out-of-bounds access. This vulnerability
+    can cause memory corruption or crashes. The fix introduces a proper loop with
+    an unsigned counter and bounds checking using `passert`. Always use proper loop
+    constructs with bounds checking when iterating over arrays.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libreswan/libreswan/commit/7ceef9a79cb14ea1f53bbab7681523994b0ca25e
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

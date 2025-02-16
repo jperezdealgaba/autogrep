@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libreswan-f32feb1d
+  pattern: 'change_v1_state(&$IKE->sa, STATE_AGGR_R1);
+
+    '
+  pattern-not: 'change_v1_state(&$IKE->sa, STATE_AGGR_R0);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability in libreswan where the state change
+    to STATE_AGGR_R1 can lead to security issues. The vulnerability allows an attacker
+    to potentially guess the responder''s IKE SPI, which could lead to unauthorized
+    access or other security breaches. The fix involves changing the state to STATE_AGGR_R0
+    to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libreswan/libreswan/commit/f32feb1dd71e4a69636d9d7efbd1ff441acde9d6
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/330.html
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-containerd-5b46e404
+  pattern: 'Version = "1.4.10+unknown"
+
+    '
+  pattern-not: 'Version = "1.4.11+unknown"
+
+    '
+  languages:
+  - go
+  message: 'Detected an outdated version of containerd (1.4.10) which may contain
+    security vulnerabilities. Using outdated versions can expose systems to known
+    exploits. Upgrade to version 1.4.11 or later to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containerd/containerd/commit/5b46e404f6b9f661a205e28d59c982d3634148f8
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/containerd/containerd/releases/tag/v1.4.11
+    technology:
+    - go

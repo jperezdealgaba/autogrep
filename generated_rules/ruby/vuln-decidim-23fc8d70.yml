@@ -1,0 +1,25 @@
+rules:
+- id: vuln-decidim-23fc8d70
+  pattern: 'expect(page).to have_text($STRING)
+
+    '
+  pattern-not: 'expect(page).to have_content(translated($VAR))
+
+    '
+  languages:
+  - ruby
+  message: "Hardcoded string expectations in tests can lead to localization issues\
+    \ and brittle tests. \nUse the `translated` helper with attributes to ensure proper\
+    \ handling of translations.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/decidim/decidim/commit/23fc8d702a4976727f78617f5e42353d67931645
+    category: best-practice
+    cwe:
+    - CWE-627
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://edgeguides.rubyonrails.org/i18n.html
+    technology:
+    - ruby

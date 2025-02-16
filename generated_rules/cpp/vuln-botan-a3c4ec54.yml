@@ -1,0 +1,30 @@
+rules:
+- id: vuln-botan-a3c4ec54
+  pattern: "bigint_monty_mul($Z, $X, $G[$NIBBLE],\n                 $MODULUS.data(),\
+    \ $MOD_WORDS, $MOD_PRIME,\n                 $WORKSPACE.data());\n"
+  pattern-not: "BigInt::const_time_lookup($E, $G, $NIBBLE);\nbigint_mul($Z.mutable_data(),\
+    \ $Z.size(),\n           $X.data(), $X.size(), $X.sig_words(),\n           $E.data(),\
+    \ $MOD_WORDS, $MOD_WORDS,\n           $WORKSPACE.data());\nbigint_monty_redc($Z.mutable_data(),\n\
+    \                  $MODULUS.data(), $MOD_WORDS, $MOD_PRIME,\n                \
+    \  $WORKSPACE.data());\n"
+  languages:
+  - cpp
+  message: 'Detected insecure direct use of `bigint_monty_mul` without constant-time
+    lookup. This can lead to timing side-channel vulnerabilities. The fix involves
+    using `BigInt::const_time_lookup` to ensure constant-time access to the lookup
+    table, followed by separate multiplication and reduction steps.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/a3c4ec54ba8f611e7ef41867a4ed0fd669ef8057
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://www.bearssl.org/constanttime.html
+    technology:
+    - cpp

@@ -1,0 +1,37 @@
+rules:
+- id: vuln-varnish-cache-62932b42
+  pattern: "static void\ncnt_vdp(struct req *req, struct boc *boc)\n{\n    ...\n \
+    \   if (sendbody < 0) {\n        /* Don't touch pass+HEAD C-L */\n        sendbody\
+    \ = 0;\n    } else if (resp_len >= 0 && resp_len == req->resp_len) {\n       \
+    \ /* Reuse C-L header */\n    } else {\n        http_Unset(req->resp, H_Content_Length);\n\
+    \        if (req->resp_len >= 0 && sendbody)\n            http_PrintfHeader(req->resp,\n\
+    \                \"Content-Length: %jd\", req->resp_len);\n    }\n    ...\n}\n"
+  pattern-not: "static enum req_fsm_nxt\ncnt_transmit(struct worker *wrk, struct req\
+    \ *req)\n{\n    ...\n    if (sendbody < 0) {\n        /* Don't touch pass+HEAD\
+    \ C-L */\n        sendbody = 0;\n    } else if (resp_len >= 0 && resp_len == req->resp_len)\
+    \ {\n        /* Reuse C-L header */\n        http_Unset(req->resp, H_Content_Length);\n\
+    \        if (req->resp_len >= 0 && sendbody)\n            http_PrintfHeader(req->resp,\n\
+    \                \"Content-Length: %jd\", req->resp_len);\n    }\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The function `cnt_vdp` incorrectly handles the Content-Length header in
+    certain cases, which could lead to incorrect HTTP responses. This vulnerability
+    can cause issues with HTTP compliance and potentially lead to security risks such
+    as response smuggling. The issue was fixed by moving the logic to `cnt_transmit`
+    and ensuring proper handling of the Content-Length header. Always ensure that
+    Content-Length headers are correctly set and unset based on the response body
+    and status code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/varnishcache/varnish-cache/commit/62932b422f311ed1224f14a216169bcdc1b77a2d
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A6:2017 - Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.3.3
+    technology:
+    - c

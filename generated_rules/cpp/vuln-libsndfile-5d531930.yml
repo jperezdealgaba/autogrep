@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libsndfile-5d531930
+  pattern: 'int blockwidth;
+
+    '
+  pattern-not: 'sf_count_t blockwidth;
+
+    '
+  languages:
+  - cpp
+  message: 'The use of ''int'' for ''blockwidth'' is dangerous because it may lead
+    to integer overflow when handling large files. This can cause incorrect calculations
+    and potential security vulnerabilities. Use ''sf_count_t'' instead, which is designed
+    to handle larger values safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/5d5319300587e3d4a146332a2f48674ceb8a0257
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

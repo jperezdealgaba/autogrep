@@ -1,0 +1,25 @@
+rules:
+- id: vuln-puppet-9ee12151
+  pattern: 'Puppet::SSL::Certificate.find($VAR)
+
+    '
+  pattern-not: 'Puppet::SSL::Certificate.indirection.find($VAR)
+
+    '
+  languages:
+  - ruby
+  message: "Direct use of `Puppet::SSL::Certificate.find` is deprecated and insecure.\
+    \ \nUse `Puppet::SSL::Certificate.indirection.find` instead to ensure proper indirector\
+    \ handling and security.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/9ee12151e9c83d2b477ea5b04dd7d52e749a6992
+    category: security
+    cwe:
+    - CWE-749
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://puppet.com/docs/puppet/7/ssl_architecture.html
+    technology:
+    - ruby

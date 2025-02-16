@@ -1,0 +1,27 @@
+rules:
+- id: vuln-puppet-91e7ce47
+  pattern: '$NET_TELNET.new(..., "Output_log" => $LOG_PATH)
+
+    '
+  pattern-not: '$NET_TELNET.new(..., "Prompt" => $PROMPT)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected insecure file logging in Telnet transport. Writing sensitive
+    network data to a file can expose credentials and other sensitive information.
+    Remove the "Output_log" parameter to prevent file-based logging.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/91e7ce478649490d87684661f79d70b5ca46ddd0
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - ruby

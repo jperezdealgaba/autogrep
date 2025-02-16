@@ -1,0 +1,31 @@
+rules:
+- id: vuln-freetype2-0545ec1c
+  pattern: 'charset->sids[$J] = FT_GET_USHORT();
+
+    '
+  pattern-not: "{\n  FT_UShort $SID = FT_GET_USHORT();\n  if ( $SID < 65000 )\n  \
+    \  charset->sids[$J] = $SID;\n  else\n  {\n    FT_ERROR(( \"cff_charset_load:\
+    \ invalid SID value %d set to zero\\n\", $SID ));\n    charset->sids[$J] = 0;\n\
+    \  }\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves directly assigning a SID (String ID) value
+    from FT_GET_USHORT() to charset->sids without validation. This can lead to the
+    use of invalid SID values, potentially causing undefined behavior or crashes.
+    The fix includes checking if the SID value is within the valid range (less than
+    65000) and setting it to zero if it''s invalid. To fix this, always validate SID
+    values before assignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/0545ec1ca36b27cb928128870a83e5f668980bc5
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.adobe.com/content/dam/acom/en/devnet/font/pdfs/5176.CFF.pdf
+    technology:
+    - c

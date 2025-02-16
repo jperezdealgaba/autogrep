@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libebml-4c0d757d
+  pattern: "if ($SIZE + $DATABUFFERPOS > $DATABUFFERTOTALSIZE) {\n  ...\n}\n"
+  pattern-not: "if ($SIZE + $DATABUFFERPOS < $SIZE || $SIZE + $DATABUFFERPOS > $DATABUFFERTOTALSIZE)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "Detected a potential integer overflow vulnerability in the condition check.\
+    \ \nThe original code does not account for possible integer overflow when adding\
+    \ `Size` and `dataBufferPos`, which could lead to incorrect buffer size checks\
+    \ and potential memory corruption. \nTo fix this, add an overflow check before\
+    \ comparing with `dataBufferTotalSize`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/4c0d757d6de529e8dda6bb6ca08369d5f9bffdb3
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

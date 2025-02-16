@@ -1,0 +1,29 @@
+rules:
+- id: vuln-buildkit-c82ace12
+  pattern: "func sub(m mount.Mount, subPath string) (mount.Mount, error) {\n    src,\
+    \ err := fs.RootPath(m.Source, subPath)\n    if err != nil {\n        return mount.Mount{},\
+    \ err\n    }\n    m.Source = src\n    return m, nil\n}\n"
+  pattern-not: "func sub(m mount.Mount, subPath string) (mount.Mount, func() error,\
+    \ error) {\n    src, err := fs.RootPath(m.Source, subPath)\n    if err != nil\
+    \ {\n        return mount.Mount{}, nil, err\n    }\n    m.Source = src\n    return\
+    \ m, func() error { return nil }, nil\n}\n"
+  languages:
+  - go
+  message: 'The function `sub` does not properly handle unmounting of subpaths, which
+    can lead to resource leaks and potential security vulnerabilities. The fixed version
+    includes an unmount function to ensure proper cleanup. Update the function to
+    return an unmount function and handle cleanup appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moby/buildkit/commit/c82ace1296850847bcbdebe7a8af627f58eae41b
+    category: security
+    cwe:
+    - CWE-772
+    owasp:
+    - A9:2017-Insufficient Attack Protection
+    references:
+    - https://github.com/moby/buildkit/commit/c82ace1296850847bcbdebe7a8af627f58eae41b
+    technology:
+    - go

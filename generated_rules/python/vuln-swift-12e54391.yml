@@ -1,0 +1,28 @@
+rules:
+- id: vuln-swift-12e54391
+  pattern: 'parser = lxml.etree.XMLParser()
+
+    '
+  pattern-not: 'parser = lxml.etree.XMLParser(resolve_entities=False, no_network=True)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe XML parsing configuration. The XML parser is vulnerable
+    to XML External Entity (XXE) attacks, which can lead to sensitive data disclosure
+    or server-side request forgery (SSRF). To fix this, configure the XML parser with
+    `resolve_entities=False` and `no_network=True`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/swift/commit/12e54391861e7d182d58f89fb88b027e65842640
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://lxml.de/apidoc/lxml.etree.XMLParser-class.html
+    technology:
+    - python

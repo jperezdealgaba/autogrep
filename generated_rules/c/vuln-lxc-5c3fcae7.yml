@@ -1,0 +1,28 @@
+rules:
+- id: vuln-lxc-5c3fcae7
+  pattern: "if (($OPTIONS->namespaces & $CLONE_NEWNS) && ($OPTIONS->attach_flags &\
+    \ $LXC_ATTACH_LSM)) {\n  ...\n  $RET = lsm_process_label_set($INIT_CTX->lsm_label,\
+    \ $INIT_CTX->container->lxc_conf, 0, $ON_EXEC);\n  ...\n}\n"
+  pattern-not: "if (($OPTIONS->namespaces & $CLONE_NEWNS) && ($OPTIONS->attach_flags\
+    \ & $LXC_ATTACH_LSM) && $INIT_CTX->lsm_label) {\n  ...\n  if (lsm_set_label_at($PROCFD,\
+    \ $ON_EXEC, $INIT_CTX->lsm_label) < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to check if the LSM label is set before attempting to set
+    it, which can lead to null pointer dereference or unexpected behavior. This vulnerability
+    was fixed by adding a check for `init_ctx->lsm_label` before calling `lsm_set_label_at`.
+    Ensure that the LSM label is properly initialized before attempting to set it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lxc/lxc/commit/5c3fcae78b63ac9dd56e36075903921bd9461f9e
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A8-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

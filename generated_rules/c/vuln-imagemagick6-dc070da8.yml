@@ -1,0 +1,26 @@
+rules:
+- id: vuln-imagemagick6-dc070da8
+  pattern: 'EXIFMultipleValues($SIZE, "%f", (double) *($TYPE *) $PTR)
+
+    '
+  pattern-not: 'EXIFMultipleValues($SIZE, "%.20g", (double) ReadPropertySignedLong($ENDIAN,
+    $PTR))
+
+    '
+  languages:
+  - c
+  message: 'The use of `%f` format specifier with type casting can lead to incorrect
+    data interpretation. This vulnerability occurs when floating-point data is read
+    directly from memory without proper conversion, potentially leading to data corruption
+    or security issues. The fix involves using `%.20g` format specifier and `ReadPropertySignedLong`
+    function to ensure proper data handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ImageMagick/ImageMagick6/commit/dc070da861a015d3c97488fdcca6063b44d47a7b
+    category: security
+    cwe:
+    - 'CWE-681: Incorrect Conversion between Numeric Types'
+    technology:
+    - c

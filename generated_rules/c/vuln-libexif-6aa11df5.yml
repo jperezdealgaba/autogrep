@@ -1,0 +1,32 @@
+rules:
+- id: vuln-libexif-6aa11df5
+  pattern: 'exif_data_load_data_content($DATA, $IFD, $D, $DS, $O, $RECURSION_DEPTH
+    + 1)
+
+    '
+  pattern-not: 'exif_data_load_data_content($DATA, $IFD, $D, $DS, $O, $RECURSION_COST
+    + level_cost($N))
+
+    '
+  languages:
+  - c
+  message: 'Deep recursion vulnerability detected. The original code uses a simple
+    counter for recursion depth, which can lead to excessive recursion and potential
+    stack overflow in pathological cases. The fix introduces a logarithmic-scale recursion
+    cost calculation to better manage and limit recursion depth. Replace the simple
+    recursion depth counter with a recursion cost calculation using the `level_cost`
+    function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libexif/libexif/commit/6aa11df549114ebda520dde4cdaea2f9357b2c89
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/674.html
+    technology:
+    - c

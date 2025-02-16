@@ -1,0 +1,30 @@
+rules:
+- id: vuln-mediawiki-b9922cee
+  pattern: '$this->addTables([ ''page'', $VAR ]);
+
+    '
+  pattern-not: '$this->addTables([ $VAR, ''page'' ]);
+
+    $this->addOption(''STRAIGHT_JOIN'');
+
+    '
+  languages:
+  - php
+  message: 'The order of tables in the SQL join can lead to inefficient queries, potentially
+    causing full table scans. This can impact performance and lead to denial of service.
+    To fix this, reorder the tables in the join and add ''STRAIGHT_JOIN'' to ensure
+    the query optimizer processes the tables in the correct order.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/b9922cee8093a587cfa7940c4b9c4e63c880d875
+    category: performance
+    cwe:
+    - CWE-1075
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://phabricator.wikimedia.org/T290379
+    technology:
+    - php

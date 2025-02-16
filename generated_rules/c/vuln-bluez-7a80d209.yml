@@ -1,0 +1,39 @@
+rules:
+- id: vuln-bluez-7a80d209
+  pattern: "static GSList *caps_to_list(uint8_t *data, int size, ...) {\n  ...\n \
+    \ for ($PROCESSED = 0, $CAPS = NULL; $PROCESSED + 2 <= $SIZE;) {\n    ...\n  \
+    \  if ($PROCESSED + 2 + $LENGTH > $SIZE) {\n      ...\n    }\n    ...\n    $PROCESSED\
+    \ += 2 + $LENGTH;\n    $DATA += 2 + $LENGTH;\n    ...\n  }\n  ...\n}\n"
+  pattern-not: "static GSList *caps_to_list(uint8_t *data, size_t size, ...) {\n \
+    \ ...\n  if ($SIZE < sizeof(*$CAP)) return NULL;\n  ...\n  for ($CAPS = NULL;\
+    \ $SIZE >= sizeof(*$CAP);) {\n    ...\n    if (sizeof(*$CAP) + $CAP->length >=\
+    \ $SIZE) {\n      ...\n    }\n    ...\n    $SIZE -= sizeof(*$CAP) + $CAP->length;\n\
+    \    $DATA += sizeof(*$CAP) + $CAP->length;\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function ''caps_to_list'' contains a potential integer overflow vulnerability
+    due to improper bounds checking.
+
+    The original code uses ''int'' for the size parameter and performs arithmetic
+    operations that could lead to overflow.
+
+    This could result in memory corruption or out-of-bounds access.
+
+    To fix this, use ''size_t'' for size parameters and ensure proper bounds checking
+    before arithmetic operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/7a80d2096f1b7125085e21448112aa02f49f5e9a
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

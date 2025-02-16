@@ -1,0 +1,29 @@
+rules:
+- id: vuln-gitea-6d318140
+  pattern: 'migrateRepository($DOWNLOADER, $UPLOADER, $OPTS, $MESSENGER)
+
+    '
+  pattern-not: 'migrateRepository($DOER, $DOWNLOADER, $UPLOADER, $OPTS, $MESSENGER)
+
+    '
+  languages:
+  - go
+  message: 'The function `migrateRepository` is being called without a `doer` parameter,
+    which is required for proper URL validation during migration. This can lead to
+    security vulnerabilities by allowing unauthorized or unsafe URLs to be processed.
+    Always include the `doer` parameter, typically obtained via `user_model.GetAdminUser()`,
+    to ensure proper URL validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/6d3181406d87503dbd15e4a7c764c8963f13977f
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://github.com/go-gitea/gitea/pull/12345
+    technology:
+    - go

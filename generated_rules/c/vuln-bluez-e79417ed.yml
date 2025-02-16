@@ -1,0 +1,35 @@
+rules:
+- id: vuln-bluez-e79417ed
+  pattern: "static sdp_cstate_list_t *cstates;\n...\nstatic sdp_buf_t *sdp_get_cached_rsp(sdp_cont_state_t\
+    \ *cstate) {\n  sdp_cstate_list_t *p;\n  for (p = cstates; p; p = p->next) {\n\
+    \    if (p->timestamp != cstate->timestamp)\n      continue;\n    if (cstate->cStateValue.maxBytesSent\
+    \ < p->buf.data_size)\n      return &p->buf;\n  }\n  return 0;\n}\n"
+  pattern-not: "static sdp_list_t *cstates;\n...\nstatic sdp_cont_info_t *sdp_get_cont_info(sdp_req_t\
+    \ *req, sdp_cont_state_t *cstate) {\n  sdp_list_t *list;\n  list = sdp_list_find(cstates,\
+    \ cstate, cstate_match);\n  if (list) {\n    sdp_cont_info_t *cinfo = list->data;\n\
+    \    if (cinfo->opcode == req->opcode)\n      return cinfo;\n    sdp_cont_info_free(cinfo);\n\
+    \    return NULL;\n  }\n  sdp_cstate_cleanup(req->sock);\n  return NULL;\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe continuation state handling in BlueZ SDP implementation.
+    The vulnerability arises from directly accessing and manipulating a linked list
+    of continuation states without proper synchronization or validation, which could
+    lead to memory corruption or use-after-free vulnerabilities. The fix introduced
+    proper cleanup and validation mechanisms using sdp_list_find and sdp_cont_info_free
+    functions. To fix similar vulnerabilities, ensure proper state handling with validation,
+    cleanup, and synchronization mechanisms.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/e79417ed7185b150a056d4eb3a1ab528b91d2fc0
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://en.wikipedia.org/wiki/Use-after-free
+    technology:
+    - c

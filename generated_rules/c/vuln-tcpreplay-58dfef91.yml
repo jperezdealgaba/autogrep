@@ -1,0 +1,26 @@
+rules:
+- id: vuln-tcpreplay-58dfef91
+  pattern: "if (!process_xX_by_cidr_ipv4($MODE, $CIDR, $IP_HDR)) {\n  ...\n}\n"
+  pattern-not: "if (!$IP_HDR || !process_xX_by_cidr_ipv4($MODE, $CIDR, $IP_HDR)) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing null check for `ip_hdr` before passing it to `process_xX_by_cidr_ipv4`.
+
+    This can lead to a null pointer dereference, causing a crash or undefined behavior.
+
+    Always check for null pointers before dereferencing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/58dfef91fa206f29e52fc5f7efeeb334eeaf37c6
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

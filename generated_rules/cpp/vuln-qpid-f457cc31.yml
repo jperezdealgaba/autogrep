@@ -1,0 +1,27 @@
+rules:
+- id: vuln-qpid-f457cc31
+  pattern: 'add(SequenceNumber($BUFFER.getLong()), SequenceNumber($BUFFER.getLong()));
+
+    '
+  pattern-not: "SequenceNumber $A($BUFFER.getLong());\nSequenceNumber $B($BUFFER.getLong());\n\
+    if ($B < $A)\n    throw IllegalArgumentException(...);\nadd($A, $B);\n"
+  languages:
+  - cpp
+  message: 'Detected a potentially invalid sequence range without validation. This
+    can lead to incorrect processing of sequence numbers, which may cause unexpected
+    behavior or security issues. Always validate that the second sequence number is
+    greater than or equal to the first before adding the range.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/qpid/commit/f457cc314c6bc692731a87e8fed86d049e7c66c6
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp

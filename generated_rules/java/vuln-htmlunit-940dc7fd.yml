@@ -1,0 +1,27 @@
+rules:
+- id: vuln-htmlunit-940dc7fd
+  pattern: "final DomNode parent = $STARTINGNODE.getParentNode();\nif (parent == null\
+    \ || parent == $THIS) {\n    return null;\n}\nDomNode next = parent.getNextSibling();\n\
+    while (next != null && !isAccepted(next)) {\n    next = next.getNextSibling();\n\
+    }\nif (next == null) {\n    return getNextElementUpwards(parent);\n}\nreturn next;\n"
+  pattern-not: "DomNode parent = $STARTINGNODE.getParentNode();\nwhile (parent !=\
+    \ null && parent != $THIS) {\n    DomNode next = parent.getNextSibling();\n  \
+    \  while (next != null && !isAccepted(next)) {\n        next = next.getNextSibling();\n\
+    \    }\n    if (next != null) {\n        return next;\n    }\n    parent = parent.getParentNode();\n\
+    }\nreturn null;\n"
+  languages:
+  - java
+  message: 'The original code could lead to incorrect traversal of the DOM tree, potentially
+    causing unexpected behavior or security issues. The fixed version ensures proper
+    traversal by using a while loop to check parent nodes. Always ensure correct DOM
+    traversal logic to avoid such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/HtmlUnit/htmlunit/commit/940dc7fd8af9f46ca448c1e548b8f6d064a64290
+    category: security
+    cwe: CWE-670
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - java

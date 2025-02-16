@@ -1,0 +1,30 @@
+rules:
+- id: vuln-admin-ui-classic-bundle-b9fee9d3
+  pattern: "public function invitationLinkAction(Request $request, TranslatorInterface\
+    \ $translator): JsonResponse\n{\n    ...\n}\n"
+  pattern-not: "public function invitationLinkAction(Request $request, TranslatorInterface\
+    \ $translator, RouterInterface $router): JsonResponse\n{\n    ...\n    $domain\
+    \ = SystemSettingsConfig::get()['general']['domain'];\n    if (!$domain) {\n \
+    \       throw new \\Exception('No main domain set in system settings, unable to\
+    \ generate login invitation link');\n    }\n    $context = $router->getContext();\n\
+    \    $context->setHost($domain);\n    ...\n}\n"
+  languages:
+  - php
+  message: 'The invitation link generation method does not validate or set the domain
+    from system settings, which could lead to security issues such as phishing attacks.
+    Always validate and set the domain from trusted system settings to ensure the
+    generated links are secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/admin-ui-classic-bundle/commit/b9fee9d383fc73dbd5e1d98dbb0ff3266d6b5a82
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - php

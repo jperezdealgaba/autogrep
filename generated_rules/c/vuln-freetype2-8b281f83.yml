@@ -1,0 +1,28 @@
+rules:
+- id: vuln-freetype2-8b281f83
+  pattern: '(void)$FUNC($PARSER, $SIZE, $ARRAY, $COUNT);
+
+    '
+  pattern-not: "$RESULT = $FUNC($PARSER, $SIZE, $ARRAY, $COUNT);\nif ($RESULT < $SIZE)\n\
+    \  return $ERROR;\n"
+  languages:
+  - c
+  message: 'The function `$FUNC` is called without checking its return value, which
+    can lead to invalid data processing. This vulnerability can cause incorrect handling
+    of font matrices, potentially leading to crashes or undefined behavior. Always
+    check the return value of `$FUNC` to ensure the operation was successful and handle
+    errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/8b281f83e8516535756f92dbf90940ac44bd45e1
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c

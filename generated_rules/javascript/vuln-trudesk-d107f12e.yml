@@ -1,0 +1,21 @@
+rules:
+- id: vuln-trudesk-d107f12e
+  pattern: "const $MIMETYPE = $INFO.mimeType;\nif ($MIMETYPE.indexOf('image/') ===\
+    \ -1) {\n  ...\n}\n"
+  pattern-not: "const $ALLOWED_EXTS = [...];\nif (!$ALLOWED_EXTS.includes($EXT)) {\n\
+    \  ...\n}\n"
+  languages:
+  - javascript
+  message: "Insecure file type validation detected. Checking only the MIME type is\
+    \ insufficient as it can be spoofed. \nUse a whitelist of allowed file extensions\
+    \ to ensure only safe file types are accepted.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/polonel/trudesk/commit/d107f12e71c0fe1e7ac0fdc7463f59c4965a42cd
+    category: security
+    cwe: CWE-434
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    technology:
+    - javascript

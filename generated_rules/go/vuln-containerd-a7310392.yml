@@ -1,0 +1,30 @@
+rules:
+- id: vuln-containerd-a7310392
+  pattern: 'specOpts = append(specOpts, customopts.WithMounts($OS, $CONFIG, $EXTRA_MOUNTS,
+    $MOUNT_LABEL))
+
+    '
+  pattern-not: 'specOpts = append(specOpts, customopts.WithMounts($OS, $CONFIG, $EXTRA_MOUNTS,
+    $MOUNT_LABEL), customopts.WithRelabeledContainerMounts($MOUNT_LABEL))
+
+    '
+  languages:
+  - go
+  message: 'The code is missing the `WithRelabeledContainerMounts` function call,
+    which is necessary to relabel default container mounts for files in `/etc`. This
+    can lead to security vulnerabilities where sensitive files like `/etc/hosts`,
+    `/etc/hostname`, and `/etc/resolv.conf` are not properly relabeled, potentially
+    allowing unauthorized access or modification. To fix this, ensure that `WithRelabeledContainerMounts`
+    is called along with `WithMounts` in the `specOpts` append statement.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/containerd/containerd/commit/a731039238c62be081eb8c31525b988415745eea
+    category: security
+    cwe:
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp:
+    - A05:2021 - Security Misconfiguration
+    technology:
+    - go

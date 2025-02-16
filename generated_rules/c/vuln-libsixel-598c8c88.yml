@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libsixel-598c8c88
+  pattern: '$G->out[$G->cur_x + $G->cur_y * $G->line_size] = $G->codes[$CODE].suffix;
+
+    '
+  pattern-not: '$G->out[$G->cur_x + $G->cur_y * $G->max_x] = $G->codes[$CODE].suffix;
+
+    '
+  languages:
+  - c
+  message: "Detected potential out-of-bounds write vulnerability due to incorrect\
+    \ array index calculation. \nThe use of 'line_size' instead of 'max_x' can lead\
+    \ to buffer overflow. \nReplace 'line_size' with 'max_x' to ensure correct array\
+    \ bounds.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/saitoha/libsixel/commit/598c8c88c97fd2eb5f6f5d1324fc325e66317f0c
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-grin-8e2b0c7b
+  pattern: 'version: "1.0.1"
+
+    '
+  pattern-not: 'version: "1.0.2"
+
+    '
+  languages:
+  - yaml
+  message: 'Detected an outdated version of Grin (1.0.1). This version may contain
+    security vulnerabilities. Upgrade to version 1.0.2 or later to ensure the latest
+    security patches are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/8e2b0c7bc81ce775da83ed1f86203b3817eb314c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/mimblewimble/grin/releases/tag/v1.0.2
+    technology:
+    - yaml

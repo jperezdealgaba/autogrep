@@ -1,0 +1,29 @@
+rules:
+- id: vuln-phplist3-bf445db5
+  pattern: '$column = clean($headers[$i]);
+
+    '
+  pattern-not: '$column = strip_tags($headers[$i]);
+
+    $column = htmlspecialchars($column);
+
+    '
+  languages:
+  - php
+  message: "The use of `clean()` function without proper sanitization can lead to\
+    \ XSS vulnerabilities. \nThe `clean()` function may not properly sanitize HTML\
+    \ or JavaScript input, allowing malicious code to be injected. \nTo fix this,\
+    \ use `strip_tags()` to remove HTML tags and `htmlspecialchars()` to convert special\
+    \ characters to HTML entities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpList/phplist3/commit/bf445db5b0548d09079cf45ed89867fd79e6bf56
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

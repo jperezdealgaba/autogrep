@@ -1,0 +1,24 @@
+rules:
+- id: vuln-redmine-df615b70
+  pattern: "$KLASS =\n  begin\n    $PARAMS[:object_type].to_s.singularize.classify.constantize\n\
+    \  rescue\n    nil\n  end\n"
+  pattern-not: '$KLASS = $PARAMS[:object_type].to_s.singularize.classify.constantize
+
+    '
+  languages:
+  - ruby
+  message: 'Unsafe constantization of user input detected. This can lead to remote
+    code execution or unintended class instantiation. The fix involves constraining
+    the input values in the routes and removing the unsafe constantization pattern.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/df615b7047e58a5dfb236d3b011dfe1619559acc
+    category: security
+    cwe:
+    - CWE-470
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - ruby

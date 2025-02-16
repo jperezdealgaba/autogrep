@@ -1,0 +1,29 @@
+rules:
+- id: vuln-ntp-c4cd4aaf
+  pattern: "$VALLEN = ntohl($EP->vallen);\n...\nif ($VALLEN == 0 || $VALLEN > $MAXHOSTNAME\
+    \ || $LEN - $VALUE_LEN < $VALLEN) {\n  ...\n}\n"
+  pattern-not: "$LEN = exten_payload_size($EP);\nif ($LEN == 0 || $LEN > $MAX_VALLEN)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code is vulnerable to a buffer overflow due to insufficient validation
+    of the length field in an extension packet. The original code directly uses `ntohl(ep->vallen)`
+    without proper bounds checking, which could allow an attacker to craft a malicious
+    packet that exceeds the expected size, leading to memory corruption. The fix introduces
+    a new function `exten_payload_size` to properly validate the payload size against
+    the packet''s declared frame size. Always validate the length of incoming packets
+    against expected bounds and use helper functions to ensure consistency.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/c4cd4aaf418f57f7225708a93bf48afb2bc9c1da
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

@@ -1,0 +1,34 @@
+rules:
+- id: vuln-argo-cd-1be1a047
+  pattern: "func GenerateDexConfigYAML($SETTINGS *settings.ArgoCDSettings) ([]byte,\
+    \ error) {\n  ...\n  $DEXCFG[\"web\"] = map[string]interface{}{\n    \"http\"\
+    : \"0.0.0.0:5556\",\n  }\n  ...\n}\n"
+  pattern-not: "func GenerateDexConfigYAML($SETTINGS *settings.ArgoCDSettings, $DISABLETLS\
+    \ bool) ([]byte, error) {\n  ...\n  if $DISABLETLS {\n    $DEXCFG[\"web\"] = map[string]interface{}{\n\
+    \      \"http\": \"0.0.0.0:5556\",\n    }\n  } else {\n    $DEXCFG[\"web\"] =\
+    \ map[string]interface{}{\n      \"https\":   \"0.0.0.0:5556\",\n      \"tlsCert\"\
+    : \"/tmp/tls.crt\",\n      \"tlsKey\":  \"/tmp/tls.key\",\n    }\n  }\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected insecure Dex configuration without TLS. This could expose sensitive
+
+    authentication data over unencrypted HTTP connections. Ensure Dex is configured
+
+    to use HTTPS with proper TLS certificates. The fix involves adding a disableTLS
+
+    parameter and conditionally configuring the web endpoint with HTTPS.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/1be1a0475bf1e58e4afc113aeb089e1e7e282aef
+    category: security
+    cwe:
+    - CWE-319: Cleartext Transmission of Sensitive Information
+    owasp:
+    - A2: Broken Authentication
+    references:
+    - https://dexidp.io/docs/ssl/
+    technology:
+    - go

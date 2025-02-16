@@ -1,0 +1,33 @@
+rules:
+- id: vuln-librsvg-c6ddf2ed
+  pattern: "static int\nrsvg_defs_load_extern (const RsvgDefs * $DEFS, const char\
+    \ * $NAME)\n{\n    RsvgHandle *$HANDLE;\n    gchar *$FILENAME, *$BASE_URI;\n \
+    \   ...\n    $FILENAME = _rsvg_io_get_file_path ($NAME, rsvg_handle_get_base_uri\
+    \ ($DEFS->ctx));\n    data = _rsvg_handle_acquire_data ($DEFS->ctx, $NAME, NULL,\
+    \ &data_len, NULL);\n    ...\n    $BASE_URI = rsvg_get_base_uri_from_filename\
+    \ ($FILENAME);\n    rsvg_handle_set_base_uri ($HANDLE, $BASE_URI);\n    g_free\
+    \ ($BASE_URI);\n    ...\n    g_free ($FILENAME);\n    return 0;\n}\n"
+  pattern-not: "static RsvgHandle *\nrsvg_defs_load_extern (const RsvgDefs * $DEFS,\
+    \ const char * $URI)\n{\n    RsvgHandle *$HANDLE = NULL;\n    ...\n    data =\
+    \ _rsvg_handle_acquire_data ($DEFS->ctx, $URI, NULL, &data_len, NULL);\n    ...\n\
+    \    rsvg_handle_set_base_uri ($HANDLE, $URI);\n    ...\n    return $HANDLE;\n\
+    }\n"
+  languages:
+  - c
+  message: "The function rsvg_defs_load_extern is vulnerable to URI handling issues.\
+    \ \nThe original version uses a filename derived from the input name, which can\
+    \ lead to \nincorrect or insecure URI resolution. The fix involves directly using\
+    \ the URI parameter \nand properly handling the RsvgHandle object. This vulnerability\
+    \ could lead to \nincorrect resource loading or security issues. \nTo fix this,\
+    \ ensure that URIs are handled directly and consistently throughout \nthe code,\
+    \ and properly manage resource cleanup.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/librsvg/commit/c6ddf2ed4d768fd88adbea2b63f575cd523022ea
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

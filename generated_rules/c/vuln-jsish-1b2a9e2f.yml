@@ -1,0 +1,31 @@
+rules:
+- id: vuln-jsish-1b2a9e2f
+  pattern: '$THIS->d.obj->ot = $OT;
+
+    $THIS->d.obj->d.num = $NV;
+
+    Jsi_ValueMakeNumber($INTERP, $RET, $NV);
+
+    '
+  pattern-not: 'Jsi_ValueMakeNumber($INTERP, &$THIS, $NV);
+
+    Jsi_ValueDup2($INTERP, $RET, $THIS);
+
+    '
+  languages:
+  - c
+  message: "Direct modification of object type and value fields can lead to inconsistent\
+    \ state and potential memory corruption. \nThe vulnerability occurs when the object\
+    \ type and value are set directly instead of using the proper API functions.\n\
+    To fix this, use Jsi_ValueMakeNumber and Jsi_ValueDup2 to ensure proper object\
+    \ initialization and duplication.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/1b2a9e2f35ecd5041e1c40b376a3d2959df73c24
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

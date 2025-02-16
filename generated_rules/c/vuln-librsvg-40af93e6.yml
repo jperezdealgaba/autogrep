@@ -1,0 +1,26 @@
+rules:
+- id: vuln-librsvg-40af93e6
+  pattern: 'g_string_append($D, g_ascii_dtostr($BUF, sizeof($BUF), pointlist[$I +
+    1]));
+
+    '
+  pattern-not: "if ($I + 1 < pointlist_len)\n    $P = pointlist[$I + 1];\nelse\n \
+    \   $P = pointlist[$I - 1];\ng_string_append($D, g_ascii_dtostr($BUF, sizeof($BUF),\
+    \ $P));\n"
+  languages:
+  - c
+  message: 'Direct access to pointlist array without bounds checking can lead to out-of-bounds
+    access, potentially causing undefined behavior or crashes. This vulnerability
+    occurs when processing SVG files with incomplete coordinate pairs. Always check
+    array bounds before accessing elements to prevent out-of-bounds access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/librsvg/commit/40af93e6eb1c94b90c3b9a0b87e0840e126bb8df
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

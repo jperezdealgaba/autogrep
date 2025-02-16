@@ -1,0 +1,21 @@
+rules:
+- id: vuln-gstreamer-7b12593c
+  pattern: "guint16 $I = 0, $NB_PROGRAMS;\n...\nwhile ($DATA < $END - 4) {\n  ...\n\
+    \  $I++;\n}\n"
+  pattern-not: "guint16 $I, $NB_PROGRAMS;\n...\nfor ($I = 0; $I < $NB_PROGRAMS; $I++)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential unbounded loop due to missing bounds check on the\
+    \ loop counter. \nThis could lead to out-of-bounds access or infinite loops if\
+    \ the loop condition is not properly constrained. \nEnsure the loop counter is\
+    \ bounded by the number of programs (nb_programs) using a for loop instead of\
+    \ a while loop.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gstreamer/gstreamer/commit/7b12593cceaa0726d7fc370a7556a8e773ccf318
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    technology:
+    - c

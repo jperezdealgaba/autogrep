@@ -1,0 +1,20 @@
+rules:
+- id: vuln-home-assistant-dbfc5ea8
+  pattern: "return self.json({\n    $PERSON[ATTR_USER_ID]: {\n        $ATTR_NAME:\
+    \ $PERSON[ATTR_NAME],\n        $CONF_PICTURE: $PERSON.get(CONF_PICTURE),\n   \
+    \ }\n    for $PERSON in $PERSONS\n    if $PERSON.get(ATTR_USER_ID)\n})\n"
+  pattern-not: "return self.json_message(\n    message=\"Not local\",\n    status_code=HTTPStatus.BAD_REQUEST,\n\
+    \    message_code=\"not_local\",\n)\n"
+  languages:
+  - python
+  message: Detected potential exposure of sensitive user information without proper
+    IP address validation. Ensure that user data is only accessible from local network
+    addresses.
+  severity: ERROR
+  metadata:
+    source-url: github.com/home-assistant/home-assistant/commit/dbfc5ea8f96bde6cd165892f5a6a6f9a65731c76
+    category: security
+    cwe: CWE-200
+    owasp: A1:2017-Injection
+    technology:
+    - python

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-fuel-cms-4996da1e
+  pattern: '$save[''message''] = $msg;
+
+    '
+  pattern-not: '$save[''message''] = xss_clean($msg);
+
+    '
+  languages:
+  - php
+  message: 'Detected potential XSS vulnerability due to unvalidated user input being
+    assigned to a message field. This can allow attackers to inject malicious scripts
+    into the application, leading to security breaches. To fix this, ensure that user
+    input is sanitized using a function like `xss_clean()` before being assigned to
+    the message field.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/4996da1edc55b4f2964fa062156fbc2e5fab0802
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-getid3-0163ba96
+  pattern: 'echo ''Files with Encoder Options <b>''.$_REQUEST[''$VAR''].''</b>:<br>'';
+
+    '
+  pattern-not: 'echo ''Files with Encoder Options <b>''.htmlentities($_REQUEST[''$VAR'']).''</b>:<br>'';
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped output of $_REQUEST\
+    \ data. \nThis is dangerous because it allows attackers to inject malicious scripts\
+    \ into the webpage, \nwhich can lead to session hijacking, defacement, or other\
+    \ attacks. \nAlways use htmlentities() or similar functions to sanitize user input\
+    \ before outputting it to HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/JamesHeinrich/getID3/commit/0163ba96f7fc64765e499847c2373b1f994797c5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

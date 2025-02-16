@@ -1,0 +1,24 @@
+rules:
+- id: vuln-swift-75463398
+  pattern: "if $SIG not in $HMAC_VALS:\n    ...\n"
+  pattern-not: "$IS_VALID = any(streq_const_time($SIG, $HMAC) for $HMAC in $HMAC_VALS)\n\
+    if not $IS_VALID:\n    ...\n"
+  languages:
+  - python
+  message: "Detected a timing attack vulnerability in HMAC signature validation. \n\
+    Using `in` operator for HMAC comparison can leak timing information, \nallowing\
+    \ attackers to infer valid signatures. \nUse constant-time comparison functions\
+    \ like `streq_const_time` instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/swift/commit/754633988931e4095530f6b13389c254096eb485
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://docs.python.org/3/library/hmac.html
+    technology:
+    - python

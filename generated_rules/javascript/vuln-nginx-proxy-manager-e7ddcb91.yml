@@ -1,0 +1,24 @@
+rules:
+- id: vuln-nginx-proxy-manager-e7ddcb91
+  pattern: "fs.readFile('dist' + $PATH, 'utf8', function (err, $DATA) {\n    ...\n\
+    })\n"
+  pattern-not: "var $P = path.normalize('dist' + $PATH);\nif ($P.startsWith('dist'))\
+    \ {\n    fs.readFile($P, 'utf8', function (err, $DATA) {\n        ...\n    });\n\
+    }\n"
+  languages:
+  - javascript
+  message: 'Potential path traversal vulnerability detected. Directly concatenating
+    user input to a file path can allow attackers to access files outside the intended
+    directory. Use `path.normalize()` and validate the path starts with the expected
+    directory prefix.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NginxProxyManager/nginx-proxy-manager/commit/e7ddcb91fc7a4b2afc314ed3eaceb8da2ed6269f
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references: https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - javascript

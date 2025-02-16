@@ -1,0 +1,29 @@
+rules:
+- id: vuln-flatcore-cms-8d87c51a
+  pattern: "if(isset($_GET['delete'])) {\n  $delete_file = basename($_GET['delete']);\n\
+    \  ...\n}\n"
+  pattern-not: "if(isset($_POST['delete'])) {\n  $delete_file = basename($_POST['file']);\n\
+    \  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where file deletion is performed
+    based on unsanitized GET parameters. This can lead to path traversal attacks,
+    allowing an attacker to delete arbitrary files on the server. The fix involves
+    using POST requests with CSRF protection and proper file path handling using basename().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatCore/flatCore-CMS/commit/8d87c51a51b0c7260a72e583a3f83ab375a6b638
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-352
+    owasp:
+    - A1: Injection
+    - A5: Broken Access Control
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

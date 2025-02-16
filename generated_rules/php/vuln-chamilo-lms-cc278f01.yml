@@ -1,0 +1,48 @@
+rules:
+- id: vuln-chamilo-lms-cc278f01
+  pattern: '$curl = curl_init($URI);
+
+    curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+    curl_setopt($curl, CURLOPT_TIMEOUT, $TIMEOUT);
+
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+    curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER[''HTTP_USER_AGENT'']);
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+
+    '
+  pattern-not: "$client = new Client();\ntry {\n  $response = $client->request('GET',\
+    \ $URI, [\n    'timeout' => $TIMEOUT,\n    'verify' => false,\n    'headers' =>\
+    \ [\n      'User-Agent' => $_SERVER['HTTP_USER_AGENT']\n    ]\n  ]);\n} catch\
+    \ (Exception $e) {\n  return false;\n}\n"
+  languages:
+  - php
+  message: 'Detected insecure cURL usage with SSL verification disabled. This can
+    lead to Man-in-the-Middle (MITM) attacks as the connection is not properly verified.
+    Replace cURL with GuzzleHttp\Client and ensure SSL verification is enabled or
+    handle exceptions properly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/chamilo/chamilo-lms/commit/cc278f01864948b1fb160e03f0a3dc0875d5f81f
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://curl.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html
+    - https://docs.guzzlephp.org/en/stable/request-options.html#verify
+    technology:
+    - php

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-gdm-94ea12bb
+  pattern: 'gchar **splitstr = g_strsplit($MSG, " ", 2);
+
+    $FUNC($VAR);
+
+    '
+  pattern-not: "gchar **splitstr = g_strsplit($MSG, \" \", 2);\nif (splitstr == NULL\
+    \ || splitstr[0] == NULL) {\n    $HANDLE_ERROR;\n}\n$FUNC($VAR);\n"
+  languages:
+  - c
+  message: 'Detected a potential NULL pointer dereference vulnerability in g_strsplit
+    usage.
+
+    The code fails to check if splitstr or splitstr[0] is NULL before using it, which
+    could lead to a crash or undefined behavior.
+
+    Always check the return value of g_strsplit and ensure the array elements are
+    not NULL before accessing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnome/gdm/commit/94ea12bb61a1666d2d6d211e7100d6ad98731958
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

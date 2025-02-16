@@ -1,0 +1,29 @@
+rules:
+- id: vuln-flow-7a8c76b5
+  pattern: '$INVOCATION.getOwner().addDetachListener(() -> $PENDING_INVOCATIONS.removeIf($PENDING_INVOCATION
+    -> $PENDING_INVOCATION.equals($INVOCATION)));
+
+    '
+  pattern-not: '$PENDING_INVOCATIONS.forEach(this::registerDetachListenerForPendingInvocation);
+
+    '
+  languages:
+  - java
+  message: 'Detected potential memory leak due to multiple detach listeners being
+    registered for the same StateNode. This can lead to excessive memory usage and
+    performance degradation. Use a single detach listener per StateNode and manage
+    invocations through a centralized mechanism.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/7a8c76b5e8eb06e6127db075cf1f6b67c436fd96
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A2:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - java

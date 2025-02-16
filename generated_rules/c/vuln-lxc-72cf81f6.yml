@@ -1,0 +1,28 @@
+rules:
+- id: vuln-lxc-72cf81f6
+  pattern: 'snprintf($DEST, $LEN, "%s/lock/lxc/%s", $RUNDIR, $P)
+
+    '
+  pattern-not: 'snprintf($DEST, $LEN, "%s/lxc/lock/%s", $RUNDIR, $P)
+
+    '
+  languages:
+  - c
+  message: 'The lock file path construction is vulnerable due to incorrect directory
+    structure. This could lead to security issues such as lock file collisions or
+    privilege escalation. Ensure the correct directory structure is used by replacing
+    "/lock/lxc/" with "/lxc/lock/".
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lxc/lxc/commit/72cf81f6a3404e35028567db2c99a90406e9c6e6
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - A1: Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/59.html
+    technology:
+    - c

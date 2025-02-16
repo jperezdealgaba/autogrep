@@ -1,0 +1,26 @@
+rules:
+- id: vuln-react-admin-510845fd
+  pattern: '$INPUT ? $INPUT.replace(/<[^>]+>/gm, '''') : '''';
+
+    '
+  pattern-not: '$INPUT ? $INPUT.replace(/<.+?>/gm, '''') : '''';
+
+    '
+  languages:
+  - typescript
+  message: 'The regex pattern used to strip HTML tags is vulnerable to incomplete
+    tag removal due to greedy matching. This can lead to security issues such as XSS
+    if the input contains malformed HTML. Replace the pattern with a non-greedy match
+    (`<.+?>`) to ensure all tags are properly removed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marmelab/react-admin/commit/510845fdaf3b92a835a889d16f2a70359ff0fc18
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - typescript

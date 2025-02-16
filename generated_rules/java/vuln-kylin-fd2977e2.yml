@@ -1,0 +1,21 @@
+rules:
+- id: vuln-kylin-fd2977e2
+  pattern: "String $VAR = $CONFIG.getSparkSubmitCmd() != null ?\n        $CONFIG.getSparkSubmitCmd()\
+    \ : $ALTERNATIVE;\n"
+  pattern-not: 'String $VAR = $ALTERNATIVE;
+
+    '
+  languages:
+  - java
+  message: Potential security vulnerability due to unsafe command injection via config.getSparkSubmitCmd().
+    Use a hardcoded or sanitized command instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/kylin/commit/fd2977e21c51f1afed668f2d9713cf562f2dc42d
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

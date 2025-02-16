@@ -3,32 +3,28 @@ rules:
   pattern: 'uint32_t *$LCS = zmalloc((size_t)($ALEN+1)*($BLEN+1)*sizeof(uint32_t));
 
     '
-  pattern-not: "unsigned long long $LCSSIZE = (unsigned long long)($ALEN+1)*($BLEN+1);\n\
-    unsigned long long $LCSALLOC = $LCSSIZE * sizeof(uint32_t);\nuint32_t *$LCS =\
-    \ NULL;\nif ($LCSALLOC < SIZE_MAX && $LCSALLOC / $LCSSIZE == sizeof(uint32_t))\n\
-    \    $LCS = ztrymalloc($LCSALLOC);\n"
+  pattern-not: "unsigned long long $LCS_SIZE = (unsigned long long)($ALEN+1)*($BLEN+1);\n\
+    unsigned long long $LCS_ALLOC = $LCS_SIZE * sizeof(uint32_t);\nuint32_t *$LCS\
+    \ = NULL;\nif ($LCS_ALLOC < SIZE_MAX && $LCS_ALLOC / $LCS_SIZE == sizeof(uint32_t))\n\
+    \  $LCS = ztrymalloc($LCS_ALLOC);\nif (!$LCS) {\n  addReplyError($C, \"Insufficient\
+    \ memory\");\n  goto cleanup;\n}\n"
   languages:
   - c
-  message: 'This pattern detects potential integer overflow vulnerabilities in memory
-    allocation.
-
-    The original code directly multiplies dimensions without checking for overflow,
-    which can lead to insufficient memory allocation or security vulnerabilities.
-
-    The fixed version introduces checks to prevent overflow and ensures safe memory
-    allocation.
-
-    To fix this, always validate the size calculation before allocation and use appropriate
-    checks to prevent overflow.
-
-    '
+  message: "Potential integer overflow vulnerability in memory allocation. \nThe original\
+    \ code directly multiplies the length of two strings without checking for overflow,\
+    \ which could lead to a buffer overflow. \nThe fix introduces checks to ensure\
+    \ the allocation size does not overflow and uses a larger data type for the calculation.\n\
+    To fix this, always validate the size of memory allocations and use appropriate\
+    \ data types to prevent overflow.\n"
   severity: ERROR
   metadata:
-    source-url: https://github.com/redis/redis/commit/1ddecf1958924b178b76a31d989ef1e05af81964
+    source-url: github.com/antirez/redis/commit/1ddecf1958924b178b76a31d989ef1e05af81964
     category: security
     cwe:
     - CWE-190
     owasp:
-    - A9:2017 - Using Components with Known Vulnerabilities
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
     technology:
     - c

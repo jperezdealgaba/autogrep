@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gogs-7f8799c0
+  pattern: 'conf.App.Version = "0.12.7"
+
+    '
+  pattern-not: 'conf.App.Version = "0.12.8"
+
+    '
+  languages:
+  - go
+  message: 'Detected outdated version of Gogs (0.12.7). This version may contain security
+    vulnerabilities. Update to version 0.12.8 or later to mitigate potential risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gogs/gogs/commit/7f8799c01f264eb7770766621fb68debee414b68
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/gogs/gogs/releases/tag/v0.12.8
+    technology:
+    - go

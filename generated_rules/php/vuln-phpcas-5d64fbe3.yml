@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpcas-5d64fbe3
+  pattern: '$OBJECT->setCasServerCACert($PATH)
+
+    '
+  pattern-not: '$OBJECT->setCasServerCACert($PATH, true)
+
+    '
+  languages:
+  - php
+  message: 'The method `setCasServerCACert` is being called without the second argument,
+    which is required to enable certificate validation. This can lead to insecure
+    connections by not enforcing the validation of the server''s CA certificate. Always
+    pass `true` as the second argument to ensure certificate validation is enabled.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apereo/phpCAS/commit/5d64fbe3047428027d638abfe6282241a3073523
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - php

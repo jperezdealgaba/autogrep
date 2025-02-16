@@ -1,0 +1,29 @@
+rules:
+- id: vuln-chamilo-lms-f3d62b65
+  pattern: '$tmpFile = $tempDirectory.$FILE[''name''];
+
+    '
+  pattern-not: "$tmpFile = disable_dangerous_file(\n  api_replace_dangerous_char($FILE['name'])\n\
+    );\n$tempDirectory.$tmpFile\n"
+  languages:
+  - php
+  message: 'Detected unsafe file path construction using user-controlled input. This
+    can lead to path traversal or arbitrary file upload vulnerabilities. To fix, use
+    `disable_dangerous_file` and `api_replace_dangerous_char` functions to sanitize
+    the file name before using it in file paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/f3d62b65ad60d68096c2674d5695339f04de0b8a
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    technology:
+    - php

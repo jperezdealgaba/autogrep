@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libmspack-40ef1b40
+  pattern: 'unsigned char $INPUT[CAB_INPUTMAX];
+
+    '
+  pattern-not: 'unsigned char $INPUT[CAB_INPUTBUF];
+
+    '
+  languages:
+  - cpp
+  message: 'The buffer size for the input array is insufficient, which can lead to
+    buffer overflow when reading large blocks of data. This vulnerability is dangerous
+    because it can allow attackers to execute arbitrary code or cause a denial of
+    service. To fix this, use the defined constant CAB_INPUTBUF to ensure the buffer
+    is large enough to handle the maximum input size plus an additional byte for alignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kyz/libmspack/commit/40ef1b4093d77ad3a5cfcee1f5cb6108b3a3bcc2
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

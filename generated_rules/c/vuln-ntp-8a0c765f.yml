@@ -1,0 +1,25 @@
+rules:
+- id: vuln-ntp-8a0c765f
+  pattern: "static void list_restrict4(restrict_u *res, struct info_restrict **ppir)\
+    \ {\n  ...\n  if (res->link != NULL)\n    list_restrict4(res->link, ppir);\n \
+    \ ...\n}\n"
+  pattern-not: "static void list_restrict4(const restrict_u *res, struct info_restrict\
+    \ **ppir) {\n  ...\n  for (rpad = NULL; res; res = res->link)\n    if (!pushRestriction(&rpad,\
+    \ res))\n      break;\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a recursive function that could lead to stack overflow in NTP's\
+    \ restrict list processing. \nThe vulnerability occurs due to deep recursion in\
+    \ handling restrict lists, which can cause stack overflows. \nThe fix replaces\
+    \ recursion with an iterative approach using a stack structure. \nUpdate the function\
+    \ to use an iterative approach with a stack to prevent potential stack overflows.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/8a0c765f3c47633fa262356b0818788d1cf249b1
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

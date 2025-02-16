@@ -1,0 +1,25 @@
+rules:
+- id: vuln-core-d218b225
+  pattern: "if (!$GLOBALS['csrf']['defer']) {\n  csrf_check();\n}\n"
+  pattern-not: 'csrf_check();
+
+    '
+  languages:
+  - php
+  message: 'The CSRF check is conditionally deferred based on the `$GLOBALS[''csrf''][''defer'']`
+    setting, which can lead to security bypass if the setting is improperly configured.
+    This vulnerability allows attackers to bypass CSRF protection by manipulating
+    the global defer setting. Ensure that CSRF checks are always enforced without
+    relying on conditional deferral.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opnsense/core/commit/d218b225ccaf885a959f2a6e595d7a235acea8fc
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php

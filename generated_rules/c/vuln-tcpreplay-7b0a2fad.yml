@@ -1,0 +1,22 @@
+rules:
+- id: vuln-tcpreplay-7b0a2fad
+  pattern: "if ($L2_LEN + $TCPR_IPV4_H > $DATALEN) {\n  ...\n}\n"
+  pattern-not: "if ($L2_LEN < 0 || $L2_LEN + $TCPR_IPV4_H > $DATALEN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks if the sum of L2 length and IPv4 header size exceeds the
+    data length, but it does not account for cases where L2 length is invalid (e.g.,
+    negative). This can lead to incorrect packet processing or security vulnerabilities.
+    Always validate L2 length before performing such checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/7b0a2fad69cc89ce8e08c3326db7cdbe5d383a58
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    technology:
+    - c

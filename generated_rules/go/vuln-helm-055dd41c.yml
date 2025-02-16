@@ -1,0 +1,24 @@
+rules:
+- id: vuln-helm-055dd41c
+  pattern: "if err := yaml.Unmarshal($DATA, $VAR); $ERR {\n  ...\n}\n"
+  pattern-not: "if err := yaml.UnmarshalStrict($DATA, $VAR); $ERR {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Using yaml.Unmarshal instead of yaml.UnmarshalStrict can lead to security
+    vulnerabilities by silently ignoring unknown fields. This can allow malicious
+    YAML content to bypass validation. Always use yaml.UnmarshalStrict to ensure strict
+    parsing and validation of YAML content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/helm/helm/commit/055dd41cbe53ce131ab0357524a7f6729e6e40dc
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://helm.sh/docs/chart_template_guide/yaml_techniques/
+    technology:
+    - go

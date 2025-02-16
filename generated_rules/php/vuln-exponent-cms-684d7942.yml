@@ -1,0 +1,27 @@
+rules:
+- id: vuln-exponent-cms-684d7942
+  pattern: "if (array_key_exists($perm_action, $perms)) {\n    ...\n} elseif (array_key_exists($common_action,\
+    \ $perms)) {\n    ...\n} elseif (array_key_exists($perm_action, $controller->requires_login))\
+    \ {\n    ...\n} elseif (array_key_exists($common_action, $controller->requires_login))\
+    \ {\n    ...\n}\n"
+  pattern-not: "if (array_key_exists(strtolower($perm_action), array_change_key_case($perms)))\
+    \ {\n    ...\n} elseif (array_key_exists(strtolower($common_action), array_change_key_case($perms)))\
+    \ {\n    ...\n} elseif (array_key_exists(strtolower($perm_action), $controller->requires_login))\
+    \ {\n    ...\n} elseif (array_key_exists(strtolower($common_action), $controller->requires_login))\
+    \ {\n    ...\n}\n"
+  languages:
+  - php
+  message: "The code is vulnerable to case-sensitive action name reflection attacks.\
+    \ \nAttackers can bypass access controls by using different case variations of\
+    \ action names. \nConvert action names and permission arrays to lowercase before\
+    \ comparison to prevent this.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/684d79424f768db8bb345d5c68aa2a886239492b
+    category: security
+    cwe:
+    - CWE-178
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-android-3f8adc10
+  pattern: '<string name="auto_upload_path">automatinis paleidimas</string>
+
+    '
+  pattern-not: '<string name="auto_upload_path">...</string>
+
+    '
+  languages:
+  - xml
+  message: 'The string resource ''auto_upload_path'' was removed in the patch, indicating
+    it may have been a security risk or deprecated. Ensure that any references to
+    this string are updated or removed to prevent potential issues.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/nextcloud/android/commit/3f8adc101626bd024f3838ff712b01ee3e2fc11d
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - xml

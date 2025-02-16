@@ -1,0 +1,27 @@
+rules:
+- id: vuln-hosting-9c5294e6
+  pattern: "if(empty($_POST['csrf_token']) || $_POST['csrf_token'] != $_SESSION['csrf_token']){\n\
+    \  ...\n}\n"
+  pattern-not: "if($error=check_csrf_error()){\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Missing CSRF token validation in form submission. This vulnerability allows
+    attackers to perform Cross-Site Request Forgery (CSRF) attacks, potentially leading
+    to unauthorized actions being performed on behalf of the user. Always validate
+    CSRF tokens in all form submissions to ensure the request originates from a legitimate
+    source.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DanWin/hosting/commit/9c5294e64e81a3720ee7756d4008386ef4d9b1e0
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+    technology:
+    - php

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-pyscript-6dd242f3
+  pattern: 'exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/
+
+    '
+  pattern-not: 'exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/|pyscript.core/src/toml\.js
+
+    '
+  languages:
+  - yaml
+  message: 'The exclude pattern in the pre-commit configuration is missing the exclusion
+    of ''pyscript.core/src/toml.js''. This could lead to unnecessary checks or potential
+    security issues if sensitive files are not excluded. Ensure all necessary exclusions
+    are included to maintain security and efficiency.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/pyscript/pyscript/commit/6dd242f3ceb9cce512541fccd6d13a54ac7caf66
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - yaml

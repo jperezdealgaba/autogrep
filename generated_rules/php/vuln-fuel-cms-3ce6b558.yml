@@ -1,0 +1,26 @@
+rules:
+- id: vuln-fuel-cms-3ce6b558
+  pattern: 'array_push($$joiner_arr, ''LOWER(''.$key.'') LIKE "%''.strtolower($this->db->escape($val)).''%"'')
+
+    '
+  pattern-not: 'array_push($$joiner_arr, ''LOWER(''.$key.'') LIKE "%''.strtolower(addslashes($val)).''%"'')
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to SQL injection due to improper escaping of user
+    input. Using `$this->db->escape` directly within a LIKE clause does not properly
+    handle certain special characters, leading to potential SQL injection. The fix
+    is to use `addslashes` to properly escape the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/3ce6b558aa18410ebccf376b849898385302c4d8
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

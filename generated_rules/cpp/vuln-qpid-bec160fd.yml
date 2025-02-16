@@ -1,0 +1,24 @@
+rules:
+- id: vuln-qpid-bec160fd
+  pattern: "ConnectionCounter::ConnectionCounter(uint32_t $NL, uint32_t $HL) :\n \
+    \   nameLimit($NL), hostLimit($HL) {}\n"
+  pattern-not: "ConnectionCounter::ConnectionCounter(Acl& $ACL, uint32_t $NL, uint32_t\
+    \ $HL) :\n    acl($ACL), nameLimit($NL), hostLimit($HL) {}\n"
+  languages:
+  - cpp
+  message: 'The ConnectionCounter constructor is missing a reference to the Acl object,
+    which is required for proper reporting of connection limits. This can lead to
+    incomplete logging and monitoring of connection denials, potentially masking security
+    issues. Update the constructor to include the Acl reference as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/qpid/commit/bec160fd287763f979ebc3c5a8cdcf92a57a6c4b
+    category: security
+    cwe:
+    - 'CWE-223: Omission of Security-relevant Information'
+    owasp:
+    - A09:2021 - Security Logging and Monitoring Failures
+    technology:
+    - cpp

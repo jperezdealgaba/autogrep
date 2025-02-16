@@ -1,0 +1,26 @@
+rules:
+- id: vuln-re2c-02e5d797
+  pattern: "LOCAL_NODISCARD(Ret $FUNC(RESpec& spec, const AstNode* ast, Range*& $RANGE))\
+    \ {\n  ...\n  $RANGE = $EXPR;\n  ...\n}\n"
+  pattern-not: "LOCAL_NODISCARD(Ret $FUNC(RESpec& spec, const AstNode* ast, Range**\
+    \ $PRANGE)) {\n  ...\n  *$PRANGE = $EXPR;\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The function directly assigns to a Range pointer parameter instead of
+    using a double pointer, which can lead to unsafe memory operations. This vulnerability
+    can cause memory corruption or undefined behavior when the pointer is used or
+    freed incorrectly. To fix this, modify the function to use a double pointer (Range**)
+    for the output parameter, ensuring safer memory handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/skvadrik/re2c/commit/02e5d79784fc112da30dd04da2b04294e322f200
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-787
+    owasp:
+    - 'A8: Insecure Deserialization'
+    technology:
+    - cpp

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-exponent-cms-d5c3c175
+  pattern: '$this->order = empty($params[''order'']) ? ''id'' : expString::escape($params[''order'']);
+
+    '
+  pattern-not: '$this->order = empty($params[''order'']) ? ''id'' : preg_replace(''/[^a-z\_]/i'','''',$params[''order'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe handling of order parameter in SQL query. Using expString::escape
+    is insufficient for sanitizing SQL order by clauses, potentially leading to SQL
+    injection. Use preg_replace to restrict input to only alphanumeric and underscore
+    characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/d5c3c175b60bd26b2b74ec85b8f0d2544db2c8db
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

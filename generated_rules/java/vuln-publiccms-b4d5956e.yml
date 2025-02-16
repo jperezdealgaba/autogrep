@@ -1,0 +1,19 @@
+rules:
+- id: vuln-publiccms-b4d5956e
+  pattern: '@Column(name = "ip", nullable = false, length = 64)
+
+    '
+  pattern-not: '@Column(name = "ip", nullable = false, length = 130)
+
+    '
+  languages:
+  - java
+  message: IP address field length is too short, which could lead to truncation and
+    security issues. Increase the length to at least 130 characters.
+  severity: ERROR
+  metadata:
+    source-url: github.com/sanluan/PublicCMS/commit/b4d5956e65b14347b162424abb197a180229b3db
+    category: security
+    cwe: CWE-130
+    owasp: A2:2017-Insufficient Logging & Monitoring
+    technology: java

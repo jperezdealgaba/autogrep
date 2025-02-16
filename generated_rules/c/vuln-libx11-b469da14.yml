@@ -1,0 +1,36 @@
+rules:
+- id: vuln-libx11-b469da14
+  pattern: "$CHEND = $CH + ($LEN + 1);\n...\nif ($CH <= $CHEND) {\n    ...\n}\n"
+  pattern-not: '$CHEND = $CH + $LEN;
+
+    ...
+
+    $LENGTH = *$CH;
+
+    *$CH = ''\0'';
+
+    $COUNT++;
+
+    '
+  languages:
+  - c
+  message: 'The code incorrectly calculates the end pointer by adding an extra byte,
+    which can lead to out-of-bounds access. This vulnerability occurs because the
+    calculation includes an unnecessary +1, potentially causing memory corruption
+    or crashes. To fix this, ensure the end pointer is calculated without the extra
+    byte, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mirror/libX11/commit/b469da1430cdcee06e31c6251b83aede072a1ff0
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp: 'A8: Software and Data Integrity Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

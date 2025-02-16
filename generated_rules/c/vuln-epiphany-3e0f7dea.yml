@@ -1,0 +1,33 @@
+rules:
+- id: vuln-epiphany-3e0f7dea
+  pattern: "if ($URI && g_str_has_prefix($URI, \"https\")) {\n  $SECURITY_LEVEL =\
+    \ $EPHY_WEB_VIEW_STATE_IS_SECURE_HIGH;\n} else {\n  $SECURITY_LEVEL = $EPHY_WEB_VIEW_STATE_IS_UNKNOWN;\n\
+    }\n"
+  pattern-not: "if ($URI && g_str_has_prefix($URI, \"https\")) {\n  $FRAME = webkit_web_view_get_main_frame($VIEW);\n\
+    \  $SOURCE = webkit_web_frame_get_data_source($FRAME);\n  $REQUEST = webkit_web_data_source_get_request($SOURCE);\n\
+    \  $MESSAGE = webkit_network_request_get_message($REQUEST);\n\n  if ($MESSAGE\
+    \ && (soup_message_get_flags($MESSAGE) & SOUP_MESSAGE_CERTIFICATE_TRUSTED)) {\n\
+    \    $SECURITY_LEVEL = $EPHY_WEB_VIEW_STATE_IS_SECURE_HIGH;\n  } else {\n    $SECURITY_LEVEL\
+    \ = $EPHY_WEB_VIEW_STATE_IS_BROKEN;\n  }\n} else {\n  $SECURITY_LEVEL = $EPHY_WEB_VIEW_STATE_IS_UNKNOWN;\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code determines the security level of a web page based solely on the
+    presence of an ''https'' prefix in the URI, without verifying the SSL/TLS certificate.
+    This can lead to false positives where a page is marked as secure even if the
+    certificate is invalid or untrusted. This vulnerability can be exploited by attackers
+    to impersonate legitimate websites. To fix this, verify the SSL/TLS certificate
+    using the system''s CA file and ensure the certificate is trusted before marking
+    the page as secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnome/epiphany/commit/3e0f7dea754381c5ad11a06ccc62eb153382b498
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

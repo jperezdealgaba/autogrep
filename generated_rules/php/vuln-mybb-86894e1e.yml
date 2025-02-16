@@ -1,0 +1,31 @@
+rules:
+- id: vuln-mybb-86894e1e
+  pattern: "$message = preg_replace_callback(\n  \"#<a\\\\s[^>]*>.*?</a>|([\\s\\(\\\
+    )\\[\\>])(http|https|ftp|news|irc|ircs|irc6){1}(://)([^\\/\\\"\\s\\<\\[\\.]+\\\
+    .([^\\/\\\"\\s\\<\\[\\.]+\\.)*[\\w]+(:[0-9]+)?(/([^\\\"\\s<\\[]|\\[\\])*)?([\\\
+    w\\/\\)]))#ius\",\n  array($this, 'mycode_auto_url_callback'),\n  $message\n);\n"
+  pattern-not: "$message = preg_replace_callback(\n  \"#<a\\\\s[^>]*>.*?</a>|([\\\
+    s\\(\\)\\[\\>])(http|https|ftp|news|irc|ircs|irc6){1}(://)([^\\/\\\"\\s\\<\\[\\\
+    .]+\\.([^\\/\\\"\\s\\<\\[\\.]+\\.)*[\\w]+(:[0-9]+)?(/([^\\\"\\s<\\[]|\\[\\])*)?([\\\
+    w\\/\\)]))(?![^<>]*?>)#ius\",\n  array($this, 'mycode_auto_url_callback'),\n \
+    \ $message\n);\n"
+  languages:
+  - php
+  message: 'The regular expression used to auto-detect URLs is vulnerable to HTML
+    injection due to missing negative lookahead assertion. This can allow attackers
+    to inject malicious HTML content. The fix adds a negative lookahead assertion
+    `(?![^<>]*?>)` to prevent matching URLs within HTML tags.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/86894e1e6837f7687ecf6d9e572a626fc2d5d4fc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

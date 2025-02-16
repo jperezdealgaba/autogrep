@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mupdf-5e411a99
+  pattern: "if ($NUM < 0)\n  fz_throw($CTX, $ERROR, $MSG, $NUM);\n"
+  pattern-not: "if ($NUM < 0 || $NUM > $MAX)\n  fz_throw($CTX, $ERROR, $MSG, $NUM);\n"
+  languages:
+  - c
+  message: 'This rule detects insufficient validation of object numbers in PDF parsing
+    code. The original code only checks if the number is negative but fails to check
+    if it exceeds the maximum allowed value (PDF_MAX_OBJECT_NUMBER). This could lead
+    to out-of-bounds access or other undefined behavior. The fix is to add an upper
+    bound check using PDF_MAX_OBJECT_NUMBER.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/5e411a99604ff6be5db9e273ee84737204113299
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - c

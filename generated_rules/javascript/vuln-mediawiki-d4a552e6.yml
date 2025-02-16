@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mediawiki-d4a552e6
+  pattern: '$RETURNURL = $(''$SELECTOR'').attr(''href'');
+
+    ...
+
+    location.href = $RETURNURL;
+
+    '
+  pattern-not: '$URL = $THIS.href;
+
+    ...
+
+    location.href = $URL;
+
+    '
+  languages:
+  - javascript
+  message: 'Potential security issue: Using jQuery to extract href attributes directly
+    from DOM elements can lead to XSS or other injection vulnerabilities. Prefer accessing
+    the href property directly from the event object.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/d4a552e65bdfd7309a9b8537e9dbe69c5e2991eb
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

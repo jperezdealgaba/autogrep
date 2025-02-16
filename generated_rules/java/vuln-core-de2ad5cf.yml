@@ -1,0 +1,19 @@
+rules:
+- id: vuln-core-de2ad5cf
+  pattern: '"#parseContainer(''%1$s/application/containers/default/'',''1'')"
+
+    '
+  pattern-not: '"#parseContainer(''//%1$s/application/containers/default/'',''1'')"
+
+    '
+  languages:
+  - java
+  message: Potential path traversal vulnerability due to missing double slashes in
+    parseContainer. Ensure paths start with '//' to prevent security issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/de2ad5cf10752380665836c11f8f43af52812220
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    technology: java

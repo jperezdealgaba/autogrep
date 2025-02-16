@@ -1,0 +1,26 @@
+rules:
+- id: vuln-evmos-478b7a62
+  pattern: '$PRE, err := ics20.NewPrecompile($TRANSFER_KEEPER, $CHANNEL_KEEPER, $AUTHZ_KEEPER)
+
+    '
+  pattern-not: '$PRE, err := ics20.NewPrecompile($STAKING_KEEPER, $TRANSFER_KEEPER,
+    $CHANNEL_KEEPER, $AUTHZ_KEEPER)
+
+    '
+  languages:
+  - go
+  message: 'The precompile initialization is missing the staking keeper, which is
+    required to correctly mirror balance changes in the EVM stateDB. This can lead
+    to incorrect state handling and potential security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/evmos/evmos/commit/478b7a62e7af57a70cf3a01126c7f5a89bee69d7
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - go

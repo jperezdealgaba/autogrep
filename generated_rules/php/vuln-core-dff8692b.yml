@@ -1,0 +1,27 @@
+rules:
+- id: vuln-core-dff8692b
+  pattern: "if ($url == '/index.php?logout' || strpos($url, 'api/core/menu/') !==\
+    \ false) {\n    return true;\n} elseif (!empty($_SESSION['user_shouldChangePassword']))\
+    \ {\n    ...\n}\n"
+  pattern-not: "yield 'index.php?logout';\nyield 'api/core/menu/*';\nif (!empty($_SESSION['user_shouldChangePassword']))\
+    \ {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'The function `urlMatch` in the original code bypasses authentication checks
+    for specific URLs (`/index.php?logout` and `api/core/menu/*`), which could allow
+    unauthorized access to sensitive endpoints. This is dangerous because it can lead
+    to security bypass vulnerabilities. The fix involves using `yield` statements
+    to handle these URLs separately and ensuring proper authentication checks are
+    in place. Always validate and authorize access to sensitive endpoints.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opnsense/core/commit/dff8692b8a230b7a561f8e1fc1cd458318621097
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

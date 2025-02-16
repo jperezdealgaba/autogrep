@@ -1,0 +1,28 @@
+rules:
+- id: vuln-vlc-09572892
+  pattern: '$BOX->data.p_rdrf->psz_ref = malloc($LEN + 1);
+
+    '
+  pattern-not: '$BOX->data.p_rdrf->psz_ref = malloc($LEN);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential off-by-one error in memory allocation. The code allocates
+    memory for a string with an extra byte, which could lead to buffer overflows or
+    memory corruption. The fix involves correctly allocating memory based on the exact
+    length required. Ensure that the allocation size matches the intended data size
+    to avoid security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/videolan/vlc/commit/09572892df7e72c0d4e598c0b5e076cf330d8b0a
+    category: security
+    cwe:
+    - CWE-193
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/193.html
+    technology:
+    - c

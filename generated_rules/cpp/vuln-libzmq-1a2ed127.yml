@@ -1,0 +1,29 @@
+rules:
+- id: vuln-libzmq-1a2ed127
+  pattern: '(unsigned char *)$READ_POS + $MSG_SIZE > $ALLOCATOR.data() + $ALLOCATOR.size()
+
+    '
+  pattern-not: '$MSG_SIZE > $ALLOCATOR.data() + $ALLOCATOR.size() - $READ_POS
+
+    '
+  languages:
+  - cpp
+  message: "Detected a potential buffer overflow vulnerability due to incorrect pointer\
+    \ arithmetic. \nThe original code could lead to out-of-bounds memory access by\
+    \ calculating the end position incorrectly. \nThe fix ensures that the message\
+    \ size is checked against the remaining buffer space properly.\nThis vulnerability\
+    \ could lead to memory corruption or arbitrary code execution.\nAlways validate\
+    \ buffer sizes relative to the remaining space in the buffer.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/1a2ed12716693073032d57dac4e269df3d373751
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - cpp

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mujs-25821e6d
+  pattern: "if ($EXP < 0) {\n  ...\n}\nif ($EXP > $MAXEXPONENT) {\n  $EXP = $MAXEXPONENT;\n\
+    \  errno = ERANGE;\n}\n"
+  pattern-not: "if ($EXP < -$MAXEXPONENT) {\n  $EXP = $MAXEXPONENT;\n  $EXPSIGN =\
+    \ TRUE;\n  errno = ERANGE;\n} else if ($EXP > $MAXEXPONENT) {\n  $EXP = $MAXEXPONENT;\n\
+    \  $EXPSIGN = FALSE;\n  errno = ERANGE;\n} else if ($EXP < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code lacks proper handling of exponent values, which can lead to incorrect
+    calculations or undefined behavior. The vulnerability occurs when the exponent
+    value is not properly bounded, potentially causing out-of-range errors. The fix
+    ensures that the exponent is clamped within a valid range and sets the appropriate
+    error flag. To fix this, ensure that both lower and upper bounds are checked and
+    handled correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ccxvii/mujs/commit/25821e6d74fab5fcc200fe5e818362e03e114428
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

@@ -1,0 +1,21 @@
+rules:
+- id: vuln-kylin-f4daf14d
+  pattern: 'new IvParameterSpec("AAAAAAAAAAAAAAAA".getBytes("UTF-8"))
+
+    '
+  pattern-not: 'new IvParameterSpec(KylinConfig.getInstanceFromEnv().getEncryptCipherIvSpec().getBytes("UTF-8"))
+
+    '
+  languages:
+  - java
+  message: Hardcoded IV (Initialization Vector) in cryptographic operations detected.
+    This can lead to predictable encryption and security vulnerabilities. Use a secure,
+    configurable IV instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/kylin/commit/f4daf14dde99b934c92ce2c832509f24342bc845
+    category: security
+    cwe: CWE-329
+    owasp: 'A2: Cryptographic Failures'
+    references: https://owasp.org/www-project-top-ten/2017/A2_2017-Cryptographic_Failures
+    technology: java

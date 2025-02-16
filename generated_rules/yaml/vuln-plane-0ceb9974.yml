@@ -1,0 +1,23 @@
+rules:
+- id: vuln-plane-0ceb9974
+  pattern: "env_file:\n  - $FILE\n"
+  pattern-not: "environment:\n  - $VAR=${$VAR:-$DEFAULT}\n"
+  languages:
+  - yaml
+  message: 'Using `env_file` to load environment variables can lead to security risks
+    as it may expose sensitive data. Instead, explicitly define environment variables
+    with default values using the `environment` key to ensure better control and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/makeplane/plane/commit/0ceb9974f6974fbebeab6de814ced57f6817cc83
+    category: security
+    cwe:
+    - 'CWE-200: Exposure of Sensitive Information to an Unauthorized Actor'
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://docs.docker.com/compose/environment-variables/
+    technology:
+    - yaml

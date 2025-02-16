@@ -1,0 +1,23 @@
+rules:
+- id: vuln-mupdf-af1e390a
+  pattern: "if (pix->stride - 1 > INT_MAX / $N)\n  fz_throw($CTX, $ERROR, \"overly\
+    \ wide image\");\n"
+  pattern-not: "if (pix->stride > INT_MAX / pix->h)\n  fz_throw($CTX, $ERROR, \"Overly\
+    \ large image\");\n"
+  languages:
+  - c
+  message: "Integer overflow vulnerability detected in stride calculation. \nThe original\
+    \ check `pix->stride - 1 > INT_MAX / $N` is insufficient to prevent overflow,\
+    \ \nwhich could lead to memory corruption or crashes. \nFix by checking `pix->stride\
+    \ > INT_MAX / pix->h` to ensure the stride calculation \ndoes not exceed integer\
+    \ limits.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/af1e390a2c7abceb32676ec684cd1dbb92907ce8
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

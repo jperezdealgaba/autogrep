@@ -1,0 +1,29 @@
+rules:
+- id: vuln-varnish-cache-29870c8f
+  pattern: "$RETVAL = htc_request_check_host_hdr($HP);\nif ($RETVAL != 0) {\n    WSP($SP,\
+    \ SLT_Error, \"Duplicated Host header\");\n    return ($RETVAL);\n}\n"
+  pattern-not: "int $SEEN_CL = 0;\nif (http_IsHdr(&$HP->hd[$U], H_Content_Length))\
+    \ {\n    if ($SEEN_CL) {\n        WSP($SP, SLT_Error, \"Duplicated Content-Length\
+    \ header\");\n        return (400);\n    }\n    $SEEN_CL = 1;\n}\n$RETVAL = htc_request_check_hdrs($SP,\
+    \ $HP);\n"
+  languages:
+  - c
+  message: 'The function `htc_request_check_host_hdr` is vulnerable to duplicated
+    Host header issues without checking for duplicated Content-Length headers. This
+    can lead to HTTP request smuggling or other security issues. The fix includes
+    checking for both duplicated Host and Content-Length headers. Update the code
+    to use `htc_request_check_hdrs` and ensure proper header validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/varnishcache/varnish-cache/commit/29870c8fe95e4e8a672f6f28c5fbe692bea09e9c
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - c

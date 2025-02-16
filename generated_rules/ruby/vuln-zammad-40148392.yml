@@ -1,0 +1,27 @@
+rules:
+- id: vuln-zammad-40148392
+  pattern: 'prepend_before_action :authentication_check, except: %i[create password_reset_send
+    password_reset_verify image]
+
+    '
+  pattern-not: 'prepend_before_action :authentication_check, except: %i[create password_reset_send
+    password_reset_verify image email_verify email_verify_send]
+
+    '
+  languages:
+  - ruby
+  message: 'The authentication check is missing for email verification endpoints,
+    which could allow unauthorized access to these endpoints. Ensure that all sensitive
+    endpoints are protected by proper authentication checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zammad/zammad/commit/40148392426f626cb779c76d6bdda0f67bd6069d
+    category: security
+    cwe:
+    - CWE-306
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - ruby

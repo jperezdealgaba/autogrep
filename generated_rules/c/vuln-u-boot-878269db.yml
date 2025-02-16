@@ -1,0 +1,25 @@
+rules:
+- id: vuln-u-boot-878269db
+  pattern: "if ($BLOCKSIZE <= 0) {\n  return -1;\n}\n"
+  pattern-not: "if ($BLOCKSIZE <= 0 || $LEN <= 0) {\n  ext_cache_fini(&$CACHE);\n\
+    \  return -1;\n}\n"
+  languages:
+  - c
+  message: 'The code does not properly validate the `len` parameter, which could lead
+    to undefined behavior or security vulnerabilities. Always validate all input parameters
+    before using them. The fix includes checking `len` and properly cleaning up with
+    `ext_cache_fini` before returning an error.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/u-boot/u-boot/commit/878269dbe74229005dd7f27aca66c554e31dad8e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c

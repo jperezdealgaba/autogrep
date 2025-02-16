@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rdoc-1254b006
+  pattern: "File.open($FILE, 'rb') do |$IO|\n  Marshal.load($IO.read)\nend\n"
+  pattern-not: 'File.open($FILE, ''rb'') {|$IO| Marshal.load($IO, $FILTER)}
+
+    '
+  languages:
+  - ruby
+  message: 'Unsafe deserialization detected. Using `Marshal.load` without a filter
+    can lead to arbitrary code execution by deserializing untrusted data. This vulnerability
+    allows attackers to execute malicious code by crafting a specially crafted serialized
+    object. To fix this, use `Marshal.load` with a filter to restrict the types of
+    objects that can be deserialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/rdoc/commit/1254b0066f312ddbf7fae7a195e66ce5b3bc6656
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://docs.ruby-lang.org/en/master/Marshal.html
+    technology:
+    - ruby

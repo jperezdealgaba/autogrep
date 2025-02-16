@@ -1,0 +1,23 @@
+rules:
+- id: vuln-mybb-238696e3
+  pattern: '$local = $DOMAIN[0].''.'';
+
+    '
+  pattern-not: '$local = htmlspecialchars_uni($DOMAIN[0]).''.'';
+
+    '
+  languages:
+  - php
+  message: "The code directly concatenates a domain value without proper escaping,\
+    \ which can lead to XSS vulnerabilities. \nAlways use htmlspecialchars_uni or\
+    \ similar functions to sanitize user input before displaying it in HTML context.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/238696e37d6a22b89e6bba11e4de3e6620cb5547
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

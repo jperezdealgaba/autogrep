@@ -1,0 +1,28 @@
+rules:
+- id: vuln-uaa-cd31cc39
+  pattern: 'public ExpiringCode generateCode($DATA, $EXPIRES_AT);
+
+    public ExpiringCode retrieveCode($CODE);
+
+    public void setGenerator($GENERATOR);
+
+    '
+  pattern-not: 'ExpiringCode generateCode($DATA, $EXPIRES_AT);
+
+    ExpiringCode retrieveCode($CODE);
+
+    void setGenerator($GENERATOR);
+
+    '
+  languages:
+  - java
+  message: Public methods in ExpiringCodeStore interface should not be exposed. This
+    could lead to unauthorized access or misuse of sensitive code generation and retrieval
+    operations. Change the methods to package-private or protected access.
+  severity: ERROR
+  metadata:
+    source-url: github.com/cloudfoundry/uaa/commit/cd31cc397fe17389d95b83d6a9caa46eebc54faf
+    category: security
+    cwe: CWE-732
+    owasp: A01:2021 - Broken Access Control
+    technology: java

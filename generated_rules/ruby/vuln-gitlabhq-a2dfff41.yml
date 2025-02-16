@@ -1,0 +1,34 @@
+rules:
+- id: vuln-gitlabhq-a2dfff41
+  pattern: '$GROUP = find_group($PARAMS[:id])
+
+    $MEMBER = $GROUP.group_members.find_by(user_id: $PARAMS[:user_id])
+
+    '
+  pattern-not: '$GROUP = find_group($PARAMS[:id])
+
+    authorize! :manage_group, $GROUP
+
+    $MEMBER = $GROUP.group_members.find_by(user_id: $PARAMS[:user_id])
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unauthorized group member modification. The code modifies group
+    members without proper authorization checks, which could allow unauthorized users
+    to alter group memberships. To fix this, ensure that `authorize! :manage_group,
+    $GROUP` is called before modifying group members.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gitlabhq/gitlabhq/commit/a2dfff418bf2532ebb5aee88414107929b17eefd
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby

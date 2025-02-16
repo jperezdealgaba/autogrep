@@ -1,0 +1,34 @@
+rules:
+- id: vuln-silverstripe-framework-bdd63913
+  pattern: "if(strpos($OUTPUT, '<base') !== false) {\n  if($SSVIEWER_OPTIONS['rewriteHashlinks']\
+    \ === 'php') {\n    $THISURLRELATIVETOBASE = \"<?php echo strip_tags(\\$_SERVER['REQUEST_URI']);\
+    \ ?>\";\n  } else {\n    $THISURLRELATIVETOBASE = strip_tags($_SERVER['REQUEST_URI']);\n\
+    \  }\n  $OUTPUT = preg_replace('/(<a[^>+]href *= *)\"#/i', '\\\\1\"' . $THISURLRELATIVETOBASE\
+    \ . '#', $OUTPUT);\n}\n"
+  pattern-not: "if($SSVIEWER_OPTIONS['rewriteHashlinks']) {\n  if(strpos($OUTPUT,\
+    \ '<base') !== false) {\n    if($SSVIEWER_OPTIONS['rewriteHashlinks'] === 'php')\
+    \ {\n      $THISURLRELATIVETOBASE = \"<?php echo strip_tags(\\$_SERVER['REQUEST_URI']);\
+    \ ?>\";\n    } else {\n      $THISURLRELATIVETOBASE = strip_tags($_SERVER['REQUEST_URI']);\n\
+    \    }\n    $OUTPUT = preg_replace('/(<a[^>]+href *= *)\"#/i', '\\\\1\"' . $THISURLRELATIVETOBASE\
+    \ . '#', $OUTPUT);\n  }\n}\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to a security issue where the `rewriteHashlinks`
+    option is not properly checked before processing. This could lead to unintended
+    behavior or security vulnerabilities if the option is not enabled. The fix ensures
+    that the `rewriteHashlinks` option is checked before proceeding with the URL rewriting
+    logic.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/bdd63913bc3bcca2f60c79b14f91d3ecbbe1725e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

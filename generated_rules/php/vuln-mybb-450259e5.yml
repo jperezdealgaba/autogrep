@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mybb-450259e5
+  pattern: 'if(!trim($mybb->input[''file'']) || !file_exists(MYBB_ADMIN_DIR.''backups/''.$file))
+
+    '
+  pattern-not: 'if(!trim($mybb->input[''file'']) || !file_exists(MYBB_ADMIN_DIR.''backups/''.$file)
+    || filetype(MYBB_ADMIN_DIR.''backups/''.$file) != ''file'' || ($ext != ''gz''
+    && $ext != ''sql''))
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to path traversal or file inclusion attacks due
+    to insufficient validation of the file parameter. It only checks if the file exists
+    but does not verify its type or extension, which could allow an attacker to manipulate
+    the file path and access unauthorized files. To fix this, ensure the file type
+    is verified and only allow specific extensions (e.g., ''gz'' or ''sql'').
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/450259e501b94c9d483efb167cb2bf875605e111
+    category: security
+    cwe:
+    - 22
+    - 434
+    owasp: A1:2017-Injection
+    technology:
+    - php

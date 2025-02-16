@@ -1,0 +1,25 @@
+rules:
+- id: vuln-botan-21dccc8f
+  pattern: "if($NAM.size() == $CONSTRAINT.size())\n{\n  return tolower_string($NAM)\
+    \ == tolower_string($CONSTRAINT);\n}\n"
+  pattern-not: "const std::string $CONSTRAINT = tolower_string($NAME);\nconst std::string\
+    \ $ISSUED = tolower_string($NAM);\n\nif($NAM.size() == $CONSTRAINT.size())\n{\n\
+    \  return $ISSUED == $CONSTRAINT;\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly compares the lowercase versions of strings without first
+    converting them to lowercase. This can lead to inconsistent comparisons and potential
+    security vulnerabilities. Always convert strings to lowercase before comparing
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/21dccc8fef18c165ba3301d850ac61521f85637e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - cpp

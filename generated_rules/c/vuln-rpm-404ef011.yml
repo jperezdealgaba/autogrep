@@ -1,0 +1,25 @@
+rules:
+- id: vuln-rpm-404ef011
+  pattern: 'Fopen($DEST, "w.ufdio")
+
+    '
+  pattern-not: 'Fopen($DEST, "wx.ufdio")
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe file opening with mode "w.ufdio" which does not ensure
+    exclusive access. This can lead to race conditions or unintended file overwrites.
+    Use "wx.ufdio" to ensure exclusive creation of the file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/404ef011c300207cdb1e531670384564aae04bdc
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c

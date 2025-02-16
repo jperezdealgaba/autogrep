@@ -1,0 +1,19 @@
+rules:
+- id: vuln-trudesk-fb2ef82b
+  pattern: 'router.post(''/tickets/uploadattachment'', $MIDDLEWARE, $CONTROLLER)
+
+    '
+  pattern-not: "router.post(\n  '/tickets/uploadattachment',\n  middleware.redirectToLogin,\n\
+    \  middleware.csrfCheck,\n  controllers.tickets.uploadAttachment\n)\n"
+  languages:
+  - javascript
+  message: Missing CSRF protection in file upload endpoint. This can lead to CSRF
+    attacks where an attacker can upload malicious files. Add CSRF middleware to protect
+    the endpoint.
+  severity: ERROR
+  metadata:
+    source-url: github.com/polonel/trudesk/commit/fb2ef82b0a39d0a560a261e07c3c73ba25332ecb
+    category: security
+    cwe: CWE-352
+    owasp: A05:2021-Security Misconfiguration
+    technology: javascript

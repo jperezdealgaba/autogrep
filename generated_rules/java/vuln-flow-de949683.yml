@@ -1,0 +1,18 @@
+rules:
+- id: vuln-flow-de949683
+  pattern: "if (HandlerHelper.isPathUnsafe($FILENAME)) {\n    ...\n}\n"
+  pattern-not: "if (HandlerHelper.isPathUnsafe($FILENAME)\n        || $PATTERN.matcher($FILENAME).find())\
+    \ {\n    ...\n}\n"
+  languages:
+  - java
+  message: Missing validation for potentially malicious characters in filenames. This
+    can lead to script injection attacks. Ensure all filenames are checked for illegal
+    characters like quotes and encoded versions.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/de94968367a7567a8ae5e4850dd33d5b718f5de1
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-community/attacks/Command_Injection
+    technology: java

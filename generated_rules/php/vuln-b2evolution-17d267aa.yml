@@ -1,0 +1,27 @@
+rules:
+- id: vuln-b2evolution-17d267aa
+  pattern: 'echo ''<a href="''.url_rel_to_same_host($redirect_to, $ReqHost).''">''.$TEXT.''</a>'';
+
+    '
+  pattern-not: 'echo ''<a href="''.htmlspecialchars(url_rel_to_same_host($redirect_to,
+    $ReqHost)).''">''.$TEXT.''</a>'';
+
+    '
+  languages:
+  - php
+  message: "The URL in the link is not properly escaped, which can lead to Cross-Site\
+    \ Scripting (XSS) vulnerabilities. \nAn attacker could inject malicious scripts\
+    \ by manipulating the `$redirect_to` parameter. \nTo fix this, always use `htmlspecialchars`\
+    \ to escape URLs before outputting them in HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/b2evolution/b2evolution/commit/17d267aa685179ddcbb9765da7480c3419856993
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://secunia.com/cve_reference/CVE-2007-0175/
+    technology:
+    - php

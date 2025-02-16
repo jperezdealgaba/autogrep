@@ -1,0 +1,29 @@
+rules:
+- id: vuln-itop-e3ba826e
+  pattern: '$aShortcutPrefs[$aShortcutKey[''id'']] = strtolower($sKey)
+
+    '
+  pattern-not: '$aShortcutPrefs[$aShortcutKey[''id'']] = strtolower(utils::HtmlEntities($sKey))
+
+    '
+  languages:
+  - php
+  message: 'Detected potential vulnerability due to missing HTML entity encoding before
+    using user input in a function. This can lead to XSS (Cross-Site Scripting) attacks
+    if the input contains malicious HTML or JavaScript. To fix this, ensure that user
+    input is properly encoded using `utils::HtmlEntities()` or a similar function
+    before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/e3ba826e5dfd3b724f1ee97bebfd20ded3c70b10
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

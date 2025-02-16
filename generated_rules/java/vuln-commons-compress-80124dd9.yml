@@ -1,0 +1,29 @@
+rules:
+- id: vuln-commons-compress-80124dd9
+  pattern: 'final byte[] $VAR = new byte[$LEN];
+
+    final int $READ = IOUtils.readFully($INPUT, $VAR);
+
+    '
+  pattern-not: 'final byte[] $VAR = IOUtils.readRange($INPUT, $LEN);
+
+    final int $READ = $VAR.length;
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe byte array reading pattern. The code creates a byte array
+    and uses IOUtils.readFully to read data, which may not handle incomplete reads
+    correctly. Use IOUtils.readRange instead, which ensures proper handling of the
+    read data and throws EOFException if the expected length is not read.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-compress/commit/80124dd9fe4b0a0b2e203ca19aacac8cd0afc96f
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A10:2021 - Server-Side Request Forgery
+    technology:
+    - java

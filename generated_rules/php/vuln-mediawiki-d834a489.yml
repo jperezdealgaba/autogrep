@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mediawiki-d834a489
+  pattern: "$entropyEnabled = (\n    ( wfIsWindows() && version_compare( PHP_VERSION,\
+    \ '5.3.3', '>=' ) )\n    || ini_get( 'session.entropy_file' )\n)\n&& intval( ini_get(\
+    \ 'session.entropy_length' ) ) >= 32;\n"
+  pattern-not: '$entropyEnabled = wfCheckEntropy();
+
+    '
+  languages:
+  - php
+  message: 'Insecure session entropy check detected. Directly checking entropy settings
+    without proper validation can lead to weak session IDs, making the application
+    vulnerable to session hijacking. Use a dedicated function like `wfCheckEntropy()`
+    to ensure proper entropy validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/d834a4892af5ea57b3ee387dad79ad1a2205acad
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://www.php.net/manual/en/session.security.php
+    technology:
+    - php

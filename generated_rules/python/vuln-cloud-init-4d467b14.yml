@@ -1,0 +1,23 @@
+rules:
+- id: vuln-cloud-init-4d467b14
+  pattern: 'validate_cloudconfig_schema(config=$CONFIG, strict=$STRICT)
+
+    '
+  pattern-not: 'validate_cloudconfig_schema(config=$CONFIG, strict=$STRICT, log_details=$DETAILS)
+
+    '
+  languages:
+  - python
+  message: "Detected a call to validate_cloudconfig_schema without the log_details\
+    \ parameter. \nThis can lead to sensitive data being logged in validation error\
+    \ messages. \nAlways set log_details=False when handling sensitive user data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/canonical/cloud-init/commit/4d467b14363d800b2185b89790d57871f11ea88c
+    category: security
+    cwe: CWE-532
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cloudinit.readthedocs.io/en/latest/topics/datasources.html
+    technology:
+    - python

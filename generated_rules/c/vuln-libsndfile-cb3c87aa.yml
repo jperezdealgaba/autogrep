@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libsndfile-cb3c87aa
+  pattern: '$STRUCT->sf.frames = $STRUCT->datalength / $STRUCT->blockwidth;
+
+    '
+  pattern-not: '$STRUCT->sf.frames = $STRUCT->blockwidth > 0 ? $STRUCT->datalength
+    / $STRUCT->blockwidth : $VALUE;
+
+    '
+  languages:
+  - c
+  message: 'Division by zero vulnerability detected. The code performs a division
+    by `blockwidth` without checking if it is zero, which can lead to undefined behavior.
+    Always check if the divisor is greater than zero before performing the division.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/cb3c87aa3bba868dd6477d35cf4b86d67c3e1f77
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

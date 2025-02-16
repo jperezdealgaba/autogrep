@@ -1,0 +1,25 @@
+rules:
+- id: vuln-bluez-838c0dc7
+  pattern: "static struct pending_op *$FUNC(struct btd_device *$DEVICE, ...) {\n \
+    \ ...\n  $OP->device = $DEVICE;\n  ...\n}\n"
+  pattern-not: "static struct pending_op *$FUNC(struct bt_att *$ATT, ...) {\n  ...\n\
+    \  $OP->att = bt_att_ref($ATT);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses `btd_device` directly without proper connection handling,
+    which can lead to use-after-free or invalid memory access if the device disconnects.
+    The vulnerability was fixed by replacing `btd_device` with `bt_att` and adding
+    disconnect handlers. To fix, ensure proper connection state management by using
+    `bt_att` and registering disconnect callbacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/838c0dc7641e1c991c0f3027bf94bee4606012f8
+    category: security
+    cwe:
+    - 'CWE-416: Use After Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

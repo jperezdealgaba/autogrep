@@ -1,0 +1,24 @@
+rules:
+- id: vuln-crm-e3bd7bfb
+  pattern: "if ($VAR == $VAL) {\n  ...\n}\n"
+  pattern-not: "if ($VAR === $VAL) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code uses ''=='' for comparison instead of ''===''. This can lead
+    to type juggling vulnerabilities where PHP may convert types unexpectedly, potentially
+    bypassing security checks. Always use ''==='' for strict type comparison to avoid
+    such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ChurchCRM/CRM/commit/e3bd7bfbf33f01148df0ef1acdb0cf2c2b878b08
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/language.operators.comparison.php
+    technology:
+    - php

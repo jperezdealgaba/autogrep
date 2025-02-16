@@ -1,0 +1,18 @@
+rules:
+- id: vuln-embeddable-build-status-plugin-63f82f28
+  pattern: "if (style == null) {\n  ...\n}\n"
+  pattern-not: "if (style == null || !Arrays.asList(\"flat-square\", \"plastic\").contains(style))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Missing validation of 'style' parameter allows potential XSS attacks.\
+    \ \nThe patch explicitly lists allowed values to prevent injection of malicious\
+    \ styles. \nEnsure all user inputs are validated against a whitelist of allowed\
+    \ values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/embeddable-build-status-plugin/commit/63f82f28d989d30a23089a0a66c11f222651a8c6
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    technology: java

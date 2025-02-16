@@ -1,0 +1,31 @@
+rules:
+- id: vuln-subrion-bc6ed863
+  pattern: 'return $this->_processAnimatedGif($sourceFile, $destinationFile, $width,
+    $height, $applyWatermark);
+
+    '
+  pattern-not: '$this->_processAnimatedGif($sourceFile, $destinationFile, $width,
+    $height, $applyWatermark);
+
+    '
+  languages:
+  - php
+  message: 'The return statement before `_processAnimatedGif` may lead to unexpected
+    behavior or incomplete execution of the method. This could result in improper
+    handling of animated GIFs, potentially causing security vulnerabilities such as
+    incomplete processing or resource leaks. Remove the return statement to ensure
+    the method executes fully.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/intelliants/subrion/commit/bc6ed863d1d63e79980c5ba8ff7405a6a45401b5
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)
+    technology:
+    - php

@@ -1,0 +1,16 @@
+rules:
+- id: vuln-undertow-05ab8777
+  pattern: "if ($IDLE_TIMEOUT != null && $IDLE_TIMEOUT > 0) {\n  ...\n}\n"
+  pattern-not: "if ($IDLE_TIMEOUT != null && $IDLE_TIMEOUT > 0 && $IDLE_TIMEOUT <\
+    \ $READ_TIMEOUT) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Potential timeout vulnerability detected. Ensure idleTimeout is less than
+    readTimeout to prevent unintended behavior.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/05ab8777ed7cc3510acf4550102e5e38fc706fd1
+    category: security
+    cwe: CWE-400
+    owasp: 'A2: Broken Authentication'
+    technology: java

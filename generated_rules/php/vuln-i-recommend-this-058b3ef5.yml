@@ -1,0 +1,34 @@
+rules:
+- id: vuln-i-recommend-this-058b3ef5
+  pattern: "$request = \"SELECT * FROM $wpdb->posts, $wpdb->postmeta\";\n$request\
+    \ .= \" WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id\";\nif ($year != '') {\n\
+    \    $request .= \" AND YEAR(post_date) = '$year'\";\n}\nif ($monthnum != '')\
+    \ {\n    $request .= \" AND MONTH(post_date) = '$monthnum'\";\n}\n$request .=\
+    \ \" AND post_status='publish' AND post_type='$post_type' AND meta_key='_recommended'\"\
+    ;\n$request .= \" ORDER BY $wpdb->postmeta.meta_value+0 DESC LIMIT $number\";\n\
+    $posts = $wpdb->get_results($request);\n"
+  pattern-not: "$sql = \"SELECT * FROM $wpdb->posts, $wpdb->postmeta WHERE $wpdb->posts.ID\
+    \ = $wpdb->postmeta.post_id\";\nif( '' !== $atts['year'] ) {\n    $sql .= ' AND\
+    \ YEAR(post_date) = %d';\n    $params[] = $atts['year'];\n}\nif( '' !== $atts['monthnum']\
+    \ ) {\n    $sql .= ' AND MONTH(post_date) = %d';\n    $params[] = $atts['monthnum'];\n\
+    }\n$sql .= \" AND post_status = 'publish' AND post_type = %s AND meta_key = '_recommended'\"\
+    ;\n$params[] = $atts['post_type'];\n$sql .= \" ORDER BY {$wpdb->postmeta}.meta_value+0\
+    \ DESC LIMIT %d\";\n$params[] = $atts['number'];\n$query = $wpdb->prepare( $sql,\
+    \ $params );\n$posts = $wpdb->get_results( $query );\n"
+  languages:
+  - php
+  message: "Detected SQL query concatenation with user input, which can lead to SQL\
+    \ injection. \nUse prepared statements with placeholders to safely include user\
+    \ input in SQL queries.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wp-plugins/i-recommend-this/commit/058b3ef5c7577bf557557904a53ecc8599b13649
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/mysqli.quickstart.prepared-statements.php
+    technology:
+    - php

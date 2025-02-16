@@ -1,0 +1,25 @@
+rules:
+- id: vuln-aiohttp-cebe526b
+  pattern: 'form = aiohttp.FormData()
+
+    form.add_field($FIELD, $VALUE, content_transfer_encoding=$ENCODING)
+
+    '
+  pattern-not: 'form = aiohttp.FormData()
+
+    form.add_field($FIELD, $VALUE, filename=$FILENAME)
+
+    '
+  languages:
+  - python
+  message: Using content_transfer_encoding with FormData is deprecated and insecure.
+    Use the filename parameter or pass a BytesIO object instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/cebe526b9c34dc3a3da9140409db63014bc4cf19
+    category: security
+    cwe: CWE-319
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc7578#section-4.7
+    technology: python

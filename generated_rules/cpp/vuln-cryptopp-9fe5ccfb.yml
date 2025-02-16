@@ -1,0 +1,29 @@
+rules:
+- id: vuln-cryptopp-9fe5ccfb
+  pattern: 'IsAlignedOn($PTR, GetAlignmentOf<$T*>())
+
+    '
+  pattern-not: 'IsAlignedOn($PTR, GetAlignmentOf<$T>())
+
+    '
+  languages:
+  - cpp
+  message: 'Detected incorrect pointer alignment check. The function `IsAlignedOn`
+    is being called with `GetAlignmentOf<T*>()`, which checks alignment for a pointer
+    to `T` instead of `T` itself. This can lead to incorrect alignment validation,
+    potentially causing undefined behavior or security vulnerabilities. Fix by using
+    `GetAlignmentOf<T>()` to check alignment for the type `T` directly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weidai11/cryptopp/commit/9fe5ccfbeed3c3c48b6e1d42e4abb64d11662527
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/weidai11/cryptopp/issues/992
+    technology:
+    - cpp

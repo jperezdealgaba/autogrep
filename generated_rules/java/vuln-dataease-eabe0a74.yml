@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dataease-eabe0a74
+  pattern: 'value = "none";
+
+    '
+  pattern-not: "value = \"\";\n...\nint size = line.size();\nif(size < header.size()){\n\
+    \    for (int i = 0; i < header.size() - size; i++) {\n        line.add(\"\");\n\
+    \    }\n}\n"
+  languages:
+  - java
+  message: 'Detected a potential issue where a default value of "none" is used instead
+    of an empty string. This can lead to incorrect data handling or unexpected behavior
+    when processing datasets. Replace "none" with an empty string and ensure proper
+    handling of dataset sizes by adding missing values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dataease/dataease/commit/eabe0a749105eba59ec0fecfefd67c5a17b44593
+    category: security
+    cwe: CWE-20
+    owasp: OWASP-API8
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-api-security/
+    technology:
+    - java

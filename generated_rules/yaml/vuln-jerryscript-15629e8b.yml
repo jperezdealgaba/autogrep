@@ -10,20 +10,20 @@ rules:
     '
   languages:
   - yaml
-  message: 'The YAML configuration is missing the `regression-test-issue-3785.js`
-    test in the `--skip-list` option. This omission could lead to potential vulnerabilities
-    being overlooked during testing. Ensure all relevant tests are included in the
-    `--skip-list` to maintain comprehensive security checks.
+  message: 'The skip-list in the test configuration is missing a critical regression
+    test (regression-test-issue-3785.js). This could lead to undetected issues in
+    the codebase. Ensure all relevant regression tests are included in the skip-list
+    to maintain comprehensive test coverage.
 
     '
   severity: WARNING
   metadata:
-    source-url: github.com/galpeter/jerryscript/commit/15629e8ba5bdbb4e92a81f327d532968343ae376
+    source-url: github.com/jerryscript-project/jerryscript/commit/15629e8ba5bdbb4e92a81f327d532968343ae376
     category: security
     cwe:
-    - CWE-489
+    - 'CWE-489: Active Debug Code'
     owasp:
-    - A06:2021-Vulnerable and Outdated Components
+    - A03:2021 - Injection
     references:
     - https://cwe.mitre.org/data/definitions/489.html
     technology:

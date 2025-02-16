@@ -1,0 +1,37 @@
+rules:
+- id: vuln-phpmyfaq-ec8b3cc3
+  pattern: '$delete_id = PMF_Filter::filterInput(INPUT_POST, ''id'', FILTER_VALIDATE_INT);
+
+    $news->deleteNews($delete_id);
+
+    printf(''<p class="alert alert-success">%s</p>'', $PMF_LANG[''ad_news_delsuc'']);
+
+    printf(''<div class="form-group">&rarr; <a href="?action=news">%s</a></p>'', $PMF_LANG[''msgNews'']);
+
+    '
+  pattern-not: "if ($csrfCheck) {\n    $deleteId = PMF_Filter::filterInput(INPUT_POST,\
+    \ 'id', FILTER_VALIDATE_INT);\n    $news->deleteNews($deleteId);\n    printf('<p\
+    \ class=\"alert alert-success\">%s</p>', $PMF_LANG['ad_news_delsuc']);\n    printf('<div\
+    \ class=\"form-group\">&rarr; <a href=\"?action=news\">%s</a></p>', $PMF_LANG['msgNews']);\n\
+    }\n"
+  languages:
+  - php
+  message: 'Missing CSRF token validation before performing sensitive actions like
+    deleting news. This can lead to Cross-Site Request Forgery (CSRF) attacks, allowing
+    attackers to perform unauthorized actions on behalf of authenticated users. Always
+    validate CSRF tokens before executing sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/thorsten/phpMyFAQ/commit/ec8b3cc37d05b6625e24916b8f7253f830015b5f
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+    technology:
+    - php

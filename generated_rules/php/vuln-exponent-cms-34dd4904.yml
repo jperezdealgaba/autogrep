@@ -1,0 +1,31 @@
+rules:
+- id: vuln-exponent-cms-34dd4904
+  pattern: '$cfg = new expConfig($key);
+
+    $this->config = $cfg->config;
+
+    $cfg = new expConfig($key);
+
+    '
+  pattern-not: '$cfg = new expConfig(expCore::makeLocation($key->mod, $key->src));
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe instantiation of expConfig with raw $key parameter. This
+    can lead to security vulnerabilities if $key is not properly sanitized. The fix
+    uses expCore::makeLocation to ensure proper handling of the key components. Always
+    use secure methods to construct configuration objects to prevent potential injection
+    or unauthorized access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/34dd490453e64ecd5615ba23496275c2ad3f5d0d
+    category: security
+    cwe:
+    - CWE-915
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

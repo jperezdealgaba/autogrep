@@ -1,0 +1,40 @@
+rules:
+- id: vuln-icehrm-f44b9ec8
+  pattern: 'define(''VERSION'', ''29.0.0.OS'');
+
+    define(''CACHE_VALUE'', ''29.0.0.OS.2020-04021509'');
+
+    define(''VERSION_NUMBER'', ''290000'');
+
+    define(''VERSION_DATE'', ''02/04/2021'');
+
+    '
+  pattern-not: 'define(''VERSION'', ''30.0.0.OS'');
+
+    define(''CACHE_VALUE'', ''30.0.0.OS.2021-06261009'');
+
+    define(''VERSION_NUMBER'', ''300000'');
+
+    define(''VERSION_DATE'', ''26/06/2021'');
+
+    '
+  languages:
+  - php
+  message: 'Outdated version constants detected. Using outdated versions can expose
+    the application to known vulnerabilities. Update the version constants to the
+    latest secure version to ensure the application is protected against known security
+    issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gamonoid/icehrm/commit/f44b9ec8dd60f42c9e94ac78c55d82244b74b4db
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

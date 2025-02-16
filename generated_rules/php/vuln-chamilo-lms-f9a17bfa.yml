@@ -1,0 +1,29 @@
+rules:
+- id: vuln-chamilo-lms-f9a17bfa
+  pattern: '$defaults = NotebookManager::get_note_information(Security::remove_XSS($_GET[''notebook_id'']));
+
+    '
+  pattern-not: "$defaults = NotebookManager::get_note_information((int) $_GET['notebook_id']);\n\
+    if ($currentUserId !== (int) $defaults['user_id']) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code retrieves notebook information without validating the user''s
+    ownership of the notebook. This can lead to unauthorized access to sensitive data.
+    The vulnerability occurs because the notebook ID is sanitized but not properly
+    checked against the current user''s ID. To fix this, ensure that the notebook
+    ID is cast to an integer and verify that the current user ID matches the notebook''s
+    user ID before proceeding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/f9a17bfaf05994383bca5f4b65eb6897acc60d41
+    category: security
+    cwe:
+    - CWE-639
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

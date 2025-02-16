@@ -1,0 +1,29 @@
+rules:
+- id: vuln-mautic-fd933cbe
+  pattern: '$user = $this->loadUserByUsername($user->getUsername(), $user->getEmail());
+
+    '
+  pattern-not: '$user = $this->findUser($user);
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses `loadUserByUsername` with both username and email
+    parameters, which can lead to authentication bypass vulnerabilities. The method
+    should handle username and email separately and throw appropriate exceptions when
+    credentials are invalid. Use the `findUser` method instead, which properly handles
+    username and email lookup with exception handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mautic/mautic/commit/fd933cbef795b04cabdc50527cb18e037488fef9
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A02_2021-Cryptographic_Failures/
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cilium-d367fb38
+  pattern: "if $ID.ID == $NEWID.ID {\n  ...\n}\n"
+  pattern-not: "if $ID.ID == $NEWID.ID && $PREFIXINFO.Source() == $ID.Source {\n \
+    \ ...\n}\n"
+  languages:
+  - go
+  message: 'Detected a vulnerability where the ipcache upsert operation only checks
+    the ID without verifying the source. This can lead to incorrect ipcache entries
+    when the same identity is sourced from different locations. Always verify both
+    the ID and the source to ensure correct ipcache updates. See GH-24502 for more
+    details.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/cilium/cilium/commit/d367fb38acef88ab7e8d308ec167721dad2e1c82
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://github.com/cilium/cilium/issues/24502
+    technology:
+    - go

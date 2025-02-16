@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jeecg-boot-51e2227b
+  pattern: 'String $IDS = String.format("''%s''", String.join("'',''", $USERIDS));
+
+    $MAPPER.$METHOD($IDS, ...);
+
+    '
+  pattern-not: '$MAPPER.$METHOD($USERIDS, ...);
+
+    '
+  languages:
+  - java
+  message: "Potential SQL injection vulnerability due to improper handling of user\
+    \ IDs. \nThe use of String.format to concatenate user IDs into a SQL query can\
+    \ lead to SQL injection. \nInstead, pass the list of user IDs directly to the\
+    \ mapper method.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jeecgboot/jeecg-boot/commit/51e2227bfe54f5d67b09411ee9a336750164e73d
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

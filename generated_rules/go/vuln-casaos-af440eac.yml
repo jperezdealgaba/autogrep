@@ -1,0 +1,32 @@
+rules:
+- id: vuln-casaos-af440eac
+  pattern: '$VAR := command2.ExecResultStr("source " + $CONFIG + "/helper.sh ;MountCIFS
+    " + $USERNAME + " " + $HOST + " " + $DIRECTORY + " " + $PORT + " " + $MOUNTPOINT
+    + " " + $PASSWORD)
+
+    '
+  pattern-not: "unix.Mount(\n  fmt.Sprintf(\"//%s/%s\", $HOST, $DIRECTORY),\n  $MOUNTPOINT,\n\
+    \  \"cifs\",\n  unix.MS_NOATIME|unix.MS_NODEV|unix.MS_NOSUID,\n  fmt.Sprintf(\"\
+    username=%s,password=%s\", $USERNAME, $PASSWORD),\n)\n"
+  languages:
+  - go
+  message: 'The code uses command2.ExecResultStr to execute shell commands, which
+    can lead to command injection vulnerabilities if the input parameters are not
+    properly sanitized. This is dangerous because an attacker could inject arbitrary
+    commands by manipulating the input parameters. Use the unix.Mount function instead,
+    which is safer and avoids shell command execution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/IceWhaleTech/CasaOS/commit/af440eac5563644854ff33f72041e52d3fd1f47c
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    - https://owasp.org/Top10/A03_2021-Injection/
+    technology:
+    - go

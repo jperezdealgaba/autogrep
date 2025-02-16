@@ -1,0 +1,23 @@
+rules:
+- id: vuln-nltk-2a50a3ed
+  pattern: '(r"^-?[0-9]+(.[0-9]+)?$", "CD")
+
+    '
+  pattern-not: '(r"^-?[0-9]+(\.[0-9]+)?$", "CD")
+
+    '
+  languages:
+  - python
+  message: 'Detected a vulnerable regular expression pattern for matching cardinal
+    numbers. The pattern is missing an escaped dot (.), which can lead to incorrect
+    matches. This could cause security issues or incorrect behavior in parsing numeric
+    values. Fix by escaping the dot in the regex pattern.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nltk/nltk/commit/2a50a3edc9d35f57ae42a921c621edc160877f4d
+    category: security
+    cwe: CWE-185
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

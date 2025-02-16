@@ -1,0 +1,26 @@
+rules:
+- id: vuln-bluez-35d8d895
+  pattern: "if (!device_is_bonded($DEVICE, btd_device_get_bdaddr_type($DEVICE)))\n\
+    \  return -ECONNREFUSED;\n"
+  pattern-not: "if (!device_is_bonded($DEVICE, btd_device_get_bdaddr_type($DEVICE)))\
+    \ {\n  struct bt_gatt_client *$CLIENT;\n  $CLIENT = btd_device_get_gatt_client($DEVICE);\n\
+    \  if (!bt_gatt_client_set_security($CLIENT, BT_ATT_SECURITY_MEDIUM)) {\n    return\
+    \ -ECONNREFUSED;\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code directly returns -ECONNREFUSED without setting the required GATT
+    security level, which could allow unauthorized access to Bluetooth devices. This
+    vulnerability can be exploited to bypass security checks. The fix involves setting
+    the GATT security level to medium before rejecting the connection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/35d8d895cd0b724e58129374beb0bb4a2edf9519
+    category: security
+    cwe:
+    - 'CWE-284: Improper Access Control'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

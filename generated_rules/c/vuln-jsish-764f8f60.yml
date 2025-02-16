@@ -1,0 +1,32 @@
+rules:
+- id: vuln-jsish-764f8f60
+  pattern: "Assert($T >= 0);\nJsi_Value *$V = _jsi_THISIDX($T);\njsiClearThis($INTERP,\
+    \ $T);\nJsi_ValueCopy($INTERP, $V, _jsi_TOQ);\nif ($V->vt == JSI_VT_VARIABLE)\
+    \ {\n    Jsi_ValueCopy($INTERP, $V, $V->d.lval);\n}\n$RC = Jsi_ValueToObject($INTERP,\
+    \ $V);\n"
+  pattern-not: "if ($T >= 0) {\n    Jsi_Value *$V = _jsi_THISIDX($T);\n    jsiClearThis($INTERP,\
+    \ $T);\n    Jsi_ValueCopy($INTERP, $V, _jsi_TOQ);\n    if ($V->vt == JSI_VT_VARIABLE)\
+    \ {\n        Jsi_ValueCopy($INTERP, $V, $V->d.lval);\n    }\n    $RC = Jsi_ValueToObject($INTERP,\
+    \ $V);\n}\n"
+  languages:
+  - c
+  message: 'The code previously used an assert statement to ensure that the value
+    of `t` is non-negative, which could lead to undefined behavior if the assertion
+    fails in a non-debug build. The patch adds a conditional check to ensure that
+    `t` is non-negative before proceeding with the operations, making the code safer
+    and more robust. This vulnerability could lead to crashes or undefined behavior
+    in production builds where assertions are typically disabled. To fix this, always
+    use explicit checks instead of assertions for critical conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/pcmacdon/jsish/commit/764f8f60d00808cc12321ba7a276de2c5118f835
+    category: security
+    cwe:
+    - CWE-617
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c

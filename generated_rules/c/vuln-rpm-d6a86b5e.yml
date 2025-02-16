@@ -1,0 +1,28 @@
+rules:
+- id: vuln-rpm-d6a86b5e
+  pattern: "void headerMergeLegacySigs(Header $H, Header $SIGH) {\n  ...\n  switch\
+    \ ($TD.tag) {\n    case $RPMSIGTAG:\n      $TD.tag = $RPMTAG;\n      break;\n\
+    \    ...\n  }\n  ...\n}\n"
+  pattern-not: "rpmTagVal headerMergeLegacySigs(Header $H, Header $SIGH, char **$MSG)\
+    \ {\n  ...\n  for ($XL = $xlateTags; $XL->stag; $XL++) {\n    ...\n    if (headerGet($SIGH,\
+    \ $XL->stag, &$TD, $HEADERGET_RAW|$HEADERGET_MINMEM)) {\n      ...\n      if ($XL->stag\
+    \ != $XL->xtag)\n        $TD.tag = $XL->xtag;\n      ...\n    }\n    ...\n  }\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected vulnerable version of headerMergeLegacySigs function. The original
+    implementation uses a switch statement for tag translation which is error-prone
+    and lacks proper validation. This can lead to incorrect tag handling and potential
+    security issues. The function has been fixed to use a translation table (xlateTags)
+    with proper validation checks. Update to the new version that includes proper
+    tag validation and error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/d6a86b5e69e46cc283b1e06c92343319beb42e21
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    technology:
+    - c

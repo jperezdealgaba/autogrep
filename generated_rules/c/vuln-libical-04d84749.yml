@@ -1,0 +1,26 @@
+rules:
+- id: vuln-libical-04d84749
+  pattern: "if ($PREV_CHAR != '\\\\') {\n  ...\n}\n"
+  pattern-not: "if ($PREV_CHAR && $PREV_CHAR != '\\\\') {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks if a character is not a backslash without first ensuring
+    the character exists. This can lead to undefined behavior if the character is
+    null. Always check if the character exists before performing any operations on
+    it.
+
+    To fix this, ensure the character is not null before comparing it to a backslash.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libical/libical/commit/04d84749e53db08c71ed0ce8b6ba5c11082743cd
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-bluez-0388794d
+  pattern: "if (sizeof(*$CAP) + $CAP->length >= $SIZE) {\n  ...\n}\n"
+  pattern-not: "if (sizeof(*$CAP) + $CAP->length > $SIZE) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This vulnerability occurs due to an incorrect boundary check in a memory
+    comparison operation.
+
+    The original code uses `>=` which can lead to a buffer overflow if the condition
+    is met exactly.
+
+    This is dangerous as it can allow an attacker to read or write beyond the allocated
+    memory, potentially leading to arbitrary code execution.
+
+    To fix this, replace `>=` with `>` to ensure proper boundary checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/0388794dc5fdb73a4ea88bcf148de0a12b4364d4
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-126
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/126.html
+    technology:
+    - c

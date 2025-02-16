@@ -1,0 +1,35 @@
+rules:
+- id: vuln-mediawiki-5d1e4d7f
+  pattern: '$conds[''redirect''][] = "rd_from $rel $offset";
+
+    $conds[''templatelinks''][] = "tl_from $rel $offset";
+
+    $conds[''pagelinks''][] = "pl_from $rel $offset";
+
+    $conds[''imagelinks''][] = "il_from $rel $offset";
+
+    '
+  pattern-not: "$conds['redirect'][] = \"rd_from $rel $offsetPageID\";\n$conds['templatelinks'][]\
+    \ = \"(tl_from_namespace = $offsetNamespace AND tl_from $rel $offsetPageID \"\
+    \ .\n    \"OR tl_from_namespace $rel $offsetNamespace)\";\n$conds['pagelinks'][]\
+    \ = \"(pl_from_namespace = $offsetNamespace AND pl_from $rel $offsetPageID \"\
+    \ .\n    \"OR pl_from_namespace $rel $offsetNamespace)\";\n$conds['imagelinks'][]\
+    \ = \"(il_from_namespace = $offsetNamespace AND il_from $rel $offsetPageID \"\
+    \ .\n    \"OR il_from_namespace $rel $offsetNamespace)\";\n"
+  languages:
+  - php
+  message: "The code is vulnerable due to improper handling of offset in SQL conditions,\
+    \ which can lead to incorrect query results or potential security issues. The\
+    \ offset should include namespace information to ensure accurate and secure querying.\
+    \ \nTo fix this, update the conditions to include both namespace and page ID as\
+    \ shown in the fixed version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/5d1e4d7fd4a50e48385abcfe042ee9f9a9ffc3cc
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php

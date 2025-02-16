@@ -1,0 +1,18 @@
+rules:
+- id: vuln-express-restify-mongoose-23ccb247
+  pattern: "module.exports = function ($MODEL, $OPTIONS) {\n  ...\n}\n"
+  pattern-not: "module.exports = function ($MODEL, $OPTIONS, $EXCLUDEDMAP) {\n  ...\n\
+    }\n"
+  languages:
+  - javascript
+  message: "The function is missing the `excludedMap` parameter, which is crucial\
+    \ for proper access control. \nThis can lead to security vulnerabilities where\
+    \ unauthorized access to distinct queries is not properly filtered.\nAdd the `excludedMap`\
+    \ parameter to ensure proper access control.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/florianholzapfel/express-restify-mongoose/commit/23ccb247d0074bfaca6737cdff52d89c6d6e4a7c
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+    technology: javascript

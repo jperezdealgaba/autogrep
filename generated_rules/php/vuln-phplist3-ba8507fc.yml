@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phplist3-ba8507fc
+  pattern: '$category = trim($category);
+
+    '
+  pattern-not: '$category = trim(htmlspecialchars($category));
+
+    '
+  languages:
+  - php
+  message: "The code directly trims user input without proper sanitization, which\
+    \ can lead to XSS vulnerabilities. \nIt is dangerous because malicious input can\
+    \ be executed in the browser, potentially compromising user data. \nTo fix this,\
+    \ use htmlspecialchars to sanitize the input before processing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpList/phplist3/commit/ba8507fcedbf9927036eb09a49b692b9c8fb1598
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

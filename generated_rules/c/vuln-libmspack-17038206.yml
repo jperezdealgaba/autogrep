@@ -1,0 +1,31 @@
+rules:
+- id: vuln-libmspack-17038206
+  pattern: 'unsigned int $LEN;
+
+    $LEN = $READ($FH, &$BUF[0], $SIZE);
+
+    '
+  pattern-not: "int $LEN;\nif (($LEN = $READ($FH, &$BUF[0], $SIZE)) <= 0) {\n  $ERROR\
+    \ = $ERR_CODE;\n  return $NULL;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when the return value of a read operation is
+    not checked for errors or negative values, which can lead to undefined behavior
+    or security issues. In the original code, the return value of `sys->read` was
+    stored in an `unsigned int` variable, making it impossible to detect errors or
+    EOF conditions. This can result in incorrect processing of the buffer or potential
+    out-of-bounds access. The fix involves checking if the return value is less than
+    or equal to 0 and handling the error appropriately. Always validate the return
+    value of read operations to ensure proper error handling and avoid undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kyz/libmspack/commit/17038206fcc384dcee6dd9e3a75f08fd3ddc6a38
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

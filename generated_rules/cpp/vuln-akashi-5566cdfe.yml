@@ -1,0 +1,30 @@
+rules:
+- id: vuln-akashi-5566cdfe
+  pattern: "if ($IS_INT && $IDX <= $AREA->evidence().size() && $IDX >= 0) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($IS_INT && $IDX < $AREA->evidence().size() && $IDX >= 0) {\n \
+    \ ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potential out-of-bounds access vulnerability. The condition
+    `idx <= area->evidence().size()` should be `idx < area->evidence().size()` to
+    prevent accessing elements beyond the valid range. This could lead to undefined
+    behavior or security vulnerabilities.
+
+    To fix, replace `<=` with `<` in the condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/AttorneyOnline/akashi/commit/5566cdfedddef1f219aee33477d9c9690bf2f78b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-126
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/126.html
+    technology:
+    - cpp

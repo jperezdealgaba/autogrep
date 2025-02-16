@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nodebb-37b48b82
+  pattern: 'const $PARTS = $EVENTNAME.toString().split(''.'');
+
+    '
+  pattern-not: "if (typeof $EVENTNAME !== 'string') {\n  const $ESCAPEDNAME = validator.escape(String($EVENTNAME));\n\
+    \  return $CALLBACK({ message: `[[error:invalid-event, ${$ESCAPEDNAME}]]` });\n\
+    }\nconst $PARTS = $EVENTNAME.split('.');\n"
+  languages:
+  - javascript
+  message: 'Directly converting eventName to string and splitting it without type
+    validation can lead to unexpected behavior or security issues. Always validate
+    the type of eventName and escape it if necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/37b48b82a4bc7680c6e4c42647209010cb239c2c
+    category: security
+    cwe: CWE-20
+    owasp: OWASP-API7
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Improper_Input_Validation
+    technology:
+    - javascript

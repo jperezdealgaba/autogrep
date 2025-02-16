@@ -1,0 +1,30 @@
+rules:
+- id: vuln-web2py-4bd002ae
+  pattern: "def $FUNC(...):\n    ...\n    return True\n    ...\n    return False\n\
+    \    ...\n    return gluon.contrib.pam.authenticate($USER, $PASSWORD)\n    ...\n\
+    \    return _config['password'] == CRYPT()($PASSWORD)[0]\n"
+  pattern-not: "def $FUNC(...):\n    ...\n    ret = True\n    ...\n    ret = False\n\
+    \    ...\n    ret = gluon.contrib.pam.authenticate($USER, $PASSWORD)\n    ...\n\
+    \    ret = _config['password'] == CRYPT()($PASSWORD)[0]\n    ...\n    if ret:\n\
+    \        session.hmac_key = web2py_uuid()\n    return ret\n"
+  languages:
+  - python
+  message: 'Detected missing HMAC key generation after authentication. This can lead
+    to security vulnerabilities as the session is not properly secured after successful
+    authentication. Ensure that a HMAC key is generated and stored in the session
+    after successful authentication to maintain session integrity.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/web2py/web2py/commit/4bd002aee978813bc664cf186ef38ff4e8bbe1cd
+    category: security
+    cwe:
+    - CWE-384
+    - CWE-287
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - python

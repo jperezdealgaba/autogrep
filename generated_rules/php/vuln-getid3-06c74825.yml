@@ -1,0 +1,25 @@
+rules:
+- id: vuln-getid3-06c74825
+  pattern: 'const VERSION = ''1.9.22-202308100852'';
+
+    '
+  pattern-not: 'const VERSION = ''1.9.23-202310190849'';
+
+    '
+  languages:
+  - php
+  message: "The version constant in the code is outdated and may contain security\
+    \ vulnerabilities. \nUsing an outdated version can expose the application to known\
+    \ exploits and bugs. \nUpdate the version constant to the latest secure version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/JamesHeinrich/getID3/commit/06c7482532ff2b3f9111b011d880ca6699c8542b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - php

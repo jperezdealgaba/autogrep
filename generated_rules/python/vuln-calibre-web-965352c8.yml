@@ -1,0 +1,25 @@
+rules:
+- id: vuln-calibre-web-965352c8
+  pattern: 'img = requests.get($URL, timeout=($TIMEOUT))
+
+    '
+  pattern-not: 'img = requests.get($URL, timeout=($TIMEOUT), allow_redirects=False)
+
+    '
+  languages:
+  - python
+  message: 'Detected a request without `allow_redirects=False`. This can lead to security
+    vulnerabilities such as SSRF (Server Side Request Forgery) by allowing redirects
+    to malicious endpoints. Always disable redirects unless explicitly required.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/janeczku/calibre-web/commit/965352c8d96c9eae7a6867ff76b0db137d04b0b8
+    category: security
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    technology:
+    - python

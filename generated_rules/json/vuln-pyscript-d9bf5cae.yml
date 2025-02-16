@@ -1,0 +1,28 @@
+rules:
+- id: vuln-pyscript-d9bf5cae
+  pattern: "{\n  \"scripts\": {\n    \"build\": \"npm run build:toml && npm run build:stdlib\
+    \ && npm run build:plugins && npm run build:core && eslint src/ && npm run ts\"\
+    ,\n    ...\n  },\n  ...\n}\n"
+  pattern-not: "{\n  \"scripts\": {\n    \"build\": \"npm run build:toml && npm run\
+    \ build:stdlib && npm run build:plugins && npm run build:core && eslint src/ &&\
+    \ npm run ts && npm run test:mpy\",\n    \"test:mpy\": \"static-handler --coi\
+    \ . 2>/dev/null & SH_PID=$!; EXIT_CODE=0; playwright test --fully-parallel test/\
+    \ || EXIT_CODE=$?; kill $SH_PID 2>/dev/null; exit $EXIT_CODE\",\n    ...\n  },\n\
+    \  ...\n}\n"
+  languages:
+  - json
+  message: The build script is missing the 'test:mpy' command, which is essential
+    for running Playwright tests. This could lead to untested code being deployed.
+    Add the 'test:mpy' script to ensure all tests are run during the build process.
+  severity: ERROR
+  metadata:
+    source-url: github.com/pyscript/pyscript/commit/d9bf5cae12de6806ce9e04f2455440e7a1b8e157
+    category: security
+    cwe:
+    - CWE-1124
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://playwright.dev/docs/intro
+    technology:
+    - json

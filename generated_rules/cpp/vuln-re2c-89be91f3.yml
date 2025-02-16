@@ -1,0 +1,54 @@
+rules:
+- id: vuln-re2c-89be91f3
+  pattern: "static size_t estimate(const RE *re) {\n    switch (re->type) {\n    \
+    \    case RE::NIL: return 0;\n        case RE::SYM: return 1;\n        case RE::TAG:\
+    \ return 1;\n        case RE::ALT:\n            return estimate(re->alt.re1)\n\
+    \                + estimate(re->alt.re2)\n                + 1;\n        case RE::CAT:\n\
+    \            return estimate(re->cat.re1)\n                + estimate(re->cat.re2);\n\
+    \        case RE::ITER: {\n            const size_t\n                iter = estimate(re->iter.re),\n\
+    \                min = re->iter.min,\n                max = re->iter.max;\n  \
+    \          return max == AST::MANY\n                ? iter * min + 1\n       \
+    \         : iter * max + (max - min);\n        }\n    }\n    return 0;\n}\n"
+  pattern-not: "static uint32_t estimate_re_size(const RE *re0, std::vector<StackItem>\
+    \ &stack) {\n    uint32_t size = 0;\n    const StackItem i0 = {re0, 0, 0};\n \
+    \   stack.push_back(i0);\n    while (!stack.empty()) {\n        const StackItem\
+    \ i = stack.back();\n        stack.pop_back();\n        const RE *re = i.re;\n\
+    \        if (re->type == RE::NIL) {\n            size = 0;\n        }\n      \
+    \  else if (re->type == RE::SYM || re->type == RE::TAG) {\n            size =\
+    \ 1;\n        }\n        else if (re->type == RE::ALT) {\n            if (i.succ\
+    \ == 0) {\n                StackItem k = {re, 0, 1};\n                stack.push_back(k);\n\
+    \                StackItem j = {re->alt.re1, 0, 0};\n                stack.push_back(j);\n\
+    \            }\n            else if (i.succ == 1) {\n                StackItem\
+    \ k = {re, size, 2};\n                stack.push_back(k);\n                StackItem\
+    \ j = {re->alt.re2, 0, 0};\n                stack.push_back(j);\n            }\n\
+    \            else {\n                size = i.size + size + 1;\n            }\n\
+    \        }\n        else if (re->type == RE::CAT) {\n            if (i.succ ==\
+    \ 0) {\n                StackItem k = {re, 0, 1};\n                stack.push_back(k);\n\
+    \                StackItem j = {re->cat.re1, 0, 0};\n                stack.push_back(j);\n\
+    \            }\n            else if (i.succ == 1) {\n                StackItem\
+    \ k = {re, size, 2};\n                stack.push_back(k);\n                StackItem\
+    \ j = {re->cat.re2, 0, 0};\n                stack.push_back(j);\n            }\n\
+    \            else {\n                size = i.size + size;\n            }\n  \
+    \      }\n        else if (re->type == RE::ITER) {\n            if (i.succ ==\
+    \ 0) {\n                StackItem k = {re, 0, 1};\n                stack.push_back(k);\n\
+    \                StackItem j = {re->iter.re, 0, 0};\n                stack.push_back(j);\n\
+    \            }\n            else {\n                const uint32_t min = re->iter.min,\
+    \ max = re->iter.max;\n                size = max == AST::MANY\n             \
+    \       ? size * min + 1\n                    : size * max + (max - min);\n  \
+    \          }\n        }\n    }\n    return size;\n}\n"
+  languages:
+  - cpp
+  message: "The original recursive function `estimate` can lead to stack overflow\
+    \ due to deep recursion. \nThe patch replaces it with an iterative approach using\
+    \ a stack to prevent this vulnerability. \nUse the iterative approach to avoid\
+    \ potential stack overflow issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/skvadrik/re2c/commit/89be91f3df00657261870adbc590209fdb2bc405
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

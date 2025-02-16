@@ -1,0 +1,45 @@
+rules:
+- id: vuln-xrdp-6cb54a1c
+  pattern: 'char *$NAME;
+
+    ...
+
+    $NAME = g_new(char, $NAME_BYTES + 1);
+
+    ...
+
+    g_free($NAME);
+
+    '
+  pattern-not: 'char $NAME[1024 + 1];
+
+    ...
+
+    if (($NAME_BYTES < 1) || ($NAME_BYTES > (int)(sizeof($NAME) - 1)))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe dynamic memory allocation for a buffer without proper
+    bounds checking.
+
+    This can lead to potential buffer overflows if the input size is not properly
+    validated.
+
+    Instead, use a fixed-size buffer with proper bounds checking to ensure memory
+    safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/6cb54a1c26b53617e1c79a0abc96d03c4add1eb8
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

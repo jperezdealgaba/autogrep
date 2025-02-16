@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dokuwiki-63e9a247
+  pattern: 'echo ''<table class="diff diff_''.$this->preference[''difftype''] .''">'';
+
+    '
+  pattern-not: 'echo ''<table class="diff diff_''.hsc($this->preference[''difftype''])
+    .''">'';
+
+    '
+  languages:
+  - php
+  message: "Detected unescaped user input in HTML output, which can lead to Cross-Site\
+    \ Scripting (XSS) vulnerabilities. \nThe vulnerability occurs because user-controlled\
+    \ input is directly embedded into HTML without proper escaping.\nTo fix this,\
+    \ use the `hsc()` function to escape the output before embedding it in HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dokuwiki/dokuwiki/commit/63e9a247c072008a031f9db39fa496f6aca489b6
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

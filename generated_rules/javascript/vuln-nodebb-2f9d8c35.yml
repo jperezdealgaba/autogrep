@@ -1,0 +1,23 @@
+rules:
+- id: vuln-nodebb-2f9d8c35
+  pattern: 'uri: `${nconf.get(''url'')}/register/abort`
+
+    '
+  pattern-not: 'uri: `${nconf.get(''url'')}/register/abort?_csrf=${$CSRF}`
+
+    '
+  languages:
+  - javascript
+  message: Missing CSRF token in the URI for the /register/abort endpoint. This can
+    lead to CSRF attacks where an attacker can force a user to perform unintended
+    actions. Always include a CSRF token in sensitive requests to prevent such attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/2f9d8c350e54543f608d3d4c8e1a49bbb6cdea38
+    category: security
+    cwe: CWE-352
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - javascript

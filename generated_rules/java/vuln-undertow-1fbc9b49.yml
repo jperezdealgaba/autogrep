@@ -1,0 +1,20 @@
+rules:
+- id: vuln-undertow-1fbc9b49
+  pattern: "public $RETURN $METHOD(...) {\n  ...\n  synchronized (this) {\n    ...\n\
+    \  }\n  ...\n}\n"
+  pattern-not: "public synchronized $RETURN $METHOD(...) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Potential race condition due to incorrect synchronization. Methods that
+    require thread safety should be declared as synchronized at the method level rather
+    than using synchronized blocks inside the method.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/1fbc9b49f5bda1d8cf6df734d3e890ff640d40f3
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java

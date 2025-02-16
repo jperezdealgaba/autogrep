@@ -1,0 +1,29 @@
+rules:
+- id: vuln-zammad-cf5a5e39
+  pattern: 'return false if $RECORD.internal == true && !$USER.permissions?(''ticket.agent'')
+
+    '
+  pattern-not: 'return false if $RECORD.internal == true && !TicketPolicy.new($USER,
+    $TICKET).agent_read_access?
+
+    '
+  languages:
+  - ruby
+  message: 'Detected insecure permission check using direct permission validation
+    instead of the proper agent_read_access? method. This can lead to incorrect access
+    control decisions. Use TicketPolicy#agent_read_access? to properly validate agent
+    permissions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zammad/zammad/commit/cf5a5e396058d4b134dd33d0a62b11c1733c98ab
+    category: security
+    cwe:
+    - CWE-862
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control/
+    technology:
+    - ruby

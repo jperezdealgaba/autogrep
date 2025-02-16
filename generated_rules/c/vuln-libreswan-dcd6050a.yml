@@ -1,0 +1,35 @@
+rules:
+- id: vuln-libreswan-dcd6050a
+  pattern: "int $TYPE_PROPOSED = (($TRANSFORM_TYPES_FOUND & LELEM($TYPE)) != 0);\n\
+    int $TYPE_MATCHED = $MATCHING_LOCAL_PROPOSAL->matching_transform[$TYPE]->valid;\n\
+    if ($TYPE_PROPOSED != $TYPE_MATCHED) {\n  ...\n}\n"
+  pattern-not: "bool $LOCAL_TRANSFORM_TYPE_PRESENT = $LOCAL_TRANSFORMS->transform[0].valid;\n\
+    bool $REMOTE_TRANSFORM_TYPE_PRESENT = (($TRANSFORM_TYPES_FOUND & LELEM($TYPE))\
+    \ != 0);\nif ($LOCAL_TRANSFORM_TYPE_PRESENT != $REMOTE_TRANSFORM_TYPE_PRESENT)\
+    \ {\n  ...\n}\nbool $REMOTE_TRANSFORM_TYPE_MATCHED = $MATCHING_LOCAL_PROPOSAL->matching_transform[$TYPE]->valid;\n\
+    if ($LOCAL_TRANSFORM_TYPE_PRESENT != $REMOTE_TRANSFORM_TYPE_MATCHED) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code performs an inconsistent check between proposed and matched transform
+    types, which could lead to security vulnerabilities in the IKEv2 protocol implementation.
+    The original check only compared the proposed and matched states without ensuring
+    that both ends of the communication agree on the presence of the transform. This
+    could allow an attacker to exploit discrepancies in the protocol negotiation.
+    The fix ensures that both local and remote ends agree on the presence and validity
+    of the transform types, providing a more secure protocol implementation. Always
+    ensure that both ends of the communication agree on the presence and validity
+    of transform types in protocol negotiations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libreswan/libreswan/commit/dcd6050ad8b566ec2d1e424403cf8d2d36925099
+    category: security
+    cwe:
+    - CWE-358
+    owasp: A03:2021 - Injection
+    references:
+    - https://tools.ietf.org/html/rfc7296
+    technology:
+    - c

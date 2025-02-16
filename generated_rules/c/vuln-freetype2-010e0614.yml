@@ -1,0 +1,26 @@
+rules:
+- id: vuln-freetype2-010e0614
+  pattern: '$STACK = cf2_stack_init($MEMORY, $ERROR);
+
+    '
+  pattern-not: '$STACK = cf2_stack_init($MEMORY, $ERROR, $STACK_SIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected initialization of a stack without specifying the stack size.
+    This can lead to buffer overflows or underflows due to the lack of size constraints.
+    Always specify the stack size when initializing a stack to ensure proper bounds
+    checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aseprite/freetype2/commit/010e0614f2effe058855aacfc3e61c71e1cb5739
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c

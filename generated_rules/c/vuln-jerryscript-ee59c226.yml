@@ -1,0 +1,28 @@
+rules:
+- id: vuln-jerryscript-ee59c226
+  pattern: "$PROP->value = ECMA_VALUE_UNDEFINED;\nif ($ARGS_COUNT != 0) {\n  $PROP->value\
+    \ = ecma_copy_value_if_not_object($ARGS[0]);\n}\n"
+  pattern-not: '$ARG = $ARGS_COUNT > 0 ? $ARGS[0] : ECMA_VALUE_UNDEFINED;
+
+    $PROP->value = ecma_copy_value_if_not_object($ARG);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where the argument count is not properly
+    checked before accessing the argument array. This can lead to undefined behavior
+    or crashes if the argument array is accessed with an invalid index. The fix involves
+    safely handling the argument by checking the count and using a default value when
+    no arguments are provided.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jerryscript-project/jerryscript/commit/ee59c226d974ceb6cbdf8a3e0c19fafc7ce6f279
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    technology:
+    - c

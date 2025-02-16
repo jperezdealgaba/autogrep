@@ -1,0 +1,28 @@
+rules:
+- id: vuln-libxml2-c1ba6f54
+  pattern: 'xmlBufCCat($BUF, "\"");
+
+    ...
+
+    xmlBufCCat($BUF, "\"");
+
+    '
+  pattern-not: 'xmlBufWriteQuotedString($BUF, $ESC);
+
+    '
+  languages:
+  - c
+  message: "The code directly appends unescaped quotes to the buffer, which can lead\
+    \ to injection vulnerabilities. \nThis is dangerous because it can allow attackers\
+    \ to inject malicious content into the output. \nThe fix is to use `xmlBufWriteQuotedString`\
+    \ to properly escape the content.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/libxml2/commit/c1ba6f54d32b707ca6d91cb3257ce9de82876b6f
+    category: security
+    cwe:
+    - 'CWE-116: Improper Encoding or Escaping of Output'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gitea-4b87aa36
+  pattern: "if err := $ISSUE.MailParticipants(); err != nil {\n  ...\n}\n"
+  pattern-not: "if err := $ISSUE.MailParticipants($ACTION); err != nil {\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'The function `MailParticipants` is called without specifying the action
+    type, which can lead to incorrect notification content. This vulnerability occurs
+    because the content of the notification is not properly set based on the action
+    being performed (e.g., closing or reopening an issue or pull request). Always
+    pass the appropriate action type to ensure the correct notification content is
+    generated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/4b87aa367c87e56de36ab12b3340b450c55cb9f6
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - go

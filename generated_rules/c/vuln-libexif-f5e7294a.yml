@@ -1,0 +1,33 @@
+rules:
+- id: vuln-libexif-f5e7294a
+  pattern: 'exif_convert_utf16_to_utf8($VAL, (unsigned short*)$DATA, MIN($MAXLEN,
+    $SIZE));
+
+    '
+  pattern-not: "{\n  if ($SIZE+sizeof(unsigned short) < $SIZE) break;\n  unsigned\
+    \ short *$UTF16 = exif_mem_alloc($MEM, $SIZE+sizeof(unsigned short));\n  if (!$UTF16)\
+    \ break;\n  memcpy($UTF16, $DATA, $SIZE);\n  $UTF16[$SIZE/sizeof(unsigned short)]\
+    \ = 0;\n  exif_convert_utf16_to_utf8($VAL, $UTF16, $MAXLEN);\n  exif_mem_free($MEM,\
+    \ $UTF16);\n}\n"
+  languages:
+  - c
+  message: 'The code directly uses untrusted data without proper bounds checking,
+    which can lead to buffer overflow vulnerabilities. The patch adds a sanity check
+    to prevent integer overflow and ensures the data is properly null-terminated before
+    conversion. To fix this, always validate the size of the input data and create
+    a safe copy before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libexif/libexif/commit/f5e7294ab588f9eff0188588e45fa2dd33911dd2
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-190
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

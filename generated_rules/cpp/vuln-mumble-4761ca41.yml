@@ -1,0 +1,32 @@
+rules:
+- id: vuln-mumble-4761ca41
+  pattern: "LeakyBucket::LeakyBucket() : tokensPerSec(4), maxTokens(30), currentTokens(0)\
+    \ {\n  ...\n}\n"
+  pattern-not: "LeakyBucket::LeakyBucket() : tokensPerSec(1), maxTokens(5), currentTokens(0)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected an insecure rate limiting configuration in the LeakyBucket constructor.
+
+    The original configuration allowed a burst of 30 messages with a rate of 4 messages
+    per second,
+
+    which could lead to potential abuse or denial of service attacks.
+
+    The fix reduces the burst size to 5 and the rate to 1 message per second.
+
+    Update the constructor to use safer rate limiting values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mumble-voip/mumble/commit/4761ca41ab1f611cd4a6d117f9f6cfd7c64f6b55
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - cpp

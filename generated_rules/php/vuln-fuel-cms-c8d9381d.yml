@@ -1,0 +1,28 @@
+rules:
+- id: vuln-fuel-cms-c8d9381d
+  pattern: '$this->db->order_by(str_replace('' '', '''', $COL), str_replace('' '',
+    '''', $ORDER), $FALSE)
+
+    '
+  pattern-not: '$this->db->order_by($this->db->escape($COL), $this->db->escape($ORDER),
+    $FALSE)
+
+    '
+  languages:
+  - php
+  message: "Detected unsafe usage of `order_by` with `str_replace` which can lead\
+    \ to SQL injection. \nThe `str_replace` function does not properly sanitize input,\
+    \ allowing attackers to inject malicious SQL code. \nUse `$this->db->escape` to\
+    \ properly sanitize the input and prevent SQL injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/c8d9381d39b1c0f5488cf059ea9aa659ee227da4
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php

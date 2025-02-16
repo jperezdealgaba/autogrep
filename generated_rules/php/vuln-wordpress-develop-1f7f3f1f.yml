@@ -1,0 +1,36 @@
+rules:
+- id: vuln-wordpress-develop-1f7f3f1f
+  pattern: "if ( stripos( $text, 'target' ) !== false && stripos( $text, '<a ' ) !==\
+    \ false ) {\n  if ( ! is_serialized( $text ) ) {\n    $text = preg_replace_callback(\
+    \ '|<a\\s([^>]*target\\s*=[^>]*)>|i', 'wp_targeted_link_rel_callback', $text );\n\
+    \  }\n}\n"
+  pattern-not: "if ( stripos( $text, 'target' ) === false || stripos( $text, '<a '\
+    \ ) === false || is_serialized( $text ) ) {\n  return $text;\n}\n$script_and_style_regex\
+    \ = '/<(script|style).*?<\\/\\\\1>/si';\npreg_match_all( $script_and_style_regex,\
+    \ $text, $matches );\n$extra_parts = $matches[0];\n$html_parts  = preg_split(\
+    \ $script_and_style_regex, $text );\nforeach ( $html_parts as &$part ) {\n  $part\
+    \ = preg_replace_callback( '|<a\\s([^>]*target\\s*=[^>]*)>|i', 'wp_targeted_link_rel_callback',\
+    \ $part );\n}\n$text = '';\nfor ( $i = 0; $i < count( $html_parts ); $i++ ) {\n\
+    \  $text .= $html_parts[ $i ];\n  if ( isset( $extra_parts[ $i ] ) ) {\n    $text\
+    \ .= $extra_parts[ $i ];\n  }\n}\n"
+  languages:
+  - php
+  message: 'Detected a vulnerability where HTML content within `<script>` and `<style>`
+    tags is not properly handled when processing links with target attributes. This
+    can lead to security issues such as XSS if malicious content is injected within
+    these tags. The fix ensures that script and style content is skipped during link
+    processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/1f7f3f1f59567e2504f0fbebd51ccf004b3ccb1d
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-mautic-20c5dc39
+  pattern: '$builder->addEventSubscriber(new CleanFormSubscriber())
+
+    '
+  pattern-not: '$builder->addEventSubscriber(new CleanFormSubscriber(...))
+
+    '
+  languages:
+  - php
+  message: "Detected insecure usage of CleanFormSubscriber without any cleaning rules.\
+    \ \nThis can lead to insufficient input sanitization and potential security vulnerabilities\
+    \ like XSS. \nAlways provide specific cleaning rules to ensure proper sanitization\
+    \ of form data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mautic/mautic/commit/20c5dc39b62164f6922ce53ea42cbb4ccec64e57
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

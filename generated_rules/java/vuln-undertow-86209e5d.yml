@@ -1,0 +1,27 @@
+rules:
+- id: vuln-undertow-86209e5d
+  pattern: "if ($FILE == null && $FILENAME != null && $FILESIZETHRESHOLD < $CURRENTFILESIZE)\
+    \ {\n  ...\n  $FILE = Files.createTempFile($TEMPLOCATION, \"undertow\", \"upload\"\
+    );\n  ...\n}\n"
+  pattern-not: "if ($FILE == null && $FILESIZETHRESHOLD < $CURRENTFILESIZE && ($FILENAME\
+    \ != null || $CURRENTFILESIZE > $FIELDSIZETHRESHOLD)) {\n  ...\n  $FILE = createFile();\n\
+    \  ...\n}\n"
+  languages:
+  - java
+  message: "Detected a file upload vulnerability where files could be created without\
+    \ proper size threshold validation. \nThis could lead to uncontrolled file creation\
+    \ and potential denial of service. \nThe fix introduces a fieldSizeThreshold to\
+    \ ensure files are only created when they exceed both the fileSizeThreshold and\
+    \ fieldSizeThreshold.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/86209e5dd84d06708957ead659b7ed8daa7fb912
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - java

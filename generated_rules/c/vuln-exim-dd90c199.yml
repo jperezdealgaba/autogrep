@@ -1,0 +1,27 @@
+rules:
+- id: vuln-exim-dd90c199
+  pattern: 'clearenv();
+
+    '
+  pattern-not: 'if (environ) *environ = NULL;
+
+    '
+  languages:
+  - c
+  message: 'The use of `clearenv()` can lead to undefined behavior on certain operating
+    systems (e.g., crashes on OS X, doesn''t work on FreeBSD 7.0, or Haiku OS). Instead,
+    the environment should be cleared by setting `*environ = NULL` after checking
+    if `environ` is not NULL. This ensures compatibility across different platforms.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/dd90c19962a63fe966e17c75b4a36639302d1e67
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/dovecot/core/blob/master/src/lib/env-util.c#L55
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-ngiflib-19913ae4
+  pattern: '$GIF->input.bytes = $BUFFER;
+
+    '
+  pattern-not: '$GIF->input.buffer.bytes = $BUFFER;
+
+    $GIF->input.buffer.count = (unsigned long)$FILESIZE;
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe direct assignment to `input.bytes` without proper buffer
+    size tracking. This can lead to buffer overrun vulnerabilities. Always use `input.buffer.bytes`
+    and `input.buffer.count` to ensure proper buffer management and prevent overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/miniupnp/ngiflib/commit/19913ae4b4ff58ebcb84e9dc9fbef81da5c8d850
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-swoole-src-a37b2087
+  pattern: 'uint32_t $VAR = $PARAMS ? $PARAMS - $URL : $REQUEST->url_length;
+
+    '
+  pattern-not: "size_t $VAR = $PARAMS ? $PARAMS - $URL : $REQUEST->url_length;\nif\
+    \ ($SERV->document_root_len + $VAR >= PATH_MAX)\n{\n    return SW_FALSE;\n}\n"
+  languages:
+  - c
+  message: 'The use of `uint32_t` for length calculations can lead to integer overflow
+    vulnerabilities when handling large inputs. This can result in buffer overflows
+    or other memory corruption issues. The fix involves using `size_t` for length
+    calculations and adding bounds checking to ensure the combined length does not
+    exceed `PATH_MAX`. Always use `size_t` for size calculations and validate input
+    lengths to prevent overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/swoole/swoole-src/commit/a37b20878592951f4e8e7274b38bbb6e94af7e42
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

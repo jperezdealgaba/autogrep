@@ -1,0 +1,34 @@
+rules:
+- id: vuln-h2database-581ed18f
+  pattern: '<li><code>webAdminPassword</code>: password to access preferences and
+    tools of H2 Console.
+
+    '
+  pattern-not: '<li><code>webAdminPassword</code>: hash of password to access preferences
+    and tools of H2 Console,
+
+    use <code>org.h2.server.web.WebServer.encodeAdminPassword(String)</code> to generate
+    a hash for your password.
+
+    Always use long complex passwords, especially when access from other hosts is
+    enabled.
+
+    '
+  languages:
+  - html
+  message: "The `webAdminPassword` is stored in plaintext, which is a security risk.\
+    \ \nAn attacker could easily gain access to the H2 Console if they obtain this\
+    \ password. \nAlways hash the password using `org.h2.server.web.WebServer.encodeAdminPassword(String)`\
+    \ and use long, complex passwords.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/h2database/h2database/commit/581ed18ff9d6b3761d851620ed88a3994a351a0d
+    category: security
+    cwe:
+    - CWE-312
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - html

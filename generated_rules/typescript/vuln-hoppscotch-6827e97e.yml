@@ -1,0 +1,29 @@
+rules:
+- id: vuln-hoppscotch-6827e97e
+  pattern: 'return `${$VAR.variables.invitee} invited you to join ${$VAR.variables.invite_team_name}
+    in Hoppscotch`
+
+    '
+  pattern-not: 'return `A user has invited you to join a team workspace in Hoppscotch`
+
+    '
+  languages:
+  - typescript
+  message: 'The code exposes sensitive information (invitee and team name) in email
+    messages, which could lead to information disclosure. This practice is dangerous
+    as it can reveal user identities and organizational details to unintended recipients.
+    To fix this, use generic messages that do not include specific user or team details.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hoppscotch/hoppscotch/commit/6827e97ec583b2534cdc1c2f33fa44973a0c2bf5
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - typescript

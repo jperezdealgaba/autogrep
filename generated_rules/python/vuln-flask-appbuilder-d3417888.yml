@@ -1,0 +1,21 @@
+rules:
+- id: vuln-flask-appbuilder-d3417888
+  pattern: __version__ = "3.4.4"
+  pattern-not: __version__ = "3.4.5"
+  languages:
+  - python
+  message: Detected an outdated version of Flask-AppBuilder (3.4.4). This version
+    may contain security vulnerabilities. Upgrade to version 3.4.5 or later to ensure
+    security patches are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dpgaspar/Flask-AppBuilder/commit/d341788830726aebc99ce7f9c6f5be40a3719fa0
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://github.com/dpgaspar/Flask-AppBuilder/releases/tag/v3.4.5
+    technology:
+    - python

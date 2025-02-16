@@ -1,0 +1,26 @@
+rules:
+- id: vuln-phpmailer-8e653bb7
+  pattern: "if (!file_exists($PATH)) {\n  ...\n}\n"
+  pattern-not: "if (!static::isPermittedPath($PATH) || !file_exists($PATH)) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where file operations are
+    performed without validating the file path. This can allow attackers to specify
+    remote URLs or phar resources, leading to remote code execution or other malicious
+    activities. Always validate file paths using a method like `isPermittedPath` to
+    ensure they are local and safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PHPMailer/PHPMailer/commit/8e653bb79643abad30ae60b1aad6966c0810b896
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

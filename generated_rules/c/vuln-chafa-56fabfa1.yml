@@ -1,0 +1,35 @@
+rules:
+- id: vuln-chafa-56fabfa1
+  pattern: '$TYPE *$P = (const $TYPE *) &$IN;
+
+    ...
+
+    $H->$FIELD = g_ntohl (*(p++));
+
+    '
+  pattern-not: '$TYPE *$P = &$IN;
+
+    ...
+
+    UNPACK_FIELD_U32 ($H, $P, $FIELD);
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe direct memory manipulation and byte order conversion using\
+    \ g_ntohl. \nThis can lead to incorrect data interpretation and potential security\
+    \ vulnerabilities. \nUse the UNPACK_FIELD_U32 macro for safe and consistent byte\
+    \ order conversion.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/hpjansson/chafa/commit/56fabfa18a6880b4cb66047fa6557920078048d9
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-681
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://en.wikipedia.org/wiki/Endianness
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

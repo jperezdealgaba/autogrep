@@ -1,0 +1,27 @@
+rules:
+- id: vuln-teleport-96133038
+  pattern: 'audit_retention_period: $PERIOD
+
+    '
+  pattern-not: 'retention_period: $PERIOD
+
+    '
+  languages:
+  - yaml
+  message: "The use of 'audit_retention_period' is deprecated and may not be respected\
+    \ by all event backends. \nThis can lead to inconsistent retention periods across\
+    \ different storage backends, potentially \ncausing compliance issues or data\
+    \ loss. Use 'retention_period' instead, and ensure the retention \nperiod is specified\
+    \ in the URI for non-DynamoDB backends (e.g., 'postgresql://...?retention_period=10d').\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gravitational/teleport/commit/96133038d3b17de3fce0798917fcfa2b59646b4a
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A03:2021 - Security Misconfiguration
+    references:
+    - https://goteleport.com/docs/setup/reference/config/
+    technology:
+    - yaml

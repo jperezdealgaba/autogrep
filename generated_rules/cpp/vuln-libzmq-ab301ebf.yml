@@ -1,0 +1,44 @@
+rules:
+- id: vuln-libzmq-ab301ebf
+  pattern: "template <typename T>\nbool $CLASS::add_helper(prefix_t $PREFIX, size_t\
+    \ $SIZE, value_t *$PIPE) {\n  ...\n  if (!size_) {\n    const bool result = !_pipes;\n\
+    \    if (!_pipes) {\n      _pipes = new (std::nothrow) pipes_t;\n      alloc_assert(_pipes);\n\
+    \    }\n    _pipes->insert($PIPE);\n    return result;\n  }\n  ...\n}\n"
+  pattern-not: "template <typename T>\nbool $CLASS::add_helper(prefix_t $PREFIX, size_t\
+    \ $SIZE, value_t *$PIPE) {\n  ...\n  // We are at the node corresponding to the\
+    \ prefix. We are done.\n  const bool result = !it->_pipes;\n  if (!it->_pipes)\
+    \ {\n    it->_pipes = new (std::nothrow) pipes_t;\n    alloc_assert(it->_pipes);\n\
+    \  }\n  it->_pipes->insert($PIPE);\n  return result;\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The original add_helper function in libzmq''s generic_mtrie implementation
+
+    used a non-tail recursive approach, which could lead to stack overflow
+
+    vulnerabilities when processing deeply nested prefixes. The vulnerability
+
+    allowed remote attackers to control the depth of recursion and potentially
+
+    crash the application by sending specially crafted messages.
+
+
+    The fix replaces the recursive implementation with an iterative approach
+
+    using a stack, which prevents stack overflow attacks. To fix this issue,
+
+    ensure that all recursive tree traversals are converted to iterative
+
+    implementations with controlled stack usage.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/ab301ebf799b4dbddb1351d77da49b2e6e1cf8ec
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/674.html
+    technology:
+    - cpp

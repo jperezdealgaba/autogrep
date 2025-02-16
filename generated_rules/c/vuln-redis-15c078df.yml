@@ -8,21 +8,23 @@ rules:
     '
   languages:
   - c
-  message: 'The function `asyncCloseClientOnOutputBufferLimitReached` is deprecated
-    and unsafe. It does not handle client closure properly in all scenarios, potentially
-    leading to resource leaks or undefined behavior. Use `closeClientOnOutputBufferLimitReached`
-    with the appropriate `async` flag instead.
+  message: 'The function `asyncCloseClientOnOutputBufferLimitReached` has been replaced
+    with `closeClientOnOutputBufferLimitReached` to handle client closure more safely.
+    The old function did not provide control over whether the client should be closed
+    immediately or asynchronously, which could lead to unsafe client handling. Use
+    `closeClientOnOutputBufferLimitReached` with an appropriate `async` parameter
+    to ensure safe client closure.
 
     '
   severity: ERROR
   metadata:
-    source-url: github.com/redis/redis/commit/15c078df61985c76944995bfcb94c1c391c1a46d
+    source-url: github.com/antirez/redis/commit/15c078df61985c76944995bfcb94c1c391c1a46d
     category: security
     cwe:
-    - CWE-404
+    - CWE-362
     owasp:
-    - 'A9: Using Components with Known Vulnerabilities'
+    - A09:2021-Security Logging and Monitoring Failures
     references:
-    - https://github.com/redis/redis/commit/15c078df61985c76944995bfcb94c1c391c1a46d
+    - https://github.com/antirez/redis/commit/15c078df61985c76944995bfcb94c1c391c1a46d
     technology:
     - c

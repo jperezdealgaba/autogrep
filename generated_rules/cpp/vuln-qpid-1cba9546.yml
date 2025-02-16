@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qpid-1cba9546
+  pattern: "void $FUNC(SslIO* $AIO, int $NUMBUFFS) {\n  ...\n}\n"
+  pattern-not: "void $FUNC(SslIO* $AIO, Timer& $TIMER, uint32_t $MAXTIME, int $NUMBUFFS)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potential security vulnerability where SSL/TLS connections
+    may not have a timeout mechanism for protocol negotiation. This can lead to resource
+    exhaustion or denial of service attacks by keeping connections open indefinitely.
+    The issue was fixed by adding a `Timer` and `maxTime` parameter to enforce a timeout.
+    To fix this vulnerability, ensure that SSL/TLS connections include a timeout mechanism
+    for protocol negotiation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/qpid/commit/1cba9546cc2c521d6ee4099bed9ff1eb0d09afd5
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A09:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

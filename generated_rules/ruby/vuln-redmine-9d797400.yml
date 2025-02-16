@@ -1,0 +1,36 @@
+rules:
+- id: vuln-redmine-9d797400
+  pattern: 'hg_args = [...]
+
+    hg_args << ''-r'' << $VAR
+
+    ...
+
+    '
+  pattern-not: 'hg_args = [...]
+
+    hg_args << "-r$VAR"
+
+    ...
+
+    '
+  languages:
+  - ruby
+  message: "Detected potential command injection vulnerability due to incorrect argument\
+    \ formatting in Mercurial commands. \nUsing separate arguments for command options\
+    \ and their values can lead to injection vulnerabilities if the values are not\
+    \ properly sanitized. \nInstead, combine the option and its value into a single\
+    \ string argument to prevent injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/9d797400eaec5f9fa7ba9507c82d9c18cb91d02e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - ruby

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-basercms-002886be
+  pattern: "if (is_string($VAR)) {\n  ...\n}\n"
+  pattern-not: "if (!empty($VAR) && is_string($VAR)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code checks if a variable is a string but does not verify if it is
+    empty. This can lead to vulnerabilities when the variable is used in contexts
+    where empty strings should be handled differently. Always check for both non-emptiness
+    and the correct type to ensure the variable is valid for its intended use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/002886be0998c74c386e04f0b43688a8a45d7a96
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - php

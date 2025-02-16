@@ -1,0 +1,26 @@
+rules:
+- id: vuln-streampipes-1d94191c
+  pattern: 'RandomStringUtils.randomAlphanumeric($LENGTH)
+
+    '
+  pattern-not: 'new RandomStringGenerator.Builder().withinRange(33, 125).build().generate($LENGTH)
+
+    '
+  languages:
+  - java
+  message: 'Detected usage of insecure random string generation. The current method
+    uses a limited character set which reduces entropy. Use a more secure random string
+    generator with a broader character range, such as RandomStringGenerator with ASCII
+    characters from decimal 33 to 125.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/streampipes/commit/1d94191c49617dffbcb6f6d8fd73bcd5dd597d52
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - java

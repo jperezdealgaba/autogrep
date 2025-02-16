@@ -1,0 +1,27 @@
+rules:
+- id: vuln-grin-5e2aa59a
+  pattern: 'use crate::core::$MODULE::$ITEM;
+
+    '
+  pattern-not: 'use crate::grin_core::$MODULE::$ITEM;
+
+    '
+  languages:
+  - rust
+  message: 'Detected usage of deprecated crate path ''crate::core'' instead of ''crate::grin_core''.
+    This can lead to incorrect module resolution and potential runtime errors. Update
+    the import to use ''crate::grin_core'' to ensure proper functionality.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/5e2aa59a15c08b41fa68e9e30d0d1d3e176c2271
+    category: security
+    cwe:
+    - 'CWE-1109: Use of Deprecated or Obsolete Functions'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/mimblewimble/grin/commit/5e2aa59a15c08b41fa68e9e30d0d1d3e176c2271
+    technology:
+    - rust

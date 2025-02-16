@@ -1,0 +1,26 @@
+rules:
+- id: vuln-openpgpjs-6b43e02a
+  pattern: '$HEADER.match(/Hash: (.+)/)
+
+    '
+  pattern-not: '$HEADER.match(/^Hash: (.+)$/)
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure regex pattern for matching "Hash" header in cleartext messages.
+    This can lead to header spoofing attacks where arbitrary text can be inserted
+    around the hash header. Use a regex that anchors the pattern to the start and
+    end of the line to prevent this.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openpgpjs/openpgpjs/commit/6b43e02a254853f5ff508ebd1b07541f78b7c566
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://github.com/openpgpjs/openpgpjs/commit/6b43e02a254853f5ff508ebd1b07541f78b7c566
+    technology:
+    - javascript

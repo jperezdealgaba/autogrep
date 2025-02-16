@@ -1,0 +1,32 @@
+rules:
+- id: vuln-evmos-39f0f276
+  pattern: '$PARAMS := $K.GetParams($CTX)
+
+    $PARAMS.DurationUntilDecay += $TIME
+
+    $PARAMS.AuthorizedChannels = $DEFAULT_CHANNELS
+
+    $PARAMS.EVMChannels = $DEFAULT_EVM_CHANNELS
+
+    '
+  pattern-not: "$PARAMS := types.Params{\n  EnableClaims: $ENABLE_CLAIMS,\n  AirdropStartTime:\
+    \ $AIRDROP_TIME,\n  DurationUntilDecay: $DURATION,\n  DurationOfDecay: $DECAY_DURATION,\n\
+    \  ClaimsDenom: $DENOM,\n  AuthorizedChannels: $DEFAULT_CHANNELS,\n  EVMChannels:\
+    \ $DEFAULT_EVM_CHANNELS,\n}\n"
+  languages:
+  - go
+  message: "Detected unsafe modification of Params struct by directly mutating fields\
+    \ after retrieval. \nThis can lead to inconsistent state and potential security\
+    \ vulnerabilities. \nInstead, create a new Params struct with the desired values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/evmos/evmos/commit/39f0f27621fcee44a4e5538e0fd37f16899e610e
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/471.html
+    technology:
+    - go

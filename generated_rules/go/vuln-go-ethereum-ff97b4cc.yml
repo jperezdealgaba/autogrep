@@ -1,0 +1,26 @@
+rules:
+- id: vuln-go-ethereum-ff97b4cc
+  pattern: "import (\n  ...\n  _ \"go.uber.org/automaxprocs\"\n  ...\n)\n"
+  pattern-not: "import (\n  ...\n  \"go.uber.org/automaxprocs/maxprocs\"\n  ...\n\
+    )\n...\nmaxprocs.Set()\n"
+  languages:
+  - go
+  message: 'The use of `_ "go.uber.org/automaxprocs"` without calling `maxprocs.Set()`
+    can lead to incorrect GOMAXPROCS settings in containerized environments. This
+    can cause suboptimal performance or resource utilization issues. To fix this,
+    import `"go.uber.org/automaxprocs/maxprocs"` and explicitly call `maxprocs.Set()`
+    to ensure GOMAXPROCS is correctly configured based on the container''s CPU quota.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/ff97b4cc6ae01af50de9c7051983901d66ce0654
+    category: performance
+    cwe:
+    - CWE-400
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://pkg.go.dev/go.uber.org/automaxprocs
+    technology:
+    - go

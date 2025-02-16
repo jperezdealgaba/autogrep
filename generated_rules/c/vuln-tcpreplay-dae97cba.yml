@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tcpreplay-dae97cba
+  pattern: 'ip_hl = (u_char*)get_layer4_v6($IPV6, $LEN) - (u_char*)$DATA;
+
+    '
+  pattern-not: "$LAYER = (u_char*)get_layer4_v6($IPV6, $LEN);\nif (!$LAYER) {\n  ...\n\
+    }\nip_hl = $LAYER - (u_char*)$DATA;\n"
+  languages:
+  - c
+  message: 'Potential null pointer dereference vulnerability detected. The function
+    `get_layer4_v6` may return null, leading to undefined behavior when calculating
+    `ip_hl`. This can cause crashes or security issues. Always check the return value
+    of `get_layer4_v6` before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/dae97cbafc5c06ebbc6b34e76ba614104f1b73e1
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

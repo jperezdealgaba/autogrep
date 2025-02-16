@@ -1,0 +1,27 @@
+rules:
+- id: vuln-calibre-863abac2
+  pattern: '$REDIRECT = $CTX.url_for(None) + ''#book_id='' + $REST[5:] + "&amp;panel=book_details"
+
+    '
+  pattern-not: '$REDIRECT = $CTX.url_for(None) + ''#book_id='' + int($REST[5:]) +
+    "&amp;panel=book_details"
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe string concatenation with potentially untrusted input.
+    This can lead to injection vulnerabilities or unexpected behavior. Ensure the
+    input is properly validated or converted to the expected type (e.g., using `int()`
+    for numeric values).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kovidgoyal/calibre/commit/863abac24e7bc3e5ca0b3307362ff1953ba53fe0
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - python

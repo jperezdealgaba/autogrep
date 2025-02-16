@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libgit2-84d30d56
+  pattern: "if ($PKT == NULL) {\n    continue;\n}\n"
+  pattern-not: "if ($PKT == NULL) {\n    giterr_set_str(GITERR_NET, \"Invalid empty\
+    \ packet\");\n    return GIT_ERROR;\n}\n"
+  languages:
+  - c
+  message: 'Detected handling of empty packets without proper error reporting. The
+    Git protocol does not specify empty lines as part of the protocol, and not knowing
+    what to do with an empty line should result in an error being returned. This vulnerability
+    could lead to undefined behavior or security issues when processing malformed
+    packets. To fix this, ensure that empty packets are handled by returning an appropriate
+    error.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/84d30d569ada986f3eef527cbdb932643c2dd037
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://git-scm.com/docs/protocol-common
+    technology:
+    - c

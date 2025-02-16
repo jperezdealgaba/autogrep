@@ -1,0 +1,25 @@
+rules:
+- id: vuln-keycloak-15a21bf8
+  pattern: '$REDIRECT_URI.toLowerCase()
+
+    '
+  pattern-not: '$REDIRECT_URI
+
+    '
+  pattern-inside: "private static String $METHOD($TYPE $PARAM) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Insecure case-insensitive URI comparison detected. OAuth recommends exact
+    case-sensitive matching for redirect URIs to prevent security issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/keycloak/keycloak/commit/15a21bf8e4fb71f006ba9caf25b9c9d1d152cd20
+    category: security
+    cwe:
+    - CWE-178
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#name-protecting-redirect-based-f
+    technology:
+    - java

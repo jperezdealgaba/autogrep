@@ -1,0 +1,24 @@
+rules:
+- id: vuln-basercms-919c3ccb
+  pattern: '$this->BcBaser->link($NAME, $URL)
+
+    '
+  pattern-not: '$this->BcBaser->link($NAME, $URL, [''escape'' => true])
+
+    '
+  languages:
+  - php
+  message: "Detected a potential XSS vulnerability due to unescaped URL in BcBaser->link.\
+    \ \nThis can allow malicious JavaScript code to be injected via the URL parameter.\n\
+    To fix this, ensure the URL is properly sanitized and use the 'escape' option\
+    \ \nto prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/919c3ccbbd7a2432967dcb2e428131cc7ad71bb2
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

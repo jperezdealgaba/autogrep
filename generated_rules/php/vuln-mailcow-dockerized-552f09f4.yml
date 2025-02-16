@@ -1,0 +1,25 @@
+rules:
+- id: vuln-mailcow-dockerized-552f09f4
+  pattern: '$db_version = "02052022_1500";
+
+    '
+  pattern-not: '$db_version = "19052022_1541";
+
+    '
+  languages:
+  - php
+  message: 'The database version is outdated and may contain security vulnerabilities.
+    Using an outdated version can expose the application to known exploits. Update
+    to the latest version to ensure security patches are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mailcow/mailcow-dockerized/commit/552f09f48aacda3a14238101c8a0f4c922ffe65f
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - php

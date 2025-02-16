@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gradle-859eae2b
+  pattern: "File $RESULT = $BASEDIR;\nfor (String $P : $PATH) {\n    $RESULT = new\
+    \ File($RESULT, $P);\n}\n"
+  pattern-not: 'File $RESULT = new File($BASEDIR, ZipSlip.safeZipEntryName(trimLeadingSlash($COMPOSEDPATH)));
+
+    '
+  languages:
+  - java
+  message: 'Potential Zip Slip vulnerability detected. The code constructs file paths
+    by concatenating user-controlled input without proper validation, which can lead
+    to directory traversal attacks. Use `ZipSlip.safeZipEntryName` to sanitize the
+    path and prevent traversal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gradle/gradle/commit/859eae2b2acf751ae7db3c9ffefe275aa5da0d5d
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://snyk.io/research/zip-slip-vulnerability
+    technology:
+    - java

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-casaos-d060968b
+  pattern: 'service.MyService.OAPI().GetServerAppInfo($ID, $T)
+
+    '
+  pattern-not: 'service.MyService.OAPI().GetServerAppInfo($ID, $T, $LANGUAGE)
+
+    '
+  languages:
+  - go
+  message: 'The function `GetServerAppInfo` is missing the required `language` parameter,
+    which is necessary for proper localization and security context handling. This
+    could lead to incorrect application behavior or security vulnerabilities. Always
+    include the `language` parameter obtained from the request header.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/IceWhaleTech/CasaOS/commit/d060968b7ab08e7f8cbfe7ca9ccdfa47afe9bb06
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - go

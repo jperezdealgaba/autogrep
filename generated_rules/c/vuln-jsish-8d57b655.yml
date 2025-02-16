@@ -1,0 +1,22 @@
+rules:
+- id: vuln-jsish-8d57b655
+  pattern: "if (!$VAR == $CONST) {\n  ...\n}\n"
+  pattern-not: "if ($VAR == $CONST) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "The condition checks for the negation of a comparison, which is likely\
+    \ a logical error. \nThis can lead to incorrect control flow and potential security\
+    \ vulnerabilities. \nThe correct way is to directly compare the variable with\
+    \ the constant.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/8d57b65503fe955acc6d219a9c31b43361653289
+    category: security
+    cwe:
+    - CWE-480
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/480.html
+    technology:
+    - c

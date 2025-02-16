@@ -1,0 +1,24 @@
+rules:
+- id: vuln-core-282c38a4
+  pattern: '$RESPONSE.getWriter().print($CONTENT);
+
+    $RESPONSE.getWriter().close();
+
+    '
+  pattern-not: "try(PrintWriter $WRITER = $RESPONSE.getWriter()){\n  $WRITER.print($CONTENT);\n\
+    }\n"
+  languages:
+  - java
+  message: "Detected unsafe use of PrintWriter without proper resource management.\
+    \ \nThis can lead to resource leaks and potential security vulnerabilities. \n\
+    Always use try-with-resources to ensure the writer is properly closed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/282c38a4f901afa1d91a9dc72709ba0ddfee5576
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - java

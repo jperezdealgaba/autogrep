@@ -1,0 +1,23 @@
+rules:
+- id: vuln-chamilo-lms-005dc8e9
+  pattern: '$VAR = $OBJ->getUserGroupInCourse($OPTIONS, $GROUPFILTER, false, true);
+
+    '
+  pattern-not: '$VAR = $OBJ->getUserGroupInCourse($OPTIONS, $GROUPFILTER);
+
+    '
+  languages:
+  - php
+  message: "Detected a potential SQL injection vulnerability due to unsafe database\
+    \ field usage. \nThe code directly uses user-controlled input in database queries\
+    \ without proper escaping, \nwhich can lead to SQL injection attacks. \nEnsure\
+    \ all user inputs are sanitized using `Database::escapeField()` before being used\
+    \ in queries.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/005dc8e9eccc6ea35264064ae09e2e84af8d5b59
+    category: security
+    cwe: CWE-89
+    owasp: 'A1: Injection'
+    technology:
+    - php

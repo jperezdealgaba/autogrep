@@ -1,0 +1,29 @@
+rules:
+- id: vuln-silverstripe-framework-b8d20dc9
+  pattern: '$regex = ''/^\s*'' . implode(''\s*'', str_split(''javascript:'')) . ''/i'';
+
+    '
+  pattern-not: '$regex = ''#^\s*('' . implode(''\s*'', str_split(''javascript:''))
+    . ''|'' . implode(''\s*'', str_split(''data:text/html;'')) . '')#i'';
+
+    '
+  languages:
+  - php
+  message: 'The regex pattern used to sanitize HTML content is incomplete and does
+    not block dangerous data:text/html; content. This can lead to XSS vulnerabilities
+    if malicious HTML content is injected. Update the regex to include both ''javascript:''
+    and ''data:text/html;'' patterns to ensure proper sanitization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/b8d20dc9d531550e06fd7da7a0eafa551922e2e1
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

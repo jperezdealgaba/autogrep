@@ -1,0 +1,23 @@
+rules:
+- id: vuln-metabase-ae857853
+  pattern: "(binding [hx/*honey-sql-version* (sql.qp/honey-sql-version $DRIVER)]\n\
+    \  ...)\n"
+  pattern-not: '(sql.qp/with-driver-honey-sql-version $DRIVER ...)
+
+    '
+  languages:
+  - clojure
+  message: "Direct use of `binding` with `hx/*honey-sql-version*` is discouraged.\
+    \ \nThis can lead to inconsistent SQL query generation across different drivers.\
+    \ \nUse `sql.qp/with-driver-honey-sql-version` instead to ensure proper driver-specific\
+    \ SQL version handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/metabase/metabase/commit/ae8578530013bbe6068fd26ad63bf120196d7286
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - clojure

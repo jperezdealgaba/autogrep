@@ -1,0 +1,27 @@
+rules:
+- id: vuln-fuel-cms-a2f15430
+  pattern: '$VAR = $MODEL->find_by_name($BLOCK, ''array'');
+
+    '
+  pattern-not: '$VAR = $MODEL->find_one_array(array(''name'' => $BLOCK));
+
+    '
+  languages:
+  - php
+  message: 'The use of `find_by_name` with a hardcoded ''array'' parameter can lead
+    to insecure data retrieval. This method may not properly sanitize or validate
+    the input, potentially leading to SQL injection or other security vulnerabilities.
+    Use `find_one_array` with a properly structured associative array to ensure secure
+    and precise data retrieval.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/a2f154306c55753ccf1261b3d9cfe939b9bf5c9c
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

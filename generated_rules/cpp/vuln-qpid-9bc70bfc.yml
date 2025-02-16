@@ -1,0 +1,25 @@
+rules:
+- id: vuln-qpid-9bc70bfc
+  pattern: '$CONNECTION.getUsername()
+
+    '
+  pattern-not: '$CONNECTION.getUserId()
+
+    '
+  languages:
+  - cpp
+  message: 'Detected usage of `getUsername()` instead of `getUserId()`. This vulnerability
+    could lead to incorrect user identification and potential security issues. Use
+    `getUserId()` to ensure proper user identification and avoid security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/qpid/commit/9bc70bfcd5fbced071fa304a5591ca8acb61c32f
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - cpp

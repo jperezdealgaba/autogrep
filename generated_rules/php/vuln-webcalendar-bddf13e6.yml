@@ -1,0 +1,28 @@
+rules:
+- id: vuln-webcalendar-bddf13e6
+  pattern: '$PROGRAM_DATE = ''09 Jul 2017'';
+
+    '
+  pattern-not: '$PROGRAM_DATE = ''11 Aug 2017'';
+
+    '
+  languages:
+  - php
+  message: 'The hardcoded date in the configuration file is outdated and may lead
+    to incorrect functionality or security vulnerabilities. Always use the latest
+    date or dynamically generate dates to ensure the application remains up-to-date
+    and secure.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/craigk5n/webcalendar/commit/bddf13e6384a991bddbc95e4c755cb348febed25
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - php

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tcpreplay-ff0ece88
+  pattern: "if ((size_t)$LEN < sizeof($ETH_HDR)) {\n    errx(-1, \"packet capture\
+    \ length %d too small to process\", $LEN);\n    return NULL;\n}\n"
+  pattern-not: "if ($LEN < (int)sizeof($ETH_HDR)) {\n    goto len_error;\n}\n"
+  languages:
+  - c
+  message: 'The code performs an incorrect size comparison by casting the length to
+    `size_t`, which can lead to integer underflow and bypassing of the length check.
+    This can result in processing packets that are too small, potentially leading
+    to memory corruption or crashes. Always ensure length checks are performed with
+    the correct type to avoid underflow issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/ff0ece886576663f2fa18f375fed91f0f38fea20
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

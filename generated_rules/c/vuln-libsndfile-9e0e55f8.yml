@@ -1,0 +1,36 @@
+rules:
+- id: vuln-libsndfile-9e0e55f8
+  pattern: '#define $CONSTANT 666
+
+    ...
+
+    return $CONSTANT ;
+
+    '
+  pattern-not: '#define $CONSTANT $VALUE
+
+    ...
+
+    return $CONSTANT ;
+
+    '
+  languages:
+  - c
+  message: 'The use of a hardcoded error code value (666) is a security vulnerability.
+    This can lead to ambiguous error handling and potential confusion in error management.
+    Replace the hardcoded value with a meaningful and descriptive constant to improve
+    code readability and maintainability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/9e0e55f8bfa60bddca083ff85699f855c91c42e7
+    category: security
+    cwe:
+    - 'CWE-547: Use of Hard-coded, Security-relevant Constants'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/547.html
+    technology:
+    - c

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-openitcockpit-73b5b34a
+  pattern: '$this->exec(escapeshellcmd("su " . $USER . " -c ''" . $COMMAND . "''"),
+    [...]);
+
+    '
+  pattern-not: "$this->exec(escapeshellcmd(\"su \" . $USER . \" -c '\" . $COMMAND\
+    \ . \"'\"), [\n    'cwd' => $PATH,\n]);\n"
+  languages:
+  - php
+  message: 'Detected potentially unsafe command execution with insufficient context
+    validation. The command is executed with ''su'' without proper validation of the
+    command or its working directory. This could allow command injection if the command
+    or user input is not properly sanitized. Ensure that the command is validated
+    against a whitelist and that the working directory is explicitly set to a secure
+    location.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/it-novum/openITCOCKPIT/commit/73b5b34afa8bd82ff26c0097558341214c768cfc
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

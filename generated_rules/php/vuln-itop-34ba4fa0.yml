@@ -1,0 +1,30 @@
+rules:
+- id: vuln-itop-34ba4fa0
+  pattern: '$aData[''full_description''] = "{$aData[''friendlyname'']}<br><i><small>{$aData[''additional_field'']}</small></i>";
+
+    '
+  pattern-not: '$sFriendlynameForHtml = utils::EscapeHtml($aData[''friendlyname'']);
+
+    $sAdditionalFieldForHtml = utils::EscapeHtml($aData[''additional_field'']);
+
+    $aData[''full_description''] = "{$sFriendlynameForHtml}<br><i><small>{$sAdditionalFieldForHtml}</small></i>";
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped HTML output in the ''full_description'' field. This
+    can lead to Cross-Site Scripting (XSS) vulnerabilities if user-controlled data
+    is included. Always escape HTML output using utils::EscapeHtml() or similar functions
+    to prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/34ba4fa0ce99534f751d9f170fe0eda103e20c72
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

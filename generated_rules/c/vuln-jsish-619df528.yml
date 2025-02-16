@@ -1,0 +1,27 @@
+rules:
+- id: vuln-jsish-619df528
+  pattern: "if ($I != $J && !Jsi_Strcmp($ARGS[$I].name, $ARGS[$J].name)) {\n    ...\n\
+    \    Jsi_LogError(\"function %s():  duplicate parameter name '%s'\", $NAME?$NAME:\"\
+    \", $ARGS[$I].name);\n    ...\n    pstate->err_count++;\n}\n"
+  pattern-not: "if ($I != $J && !Jsi_Strcmp($ANAM, $ARGS[$J].name)) {\n    ...\n \
+    \   Jsi_LogError(\"function %s():  duplicate parameter name '%s'\", $NAME?$NAME:\"\
+    \", $ANAM);\n    ...\n    pstate->err_count++;\n}\n"
+  languages:
+  - c
+  message: 'The code directly accesses the `name` field of `args` structure without
+    checking if it is a reserved keyword. This can lead to parameter name conflicts
+    with reserved keywords, potentially causing unexpected behavior or security issues.
+    Use a temporary variable to store the parameter name and check if it is a reserved
+    keyword before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/619df528295ef564592a898d58b560c3f3176e21
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

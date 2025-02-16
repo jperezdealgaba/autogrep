@@ -1,0 +1,29 @@
+rules:
+- id: vuln-nodebb-c8b2fc46
+  pattern: 'const $DATA = await fs.promises.readFile(path.join($PATH, $LANGUAGE, `${$NAMESPACE}.json`),
+    ''utf8'');
+
+    '
+  pattern-not: "const $PATH_TO_FILE = path.join($PATH, $LANGUAGE, `${$NAMESPACE}.json`);\n\
+    if (!$PATH_TO_FILE.startsWith($PATH)) {\n  throw new Error('[[error:invalid-path]]');\n\
+    }\nconst $DATA = await fs.promises.readFile($PATH_TO_FILE, 'utf8');\n"
+  languages:
+  - javascript
+  message: 'Potential path traversal vulnerability detected. The code reads a file
+    without validating that the constructed path is within the intended directory.
+    This could allow an attacker to access arbitrary files on the system. To fix this,
+    validate that the constructed path starts with the expected base directory before
+    reading the file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/c8b2fc46dc698db687379106b3f01c71b80f495f
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - javascript

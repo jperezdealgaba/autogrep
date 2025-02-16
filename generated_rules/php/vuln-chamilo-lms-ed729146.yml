@@ -1,0 +1,27 @@
+rules:
+- id: vuln-chamilo-lms-ed729146
+  pattern: 'return '' -d woogie "''.$this->base_work_dir.''/''.$this->file_path.''"  "''.$this->base_work_dir.$this->created_dir.''/''.$this->file_name.''.html"'';
+
+    '
+  pattern-not: 'return '' -d woogie "''.Security::sanitizeExecParam($this->base_work_dir.''/''.$this->file_path).''"  "''.Security::sanitizeExecParam($this->base_work_dir.$this->created_dir.''/''.$this->file_name.''.html'').''"'';
+
+    '
+  languages:
+  - php
+  message: "The code constructs a shell command using unsanitized input, which can\
+    \ lead to command injection vulnerabilities. \nThis is dangerous because an attacker\
+    \ could inject arbitrary commands and execute them on the server. \nTo fix this,\
+    \ always sanitize user inputs using Security::sanitizeExecParam() before including\
+    \ them in shell commands.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/ed72914608d2a07ee2eb587c1a654480d08201db
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

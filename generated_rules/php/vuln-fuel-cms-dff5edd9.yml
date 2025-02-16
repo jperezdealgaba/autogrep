@@ -1,0 +1,26 @@
+rules:
+- id: vuln-fuel-cms-dff5edd9
+  pattern: "$this->upload->mimes['php'] = array(\n  'application/x-httpd-php', \n\
+    \  'application/php', \n  'application/x-php', \n  'text/php', \n  'text/html',\
+    \ \n  'text/x-php', \n  'application/x-httpd-php-source', \n  'text/plain'\n);\n"
+  pattern-not: "$this->upload->mimes['php'] = array(\n  'application/x-httpd-php',\
+    \ \n  'application/php', \n  'application/x-php', \n  'text/php', \n  'text/x-php',\
+    \ \n  'application/x-httpd-php-source'\n);\n"
+  languages:
+  - php
+  message: 'The mime type configuration for PHP files includes ''text/plain'', which
+    can allow malicious PHP files to be uploaded and executed. This is dangerous because
+    it bypasses security checks that rely on mime types. Remove ''text/plain'' from
+    the allowed mime types for PHP files to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/dff5edd9d7a910872ddd307b43e4a9a2dd401ab7
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

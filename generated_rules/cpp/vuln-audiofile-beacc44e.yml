@@ -1,0 +1,29 @@
+rules:
+- id: vuln-audiofile-beacc44e
+  pattern: 'decodeSample($STATE, $CODE, $COEFFICIENT)
+
+    '
+  pattern-not: 'decodeSample($STATE, $CODE, $COEFFICIENT, &$OK)
+
+    '
+  languages:
+  - cpp
+  message: 'The function decodeSample is called without checking for potential overflow
+    or errors, which can lead to undefined behavior or crashes. This vulnerability
+    was fixed by adding an overflow check and an error handling mechanism. Always
+    check for potential overflow when performing arithmetic operations, especially
+    in audio processing where large values can be common.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/antlarr/audiofile/commit/beacc44eb8cdf6d58717ec1a5103c5141f1b37f9
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp

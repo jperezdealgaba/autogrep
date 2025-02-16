@@ -1,0 +1,25 @@
+rules:
+- id: vuln-october-433cf1d5
+  pattern: "$ext = strtolower(pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_EXTENSION));\n\
+    if (!in_array($ext, $allowedAssetTypes)) {\n    throw new ApplicationException(Lang::get('cms::lang.asset.type_not_allowed',\
+    \ ['allowed_types' => implode(', ', $allowedAssetTypes)]));\n}\n"
+  pattern-not: "if (!$this->validateFileType($fileName)) {\n    throw new ApplicationException(Lang::get('cms::lang.asset.type_not_allowed',\
+    \ ['allowed_types' => implode(', ', $this->assetExtensions)]));\n}\n"
+  languages:
+  - php
+  message: 'The code directly validates file extensions using pathinfo and in_array,
+    which is less secure and maintainable. Instead, use a dedicated validation method
+    like validateFileType to ensure consistent and secure file type validation. This
+    method should be used to prevent potential security issues related to file uploads.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/octobercms/october/commit/433cf1d504d6ebeddb50279a396f03248ceb12b0
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php

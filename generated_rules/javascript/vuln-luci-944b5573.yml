@@ -1,0 +1,20 @@
+rules:
+- id: vuln-luci-944b5573
+  pattern: 'E(''strong'', $COMMENT || _(''Unnamed key''))
+
+    '
+  pattern-not: 'E(''strong'', [ $COMMENT || _(''Unnamed key'') ])
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unescaped HTML content in E('strong',
+    ...). Always use array syntax to properly escape dynamic content.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openwrt/luci/commit/944b55738e7f9685865d5298248b7fbd7380749e
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

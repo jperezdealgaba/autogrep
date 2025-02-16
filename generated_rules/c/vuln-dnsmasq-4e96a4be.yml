@@ -1,0 +1,53 @@
+rules:
+- id: vuln-dnsmasq-4e96a4be
+  pattern: "int $SWAP, $QUIT, $I, $J;\n...\nunsigned char *$P1 = skip_name($RRSET[$I],\
+    \ $HEADER, $PLEN, 10);\nunsigned char *$P2 = skip_name($RRSET[$I+1], $HEADER,\
+    \ $PLEN, 10);\n$P1 += 8;\nGETSHORT($RDLEN1, $P1);\n$END1 = $P1 + $RDLEN1;\n$P2\
+    \ += 8;\nGETSHORT($RDLEN2, $P2);\n$END2 = $P2 + $RDLEN2;\n$DP1 = $DP2 = $RR_DESC;\n\
+    for ($QUIT = 0, $LEFT1 = 0, $LEFT2 = 0, $LEN1 = 0, $LEN2 = 0; !$QUIT;)\n{\n  ...\n\
+    \  if ($LEFT1 != 0)\n    memmove($BUFF1, $BUFF1 + $LEN1 - $LEFT1, $LEFT1);\n \
+    \ if (($LEN1 = get_rdata($HEADER, $PLEN, $END1, $BUFF1 + $LEFT1, (MAXDNAME * 2)\
+    \ - $LEFT1, &$P1, &$DP1)) == 0)\n  {\n    $QUIT = 1;\n    $LEN1 = $END1 - $P1;\n\
+    \    memcpy($BUFF1 + $LEFT1, $P1, $LEN1);\n  }\n  $LEN1 += $LEFT1;\n  ...\n  if\
+    \ ($LEFT2 != 0)\n    memmove($BUFF2, $BUFF2 + $LEN2 - $LEFT2, $LEFT2);\n  if (($LEN2\
+    \ = get_rdata($HEADER, $PLEN, $END2, $BUFF2 + $LEFT2, (MAXDNAME * 2) - $LEFT2,\
+    \ &$P2, &$DP2)) == 0)\n  {\n    $QUIT = 1;\n    $LEN2 = $END2 - $P2;\n    memcpy($BUFF2\
+    \ + $LEFT2, $P2, $LEN2);\n  }\n  $LEN2 += $LEFT2;\n  ...\n  if ($LEN1 > $LEN2)\n\
+    \    $LEFT1 = $LEN1 - $LEN2, $LEFT2 = 0, $LEN = $LEN2;\n  else\n    $LEFT2 = $LEN2\
+    \ - $LEN1, $LEFT1 = 0, $LEN = $LEN1;\n  ...\n  if ($RC > 0 || ($RC == 0 && $QUIT\
+    \ && $LEN1 > $LEN2))\n  {\n    unsigned char *$TMP = $RRSET[$I+1];\n    $RRSET[$I+1]\
+    \ = $RRSET[$I];\n    $RRSET[$I] = $TMP;\n    $SWAP = $QUIT = 1;\n  }\n  ...\n\
+    }\n"
+  pattern-not: "struct rdata_state $STATE1, $STATE2;\n...\n$STATE1.ip = skip_name($RRSET[$I],\
+    \ $HEADER, $PLEN, 10);\n$STATE2.ip = skip_name($RRSET[$I+1], $HEADER, $PLEN, 10);\n\
+    $STATE1.op = $STATE2.op = NULL;\n$STATE1.buff = $BUFF1;\n$STATE2.buff = $BUFF2;\n\
+    $STATE1.desc = $STATE2.desc = $RR_DESC;\n$STATE1.ip += 8;\nGETSHORT($RDLEN1, $STATE1.ip);\n\
+    if (!CHECK_LEN($HEADER, $STATE1.ip, $PLEN, $RDLEN1))\n  return $RRSETIDX;\n$STATE1.end\
+    \ = $STATE1.ip + $RDLEN1;\n$STATE2.ip += 8;\nGETSHORT($RDLEN2, $STATE2.ip);\n\
+    if (!CHECK_LEN($HEADER, $STATE2.ip, $PLEN, $RDLEN2))\n  return $RRSETIDX;\n$STATE2.end\
+    \ = $STATE2.ip + $RDLEN2;\nwhile (1)\n{\n  $OK1 = get_rdata($HEADER, $PLEN, &$STATE1);\n\
+    \  $OK2 = get_rdata($HEADER, $PLEN, &$STATE2);\n  if (!$OK1 && !$OK2)\n    break;\n\
+    \  else if ($OK1 && (!$OK2 || *$STATE1.op > *$STATE2.op))\n  {\n    unsigned char\
+    \ *$TMP = $RRSET[$I+1];\n    $RRSET[$I+1] = $RRSET[$I];\n    $RRSET[$I] = $TMP;\n\
+    \    $SWAP = 1;\n    break;\n  }\n  else if ($OK2 && (!$OK1 || *$STATE2.op > *$STATE1.op))\n\
+    \    break;\n}\n"
+  languages:
+  - c
+  message: 'The original code has a vulnerability in the RRset sorting logic where
+    it uses a complex manual memory management approach with potential for memory
+    corruption and incorrect sorting. The patch introduces a more robust state machine
+    approach with clearer memory boundaries. Use the new `rdata_state` structure and
+    simplified sorting logic to avoid potential memory corruption and ensure correct
+    RRset sorting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/InfrastructureServices/dnsmasq/commit/4e96a4be685c9e4445f6ee79ad0b36b9119b502a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c

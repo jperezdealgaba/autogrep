@@ -1,0 +1,24 @@
+rules:
+- id: vuln-hapi-353bf266
+  pattern: 'Hoek.applyToDefaultsWithShallow($BASE, $SETTINGS, [''bind'', ''cors''])
+
+    '
+  pattern-not: 'Hoek.applyToDefaultsWithShallow($BASE, $SETTINGS, [''bind''])
+
+    '
+  languages:
+  - javascript
+  message: "Insecure use of `Hoek.applyToDefaultsWithShallow` with 'cors' in the shallow\
+    \ copy array. \nThis can lead to improper handling of CORS settings, potentially\
+    \ allowing unauthorized cross-origin requests. \nRemove 'cors' from the shallow\
+    \ copy array to ensure proper configuration inheritance.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/hapijs/hapi/commit/353bf2661d15f4529e6f70498681a385ec2daa77
+    category: security
+    cwe: CWE-942
+    owasp: A5:2017-Broken Access Control
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    technology:
+    - javascript

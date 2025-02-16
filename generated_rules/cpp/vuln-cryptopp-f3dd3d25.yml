@@ -1,0 +1,39 @@
+rules:
+- id: vuln-cryptopp-f3dd3d25
+  pattern: 'ECP::Point $RESULT($X*$Z.NotZero(), $Y*$Z.NotZero());
+
+    $RESULT.identity = $Z.IsZero();
+
+    return $RESULT;
+
+    '
+  pattern-not: 'ECP::Point& $R = $M.m_R;
+
+    $R.x = $X*$Z.NotZero();
+
+    $R.y = $Y*$Z.NotZero();
+
+    $R.identity = $Z.IsZero();
+
+    return $R;
+
+    '
+  languages:
+  - cpp
+  message: 'The vulnerability involves the creation of a temporary ECP::Point object
+    which can lead to potential memory safety issues or unintended behavior. Instead,
+    the code should use a pre-existing reference to avoid unnecessary object creation
+    and ensure consistent state management. This is particularly important in cryptographic
+    operations where memory safety and consistency are critical.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/weidai11/cryptopp/commit/f3dd3d25592ceb688d2b32475f72118222869516
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

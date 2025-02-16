@@ -1,0 +1,26 @@
+rules:
+- id: vuln-icms2-a6a30e7b
+  pattern: '$($THIS).next(''.custom-file-label'').html($($THIS).val().replace(''C:\\fakepath\\'',
+    ''''))
+
+    '
+  pattern-not: '$($THIS).next(''.custom-file-label'').text($($THIS).val().replace(''C:\\fakepath\\'',
+    ''''))
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability detected due to unsafe use of .html() with\
+    \ user-controlled input. \nThe .html() method can execute arbitrary HTML, including\
+    \ script tags, leading to XSS attacks. \nUse .text() instead to safely set text\
+    \ content without interpreting HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/instantsoft/icms2/commit/a6a30e7bc96cd2081707388046c0259870533da6
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - javascript

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-go-ethereum-e343ddf9
+  pattern: '$_, $ERR := $DB.AncientRange($TABLE, $START, $COUNT, 0)
+
+    '
+  pattern-not: '$_, $ERR := $DB.AncientRange($TABLE, $START, $COUNT, 2*1024*1024)
+
+    '
+  languages:
+  - go
+  message: 'Detected a potentially dangerous call to AncientRange without a size limit.
+    This can lead to unbounded memory allocation, causing denial of service or resource
+    exhaustion. Always cap the size of the data being read by specifying a maximum
+    byte limit.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/e343ddf9eb39a68c12effd1575275c4888c1cbc9
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - go

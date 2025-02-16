@@ -1,0 +1,27 @@
+rules:
+- id: vuln-botan-94e9154c
+  pattern: "if($P.bits() < 64 || $P.is_negative() || !is_bailie_psw_probable_prime($P))\n\
+    \  throw Decoding_Error(\"Invalid ECC p parameter\");\n"
+  pattern-not: "if($P.bits() < 112 || $P.bits() > 1024)\n  throw Decoding_Error(\"\
+    ECC p parameter is invalid size\");\n\nif($P.is_negative() || !is_bailie_psw_probable_prime($P))\n\
+    \  throw Decoding_Error(\"ECC p parameter is not a prime\");\n"
+  languages:
+  - cpp
+  message: 'The code checks for ECC p parameter validity with insufficient bit length
+    validation (less than 64 bits). This can lead to weak cryptographic keys, making
+    the system vulnerable to attacks. The fix ensures the parameter is within a secure
+    range (112 to 1024 bits) and properly validates primality.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/94e9154c143aa5264da6254a6a1be5bc66ee2b5a
+    category: security
+    cwe:
+    - 'CWE-326: Inadequate Encryption Strength'
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    references:
+    - https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Ar3.pdf
+    technology:
+    - cpp

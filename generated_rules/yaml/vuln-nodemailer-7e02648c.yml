@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nodemailer-7e02648c
+  pattern: '- 15
+
+    '
+  pattern-not: '- 16
+
+    '
+  languages:
+  - yaml
+  message: "Using Node.js version 15 is deprecated and potentially insecure. \nThis\
+    \ version may contain unpatched vulnerabilities that could be exploited. \nUpgrade\
+    \ to Node.js version 16 or higher to ensure security and stability.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodemailer/nodemailer/commit/7e02648cc8cd863f5085bad3cd09087bccf84b9f
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://nodejs.org/en/blog/vulnerability/
+    technology:
+    - yaml

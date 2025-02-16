@@ -1,0 +1,31 @@
+rules:
+- id: vuln-kunena-forum-10cb4a89
+  pattern: '$upload = KunenaUpload::getInstance(array(...));
+
+    '
+  pattern-not: '$upload = KunenaUpload::getInstance();
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable due to the lack of file extension validation when
+    handling avatar uploads. This can allow attackers to upload malicious files with
+    arbitrary extensions, potentially leading to remote code execution or other security
+    issues. The vulnerability was fixed by moving the file extension validation logic
+    into the upload class and explicitly checking for allowed extensions (gif, jpeg,
+    jpg, png). To fix this, ensure that file extensions are validated before processing
+    uploads.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Kunena/Kunena-Forum/commit/10cb4a89ec1dfbad55115b47e51d3a6b003e1783
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

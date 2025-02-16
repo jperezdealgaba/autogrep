@@ -1,0 +1,31 @@
+rules:
+- id: vuln-miniupnp-f0f1f4b2
+  pattern: 'if($VAR >= (int)($EXPR1 + $EXPR2)) { ... }
+
+    '
+  pattern-not: 'if($VAR >= 0 && (unsigned int)$VAR >= ($EXPR1 + $EXPR2)) { ... }
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe integer comparison in buffer size checks. This vulnerability
+    can lead to integer overflow and buffer overflows. The comparison between signed
+    and unsigned integers can cause incorrect evaluations, potentially leading to
+    security issues. Always ensure proper type casting and explicit checks for non-negative
+    values when comparing buffer sizes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/miniupnp/miniupnp/commit/f0f1f4b22d6a98536377a1bb07e7c20e4703d229
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-680
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/680.html
+    technology:
+    - c

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-botan-3fb31cef
+  pattern: "if($IN[0] == 0)\n{\n  $IN += 1;\n  $IN_LENGTH -= 1;\n}\nsecure_vector<byte>\
+    \ $INPUT($IN, $IN + $IN_LENGTH);\n"
+  pattern-not: 'byte $SKIP_FIRST = CT::is_zero<byte>($IN[0]) & 0x01;
+
+    secure_vector<byte> $INPUT($IN + $SKIP_FIRST, $IN + $IN_LENGTH);
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly checks and skips the first byte of input without using
+    constant-time operations, which could lead to timing side-channel vulnerabilities.
+    According to the OAEP standard (Section 7.1.1), the first byte can always be skipped
+    safely, but this should be done in a constant-time manner to prevent information
+    leakage. Use constant-time operations like `CT::is_zero` to handle such checks
+    securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/3fb31cef450cef82015170f8e825a2d656163ea6
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding
+    technology:
+    - cpp

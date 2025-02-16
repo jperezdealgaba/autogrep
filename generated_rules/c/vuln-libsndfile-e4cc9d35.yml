@@ -1,0 +1,22 @@
+rules:
+- id: vuln-libsndfile-e4cc9d35
+  pattern: "if ($VAR->blocksize == 0) {\n    ...\n}\n"
+  pattern-not: "if ($VAR->blocksize <= 0) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a comparison of `blocksize` with zero, which should be checked
+    for being less than or equal to zero instead. This can lead to incorrect handling
+    of invalid block sizes. The fix ensures that any non-positive value is caught,
+    preventing potential issues in block processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/e4cc9d350ab162374ebe2e88d712dba70e511a3b
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

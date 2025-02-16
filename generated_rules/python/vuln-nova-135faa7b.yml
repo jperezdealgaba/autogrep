@@ -1,0 +1,18 @@
+rules:
+- id: vuln-nova-135faa7b
+  pattern: "def fetch_image($CONTEXT, $TARGET, $IMAGE_ID, $USER_ID, $PROJECT_ID):\n\
+    \  ...\n"
+  pattern-not: "def fetch_image($CONTEXT, $TARGET, $IMAGE_ID, $USER_ID, $PROJECT_ID,\
+    \ $MAX_SIZE=0):\n  ...\n"
+  languages:
+  - python
+  message: Detected missing 'max_size' parameter in fetch_image function. This can
+    lead to security vulnerabilities where disk size checks are not enforced, potentially
+    allowing disk space exhaustion or other resource-related attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/135faa7b5d9855312bedc19e5e1ecebae34d3d18
+    category: security
+    cwe: CWE-400
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

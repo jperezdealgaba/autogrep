@@ -1,0 +1,27 @@
+rules:
+- id: vuln-fuel-cms-6c72834a
+  pattern: '$filter_callback = create_function(''$a'', ''return preg_match(\''#^''.$filter.''$#\'',
+    $a);'');
+
+    '
+  pattern-not: '$filter_callback = create_function(''$a'', ''return preg_match(\''#^''.addslashes($filter).''$#\'',
+    $a);'');
+
+    '
+  languages:
+  - php
+  message: "The use of `create_function` with unescaped user input in `preg_match`\
+    \ can lead to code injection vulnerabilities. \nThis is dangerous because it allows\
+    \ attackers to manipulate the regular expression pattern, potentially executing\
+    \ arbitrary code. \nTo fix this, always escape user input using `addslashes` or\
+    \ other appropriate sanitization functions before including it in the pattern.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/6c72834a0d8d3bc34604b9ae0dbb6eef32c0070e
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

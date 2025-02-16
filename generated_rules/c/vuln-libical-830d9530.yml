@@ -1,0 +1,24 @@
+rules:
+- id: vuln-libical-830d9530
+  pattern: "if (comp_kind == ICAL_NO_COMPONENT) {\n    $C = icalcomponent_new(ICAL_XLICINVALID_COMPONENT);\n\
+    \    insert_error($C, $STR, \"Parse error in component name\", ICAL_XLICERRORTYPE_COMPONENTPARSEERROR);\n\
+    }\n"
+  pattern-not: "if (comp_kind == ICAL_NO_COMPONENT) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code creates an invalid component when `comp_kind` is `ICAL_NO_COMPONENT`,
+    which can lead to undefined behavior or crashes. This vulnerability was fixed
+    by removing the creation of the invalid component. To fix this, ensure that no
+    invalid components are created when parsing fails.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libical/libical/commit/830d9530817516377c2bc3b532798ce2c6b4765a
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

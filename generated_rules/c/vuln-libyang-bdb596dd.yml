@@ -1,0 +1,22 @@
+rules:
+- id: vuln-libyang-bdb596dd
+  pattern: "if ($EXPR->expr) {\n    ...\n}\n"
+  pattern-not: "if ($EXPR->expr && $EXPR->features[0]) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'This code checks for the existence of ''expr'' without verifying the presence
+    of ''features[0]''. This can lead to undefined behavior or security vulnerabilities
+    if ''features'' is accessed without proper validation. Always check both conditions
+    to ensure safe access to ''features''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CESNET/libyang/commit/bdb596ddc07596fa212f231135b87d0b9178f6f8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

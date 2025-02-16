@@ -1,0 +1,28 @@
+rules:
+- id: vuln-itop-86f649af
+  pattern: '$sClearText = base64_decode($sExpression);
+
+    '
+  pattern-not: '$sClearText = base64_decode($sExpression, true);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe use of base64_decode without strict parameter. This can
+    lead to decoding errors or unexpected behavior when processing malformed input.
+    Always use base64_decode with the strict parameter set to true to ensure proper
+    decoding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/86f649affc12b5078efc86d9439d67d98f4cb2f6
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.php.net/manual/en/function.base64-decode.php
+    technology:
+    - php

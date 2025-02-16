@@ -1,0 +1,29 @@
+rules:
+- id: vuln-fusionforge-e4d658a0
+  pattern: '@mkdir($GHOME . ''/cgi-bin'');
+
+    '
+  pattern-not: '#@mkdir($GHOME . ''/cgi-bin'');
+
+    '
+  languages:
+  - php
+  message: 'Use of the error suppression operator (@) with mkdir() can hide critical
+    errors, such as permission issues or path problems, leading to incomplete or insecure
+    directory creation. This can result in security vulnerabilities or system misconfigurations.
+    Replace @mkdir with proper error handling to ensure directory creation is both
+    successful and secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/fusionforge/fusionforge/commit/e4d658a062ac531bf4f58d78a717ef14d1ed2e32
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://www.php.net/manual/en/function.mkdir.php
+    technology:
+    - php

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-electron-519a02d8
+  pattern: 'if ($KEY in $CHILD) continue
+
+    '
+  pattern-not: 'if ($KEY in $CHILD && $KEY !== ''webPreferences'') continue
+
+    '
+  languages:
+  - javascript
+  message: 'Missing validation for ''webPreferences'' in object property check. This
+    can lead to unsafe web preferences being applied. Always explicitly check for
+    ''webPreferences'' and ensure proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/electron/electron/commit/519a02d8d4d28e8a467acb40fb26172a80c9454f
+    category: security
+    cwe: CWE-471
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - javascript

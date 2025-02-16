@@ -1,0 +1,27 @@
+rules:
+- id: vuln-gogs-c9fba3cb
+  pattern: 'conf.App.Version = "0.12.10"
+
+    '
+  pattern-not: 'conf.App.Version = "0.12.11"
+
+    '
+  languages:
+  - go
+  message: 'The version of the application is outdated and may contain security vulnerabilities.
+    Using an outdated version can expose the application to known exploits and security
+    risks. Update to the latest version to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gogs/gogs/commit/c9fba3cb30af0789fcf89098dfcb8f2286ee7d3b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+    technology:
+    - go

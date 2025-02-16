@@ -1,0 +1,20 @@
+rules:
+- id: vuln-tcpreplay-2595c903
+  pattern: "if ($PKTHDR->len < $PKTHDR->caplen) {\n  ...\n}\n"
+  pattern-not: "if (!$PKTHDR->len || $PKTHDR->len < $PKTHDR->caplen) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a missing check for zero packet length in packet capture handling.\
+    \ \nThis vulnerability could lead to incorrect processing of malformed packets.\
+    \ \nThe fix involves adding a check for zero length before comparing packet length\
+    \ and capture length.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/2595c903b61d9e50b22cbfcc6899f8f11a17bbff
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

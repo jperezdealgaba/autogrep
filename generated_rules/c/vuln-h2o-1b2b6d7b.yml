@@ -1,0 +1,33 @@
+rules:
+- id: vuln-h2o-1b2b6d7b
+  pattern: "struct st_delegate_request_deferred_t {\n    h2o_timeout_entry_t _timeout;\n\
+    \    h2o_req_t *req;\n};\n...\nstruct st_delegate_request_deferred_t *args = h2o_mem_alloc_pool(&req->pool,\
+    \ sizeof(*args));\n*args = (struct st_delegate_request_deferred_t){req, current_handler};\n\
+    args->_timeout.cb = on_delegate_request_cb;\nh2o_timeout_link(req->conn->ctx->loop,\
+    \ &req->conn->ctx->zero_timeout, &args->_timeout);\n"
+  pattern-not: "struct st_deferred_request_action_t {\n    h2o_timeout_entry_t timeout;\n\
+    };\nstruct st_delegate_request_deferred_t {\n    struct st_deferred_request_action_t\
+    \ super;\n};\n...\nstruct st_delegate_request_deferred_t *args =\n    (struct\
+    \ st_delegate_request_deferred_t *)create_deferred_action(req, sizeof(*args),\
+    \ on_delegate_request_cb);\nargs->current_handler = current_handler;\n"
+  languages:
+  - c
+  message: 'Detected unsafe timeout handling in request delegation. The original code
+    directly allocates and links a timeout entry without proper disposal handling,
+    which could lead to resource leaks or use-after-free vulnerabilities. The fix
+    introduces a `create_deferred_action` function that properly handles timeout disposal.
+    Use the fixed version to ensure safe timeout management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/h2o/h2o/commit/1b2b6d7be65ab12ea71ea1e2d687f370712f0b56
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-772
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/h2o/h2o/commit/1b2b6d7be65ab12ea71ea1e2d687f370712f0b56
+    technology:
+    - c

@@ -1,0 +1,36 @@
+rules:
+- id: vuln-firefly-iii-db0500dc
+  pattern: "if (null !== $user) {\n  if (1 === (int)$user->blocked) {\n    $message\
+    \ = (string)trans('firefly.block_account_logout');\n    if ('email_changed' ===\
+    \ $user->blocked_code) {\n      $message = (string)trans('firefly.email_changed_logout');\n\
+    \    }\n    app('session')->flash('logoutMessage', $message);\n    $this->auth->logout();\n\
+    \    throw new AuthenticationException('Blocked account.', $guards);\n  }\n}\n"
+  pattern-not: "private function validateBlockedUser(?User $user, array $guards):\
+    \ void {\n  if (null !== $user) {\n    if (1 === (int)$user->blocked) {\n    \
+    \  $message = (string)trans('firefly.block_account_logout');\n      if ('email_changed'\
+    \ === $user->blocked_code) {\n        $message = (string)trans('firefly.email_changed_logout');\n\
+    \      }\n      Log::warning('User is blocked, cannot use authentication method.');\n\
+    \      app('session')->flash('logoutMessage', $message);\n      $this->auth->logout();\n\
+    \      throw new AuthenticationException('Blocked account.', $guards);\n    }\n\
+    \  }\n}\n"
+  languages:
+  - php
+  message: 'The code directly handles blocked user validation within a middleware
+    without proper logging and encapsulation. This can lead to inconsistent handling
+    of blocked users and potential security issues. The fix involves encapsulating
+    this logic into a separate method with proper logging to ensure consistent and
+    secure handling of blocked users.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/firefly-iii/firefly-iii/commit/db0500dcf0d4f1990fc7a377ef0d56c3884fcaa4
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

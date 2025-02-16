@@ -1,0 +1,27 @@
+rules:
+- id: vuln-booth-98b4284d
+  pattern: '$FUNC(gcry_md_get_algo_dlen($HID))
+
+    '
+  pattern-not: '$HLEN = gcry_md_get_algo_dlen($HID);
+
+    $FUNC($HLEN)
+
+    '
+  languages:
+  - c
+  message: 'Direct usage of `gcry_md_get_algo_dlen` without checking its return value
+    can lead to vulnerabilities. Always store the result in a variable and verify
+    it before use to prevent potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ClusterLabs/booth/commit/98b4284d1701f2efec278b51f151314148bfe70e
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

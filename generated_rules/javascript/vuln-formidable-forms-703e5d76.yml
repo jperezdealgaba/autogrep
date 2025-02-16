@@ -1,0 +1,23 @@
+rules:
+- id: vuln-formidable-forms-703e5d76
+  pattern: 'jQuery(''.frm_feature_label'').html($DATA)
+
+    '
+  pattern-not: 'jQuery(''.frm_feature_label'').text($DATA)
+
+    '
+  languages:
+  - javascript
+  message: 'Potential XSS vulnerability detected. Using .html() with untrusted input
+    can lead to cross-site scripting (XSS) attacks. Use .text() instead to safely
+    set text content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Strategy11/formidable-forms/commit/703e5d7658ad2193741307829af534f4e3dadc3d
+    category: security
+    cwe: CWE-79
+    owasp: OWASP_A7
+    references: https://owasp.org/www-community/attacks/xss/
+    technology: javascript

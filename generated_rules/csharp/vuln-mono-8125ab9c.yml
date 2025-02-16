@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mono-8125ab9c
+  pattern: 'internal bool EnableViewStateMac = false;
+
+    '
+  pattern-not: 'internal bool EnableViewStateMac = true;
+
+    '
+  languages:
+  - csharp
+  message: 'The EnableViewStateMac property is set to false, which disables the Message
+    Authentication Code (MAC) validation for ViewState. This can lead to security
+    vulnerabilities such as tampering with ViewState data. Always set EnableViewStateMac
+    to true to ensure ViewState integrity.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mono/mono/commit/8125ab9c2a8c9b0d7da01b6909d54c47344eaa67
+    category: security
+    cwe:
+    - CWE-642
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://docs.microsoft.com/en-us/previous-versions/dotnet/netframework-1.1/ms972969(v=vs.71)#view-state-and-security
+    technology:
+    - csharp

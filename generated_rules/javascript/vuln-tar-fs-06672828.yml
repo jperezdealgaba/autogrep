@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tar-fs-06672828
+  pattern: 'var $VAR = path.resolve($CWD, $HEADER.linkname)
+
+    '
+  pattern-not: 'var $VAR = path.join($CWD, path.join(''/'', $HEADER.linkname))
+
+    '
+  languages:
+  - javascript
+  message: "Using `path.resolve` with untrusted input can lead to path traversal vulnerabilities.\
+    \ \nThe `path.resolve` function resolves relative paths from the current working\
+    \ directory, \nwhich can allow attackers to access files outside the intended\
+    \ directory. \nUse `path.join` with `path.join('/', $VAR)` to safely join paths\
+    \ and prevent traversal.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mafintosh/tar-fs/commit/06672828e6fa29ac8551b1b6f36c852a9a3c58a2
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://nodejs.org/api/path.html
+    technology:
+    - javascript

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-chamilo-lms-d939402d
+  pattern: '$VAR = isset($_REQUEST[''$TYPE'']) ? $_REQUEST[''$TYPE''] : $DEFAULT;
+
+    '
+  pattern-not: '$VAR = isset($_REQUEST[''$TYPE'']) && in_array($_REQUEST[''$TYPE''],
+    $ARRAY, true) ? $_REQUEST[''$TYPE''] : $DEFAULT;
+
+    '
+  languages:
+  - php
+  message: 'Unvalidated user input from $_REQUEST can lead to security vulnerabilities
+    such as injection attacks or unexpected behavior. Always validate user input against
+    a whitelist of allowed values using in_array() or similar functions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/d939402d83bf68af5377b629883d8e5437d843ec
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Injection_Flaws
+    technology:
+    - php

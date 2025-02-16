@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpcas-0e75d133
+  pattern: '$request->setSslCaCert($this->_cas_server_ca_cert);
+
+    $request->setSslCaCert($this->_cas_server_cn_validate);
+
+    '
+  pattern-not: '$request->setSslCaCert($this->_cas_server_ca_cert, $this->_cas_server_cn_validate);
+
+    '
+  languages:
+  - php
+  message: 'The code uses separate calls to `setSslCaCert` for certificate and validation,
+    which can lead to incomplete SSL/TLS validation. This is dangerous because it
+    may allow man-in-the-middle attacks. Fix by using a single call to `setSslCaCert`
+    with both parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apereo/phpCAS/commit/0e75d13385c0480d24512e5ea7dbb69863609b43
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

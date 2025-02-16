@@ -1,0 +1,24 @@
+rules:
+- id: vuln-yt-dlp-31215122
+  pattern: '$RES[''Cookie''] = $COOKIES
+
+    '
+  pattern-not: '$RES[''cookies''] = $COOKIES
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure handling of cookies in HTTP headers. Passing cookies
+    directly in headers can lead to security vulnerabilities where cookies are sent
+    to unintended domains. Use scoped cookies or load them from a secure source instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/yt-dlp/yt-dlp/commit/3121512228487c9c690d3d39bfd2579addf96e07
+    category: security
+    cwe: CWE-565
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://github.com/yt-dlp/yt-dlp/security/advisories/GHSA-v8mc-9377-rwjj
+    technology: python

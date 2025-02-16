@@ -1,0 +1,23 @@
+rules:
+- id: vuln-kate-361dd43e
+  pattern: '$CAPS.textDocumentSync = static_cast<LSPDocumentSyncKind>($EXPR);
+
+    '
+  pattern-not: '$CAPS.textDocumentSync.change = static_cast<LSPDocumentSyncKind>($EXPR);
+
+    '
+  languages:
+  - cpp
+  message: "Direct assignment to `textDocumentSync` without using the `change` field\
+    \ is unsafe. \nThis can lead to incorrect synchronization behavior in the LSP\
+    \ client. \nUpdate the code to use `textDocumentSync.change` instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/kde/kate/commit/361dd43e42994829dbdb35e78fb7698d27cbb0e2
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - cpp

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-striptags-f252a6b0
+  pattern: "{\n  ...,\n  \"version\": \"3.1.1\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"3.2.0\",\n  ...\n}\n"
+  languages:
+  - json
+  message: 'The package version 3.1.1 contains a security vulnerability that has been
+    fixed in version 3.2.0.
+
+    Using the vulnerable version can expose your application to potential security
+    risks.
+
+    Update the package to version 3.2.0 or later to mitigate the vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ericnorris/striptags/commit/f252a6b0819499cd65403707ebaf5cc925f2faca
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Misconfiguration
+    technology:
+    - json

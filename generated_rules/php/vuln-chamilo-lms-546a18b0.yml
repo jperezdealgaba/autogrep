@@ -1,0 +1,26 @@
+rules:
+- id: vuln-chamilo-lms-546a18b0
+  pattern: '$form->addElement(''text'', $NAME, $LABEL, $OPTIONS)
+
+    '
+  pattern-not: '$form->addText($NAME, $LABEL, $REQUIRED, $OPTIONS)
+
+    '
+  languages:
+  - php
+  message: "The use of `addElement('text', ...)` is deprecated and potentially insecure.\
+    \ \nIt does not enforce input validation by default, which could lead to security\
+    \ vulnerabilities \nsuch as XSS or SQL injection. Use `addText()` instead, which\
+    \ provides built-in validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/546a18b0bd1446123f4e29f81f42e71b761f51b7
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

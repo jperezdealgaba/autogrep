@@ -1,0 +1,21 @@
+rules:
+- id: vuln-argo-cd-14c3dd2c
+  pattern: "if ((window['READTHEDOCS_DATA']).version !== \"latest\" || (window['READTHEDOCS_DATA']).version\
+    \ !== \"stable\") {\n  ...\n}\n"
+  pattern-not: "else if ((window['READTHEDOCS_DATA']).version !== \"stable\") {\n\
+    \  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Incorrect conditional logic detected. The original condition will always
+    evaluate to true due to the use of ''||'' instead of ''&&''. This can lead to
+    unintended behavior. Fix by using ''&&'' or restructuring the condition as shown
+    in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/14c3dd2c59f19281d5da987741657b7374b9703e
+    category: logic-error
+    cwe: CWE-670
+    technology:
+    - javascript

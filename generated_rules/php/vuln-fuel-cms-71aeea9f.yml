@@ -1,0 +1,30 @@
+rules:
+- id: vuln-fuel-cms-71aeea9f
+  pattern: 'preg_replace(''#(<[^>]*)onerror=|onload=(.+>)#Uis'', ''$1$2'', $STR)
+
+    '
+  pattern-not: 'preg_replace(''#(<[^>]*)onerror=|onload=|ontoggle=(.+>)#Uis'', ''$1$2'',
+    $STR)
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to XSS attacks due to insufficient sanitization
+    of HTML attributes. The `preg_replace` function does not remove the `ontoggle`
+    attribute, which can be exploited to execute malicious JavaScript. This can lead
+    to Cross-Site Scripting (XSS) vulnerabilities. To fix this, ensure that all event
+    handler attributes, including `ontoggle`, are removed from HTML strings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/71aeea9f4d78c9892201a92c636790fefcf0c3f9
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

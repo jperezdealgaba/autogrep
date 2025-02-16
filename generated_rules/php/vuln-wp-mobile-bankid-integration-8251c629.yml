@@ -1,0 +1,30 @@
+rules:
+- id: vuln-wp-mobile-bankid-integration-8251c629
+  pattern: 'unserialize($VAR)
+
+    '
+  pattern-not: '$this->convert_json_order_response_to_array($VAR)
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe use of unserialize(). This function can lead to object
+    injection vulnerabilities if untrusted data is passed to it. Instead, use a safer
+    method like json_decode() or a custom validation function to process the data.
+    The patch introduces a new method convert_json_order_response_to_array() which
+    properly validates and converts JSON data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jamieblomerus/WP-Mobile-BankID-Integration/commit/8251c6298a995ccf4f26c43f03ed11a275dd0c5f
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://owasp.org/www-community/vulnerabilities/PHP_Object_Injection
+    - https://www.php.net/manual/en/function.unserialize.php
+    technology:
+    - php

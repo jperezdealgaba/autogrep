@@ -1,0 +1,28 @@
+rules:
+- id: vuln-simplesamlphp-952027dd
+  pattern: '$hookinfo[''errors''][] = ''[core] You are running PHP version '' . phpversion()
+    . ''. SimpleSAMLphp requires version >= 5.3. Please upgrade!'';
+
+    '
+  pattern-not: '$hookinfo[''errors''][] = ''[core] You are running an old PHP installation.
+    Please check the requirements for your SimpleSAMLphp version and upgrade.'';
+
+    '
+  languages:
+  - php
+  message: 'The code directly exposes the PHP version in error messages, which can
+    be leveraged by attackers to target known vulnerabilities in specific PHP versions.
+    This information disclosure should be avoided to reduce the attack surface. Instead,
+    use a more generic error message that does not reveal the exact PHP version.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/952027dd7f794ff4b2d4f5eddf549c5b5070fa38
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-quassel-6605882f
+  pattern: 'QSqlDatabase::database($VAR)
+
+    '
+  pattern-not: 'QSqlDatabase::database($VAR, false)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential database connection vulnerability where the connection
+    is not checked for being open. This can lead to application crashes or undefined
+    behavior if the connection is lost. Always check if the database connection is
+    open and attempt to reconnect if necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/6605882f41331c80f7ac3a6992650a702ec71283
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

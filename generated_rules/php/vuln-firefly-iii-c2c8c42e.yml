@@ -1,0 +1,24 @@
+rules:
+- id: vuln-firefly-iii-c2c8c42e
+  pattern: "public function $FUNC($RULE) : RedirectResponse {\n  ...\n  $this->ruleRepos->duplicate($RULE);\n\
+    \  ...\n  return redirect(route('rules.index'));\n}\n"
+  pattern-not: "public function $FUNC(Request $REQUEST) : JsonResponse {\n  ...\n\
+    \  $RULE_ID = (int)$REQUEST->get('id');\n  $RULE = $this->ruleRepos->find($RULE_ID);\n\
+    \  if (null !== $RULE) {\n    $this->ruleRepos->duplicate($RULE);\n  }\n  ...\n\
+    \  return new JsonResponse(['OK']);\n}\n"
+  languages:
+  - php
+  message: "Directly passing sensitive objects like Rule or RuleGroup in controller\
+    \ methods can lead to security vulnerabilities. \nInstead, use request objects\
+    \ to fetch and validate IDs, and return JSON responses for API consistency.\n\
+    This prevents potential object injection and ensures proper access control.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/firefly-iii/firefly-iii/commit/c2c8c42ef3194d1aeba8c48240fe2e9063f77635
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

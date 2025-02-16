@@ -1,22 +1,27 @@
 rules:
 - id: vuln-drogon-645c2d8a
-  pattern: server = "wss://echo.websocket.org";
-  pattern-not: server = "wss://echo.websocket.events/.ws";
+  pattern: 'server = "wss://echo.websocket.org"
+
+    '
+  pattern-not: 'server = "wss://echo.websocket.events/.ws"
+
+    '
   languages:
   - cpp
-  message: "The server URL is hardcoded to an insecure or outdated endpoint. \nThis\
-    \ can lead to potential security risks or service disruptions if the endpoint\
-    \ is compromised or deprecated.\nUpdate the server URL to a secure and reliable\
-    \ endpoint.\n"
+  message: 'The code uses an outdated or insecure WebSocket server URL. This could
+    expose the application to security risks if the server is compromised or no longer
+    maintained. Update the server URL to a secure and trusted endpoint.
+
+    '
   severity: ERROR
   metadata:
-    source-url: github.com/an-tao/drogon/commit/645c2d8aaf80d3502bf2598c4caeffe91e1f19a9
+    source-url: github.com/drogonframework/drogon/commit/645c2d8aaf80d3502bf2598c4caeffe91e1f19a9
     category: security
     cwe:
-    - CWE-547
+    - 'CWE-829: Inclusion of Functionality from Untrusted Control Sphere'
     owasp:
-    - 'A9: Using Components with Known Vulnerabilities'
+    - A3:2017-Sensitive Data Exposure
     references:
-    - https://owasp.org/www-project-top-ten/
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
     technology:
     - cpp

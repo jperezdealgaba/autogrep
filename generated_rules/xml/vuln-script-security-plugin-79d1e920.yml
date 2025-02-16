@@ -1,0 +1,27 @@
+rules:
+- id: vuln-script-security-plugin-79d1e920
+  pattern: '<version>1.26</version>
+
+    '
+  pattern-not: '<version>1.27</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version 1.26 of the script-security-plugin is vulnerable. Using outdated
+    versions can expose the system to security risks. Upgrade to version 1.27 or later
+    to mitigate the vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/script-security-plugin/commit/79d1e9207c5c359ca779b92f0a290e18c5e2387b
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://www.jenkins.io/security/advisory/2021-01-13/
+    technology:
+    - xml

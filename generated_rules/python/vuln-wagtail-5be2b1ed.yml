@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wagtail-5be2b1ed
+  pattern: 'mark_safe($HTML)
+
+    '
+  pattern-not: '" | ".join($BITS)
+
+    '
+  languages:
+  - python
+  message: Detected unsafe use of mark_safe with HTML content. This can lead to Cross-Site
+    Scripting (XSS) vulnerabilities. Use proper HTML escaping or safe string joining
+    instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/5be2b1ed55fd7259dfdf2c82e7701dba407b8b62
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.safestring.mark_safe
+    technology:
+    - python

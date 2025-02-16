@@ -1,0 +1,22 @@
+rules:
+- id: vuln-flow-c9db8f6c
+  pattern: "if (!$CSRF_TOKEN_IN_SESSION.equals($REQUEST.getHeader(\"X-CSRF-Token\"\
+    ))) {\n    ...\n}\n"
+  pattern-not: "if ($CSRF_TOKEN_IN_REQUEST == null || !MessageDigest.isEqual(\n  \
+    \      $CSRF_TOKEN_IN_SESSION.getBytes(StandardCharsets.UTF_8),\n        $CSRF_TOKEN_IN_REQUEST.getBytes(StandardCharsets.UTF_8)))\
+    \ {\n    ...\n}\n"
+  languages:
+  - java
+  message: 'Insecure CSRF token comparison detected. Direct string comparison of CSRF
+    tokens is vulnerable to timing attacks. Use `MessageDigest.isEqual` for secure
+    comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/c9db8f6cd0f4bbd5c78bb0ef6176f4f4dfcaa624
+    category: security
+    cwe: CWE-208
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - java

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-audiofile-7d65f89d
+  pattern: 'void *$BUFFER = malloc($SIZE * $FRAMESIZE);
+
+    '
+  pattern-not: "int $BUFFERSIZE;\nwhile (multiplyCheckOverflow($SIZE, $FRAMESIZE,\
+    \ &$BUFFERSIZE))\n  $SIZE /= 2;\nvoid *$BUFFER = malloc($BUFFERSIZE);\n"
+  languages:
+  - c
+  message: "Detected a potential integer overflow vulnerability in a malloc call.\
+    \ \nMultiplying two integers directly before passing them to malloc can lead to\
+    \ integer overflow, \nresulting in a buffer that is smaller than expected and\
+    \ potential memory corruption. \nUse a checked multiplication function to ensure\
+    \ the result does not overflow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/antlarr/audiofile/commit/7d65f89defb092b63bcbc5d98349fb222ca73b3c
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-calibre-235b7e38
+  pattern: '$VAR = $MATCH.group(1)
+
+    '
+  pattern-not: '$VAR = $MATCH.group(1).strip()
+
+    '
+  languages:
+  - python
+  message: Detected missing .strip() on regex group extraction. This can lead to unexpected
+    behavior or security issues due to leading/trailing whitespace. Always use .strip()
+    to remove unwanted whitespace.
+  severity: ERROR
+  metadata:
+    source-url: github.com/kovidgoyal/calibre/commit/235b7e38c197ba4a3c17531e516610af8795e348
+    category: security
+    cwe: CWE-20
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/re.html#re.Match.group
+    technology:
+    - python

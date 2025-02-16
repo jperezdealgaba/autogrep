@@ -1,0 +1,20 @@
+rules:
+- id: vuln-home-assistant-598f093b
+  pattern: "$LOG_PATH = $HASS.data.get($DATA_LOGGING, None)\nif $LOG_PATH:\n    $HASS.http.register_static_path($URL_API_ERROR_LOG,\
+    \ $LOG_PATH, $FLAG)\n"
+  pattern-not: "if $DATA_LOGGING in $HASS.data:\n    $HASS.http.register_view($APIErrorLog)\n\
+    class $APIErrorLog($HomeAssistantView):\n    ...\n"
+  languages:
+  - python
+  message: Detected unsafe direct file path registration in API. This can lead to
+    unauthorized file access. Use a view class with proper authentication and access
+    controls instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/home-assistant/home-assistant/commit/598f093bf0fecdefaa3d95d1ddae71317a05321e
+    category: security
+    cwe: 'CWE-552: Files or Directories Accessible to External Parties'
+    owasp: A05:2021-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A05_2021-Security_Misconfiguration
+    technology: python

@@ -1,0 +1,33 @@
+rules:
+- id: vuln-mupdf-de39f005
+  pattern: '$FORM = pdf_load_xobject($CTX, $DOC, $FORMOBJ);
+
+    ...
+
+    pdf_update_xobject_contents($CTX, $DOC, $FORM, $FZBUF);
+
+    '
+  pattern-not: 'pdf_update_stream($CTX, $DOC, $FORMOBJ, $FZBUF, 0);
+
+    $FORM = pdf_load_xobject($CTX, $DOC, $FORMOBJ);
+
+    $FORM->iteration = 1;
+
+    '
+  languages:
+  - c
+  message: "Detected an insecure sequence of operations in PDF XObject handling. \n\
+    The vulnerable code loads an XObject and updates its contents without proper iteration\
+    \ control, \nwhich can lead to memory corruption or undefined behavior. \nThe\
+    \ fix ensures the stream is updated before loading the XObject and sets the iteration\
+    \ flag correctly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/de39f005f12a1afc6973c1f5cec362d6545f70cb
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

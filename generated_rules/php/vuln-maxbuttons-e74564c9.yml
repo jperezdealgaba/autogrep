@@ -1,0 +1,29 @@
+rules:
+- id: vuln-maxbuttons-e74564c9
+  pattern: "if (isset($_GET['id']) && $_GET['id'] != '') {\n  ...\n}\n"
+  pattern-not: "if (isset($_GET['id']) && $_GET['id'] != '' && intval($_GET['id'])\
+    \ != 0) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where user input is not properly
+    validated.
+
+    The code checks if ''id'' is set and not empty but does not validate that it is
+    a non-zero integer.
+
+    This could lead to SQL injection or other security issues if the input is used
+    in a query.
+
+    To fix this, ensure that ''id'' is validated as a non-zero integer using intval().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wp-plugins/maxbuttons/commit/e74564c9e3b7429808e317f4916bd1c26ef0b806
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-argo-cd-94e60757
+  pattern: 'versionpkg.RegisterVersionServiceServer($SERVER, &version.Server{})
+
+    '
+  pattern-not: 'versionpkg.RegisterVersionServiceServer($SERVER, version.NewServer($AUTH,
+    $DISABLE_AUTH))
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure instantiation of version.Server without proper authentication
+    and authorization controls. This can lead to unauthorized access to version information.
+    Use version.NewServer with appropriate authentication and authorization parameters
+    to ensure secure access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/94e60757575c0962d8ab45c33748028ce4b5b30c
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control
+    technology:
+    - go

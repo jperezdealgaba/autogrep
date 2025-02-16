@@ -1,0 +1,27 @@
+rules:
+- id: vuln-contao-c98585d3
+  pattern: "if ($k != 'unit') {\n  ...\n}\n"
+  pattern-not: "if ($k == 'unit') {\n  if (!$this->isValidOption($v)) {\n    $varInput[$k]\
+    \ = '';\n    $this->addError($GLOBALS['TL_LANG']['ERR']['invalid']);\n  }\n}\n\
+    else {\n  ...\n}\n"
+  pattern-inside: "class $CLASS {\n  ...\n  protected $arrUnits = array();\n  ...\n\
+    \  function $FUNCTION(...) {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - php
+  message: "The code fails to validate unit fields, which can lead to security vulnerabilities.\
+    \ \nThis can allow malicious input to bypass validation checks, potentially leading\
+    \ to \ninjection attacks or other security issues. The fix adds proper validation\
+    \ for unit \nfields using the isValidOption method and handles invalid inputs\
+    \ by clearing the \nvalue and adding an error message.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/contao/contao/commit/c98585d36baa25fda69c062421e7e7eadc53c82b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

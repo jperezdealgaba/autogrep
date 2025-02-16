@@ -1,0 +1,30 @@
+rules:
+- id: vuln-pjproject-450baca9
+  pattern: "while ($MSG_LEN > 0) {\n  ...\n}\n"
+  pattern-not: "while ($MSG_LEN > 0 && $MSG->attr_count < $ATTR_MAX_CNT) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to missing bounds
+    check in a while loop.
+
+    This vulnerability occurs when processing STUN messages without verifying the
+    attribute count against the maximum allowed.
+
+    An attacker could exploit this to cause a buffer overflow, potentially leading
+    to arbitrary code execution or a crash.
+
+    To fix this, ensure the loop checks that the attribute count does not exceed the
+    maximum allowed, as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pjsip/pjproject/commit/450baca94f475345542c6953832650c390889202
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c

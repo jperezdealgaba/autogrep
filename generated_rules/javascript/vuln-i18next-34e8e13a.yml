@@ -1,0 +1,25 @@
+rules:
+- id: vuln-i18next-34e8e13a
+  pattern: '$STR.replace(new RegExp([$PREFIX, $KEY, $SUFFIX].join(''''), ''g''), $REPLACEMENT)
+
+    '
+  pattern-not: "$STR.replace(new RegExp([$PREFIX, '(.+?)', '(HTML)?', $SUFFIX].join(''),\
+    \ 'g'), function (wholeMatch, keyMatch, htmlMatched) {\n    ...\n    if ($ESCAPE_INTERPOLATION\
+    \ && !htmlMatched) {\n        return $ESCAPE_FUNCTION($VALUE);\n    }\n    return\
+    \ $VALUE;\n})\n"
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unsanitized interpolation in i18next.
+    Ensure interpolated values are properly escaped to prevent injection attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/i18next/i18next/commit/34e8e13a2b64708a0aed01092e4dbfd0e5013831
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/i18next/i18next/commit/34e8e13a2b64708a0aed01092e4dbfd0e5013831
+    technology:
+    - javascript

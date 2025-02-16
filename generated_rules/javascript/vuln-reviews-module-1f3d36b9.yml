@@ -1,0 +1,22 @@
+rules:
+- id: vuln-reviews-module-1f3d36b9
+  pattern: 'Pool.pool.query(`...${$VAR}...`, (err, results) => {...})
+
+    '
+  pattern-not: 'Pool.pool.query($QUERY, [$VAR], (err, results) => {...})
+
+    '
+  languages:
+  - javascript
+  message: SQL injection vulnerability detected. Use parameterized queries to prevent
+    SQL injection attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/opensource-table/reviews-module/commit/1f3d36b946fbb30b5475fcdcd4a345340360e983
+    category: security
+    cwe: CWE-89
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - javascript

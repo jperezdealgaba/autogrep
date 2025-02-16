@@ -1,0 +1,23 @@
+rules:
+- id: vuln-formidable-forms-5549ef92
+  pattern: 'jQuery(''.frm-confirm-msg'').html($CAUTION + link.getAttribute(''data-frmverify''))
+
+    '
+  pattern-not: "$CAUTION = link.getAttribute('data-frmcaution');\n$VERIFY = link.getAttribute('data-frmverify');\n\
+    $CONFIRM_MESSAGE = jQuery('.frm-confirm-msg');\nif ($CAUTION) {\n  $FRM_CAUTION\
+    \ = document.createElement('span');\n  $FRM_CAUTION.classList.add('frm-caution');\n\
+    \  $FRM_CAUTION.appendChild(document.createTextNode($CAUTION));\n  $CONFIRM_MESSAGE.append($FRM_CAUTION);\n\
+    }\nif ($VERIFY) {\n  $CONFIRM_MESSAGE.append(document.createTextNode($VERIFY));\n\
+    }\n"
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unsafe concatenation of HTML content.
+    Use DOM methods to safely append content instead of directly setting innerHTML.
+  severity: ERROR
+  metadata:
+    source-url: github.com/Strategy11/formidable-forms/commit/5549ef921b4afb38e4798eed1d8b9ad84a100dc4
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

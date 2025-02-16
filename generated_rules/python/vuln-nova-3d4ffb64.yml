@@ -1,0 +1,19 @@
+rules:
+- id: vuln-nova-3d4ffb64
+  pattern: "if 'nova.context' in request.environ and $PROJECT_ID:\n    request.environ['nova.context'].project_id\
+    \ = $PROJECT_ID\n"
+  pattern-not: "if ('nova.context' in request.environ and $PROJECT_ID\n    and $PROJECT_ID\
+    \ != request.environ['nova.context'].project_id):\n    msg = _(\"Malformed request\
+    \ url\")\n    return faults.Fault(webob.exc.HTTPBadRequest(explanation=msg))\n"
+  languages:
+  - python
+  message: Detected insecure project ID assignment without validation. This can lead
+    to unauthorized project ID changes. Validate the project ID before assignment.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/3d4ffb64f1e18117240c26809788528979e3bd15
+    category: security
+    cwe: CWE-639
+    owasp: A5:2017-Broken Access Control
+    technology:
+    - python

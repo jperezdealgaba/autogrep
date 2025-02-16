@@ -1,0 +1,32 @@
+rules:
+- id: vuln-undertow-facb33a5
+  pattern: "public AuthenticationMechanismOutcome handleDigestHeader(HttpServerExchange\
+    \ $EXCHANGE, final SecurityContext $SECURITY_CONTEXT) {\n  ...\n}\n"
+  pattern-not: "private AuthenticationMechanismOutcome handleDigestHeader(HttpServerExchange\
+    \ $EXCHANGE, final SecurityContext $SECURITY_CONTEXT) {\n  if($PARSED_HEADER.containsKey(DigestAuthorizationToken.DIGEST_URI))\
+    \ {\n    String $URI = $PARSED_HEADER.get(DigestAuthorizationToken.DIGEST_URI);\n\
+    \    String $REQUEST_URI = $EXCHANGE.getRequestURI();\n    if(!$EXCHANGE.getQueryString().isEmpty())\
+    \ {\n      $REQUEST_URI = $REQUEST_URI + \"?\" + $EXCHANGE.getQueryString();\n\
+    \    }\n    if(!$URI.equals($REQUEST_URI)) {\n      $EXCHANGE.setStatusCode(StatusCodes.BAD_REQUEST);\n\
+    \      $EXCHANGE.endExchange();\n      return AuthenticationMechanismOutcome.NOT_AUTHENTICATED;\n\
+    \    }\n  } else {\n    return AuthenticationMechanismOutcome.NOT_AUTHENTICATED;\n\
+    \  }\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Missing URI validation in Digest authentication handler. This can allow
+    attackers to bypass authentication by manipulating the URI.
+
+    The vulnerability occurs because the Digest URI parameter is not validated against
+    the actual request URI.
+
+    To fix this, ensure the Digest URI is validated against the request URI and return
+    BAD_REQUEST if they don''t match.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/facb33a5cedaf4b7b96d3840a08210370a806870
+    category: security
+    cwe: CWE-287
+    owasp: 'A2: Broken Authentication'
+    technology: java

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-buildkit-5026d95a
+  pattern: '$FRONTEND.Solve($CTX, $LLB, $OPT, $INPUTS, $SID, $SM)
+
+    '
+  pattern-not: '$FRONTEND.Solve($CTX, $LLB, $EXEC, $OPT, $INPUTS, $SID, $SM)
+
+    '
+  languages:
+  - go
+  message: 'Detected a call to Solve without passing the executor parameter. This
+    could lead to improper container execution management. Always pass the executor
+    parameter to ensure proper container execution handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moby/buildkit/commit/5026d95aa3336e97cfe46e3764f52d08bac7a10e
+    category: security
+    cwe: 'CWE-284: Improper Access Control'
+    owasp: 'A6: Security Misconfiguration'
+    references:
+    - https://github.com/moby/buildkit/pull/1234
+    technology:
+    - go

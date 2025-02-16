@@ -1,0 +1,27 @@
+rules:
+- id: vuln-rust-marc-6299af0a
+  pattern: 'unsafe { $VAR.set_len($LEN) };
+
+    '
+  pattern-not: '$VAR.resize($LEN, $VAL);
+
+    '
+  languages:
+  - rust
+  message: 'Detected unsafe use of `set_len` without proper initialization. This can
+    lead to uninitialized memory access, which is a security risk. Replace `set_len`
+    with `resize` to properly initialize the memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/blackbeam/rust-marc/commit/6299af0ab17f070a78b75367e14b9101c29ce475
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://doc.rust-lang.org/std/vec/struct.Vec.html#method.set_len
+    technology:
+    - rust

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-metabase-b7c6bb90
+  pattern: "if ($QUESTION.canRun()) {\n  ...\n}\n"
+  pattern-not: "if ($QUESTION.canRun() && ($QUESTION.isSaved() || $QUESTION.isStructured()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Detected a potentially unsafe conditional check that only verifies if
+    a question can run without ensuring it is either saved or structured.
+
+    This vulnerability could allow unauthorized or unsafe queries to be executed.
+
+    To fix this, ensure the condition also checks if the question is saved or structured
+    using `question.isSaved()` or `question.isStructured()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/metabase/metabase/commit/b7c6bb905a9187347cfc9035443b514713027a5c
+    category: security
+    cwe:
+    - CWE-841
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - typescript

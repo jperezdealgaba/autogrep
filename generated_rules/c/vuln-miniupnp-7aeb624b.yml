@@ -1,0 +1,28 @@
+rules:
+- id: vuln-miniupnp-7aeb624b
+  pattern: '$DATA->l_head = NULL;
+
+    $DATA->portListing = NULL;
+
+    $DATA->portListingLength = 0;
+
+    '
+  pattern-not: 'memset($DATA, 0, sizeof(struct NameValueParserData));
+
+    '
+  languages:
+  - c
+  message: 'Detected insecure initialization of struct fields. Manually setting individual
+    fields to NULL instead of using memset() can lead to uninitialized memory, potentially
+    causing memory corruption or information disclosure. Use memset() to ensure all
+    fields are properly initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/miniupnp/miniupnp/commit/7aeb624b44f86d335841242ff427433190e7168a
+    category: security
+    cwe:
+    - 'CWE-909: Missing Initialization of Resource'
+    technology:
+    - c

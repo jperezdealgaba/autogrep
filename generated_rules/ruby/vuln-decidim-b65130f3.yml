@@ -1,0 +1,28 @@
+rules:
+- id: vuln-decidim-b65130f3
+  pattern: "def $METHOD\n  return {} if $QUESTIONNAIRE&.questions.blank?\n  $QUESTIONNAIRE.questions.each.inject({})\
+    \ do |$SERIALIZED, $QUESTION|\n    ...\n  end\nend\n"
+  pattern-not: "def $METHOD\n  $QUESTIONNAIRE_ID = @answers.first&.decidim_questionnaire_id\n\
+    \  return {} unless $QUESTIONNAIRE_ID\n  $QUESTIONS = Decidim::Forms::Question.where(decidim_questionnaire_id:\
+    \ $QUESTIONNAIRE_ID)\n  return {} if $QUESTIONS.none?\n  $QUESTIONS.each.inject({})\
+    \ do |$SERIALIZED, $QUESTION|\n    ...\n  end\nend\n"
+  languages:
+  - ruby
+  message: 'Detected a potential memory leak in questionnaire handling. The original
+    code loads the entire questionnaire object for each iteration, which can cause
+    out-of-memory errors when processing large datasets. Instead, fetch only the necessary
+    questionnaire ID and questions to avoid loading unnecessary data into memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/decidim/decidim/commit/b65130f39929ef03f44a486eb85629b4de1693ac
+    category: performance
+    cwe:
+    - CWE-400
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://github.com/decidim/decidim/commit/b65130f39929ef03f44a486eb85629b4de1693ac
+    technology:
+    - ruby

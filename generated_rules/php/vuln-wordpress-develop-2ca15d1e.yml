@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wordpress-develop-2ca15d1e
+  pattern: "if ( ! $wpdb->get_results( \"DESCRIBE $table;\" ) ) {\n  ...\n}\n"
+  pattern-not: "$described_table = $wpdb->get_results( \"DESCRIBE $table;\" );\nif\
+    \ ( is_array( $described_table ) && count( $described_table ) === 0 ) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Directly using the result of `get_results` in a conditional check can
+    lead to incorrect logic due to potential false negatives. Instead, store the result
+    in a variable and explicitly check if it is an empty array. This ensures proper
+    handling of the database query results and prevents potential security issues
+    related to incorrect table existence checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/2ca15d1e5ce70493c5c0c096ca0c76503d6da07c
+    category: security
+    cwe:
+    - CWE-480
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php

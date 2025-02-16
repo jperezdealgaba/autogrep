@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ansible-runner-dcdb62da
+  pattern: 'assert $RC.private_data_dir == os.path.join(gettempdir(), ".ansible-runner")
+
+    '
+  pattern-not: 'base_private_data_dir = os.path.join(gettempdir(), ''.ansible-runner-'')
+
+    assert $RC.private_data_dir.startswith(base_private_data_dir)
+
+    assert len($RC.private_data_dir) > len(base_private_data_dir)
+
+    '
+  languages:
+  - python
+  message: 'Detected a potentially insecure directory path assertion. The fixed version
+    ensures that the private data directory has a unique suffix to avoid conflicts.
+    Use the updated pattern that checks for a unique directory name.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ansible/ansible-runner/commit/dcdb62daf668a31754fc6fbf73374e7d14d5f52c
+    category: security
+    cwe: CWE-668
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

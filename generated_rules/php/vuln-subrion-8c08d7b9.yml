@@ -1,0 +1,36 @@
+rules:
+- id: vuln-subrion-8c08d7b9
+  pattern: '$entry[''body''] = iaUtil::safeHTML($_POST[''body'']);
+
+    utf8_is_valid($entry[''body'']) || $entry[''body''] = utf8_bad_replace($entry[''body'']);
+
+    '
+  pattern-not: '$entry[''body''] = iaUtil::safeHTML(utf8_bad_replace($_POST[''body'']));
+
+    '
+  languages:
+  - php
+  message: "The code is vulnerable to potential security issues due to improper handling\
+    \ of UTF-8 encoding and missing access control checks. \nThe original code first\
+    \ sanitizes the input with `iaUtil::safeHTML` and then checks for UTF-8 validity,\
+    \ which could lead to encoding issues. \nAdditionally, the code lacks proper authorization\
+    \ checks, allowing unauthorized users to modify blog entries. \nTo fix this, ensure\
+    \ proper UTF-8 handling by applying `utf8_bad_replace` before sanitization and\
+    \ add authorization checks to verify the user's identity and permissions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/intelliants/subrion/commit/8c08d7b92a4b7b5820a951d53c24844715439b73
+    category: security
+    cwe:
+    - 'CWE-285: Improper Authorization'
+    - 'CWE-80: Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic
+      XSS)'
+    owasp:
+    - A01:2021-Broken Access Control
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    - https://cwe.mitre.org/data/definitions/285.html
+    - https://cwe.mitre.org/data/definitions/80.html
+    technology:
+    - php

@@ -1,0 +1,30 @@
+rules:
+- id: vuln-freerdp-09b9d4f1
+  pattern: '$BITMAP->length = $DSTWIDTH * $DSTHEIGHT * GetBytesPerPixel($BITMAP->format);
+
+    '
+  pattern-not: "$SIZE = $DSTWIDTH * $DSTHEIGHT;\nif ((GetBytesPerPixel($BITMAP->format)\
+    \ == 0) ||\n    ($DSTWIDTH == 0) || ($DSTHEIGHT == 0) || ($DSTWIDTH > UINT32_MAX\
+    \ / $DSTHEIGHT) ||\n    ($SIZE > (UINT32_MAX / GetBytesPerPixel($BITMAP->format))))\n\
+    \    return FALSE;\n$SIZE *= GetBytesPerPixel($BITMAP->format);\n$BITMAP->length\
+    \ = $SIZE;\n"
+  languages:
+  - c
+  message: "Detected a potential integer overflow vulnerability in bitmap length calculation.\
+    \ \nThe calculation of bitmap length as `DstWidth * DstHeight * GetBytesPerPixel(bitmap->format)`\
+    \ \ncan result in an integer overflow if the values are large. This can lead to\
+    \ memory corruption \nor buffer overflow vulnerabilities. To fix this, add checks\
+    \ to ensure that the multiplication \ndoes not exceed UINT32_MAX and handle invalid\
+    \ input values (zero width/height/bytes per pixel).\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/FreeRDP/FreeRDP/commit/09b9d4f1994a674c4ec85b4947aa656eda1aed8a
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

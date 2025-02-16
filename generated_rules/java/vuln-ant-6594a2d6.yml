@@ -1,0 +1,28 @@
+rules:
+- id: vuln-ant-6594a2d6
+  pattern: 'byte[] $ARRAY = new byte[$LENGTH];
+
+    ...
+
+    System.arraycopy($SRC, $OFFSET, $ARRAY, 0, $ARRAY.length);
+
+    '
+  pattern-not: "final int $LENGTH_VAR = (int) $LENGTH;\nif ($LENGTH_VAR < 0 || $LENGTH_VAR\
+    \ > $SRC.length - $OFFSET) {\n    throw new $EXCEPTION($MESSAGE);\n}\nbyte[] $ARRAY\
+    \ = new byte[$LENGTH_VAR];\nSystem.arraycopy($SRC, $OFFSET, $ARRAY, 0, $LENGTH_VAR);\n"
+  languages:
+  - java
+  message: Potential buffer overflow vulnerability. Always validate array length before
+    allocation and copying.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ant/commit/6594a2d66f7f060dafcbbf094dd60676db19a842
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - java

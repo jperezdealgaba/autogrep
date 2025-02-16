@@ -1,0 +1,28 @@
+rules:
+- id: vuln-simplesamlphp-e2d53086
+  pattern: 'in_array($node, $this->validNodes)
+
+    '
+  pattern-not: 'in_array($node, $this->validNodes, true)
+
+    '
+  languages:
+  - php
+  message: 'The use of `in_array()` without the strict comparison flag can lead to
+    type juggling vulnerabilities. This can allow unexpected values to pass validation
+    checks, potentially leading to security issues. Always use the strict comparison
+    flag (`true`) to ensure both value and type are checked.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/simplesamlphp/simplesamlphp/commit/e2d53086abbb253efb24ddcb49b116246eb0b6ca
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.in-array.php
+    technology:
+    - php

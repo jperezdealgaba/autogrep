@@ -1,0 +1,23 @@
+rules:
+- id: vuln-embeddable-build-status-plugin-40214878
+  pattern: "if ($THROW_ERROR_WHEN_NOT_FOUND && ($OBJ == null || !$OBJ.hasPermission($VIEW_STATUS)))\
+    \ {\n    throw $HTTP_RESPONSE;\n}\n"
+  pattern-not: "if ($OBJ == null || !$OBJ.hasPermission($VIEW_STATUS)) {\n    if ($THROW_ERROR_WHEN_NOT_FOUND)\
+    \ {\n        throw $HTTP_RESPONSE;\n    }\n    return null;\n}\n"
+  languages:
+  - java
+  message: 'The code directly throws an HTTP not found response when permissions are
+    not met, without proper handling of the `throwErrorWhenNotFound` flag. This can
+    lead to inconsistent error handling and potential security issues. The fix ensures
+    that the `throwErrorWhenNotFound` flag is properly checked before throwing the
+    exception, and returns null otherwise.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/embeddable-build-status-plugin/commit/402148784b3f4b029eaf47cc26ebf6b9bc636183
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    references: https://cwe.mitre.org/data/definitions/284.html
+    technology: java

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-script-security-plugin-35119273
+  pattern: 'new GroovyShell($CLASS_LOADER).parse($SCRIPT)
+
+    '
+  pattern-not: 'new GroovyShell($CLASS_LOADER, GroovySandbox.createSecureCompilerConfiguration()).parse($SCRIPT)
+
+    '
+  languages:
+  - java
+  message: 'Insecure Groovy script parsing detected. The GroovyShell is being initialized
+    without a secure compiler configuration, which could allow unsafe script execution.
+    Use GroovySandbox.createSecureCompilerConfiguration() to ensure scripts are executed
+    in a secure sandbox.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/script-security-plugin/commit/35119273101af26792457ec177f34f6f4fa49d99
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - java

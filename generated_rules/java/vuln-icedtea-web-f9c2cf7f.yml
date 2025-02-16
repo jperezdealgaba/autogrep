@@ -1,0 +1,32 @@
+rules:
+- id: vuln-icedtea-web-f9c2cf7f
+  pattern: "$PATH.append($LOCATION.getPath().replace('/', File.separatorChar));\n\
+    if ($LOCATION.getQuery() != null && !$LOCATION.getQuery().trim().isEmpty()) {\n\
+    \    $PATH.append(\".\").append($LOCATION.getQuery());\n}\nnew File(FileUtils.sanitizePath($PATH.toString()));\n"
+  pattern-not: "$LOCATIONPATH = $LOCATION.getPath().replace('/', File.separatorChar);\n\
+    $QUERY = \"\";\nif ($LOCATION.getQuery() != null) {\n    $QUERY = $LOCATION.getQuery();\n\
+    }\nif ($LOCATIONPATH.contains(\"..\") || $QUERY.contains(\"..\")) {\n    ...\n\
+    } else {\n    $PATH.append($LOCATIONPATH);\n    if ($LOCATION.getQuery() != null\
+    \ && !$LOCATION.getQuery().trim().isEmpty()) {\n        $PATH.append(\".\").append($LOCATION.getQuery());\n\
+    \    }\n    new File(FileUtils.sanitizePath($PATH.toString()));\n}\n"
+  languages:
+  - java
+  message: 'Path traversal vulnerability detected. The code does not properly sanitize
+    paths containing ''..'', which can lead to unauthorized file access.
+
+    To fix this, ensure that paths containing ''..'' are properly hashed or sanitized
+    before being used in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/AdoptOpenJDK/IcedTea-Web/commit/f9c2cf7fd24415ba2bb2619b69259035338ee5b6
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - java

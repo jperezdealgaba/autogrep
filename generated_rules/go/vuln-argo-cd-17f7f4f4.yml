@@ -1,0 +1,32 @@
+rules:
+- id: vuln-argo-cd-17f7f4f4
+  pattern: '$VAR = rand.RandString($LEN)
+
+    '
+  pattern-not: '$VAR, $ERR = rand.String($LEN)
+
+    errors.CheckError($ERR)
+
+    '
+  languages:
+  - go
+  message: 'The use of insecure random number generation (rand.RandString) can lead
+    to predictable values, which is dangerous in security contexts like OAuth2 state
+    nonces. This can enable attacks such as CSRF or session hijacking. Replace with
+    cryptographically secure random generation (rand.String) and ensure error handling
+    is in place.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/17f7f4f462bdb233e1b9b36f67099f41052d8cb0
+    category: security
+    cwe:
+    - CWE-330
+    - CWE-331
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://www.rfc-editor.org/rfc/rfc6749#section-10.10
+    technology:
+    - go

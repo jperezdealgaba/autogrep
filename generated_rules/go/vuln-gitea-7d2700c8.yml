@@ -1,0 +1,26 @@
+rules:
+- id: vuln-gitea-7d2700c8
+  pattern: 'ctx.Error($STATUS)
+
+    '
+  pattern-not: 'ctx.Error($STATUS, $ERROR_CODE, $MESSAGE)
+
+    '
+  languages:
+  - go
+  message: 'Detected an API error response without a proper error code and message.
+    This can lead to unclear error handling and potential security issues. Always
+    include a specific error code and message when returning errors in API responses
+    to ensure proper error handling and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/7d2700c8be5da8f2073a576dae209ae07ac6ed22
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - go

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-redis-01173bc8
+  pattern: 'getnum($FMT, $DF)
+
+    '
+  pattern-not: 'getnum($L, $FMT, $DF)
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of getnum() without lua_State parameter, which can
+    lead to integer overflow vulnerabilities. The function does not perform proper
+    bounds checking, which could result in undefined behavior or security issues.
+    Always use the updated version of getnum() that includes the lua_State parameter
+    and performs overflow checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/antirez/redis/commit/01173bc8097391b2e46c4d56a080709c219fda53
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

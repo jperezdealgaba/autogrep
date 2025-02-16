@@ -1,0 +1,23 @@
+rules:
+- id: vuln-b2evolution-e35f7c19
+  pattern: '$app_date = ''2017-01-16'';
+
+    '
+  pattern-not: '$app_date = ''2017-01-19'';
+
+    '
+  languages:
+  - php
+  message: "The application date is outdated and may lead to security vulnerabilities.\
+    \ \nUsing outdated versions can expose the application to known exploits. \nUpdate\
+    \ the date to the latest version to ensure security patches are applied.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/b2evolution/b2evolution/commit/e35f7c195d8c1103d2d981a48cda5ab45ecac48a
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - php

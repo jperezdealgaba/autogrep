@@ -1,0 +1,33 @@
+rules:
+- id: vuln-openwb-6a5ed807
+  pattern: 'system("/var/www/html/openWB/modules/soc_eq/auth.py " . $_GET[''state'']
+    . " " . $_GET[''code'']);
+
+    '
+  pattern-not: 'system($system_command);
+
+    '
+  languages:
+  - php
+  message: 'Detected a command injection vulnerability due to the use of unsanitized
+    user input in a system command.
+
+    This is dangerous as it allows attackers to execute arbitrary commands on the
+    server.
+
+    To fix this, always sanitize user input using `escapeshellarg` and `escapeshellcmd`
+    before passing it to system commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/snaptec/openWB/commit/6a5ed807057a0614e4d2b8be3ce0c621ed50435e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-publiccms-c19fe663
+  pattern: 'new File($TARGET_PATH + File.separator + $ZIP_ENTRY.getName())
+
+    '
+  pattern-not: 'new File($TARGET_PATH + File.separator + $FILE_PATH)
+
+    '
+  languages:
+  - java
+  message: 'Potential path traversal vulnerability detected. Directly using zip entry
+    names in file paths without proper sanitization can lead to directory traversal
+    attacks. Always sanitize file paths by checking for and removing sequences like
+    ''..''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sanluan/PublicCMS/commit/c19fe66378c75725f3e3a380a6cb9f8b8a7dcb71
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - java

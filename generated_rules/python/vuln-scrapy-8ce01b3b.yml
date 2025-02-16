@@ -1,0 +1,20 @@
+rules:
+- id: vuln-scrapy-8ce01b3b
+  pattern: "$REQUEST.replace(\n    url=$URL,\n    method=$METHOD,\n    body=$BODY,\n\
+    )\n"
+  pattern-not: "_build_redirect_request(\n    $REQUEST,\n    url=$URL,\n    method=$METHOD,\n\
+    \    body=$BODY,\n)\n"
+  languages:
+  - python
+  message: Detected unsafe redirect request handling. When redirecting to a different
+    domain, cookies should be removed to prevent sensitive data leakage. Use _build_redirect_request()
+    to handle redirects securely.
+  severity: ERROR
+  metadata:
+    source-url: github.com/scrapy/scrapy/commit/8ce01b3b76d4634f55067d6cfdf632ec70ba304a
+    category: security
+    cwe: CWE-200
+    owasp: A6:2017-Sensitive Data Exposure
+    references:
+    - https://tools.ietf.org/html/rfc6265
+    technology: python

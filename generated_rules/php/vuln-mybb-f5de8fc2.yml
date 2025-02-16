@@ -1,0 +1,36 @@
+rules:
+- id: vuln-mybb-f5de8fc2
+  pattern: '$form_container->output_cell("<img src=\"../".$path.$file."\" alt=\"\"
+    /><br /><small>{$file}</small>", array("class" => "align_center", "width" => 1));
+
+    $form_container->output_cell($form->generate_text_box("name[{$file}]", $name,
+    array(''id'' => ''name'', ''style'' => ''width: 98%'')));
+
+    '
+  pattern-not: '$file = htmlspecialchars_uni($file);
+
+    $form_container->output_cell("<img src=\"../".htmlspecialchars_uni($path).$file."\"
+    alt=\"\" /><br /><small>{$file}</small>", array("class" => "align_center", "width"
+    => 1));
+
+    $form_container->output_cell($form->generate_text_box("name[{$file}]", htmlspecialchars_uni($name),
+    array(''id'' => ''name'', ''style'' => ''width: 98%'')));
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output in MyBB code, which can lead to Cross-Site Scripting
+    (XSS) vulnerabilities. User-controlled input should always be sanitized before
+    being rendered in HTML. Use `htmlspecialchars_uni` to escape the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/f5de8fc2aad11e0d2583f585535ccfa2b46325db
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

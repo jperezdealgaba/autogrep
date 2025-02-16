@@ -1,0 +1,23 @@
+rules:
+- id: vuln-odoo-050806b9
+  pattern: "def $FUNC(...):\n  ...\n  self.filtered(lambda $CHANNEL: $CHANNEL.channel_type\
+    \ == 'chat').mapped('channel_last_seen_partner_ids').write({'is_pinned': True})\n\
+    \  ...\n"
+  pattern-not: "def $FUNC(...):\n  ...\n  self.filtered(lambda $CHANNEL: $CHANNEL.channel_type\
+    \ == 'chat').mapped('channel_last_seen_partner_ids').sudo().write({'is_pinned':\
+    \ True})\n  ...\n"
+  languages:
+  - python
+  message: Detected unsafe write operation without sudo() in Odoo channel management.
+    This can lead to unauthorized modifications. Always use sudo() for operations
+    that require elevated privileges.
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/050806b936c9707274d9a64e4281f4258aabeeee
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#sudo
+    technology:
+    - python

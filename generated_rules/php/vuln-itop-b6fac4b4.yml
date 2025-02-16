@@ -1,0 +1,26 @@
+rules:
+- id: vuln-itop-b6fac4b4
+  pattern: '$oFormManager = $sFormManagerClass::FromJSON($sFormManagerData);
+
+    '
+  pattern-not: '$oFormManager = $sFormManagerClass::FromJSON($sFormManagerData, $bTrustContent);
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure use of FromJSON method without trust content validation.
+    This can allow untrusted Twig content to be processed, potentially leading to
+    security vulnerabilities such as remote code execution. Always validate and trust
+    the content before processing it by using the `$bTrustContent` parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/b6fac4b411b8d145fc30fa35c66b51243eafd06b
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

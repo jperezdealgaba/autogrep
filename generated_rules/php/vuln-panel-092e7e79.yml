@@ -1,0 +1,25 @@
+rules:
+- id: vuln-panel-092e7e79
+  pattern: '$this->google2FA->getQRCodeInline($this->config->get(''app.name''), $user->email,
+    $secret)
+
+    '
+  pattern-not: "sprintf(\n  'otpauth://totp/%1$s:%2$s?secret=%3$s&issuer=%1$s',\n\
+    \  rawurlencode($company),\n  rawurlencode($user->email),\n  rawurlencode($secret)\n\
+    )\n"
+  languages:
+  - php
+  message: "The code uses an insecure method to generate TOTP QR codes by relying\
+    \ on an external library (Google2FA) which may introduce vulnerabilities. \nInstead,\
+    \ generate the TOTP URL directly and use a secure QR code generation service.\
+    \ \nThis approach reduces dependency on third-party libraries and improves security.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pterodactyl/panel/commit/092e7e79fff858ee026608c7dbccab165a67526f
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A03:2021
+    technology:
+    - php

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-core-33305e9f
+  pattern: '$MAP.put("baseType", $TYPE.baseType())
+
+    '
+  pattern-not: '$MAP.put("baseType", $TYPE.baseType().name())
+
+    '
+  languages:
+  - java
+  message: "Potential vulnerability due to missing method call on baseType(). \nDirectly\
+    \ using baseType() without calling name() may lead to unexpected behavior or security\
+    \ issues. \nAlways use baseType().name() to ensure proper type handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/33305e9f55b4e7c7e1fdd94b1ca295b05623363d
+    category: security
+    cwe: CWE-20
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - java

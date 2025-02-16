@@ -1,0 +1,25 @@
+rules:
+- id: vuln-tcpreplay-e2ac765a
+  pattern: 'fix_ipv4_checksums($TC, $PKT, $IP)
+
+    '
+  pattern-not: 'fix_ipv4_checksums($TC, $PKT, $IP, $L2LEN)
+
+    '
+  languages:
+  - c
+  message: 'The function `fix_ipv4_checksums` is called without the `l2len` parameter,
+    which can lead to incorrect checksum calculations due to missing layer 2 length
+    validation. This can result in corrupted packets or security vulnerabilities.
+    Always include the `l2len` parameter to ensure proper packet length validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/appneta/tcpreplay/commit/e2ac765a25e902728b6d4a825358aa536e6668c2
+    category: security
+    cwe:
+    - CWE-120
+    owasp: A9:2021-Security Misconfiguration
+    technology:
+    - c

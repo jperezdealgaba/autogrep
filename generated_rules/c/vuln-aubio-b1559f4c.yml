@@ -1,0 +1,33 @@
+rules:
+- id: vuln-aubio-b1559f4c
+  pattern: 'strcpy($VAR, $STRING);
+
+    '
+  pattern-not: 'strncpy($VAR, $STRING, $SIZE);
+
+    $VAR[$SIZE - 1] = ''\0'';
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of strcpy which can lead to buffer overflow vulnerabilities.
+
+    The strcpy function does not check the length of the source string, which can
+    result in overwriting adjacent memory.
+
+    Replace strcpy with strncpy and ensure the destination buffer is null-terminated
+    to prevent buffer overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aubio/aubio/commit/b1559f4c9ce2b304d8d27ffdc7128b6795ca82e5
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

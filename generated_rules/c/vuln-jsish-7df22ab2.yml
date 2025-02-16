@@ -1,0 +1,29 @@
+rules:
+- id: vuln-jsish-7df22ab2
+  pattern: '$THIS->d.obj->d.s.str = Jsi_StrdupLen($NV, $LEN);
+
+    '
+  pattern-not: '$NSTR = Jsi_StrdupLen($NV, $LEN);
+
+    $THIS->d.obj->d.s.str = $NSTR;
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment of the result of `Jsi_StrdupLen` to a structure field
+    can lead to memory leaks if the field previously held a dynamically allocated
+    string. This is dangerous because it can result in unreleased memory, leading
+    to memory exhaustion over time. The fix involves storing the result in a temporary
+    variable before assigning it to the structure field.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/7df22ab2fad6bf7cecf96465caede6401b9b451c
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

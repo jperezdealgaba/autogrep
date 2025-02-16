@@ -1,0 +1,23 @@
+rules:
+- id: vuln-gogs-4677b469
+  pattern: "if len($SID) > 0 && $PROVIDER.Exist($SID) {\n  return $READ($SID)\n}\n"
+  pattern-not: "if len($SID) > 0 && $VALID($SID) && $PROVIDER.Exist($SID) {\n  return\
+    \ $PROVIDER.Read($SID)\n}\n"
+  languages:
+  - go
+  message: 'Detected a session ID validation bypass vulnerability. The code checks
+    if a session ID exists but does not validate its format, which could allow session
+    file forgery attacks. Ensure session IDs are properly validated using a function
+    like `validSessionID` to check for correct length and character set.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gogs/gogs/commit/4677b469044bc23e98b4cd265495dbffb9be335a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - go

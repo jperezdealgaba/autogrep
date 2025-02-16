@@ -1,0 +1,21 @@
+rules:
+- id: vuln-inedo-proget-plugin-9634846c
+  pattern: "public void setPassword(String $VALUE) {\n  $PASSWORD = Secret.fromString($VALUE);\n\
+    }\n"
+  pattern-not: "public void setPassword(Secret $VALUE) {\n  $PASSWORD = $VALUE;\n\
+    }\n"
+  languages:
+  - java
+  message: 'Insecure handling of password as plain text detected. Passwords should
+    be handled using the Secret type directly to prevent exposure in memory. Update
+    the method to accept Secret type instead of String.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/inedo-proget-plugin/commit/9634846c65f204c2b54237674b2cecf66d5d5fdb
+    category: security
+    cwe: CWE-312
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - java

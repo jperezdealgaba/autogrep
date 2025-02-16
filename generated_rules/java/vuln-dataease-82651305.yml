@@ -1,0 +1,23 @@
+rules:
+- id: vuln-dataease-82651305
+  pattern: "if ($IMAGE == null || $IMAGE.getWidth() <= 0 || $IMAGE.getHeight() <=\
+    \ 0) {\n  ...\n}\n"
+  pattern-not: "Pattern $PATTERN = Pattern.compile(\"\\\\.(png|jpg|jpeg|gif)$\");\n\
+    Matcher $MATCHER = $PATTERN.matcher($FILE.getOriginalFilename().toLowerCase());\n\
+    if ($IMAGE == null || $IMAGE.getWidth() <= 0 || $IMAGE.getHeight() <= 0 || !$MATCHER.find())\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Missing file extension validation in image processing. This can lead to\
+    \ processing of malicious files. \nEnsure that only valid image file extensions\
+    \ (png, jpg, jpeg, gif) are processed by adding a regex check.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dataease/dataease/commit/826513053146721a2b3e09a9c9d3ea41f8f10569
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java

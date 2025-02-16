@@ -1,0 +1,27 @@
+rules:
+- id: vuln-libxml2-1b41ec4e
+  pattern: "if ($DICT != NULL) {\n    if (($ENTITY->$FIELD != NULL) && (!xmlDictOwns($DICT,\
+    \ $ENTITY->$FIELD)))\n        xmlFree((char *) $ENTITY->$FIELD);\n    ...\n} else\
+    \ {\n    if ($ENTITY->$FIELD != NULL)\n        xmlFree((char *) $ENTITY->$FIELD);\n\
+    \    ...\n}\n"
+  pattern-not: "if (($ENTITY->$FIELD != NULL) &&\n    (($DICT == NULL) || (!xmlDictOwns($DICT,\
+    \ $ENTITY->$FIELD))))\n    xmlFree((char *) $ENTITY->$FIELD);\n"
+  languages:
+  - c
+  message: "The code contains a double-check pattern for freeing memory that can lead\
+    \ to inconsistent memory management. \nThe vulnerability arises from the redundant\
+    \ checks for dictionary ownership and NULL pointers, which can cause memory leaks\
+    \ or double-free issues. \nThe fix consolidates the checks into a single condition,\
+    \ ensuring consistent memory management. \nTo fix this, simplify the condition\
+    \ to a single check that covers both the NULL pointer and dictionary ownership\
+    \ cases.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/libxml2/commit/1b41ec4e9433b05bb0376be4725804c54ef1d80b
+    category: security
+    cwe:
+    - 'CWE-415: Double Free'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

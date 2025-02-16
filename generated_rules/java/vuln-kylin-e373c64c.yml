@@ -1,0 +1,23 @@
+rules:
+- id: vuln-kylin-e373c64c
+  pattern: '$QUERY + " where " + $COLUMN + " = ''" + $VAR + "''"
+
+    '
+  pattern-not: '$QUERY + " where " + $COLUMN + " = ?"
+
+    '
+  languages:
+  - java
+  message: 'Potential SQL injection vulnerability detected. Concatenating user input
+    directly into SQL queries can lead to SQL injection attacks. Use prepared statements
+    with parameterized queries instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/kylin/commit/e373c64c96a54a7abfe4bccb82e8feb60db04749
+    category: security
+    cwe: CWE-89
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-community/attacks/SQL_Injection
+    technology: java
