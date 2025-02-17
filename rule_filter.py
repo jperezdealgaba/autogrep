@@ -74,7 +74,7 @@ class RuleFilter:
             embedding_dim = self.embedding_model.get_sentence_embedding_dimension()
             return np.zeros(embedding_dim)  # Return zero vector as fallback
 
-    def is_duplicate(self, rule: dict, existing_rules: List[dict], threshold: float = 0.95) -> bool:
+    def is_duplicate(self, rule: dict, existing_rules: List[dict], threshold: float = 0.8) -> bool:
         """Check if rule is a duplicate using embeddings."""
         rule_text = yaml.dump(rule)
         rule_embedding = self.get_embedding(rule_text)
@@ -99,14 +99,44 @@ class RuleFilter:
 
 {yaml.dump(rule)}
 
-Consider:
-1. Is the rule trivial (catches only exact matches)?
-2. Is it overly specific to one vulnerability?
-3. Does it have good generalization potential?
+Evaluation Criteria:
+1. REJECT if the rule is trivial:
+   - Only matches exact string literals
+   - Lacks metavariables or wildcards
+   - Example (REJECT): pattern: 'password123'
+   - Example (ACCEPT): pattern: '$PASSWORD = "..."'
+
+2. REJECT if overly specific to one vulnerability:
+   - Matches only a specific file path or function name
+   - Contains hardcoded values unique to one codebase
+   - Example (REJECT): pattern: 'validate_input("/var/www/specific_app/user.php")'
+   - Example (ACCEPT): pattern: 'validate_input($FILE)'
+
+3. REJECT if lacks generalization:
+   - No consideration for common vulnerability patterns
+   - Misses variations of the same vulnerability
+   - Example (REJECT): pattern: 'exec("rm -rf " + user_input)'
+   - Example (ACCEPT): pattern: 'exec($CMD + $USER_INPUT)'
+
+4. ACCEPT if the rule:
+   - Uses metavariables to capture patterns
+   - Considers multiple vulnerability variants
+   - Balances specificity with generalization
+   - Focuses on the vulnerable pattern, not implementation details
+
+Examples of GOOD rules:
+- SQL Injection: pattern: 'query($DB, "SELECT * FROM " + $USER_INPUT)'
+- Path Traversal: pattern: 'open($FILE + "../" + $PATH)'
+- XSS: pattern: 'echo($USER_DATA)'
+
+Examples of BAD rules:
+- Hardcoded: pattern: 'processUser("admin", "pass123")'
+- Too Specific: pattern: 'validateAdminUser("/company/admin/users.php")'
+- Exact Match: pattern: '<img src="javascript:alert(1)">'
 
 Respond with only two lines:
 First line: ACCEPT or REJECT
-Second line: Brief reason"""
+Second line: Brief reason focusing on the criteria above"""
 
             response = self.client.chat.completions.create(
                 model="deepseek/deepseek-chat",
@@ -114,7 +144,7 @@ Second line: Brief reason"""
                     {"role": "system", "content": "You are a security expert evaluating Semgrep rules."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.1
+                temperature=0.6
             )
             
             if not response.choices:
