@@ -95,48 +95,84 @@ class RuleFilter:
     def evaluate_rule_quality(self, rule: dict) -> tuple[bool, str]:
         """Evaluate rule quality using LLM."""
         try:
-            prompt = f"""Evaluate this Semgrep rule for quality:
+            prompt = f"""Evaluate this Semgrep rule for quality and generalizability:
 
 {yaml.dump(rule)}
 
-Evaluation Criteria:
-1. REJECT if the rule is trivial:
-   - Only matches exact string literals
-   - Lacks metavariables or wildcards
+Key Evaluation Criteria:
+
+1. REJECT if the rule depends on project-specific code:
+   - References custom project classes/functions
+   - Uses internal project-specific APIs
+   - Relies on specific project architecture
+   - Example (REJECT): pattern: 'MyCompanyUtils.validateUser($INPUT)'
+   - Example (REJECT): pattern: 'CompanyAuthenticator.process($DATA)'
+   - Example (ACCEPT): pattern: 'json.loads($USER_INPUT)'
+
+2. ACCEPT only if the rule references:
+   - Standard language libraries (e.g., 'os', 'sys' in Python)
+   - Common SDKs (e.g., AWS SDK, Google Cloud SDK)
+   - Popular open-source libraries (e.g., requests, pandas)
+   - Generic programming patterns
+   Examples:
+   - ACCEPT: pattern: 'requests.get($URL, verify=False)'
+   - ACCEPT: pattern: 'subprocess.shell($CMD, shell=True)'
+   - ACCEPT: pattern: 'eval($USER_INPUT)'
+
+3. REJECT if overly specific implementation:
+   - Uses custom validation methods
+   - References internal security wrappers
+   - Depends on project-specific sanitizers
+   Example (REJECT): 
+   - pattern: 'CustomSanitizer.cleanInput($DATA)'
+   - pattern: 'MyProjectValidator.checkAuth($TOKEN)'
+   Example (ACCEPT):
+   - pattern: 'htmlspecialchars($USER_INPUT)'
+   - pattern: 'mysqli_real_escape_string($CONN, $INPUT)'
+
+4. REJECT if trivial or exact matches:
+   - Matches specific string literals
+   - Lacks metavariables
    - Example (REJECT): pattern: 'password123'
    - Example (ACCEPT): pattern: '$PASSWORD = "..."'
 
-2. REJECT if overly specific to one vulnerability:
-   - Matches only a specific file path or function name
-   - Contains hardcoded values unique to one codebase
-   - Example (REJECT): pattern: 'validate_input("/var/www/specific_app/user.php")'
-   - Example (ACCEPT): pattern: 'validate_input($FILE)'
+5. Rule must be generalizable across:
+   - Different projects in the same domain
+   - Various implementation styles
+   - Multiple frameworks
+   Example (REJECT): 
+   - pattern: 'MyFramework.Model.findOne($QUERY)'
+   Example (ACCEPT):
+   - pattern: '$DB.query($UNSAFE_INPUT)'
+   - pattern: 'execute($SQL_QUERY)'
 
-3. REJECT if lacks generalization:
-   - No consideration for common vulnerability patterns
-   - Misses variations of the same vulnerability
-   - Example (REJECT): pattern: 'exec("rm -rf " + user_input)'
-   - Example (ACCEPT): pattern: 'exec($CMD + $USER_INPUT)'
+Language-Specific Good Examples:
 
-4. ACCEPT if the rule:
-   - Uses metavariables to capture patterns
-   - Considers multiple vulnerability variants
-   - Balances specificity with generalization
-   - Focuses on the vulnerable pattern, not implementation details
+Python:
+- ACCEPT: pattern: 'pickle.loads($USER_INPUT)'
+- ACCEPT: pattern: 'subprocess.run($CMD, shell=True)'
+- ACCEPT: pattern: 'open($FILE_PATH + $USER_INPUT)'
 
-Examples of GOOD rules:
-- SQL Injection: pattern: 'query($DB, "SELECT * FROM " + $USER_INPUT)'
-- Path Traversal: pattern: 'open($FILE + "../" + $PATH)'
-- XSS: pattern: 'echo($USER_DATA)'
+JavaScript:
+- ACCEPT: pattern: 'eval($USER_INPUT)'
+- ACCEPT: pattern: 'document.write($DATA)'
+- ACCEPT: pattern: 'new Function($CODE)'
 
-Examples of BAD rules:
-- Hardcoded: pattern: 'processUser("admin", "pass123")'
-- Too Specific: pattern: 'validateAdminUser("/company/admin/users.php")'
-- Exact Match: pattern: '<img src="javascript:alert(1)">'
+Java:
+- ACCEPT: pattern: 'Runtime.getRuntime().exec($CMD)'
+- ACCEPT: pattern: 'Statement.executeQuery($SQL)'
+- ACCEPT: pattern: 'new File($PATH + $INPUT)'
 
-Respond with only two lines:
+Examples of Project-Specific (BAD) Rules:
+- pattern: 'CompanyDB.rawQuery($SQL)'
+- pattern: 'InternalAuthService.validateToken($TOKEN)'
+- pattern: 'ProjectConfig.SECURE_PATHS.includes($PATH)'
+- pattern: 'MyCustomFramework.Model.find($QUERY)'
+- pattern: 'internal.security.Validator.check($INPUT)'
+
+Respond with exactly two lines:
 First line: ACCEPT or REJECT
-Second line: Brief reason focusing on the criteria above"""
+Second line: Brief reason specifically mentioning if it uses project-specific code or standard libraries"""
 
             response = self.client.chat.completions.create(
                 model="deepseek/deepseek-chat",
@@ -144,7 +180,7 @@ Second line: Brief reason focusing on the criteria above"""
                     {"role": "system", "content": "You are a security expert evaluating Semgrep rules."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.6
+                temperature=0.2
             )
             
             if not response.choices:
