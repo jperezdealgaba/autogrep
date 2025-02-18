@@ -74,7 +74,7 @@ class RuleFilter:
             embedding_dim = self.embedding_model.get_sentence_embedding_dimension()
             return np.zeros(embedding_dim)  # Return zero vector as fallback
 
-    def is_duplicate(self, rule: dict, existing_rules: List[dict], threshold: float = 0.8) -> bool:
+    def is_duplicate(self, rule: dict, existing_rules: List[dict], threshold: float = 0.9) -> bool:
         """Check if rule is a duplicate using embeddings."""
         rule_text = yaml.dump(rule)
         rule_embedding = self.get_embedding(rule_text)
