@@ -1,0 +1,124 @@
+rules:
+- id: vuln-sudo-7873f833
+  pattern: '$RET = !strcmp($STR1, $STR2);
+
+    debug_return_int($RET ? $SUCCESS : $FAILURE);
+
+    '
+  pattern-not: "if (strcmp($STR1, $STR2) == 0)\n  $RET = $SUCCESS;\nelse\n  $RET =\
+    \ $FAILURE;\ndebug_return_int($RET);\n"
+  languages:
+  - c
+  message: 'The code directly assigns the result of strcmp to a return variable without
+    proper error handling. This can lead to incorrect authentication results. Instead,
+    explicitly check the result of strcmp and set the return value accordingly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/7873f8334c8d31031f8cfa83bd97ac6029309e4f
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - c
+- id: vuln-sudo-0274a4f3
+  pattern: "const char *$ENV_EDITOR;\n...\nif ($CONDITION) {\n    $FUNCTION_CALL(U_(\"\
+    specified editor (%s) doesn't exist\"), $ENV_EDITOR);\n}\n"
+  pattern-not: "const char *$ENV_EDITOR = NULL;\n...\nif ($CONDITION) {\n    if (errno\
+    \ == ENOENT) {\n        $FUNCTION_CALL(U_(\"specified editor (%s) doesn't exist\"\
+    ), $ENV_EDITOR);\n    }\n    exit(EXIT_FAILURE);\n}\n"
+  languages:
+  - c
+  message: 'The code uses an uninitialized environment editor variable without proper
+    error handling.
+
+    This can lead to undefined behavior when the editor is not found. The fix initializes
+
+    the variable and adds specific error handling for ENOENT. Always initialize variables
+
+    and handle specific error conditions explicitly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/0274a4f3b403162a37a10f199c989f3727ed3ad4
+    category: security
+    cwe:
+    - CWE-457
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    technology:
+    - c
+- id: vuln-sudo-1f863857
+  pattern: "if ($MODE & ($FLAG1|$FLAG2)) {\n  ...\n}\n"
+  pattern-not: "if (ISSET($MODE, $FLAG1|$FLAG2)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe bitwise operation in condition check. Using the bitwise
+
+    AND operator (&) directly with flags can lead to incorrect evaluations
+
+    when multiple flags are combined. Use the ISSET macro instead to properly
+
+    check if specific flags are set in the mode variable. This vulnerability
+
+    could lead to incorrect privilege checks and potential security bypass.
+
+    Replace ''if (mode & flag)'' with ''if (ISSET(mode, flag))''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/1f8638577d0c80a4ff864a2aad80a0d95488e9a8
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - c
+- id: vuln-sudo-bd209b9f
+  pattern: 'char $VAR;
+
+    ...
+
+    $SAV = $PASS[8];
+
+    ...
+
+    $PASS[8] = ''\0'';
+
+    ...
+
+    $PASS[8] = $SAV;
+
+    '
+  pattern-not: 'char $DES_PASS[9];
+
+    ...
+
+    strlcpy($DES_PASS, $PASS, sizeof($DES_PASS));
+
+    $PASS = $DES_PASS;
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe manipulation of password array by temporarily truncating
+    it. This can lead to buffer overflows and undefined behavior. Use a separate buffer
+    with proper bounds checking instead of modifying the original array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sudo-project/sudo/commit/bd209b9f16fcd1270c13db27ae3329c677d48050
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c

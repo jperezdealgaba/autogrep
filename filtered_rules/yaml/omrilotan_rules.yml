@@ -1,0 +1,27 @@
+rules:
+- id: vuln-async-git-20701c5d
+  pattern: 'if: github.ref == ''refs/heads/master''
+
+    '
+  pattern-not: 'if: github.ref == ''refs/heads/main''
+
+    '
+  languages:
+  - yaml
+  message: "The workflow is using the outdated branch name 'master' which should be\
+    \ updated to 'main'. \nUsing 'master' can lead to confusion and inconsistencies\
+    \ in branch naming conventions, \nespecially in environments that have adopted\
+    \ the 'main' branch as the default. \nUpdate the branch reference to 'refs/heads/main'\
+    \ to align with modern practices.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/omrilotan/async-git/commit/20701c5d46798fd7d61855f37ca52be1b806da5e
+    category: best-practice
+    cwe:
+    - CWE-710
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://github.com/github/renaming
+    technology:
+    - yaml

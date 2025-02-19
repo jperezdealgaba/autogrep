@@ -1,0 +1,138 @@
+rules:
+- id: vuln-redis-a4b90be9
+  pattern: 'int reghisto[$X+2] = {0};
+
+    '
+  pattern-not: 'int reghisto[64] = {0};
+
+    '
+  languages:
+  - c
+  message: "The array 'reghisto' is declared with a size that could lead to buffer\
+    \ overflow vulnerabilities. \nThe size should be fixed to a safe value (e.g.,\
+    \ 64) to prevent potential overflows that could write data to incorrect memory\
+    \ locations.\nThis vulnerability is dangerous because it could lead to memory\
+    \ corruption, crashes, or even arbitrary code execution.\nTo fix this, ensure\
+    \ the array size is set to a safe, fixed value that accommodates all possible\
+    \ input scenarios.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/a4b90be9fcd5e1668ac941cabce3b1ab38dbe326
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c
+- id: vuln-redis-0bf90d94
+  pattern: "static void *getMcontextEip(ucontext_t *uc) {\n  ...\n  return (void*)\
+    \ $EXPRESSION;\n  ...\n}\n"
+  pattern-not: "static void* getAndSetMcontextEip(ucontext_t *uc, void *eip) {\n \
+    \ ...\n  GET_SET_RETURN($EXPRESSION, eip);\n  ...\n}\n"
+  languages:
+  - c
+  message: "Direct return of instruction pointer from ucontext_t without proper validation\
+    \ can lead to crashes when accessing invalid addresses. \nThis vulnerability occurs\
+    \ when the instruction pointer (eip/rip) is directly returned without checking\
+    \ if it points to a valid memory location, potentially causing crashes when logging\
+    \ stack traces.\nThe fix involves using a safer function (getAndSetMcontextEip)\
+    \ that allows validation and modification of the instruction pointer before returning\
+    \ it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/0bf90d944313919eb8e63d3588bf63a367f020a3
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://en.wikipedia.org/wiki/Instruction_pointer
+    - https://man7.org/linux/man-pages/man3/getcontext.3.html
+    technology:
+    - c
+- id: vuln-redis-ef1833b3
+  pattern: "if (($RUNLEN + $IDX) > HLL_REGISTERS) {\n    $ACTION;\n    return C_ERR;\n\
+    }\n"
+  pattern-not: 'if (($RUNLEN + $IDX) > HLL_REGISTERS) break;
+
+    '
+  languages:
+  - c
+  message: 'A potential buffer overflow vulnerability exists in the code. The check
+    for overflow returns an error but does not break the loop, which could lead to
+    undefined behavior or memory corruption. Instead of returning an error, the loop
+    should be terminated using a ''break'' statement to prevent further execution
+    that could cause overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/ef1833b3f9d02261617b757fd6ebe0ec3f1be507
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-redis-aa856b39
+  pattern: 'lua_pushstring($LUA, $ERR);
+
+    lua_error($LUA);
+
+    '
+  pattern-not: 'luaPushError($LUA, $ERR);
+
+    luaError($LUA);
+
+    '
+  languages:
+  - c
+  message: "Direct use of `lua_pushstring` followed by `lua_error` can lead to inconsistent\
+    \ error handling and potential security issues. \nThe vulnerability arises because\
+    \ the error message is not properly formatted and doesn't include necessary metadata.\
+    \ \nInstead, use `luaPushError` and `luaError` which properly format the error\
+    \ message and include additional context like source and line number.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/aa856b39f2ca65dbcc0eaae2d2c52f7a35291bbf
+    category: security
+    cwe:
+    - CWE-209
+    - CWE-248
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-redis-6ac3c0b7
+  pattern: "sds *$FUNC(int *$ARGC) {\n    ...\n    $P = strstr($P,\"\\r\\n\");\n \
+    \   if (!$P) goto $LABEL;\n    ...\n}\n"
+  pattern-not: "sds *$FUNC(int *$ARGC, char** $ERR) {\n    ...\n    $P = strstr($P,\"\
+    \\r\\n\");\n    if (!$P) goto $LABEL;\n    ...\n}\n"
+  languages:
+  - c
+  message: "The function `ldbReplParseCommand` is vulnerable to a protocol error due\
+    \ to insufficient error handling. \nThe original version did not properly handle\
+    \ cases where the input buffer was incomplete, leading to potential protocol errors.\n\
+    This could be exploited by an attacker to cause undefined behavior or crashes.\
+    \ \nThe fix introduces proper error handling by using an additional `err` parameter\
+    \ to manage protocol errors and ensures the function handles incomplete buffers\
+    \ correctly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redis/redis/commit/6ac3c0b7abd35f37201ed2d6298ecef4ea1ae1dd
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

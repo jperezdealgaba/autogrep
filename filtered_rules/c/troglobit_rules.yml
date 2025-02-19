@@ -1,0 +1,25 @@
+rules:
+- id: vuln-uftpd-5c3b2015
+  pattern: "DBG(\"chrooted:%d, ctrl->cwd: %s, home:%s, dir:%s, len:%zd, dirlen:%zd\"\
+    ,\n    $CHROOTED, $CTRL_CWD, $HOME, $DIR, strlen($HOME), strlen($DIR));\n"
+  pattern-not: 'INFO("%s: CWD: invalid path to %s: %m", $CLIENTADDR, $PATH);
+
+    '
+  languages:
+  - c
+  message: 'The code uses a debug logging statement that exposes sensitive information
+    such as the current working directory, home directory, and their lengths. This
+    can lead to information disclosure vulnerabilities. Replace the debug logging
+    with a more secure logging mechanism that does not expose sensitive information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/troglobit/uftpd/commit/5c3b20158bae4f93e70f6ef8b3b3681006e20680
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

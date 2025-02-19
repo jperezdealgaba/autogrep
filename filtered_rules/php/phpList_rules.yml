@@ -1,0 +1,57 @@
+rules:
+- id: vuln-phplist3-bf445db5
+  pattern: '$column = clean($headers[$i]);
+
+    '
+  pattern-not: '$column = strip_tags($headers[$i]);
+
+    $column = htmlspecialchars($column);
+
+    '
+  languages:
+  - php
+  message: "The use of `clean()` function without proper sanitization can lead to\
+    \ XSS vulnerabilities. \nThe `clean()` function may not properly sanitize HTML\
+    \ or JavaScript input, allowing malicious code to be injected. \nTo fix this,\
+    \ use `strip_tags()` to remove HTML tags and `htmlspecialchars()` to convert special\
+    \ characters to HTML entities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpList/phplist3/commit/bf445db5b0548d09079cf45ed89867fd79e6bf56
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-phplist3-e2226008
+  pattern: 'printf('' %s %s </div>'', $ROW[''name''], ...);
+
+    '
+  pattern-not: 'printf('' %s %s </div>'', htmlspecialchars($ROW[''name'']), ...);
+
+    '
+  languages:
+  - php
+  message: 'The code directly outputs user-controlled data without proper escaping,
+    which can lead to Cross-Site Scripting (XSS) vulnerabilities. Attackers can inject
+    malicious scripts that execute in the context of the victim''s browser. Always
+    use htmlspecialchars() or similar functions to escape user input before outputting
+    it to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpList/phplist3/commit/e22260083e2ae35ae7d57fa5632a9c49db3ce849
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

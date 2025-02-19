@@ -1,0 +1,270 @@
+rules:
+- id: vuln-ruby-a3a62f87
+  pattern: '$VAR = OpenSSL::ASN1.decode($EXT.to_der).value
+
+    '
+  pattern-not: '$VAR = OpenSSL::ASN1.decode($EXT.to_der).value.last
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unsafe handling of ASN1 decoded values. The original code directly
+    accesses the decoded value array without proper bounds checking, which could lead
+    to security vulnerabilities. Use `.value.last` to safely access the last element
+    of the decoded value array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/a3a62f87e144be31b9ca8ad6415b207f43f4e126
+    category: security
+    cwe:
+    - 'CWE-129: Improper Validation of Array Index'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - ruby
+- id: vuln-ruby-3ce238b5
+  pattern: '$HEADER_VALUE =~ /\r\n/
+
+    '
+  pattern-not: '/[\r\n]/ =~ $HEADER_VALUE.to_s
+
+    '
+  languages:
+  - ruby
+  message: 'Detected potential HTTP response splitting vulnerability. The code checks
+    for CRLF sequences in header values using a pattern that may miss some variations.
+    This can allow attackers to inject malicious headers. To fix, use the updated
+    pattern that checks for both CR and LF characters separately and ensure the header
+    value is converted to a string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/3ce238b5f9795581eb84114dcfbdf4aa086bfecc
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/HTTP_Response_Splitting
+    technology:
+    - ruby
+- id: vuln-ruby-32e277ac
+  pattern: 'hexdigest($METHOD, $URI, hexdigest($BODY))
+
+    '
+  pattern-not: '$BODY_DIGEST = @h.new
+
+    $BODY { |$CHUNK| $BODY_DIGEST.update($CHUNK) }
+
+    $BODY_DIGEST = $BODY_DIGEST.hexdigest
+
+    hexdigest($METHOD, $URI, $BODY_DIGEST)
+
+    '
+  languages:
+  - ruby
+  message: 'The code directly hashes the entire request body in one go, which can
+    lead to memory exhaustion or incorrect digest calculation for large bodies. This
+    vulnerability can be exploited to cause denial of service or bypass security checks.
+    Instead, process the body in chunks using an incremental digest update mechanism.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/32e277acbf35de454befc1573aff1063a55403cf
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://www.ruby-lang.org/en/news/2023/03/28/memory-exhaustion-vulnerability-in-webrick/
+    technology:
+    - ruby
+- id: vuln-rake-5b8f8fc4
+  pattern: "open($FN, $MODE, *$OPTIONS) do |$INF|\n  ...\nend\n"
+  pattern-not: "File.open($FN, $MODE, *$OPTIONS) do |$INF|\n  ...\nend\n"
+  languages:
+  - ruby
+  message: 'Detected use of `open` without specifying `File.open`. This can lead to
+    security vulnerabilities such as command injection if the filename is not properly
+    sanitized. Always use `File.open` to explicitly handle file operations safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/rake/commit/5b8f8fc41a5d7d7d6a5d767e48464c60884d3aee
+    category: security
+    cwe:
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://ruby-doc.org/core-3.0.0/File.html#method-c-open
+    technology:
+    - ruby
+- id: vuln-ruby-7b9354af
+  pattern: '/\A#{WFKV_}*=#{WFKV_}*(?:[;&]#{WFKV_}*=#{WFKV_}*)*\z/o
+
+    '
+  pattern-not: '/\A#{WFKV_}=#{WFKV_}(?:[;&]#{WFKV_}=#{WFKV_})*\z/o
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression pattern used for URI validation is vulnerable due
+    to incorrect use of the ''*'' quantifier, which can lead to false positives in
+    URI validation. This could allow malicious URIs to bypass validation checks. Use
+    the corrected pattern that properly restricts the quantifiers to ensure accurate
+    URI validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/7b9354af8805c02ed968765abe300162e0fcc943
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - ruby
+- id: vuln-ruby-4fc6b252
+  pattern: 'exec($INTERPRETER, $SCRIPT_FILENAME)
+
+    '
+  pattern-not: 'exec(*[$INTERPRETER, $SCRIPT_FILENAME])
+
+    '
+  languages:
+  - ruby
+  message: "Direct use of `exec` with a single argument can lead to command injection\
+    \ vulnerabilities. \nUse an array to pass arguments to `exec` to safely handle\
+    \ command execution.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/4fc6b25289fe83e4cede024d9fea83217bffdc7e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - ruby
+- id: vuln-ruby-2669b84d
+  pattern: "ext.value.split(/,\\s+/).each{|general_name|\n  if /\\ADNS:(.*)/ =~ general_name\n\
+    \    ...\n  elsif /\\AIP Address:(.*)/ =~ general_name\n    ...\n  end\n}\n"
+  pattern-not: "id, ostr = OpenSSL::ASN1.decode(ext.to_der).value\nsequence = OpenSSL::ASN1.decode(ostr.value)\n\
+    sequence.value.each{|san|\n  case san.tag\n  when 2\n    ...\n  when 7\n    ...\n\
+    \  end\n}\n"
+  languages:
+  - ruby
+  message: "The code is vulnerable to improper handling of Subject Alternative Names\
+    \ (SANs) in SSL certificates. \nThe original code uses a simple string split and\
+    \ regex match, which can be bypassed by crafted certificates containing NULL bytes\
+    \ or malformed IP addresses. \nThe fix properly decodes the ASN.1 structure and\
+    \ handles DNS and IP address SANs according to RFC5280 specifications.\nTo fix\
+    \ this, always use the ASN.1 decoding method provided by OpenSSL and properly\
+    \ validate the SAN values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/2669b84d407ab431e965145c827db66c91158f89
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://tools.ietf.org/html/rfc5280
+    technology:
+    - ruby
+- id: vuln-ruby-5082e918
+  pattern: '/\A(?:%\h\h|[^%]+)*\z/ =~ $STR
+
+    '
+  pattern-not: '/\A[^%]*(?:%\h\h[^%]*)*\z/ =~ $STR
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression used for validating percent-encoded strings is
+    vulnerable to bypass attacks. The original pattern allows for sequences that are
+    not properly encoded, potentially leading to security issues such as injection
+    attacks. Use the updated pattern that ensures proper validation of percent-encoded
+    strings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/5082e91876502a2f3dde862406a0efe9f85afcdb
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby
+- id: vuln-rdoc-1254b006
+  pattern: "File.open($FILE, 'rb') do |$IO|\n  Marshal.load($IO.read)\nend\n"
+  pattern-not: 'File.open($FILE, ''rb'') {|$IO| Marshal.load($IO, $FILTER)}
+
+    '
+  languages:
+  - ruby
+  message: 'Unsafe deserialization detected. Using `Marshal.load` without a filter
+    can lead to arbitrary code execution by deserializing untrusted data. This vulnerability
+    allows attackers to execute malicious code by crafting a specially crafted serialized
+    object. To fix this, use `Marshal.load` with a filter to restrict the types of
+    objects that can be deserialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/rdoc/commit/1254b0066f312ddbf7fae7a195e66ce5b3bc6656
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://docs.ruby-lang.org/en/master/Marshal.html
+    technology:
+    - ruby
+- id: vuln-ruby-03821335
+  pattern: 'URI.parse "#{uri.scheme}://#{res.target}#{uri.path}"
+
+    '
+  pattern-not: "$TARGET = res.target.to_s.strip\nif /\\.#{Regexp.quote($HOST)}\\z/\
+    \ =~ $TARGET\n  URI.parse \"#{uri.scheme}://#$TARGET#{uri.path}\"\nelse\n  $URI\n\
+    end\n"
+  languages:
+  - ruby
+  message: 'Detected a potential DNS rebinding vulnerability in URI parsing. The code
+    directly uses the target from a DNS response without validating it against the
+    original host. This could allow an attacker to perform DNS rebinding attacks,
+    redirecting requests to malicious domains. To fix, ensure the target domain is
+    validated against the original host before using it in URI construction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/038213351b757fb5a62bc9313b64fcb78ff2ce97
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - ruby

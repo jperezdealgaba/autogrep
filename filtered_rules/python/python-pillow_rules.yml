@@ -1,0 +1,151 @@
+rules:
+- id: vuln-pillow-774e53bb
+  pattern: "for $I in range(i32($S, 4)):\n    ...\n"
+  pattern-not: "$BANDS = i32($S, 4)\nif $BANDS > 4:\n    raise IOError(\"Invalid number\
+    \ of bands\")\nfor $I in range($BANDS):\n    ...\n"
+  languages:
+  - python
+  message: 'Detected unsafe direct use of i32() result in a loop without validation.
+
+    This can lead to processing invalid data if the number of bands exceeds the limit.
+
+    Add a validation check before the loop to ensure the number of bands is within
+    the expected range.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/774e53bb132461d8d5ebefec1162e29ec0ebc63d
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - python
+- id: vuln-pillow-6696b780
+  pattern: 'self.assert_($CONDITION)
+
+    '
+  pattern-not: 'self.assertTrue($CONDITION)
+
+    self.assertLess($CONDITION)
+
+    self.assertIn($CONDITION)
+
+    '
+  languages:
+  - python
+  message: Deprecated assert_() method used. Replace with more specific assertion
+    methods like assertTrue, assertLess, or assertIn to improve code clarity and prevent
+    potential issues.
+  severity: WARNING
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/6696b780e3b38672106c12be12e82f195c93b71a
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertTrue
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertLess
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertIn
+    technology:
+    - python
+- id: vuln-pillow-a90dc491
+  pattern: "layout = i8($S[3]), i16($S[4:]), i16($S[10:])\n...\nif layout == (1, 2,\
+    \ 1) or layout == (1, 1, 1):\n    ...\nelif layout == (1, 3, 3):\n    ...\nelif\
+    \ layout == (1, 3, 4):\n    ...\n"
+  pattern-not: "depth = i8($S[3]) * 8\ndimension = i16($S[4:])\nxsize = i16($S[6:])\n\
+    ysize = i16($S[8:])\nzsize = i16($S[10:])\nlayout = depth, dimension, zsize\n\
+    if layout == (8, 2, 1) or layout == (8, 1, 1):\n    ...\nelif layout == (8, 3,\
+    \ 3):\n    ...\nelif layout == (8, 3, 4):\n    ...\n"
+  languages:
+  - python
+  message: Detected unsafe handling of SGI image layout. The old code uses incorrect
+    bit depth values (1) instead of the correct (8), which can lead to incorrect image
+    processing or security vulnerabilities. Update the layout calculation to use the
+    correct bit depth (8).
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/a90dc4910045f5c6c119b582d4fd2e4841cd51f8
+    category: security
+    cwe: 'CWE-682: Incorrect Calculation'
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python
+- id: vuln-pillow-844ed441
+  pattern: "if $FILE.endswith($FORMAT):\n  ...\n"
+  pattern-not: "if not $FILE.endswith($FORMAT):\n  ...\n"
+  languages:
+  - python
+  message: "Detected a potential logic error where file format validation is incorrectly\
+    \ implemented. \nThe condition checks if a file ends with a specific format, which\
+    \ might lead to incorrect file handling. \nThis could result in processing files\
+    \ with unintended formats, potentially leading to security vulnerabilities. \n\
+    Use `if not file.endswith(format)` to properly validate file formats.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/844ed441deb6b75d3048fa111977188ed47f0b76
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - python
+- id: vuln-pillow-3bce1459
+  pattern: 'newline = whitespace_optional + newline_only + whitespace_optional
+
+    '
+  pattern-not: 'newline = whitespace_optional_no_nl + newline_only + whitespace_optional_no_nl
+
+    '
+  languages:
+  - python
+  message: Detected insecure handling of newline characters in PDF parsing. This can
+    lead to improper parsing of PDF content and potential security vulnerabilities.
+    Use 'whitespace_optional_no_nl' instead of 'whitespace_optional' to exclude newline
+    characters.
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/3bce145966374dd39ce58a6fc0083f8d1890719c
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - python
+- id: vuln-pillow-a301d061
+  pattern: '$QUANT_PROC = Popen($ARGS, stdout=PIPE)
+
+    check_call($TOGIF_ARGS, stdin=$QUANT_PROC.stdout, stdout=$FILE)
+
+    '
+  pattern-not: "$QUANT_PROC = Popen($ARGS, stdout=PIPE)\n$TOGIF_PROC = Popen($TOGIF_ARGS,\
+    \ stdin=$QUANT_PROC.stdout, stdout=$FILE)\n$QUANT_PROC.stdout.close()\n$RETCODE\
+    \ = $QUANT_PROC.wait()\nif $RETCODE:\n    raise CalledProcessError($RETCODE, $ARGS)\n\
+    $RETCODE = $TOGIF_PROC.wait()\nif $RETCODE:\n    raise CalledProcessError($RETCODE,\
+    \ $TOGIF_ARGS)\n"
+  languages:
+  - python
+  message: 'Detected unsafe subprocess handling that doesn''t properly check for process
+    failures.
+
+    This can lead to silent failures and unexpected behavior if the subprocess exits
+    with an error.
+
+    Fix by properly closing the pipe and checking the return code of both processes
+    using CalledProcessError.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python-pillow/Pillow/commit/a301d061fbff5c5ec4e6e1ae82a361deb295b7b6
+    category: security
+    cwe: CWE-252
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

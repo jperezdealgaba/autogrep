@@ -1,0 +1,134 @@
+rules:
+- id: vuln-mesos-2c282f19
+  pattern: "const bool $VAR = $HMAC.get() == $SIGNATURE.get();\nif (!$VAR) {\n  ...\n\
+    }\n"
+  pattern-not: "if (!constantTimeEquals($HMAC.get(), $SIGNATURE.get())) {\n  ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'Detected a direct string comparison that is vulnerable to timing attacks.
+
+    Using direct equality (==) comparison for sensitive data like HMAC signatures
+
+    can expose timing information, allowing attackers to infer the content.
+
+    Replace with a constant-time comparison function like constantTimeEquals().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/mesos/commit/2c282f19755ea7518caf6f43e729524b1c6bdb23
+    category: security
+    cwe:
+    - 'CWE-208: Observable Timing Discrepancy'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - cpp
+- id: vuln-trafficserver-d0dda3f1
+  pattern: "if (++$VAL_HITS >= $HITS || ($BYTES > 0 && $VAL_BYTES > $BYTES)) {\n \
+    \ ...\n}\n"
+  pattern-not: "if ($CACHEABLE && ($VAL_HITS >= $HITS || ($BYTES > 0 && $VAL_BYTES\
+    \ > $BYTES))) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The vulnerability occurs when cache promotion logic does not check if
+    the request is cacheable before promoting it. This can lead to incorrect cache
+    promotions for non-cacheable requests, potentially causing resource exhaustion
+    or cache poisoning. The fix involves adding a cacheable check before promoting
+    the request. Ensure that cache promotion logic verifies request cacheability using
+    appropriate headers and methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/d0dda3f1b1cc5f0b8e77135571c4e1e21b702d08
+    category: security
+    cwe:
+    - CWE-400
+    - CWE-524
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - cpp
+- id: vuln-trafficserver-8b5f0345
+  pattern: '$STRUCT->internal_msg_buffer_index = 0;
+
+    $STRUCT->internal_msg_buffer_size = $EXPR * 2;
+
+    '
+  pattern-not: '$STRUCT->internal_msg_buffer_size = $EXPR * 2;
+
+    '
+  languages:
+  - cpp
+  message: "Detected redundant and potentially dangerous assignment of `internal_msg_buffer_index`.\
+    \ \nThis can lead to inconsistent state management and potential memory corruption.\
+    \ \nRemove the redundant assignment to ensure proper buffer management.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/8b5f0345dade6b2822d9b52c8ad12e63011a5c12
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - cpp
+- id: vuln-trafficserver-50441b39
+  pattern: 'uint32_t $VAR = 1048576;
+
+    '
+  pattern-not: 'uint32_t $VAR = 65535;
+
+    '
+  languages:
+  - cpp
+  message: 'The HTTP/2 initial window size is set to an excessively large value (1048576),
+    which can lead to resource exhaustion and denial of service. This vulnerability
+    allows an attacker to consume excessive memory by opening multiple streams with
+    large window sizes. Update the initial window size to the recommended value of
+    65535 to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/50441b39e6631389ef95c4133f06bbf94544879c
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://httpwg.org/specs/rfc7540.html#InitialWindowSize
+    technology:
+    - cpp
+- id: vuln-trafficserver-5a9339d7
+  pattern: 'char $VAR[$LEN * 2];
+
+    '
+  pattern-not: 'char $VAR[$LEN * 3 + 1];
+
+    '
+  languages:
+  - cpp
+  message: 'Potential buffer overflow vulnerability detected. The array size calculation
+    may be insufficient, leading to buffer overflows when storing expanded data. Ensure
+    the array size accounts for the maximum possible expansion and includes space
+    for a null terminator. The fix typically involves increasing the multiplier and
+    adding space for the null terminator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/5a9339d7bc65e1c2d8d2a0fc80bb051daf3cdb0b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-131
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

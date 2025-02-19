@@ -1,0 +1,31 @@
+rules:
+- id: vuln-bmoor-29b0162c
+  pattern: "{\n  ...,\n  \"scripts\": {\n    ...,\n    \"test\": \"npm run prettier\
+    \ && mocha --recursive \\\"./src/**/*.spec.js\\\"\",\n    \"prettier\": \"npx\
+    \ prettier --write ./src && npm run lint\",\n    ...\n  },\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"scripts\": {\n    ...,\n    \"test\": \"mocha --recursive\
+    \ \\\"./src/**/*.spec.js\\\"\",\n    \"prettier\": \"npx prettier --write ./src\"\
+    ,\n    \"finalize\": \"npm run lint && npm run prettier && npm run test\",\n \
+    \   ...\n  },\n  ...\n}\n"
+  languages:
+  - json
+  message: 'The original script configuration in package.json combines multiple tasks
+    in a single command, which can lead to incomplete testing or linting if one step
+    fails. This is dangerous because it can mask issues in the codebase. The fix separates
+    these tasks into distinct commands and introduces a ''finalize'' script to ensure
+    all steps are executed correctly. Update your package.json to separate concerns
+    and ensure complete testing and linting.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/b-heilman/bmoor/commit/29b0162cc1dc1791fc060891f568b0ae29bc542b
+    category: security
+    cwe:
+    - CWE-1075
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://docs.npmjs.com/cli/v8/commands/npm-run-script
+    technology:
+    - json

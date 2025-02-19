@@ -1,0 +1,320 @@
+rules:
+- id: vuln-exiv2-a82098f4
+  pattern: 'io_->seek($LENGTH, Exiv2::BasicIo::cur);
+
+    '
+  pattern-not: "if ( io_->seek($LENGTH, Exiv2::BasicIo::cur) != 0 ) {\n    throw Error(kerCorruptedMetadata);\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'The code directly calls `io_->seek` without checking the return value,
+    which can lead to corrupted metadata handling. This can be exploited to cause
+    undefined behavior or crashes. Always check the return value of `seek` operations
+    and handle errors appropriately by throwing an exception when the operation fails.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/a82098f4f90cd86297131b5663c3dec6a34470e8
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - cpp
+- id: vuln-exiv2-1f1715c0
+  pattern: 'assert($TC.get());
+
+    $TC->setStart($P);
+
+    $OBJECT->addChild($TC);
+
+    '
+  pattern-not: "if ($TC.get()) {\n    $TC->setStart($P);\n    $OBJECT->addChild($TC);\n\
+    } else {\n    $WARNING << $MSG;\n}\n"
+  languages:
+  - cpp
+  message: 'Assertion used without proper null check can lead to undefined behavior
+    when the pointer is null.
+
+    This is dangerous because it can cause the application to crash or behave unpredictably.
+
+    Fix by replacing the assertion with a proper null check and handle the null case
+    appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/1f1715c086d8dcdf5165b19164af9aee7aa12e98
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp
+- id: vuln-exiv2-43f154f4
+  pattern: 'enforce($LENGTH >= 0, $ERROR);
+
+    enforce($LENGTH <= ($EOT - $SP)/2, $ERROR);
+
+    '
+  pattern-not: 'enforce(0 <= $LENGTH && $LENGTH <= ($EOT - $SP)/2, $ERROR);
+
+    '
+  languages:
+  - cpp
+  message: 'The code contains separate enforce calls for length validation, which
+    can lead to inconsistent checks and bypassing of security constraints. This is
+    dangerous because it can allow invalid or malicious data to pass through unchecked.
+    Consolidate the checks into a single enforce call to ensure both conditions are
+    evaluated together.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/43f154f44b838e6b232193ccbd48e5a2e94bdd35
+    category: security
+    cwe:
+    - CWE-129
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - cpp
+- id: vuln-exiv2-97e7905a
+  pattern: 'long $V = parseLong($OS.str(), $OK);
+
+    if ($OK && $V != 0) break;
+
+    '
+  pattern-not: 'long $V = parseLong($OS.str(), $OK);
+
+    if ($OK && $V > 0) break;
+
+    '
+  languages:
+  - cpp
+  message: 'The vulnerability arises from a check that only verifies if a parsed value
+    is non-zero, which can lead to incorrect handling of ISO values. This is dangerous
+    because it may allow invalid or unsafe ISO values to be processed. The fix should
+    ensure that the value is not only non-zero but also greater than zero to avoid
+    potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/97e7905a8b90fcbd5e8c440ad7d55bf8ffe007e5
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp
+- id: vuln-exiv2-8c53e468
+  pattern: 'xmlParser->ParseBuffer($BUFFER, $LENGTH, $FLAG);
+
+    xmlParser->ParseBuffer($BUFFER2, $LENGTH2, $FLAG2);
+
+    '
+  pattern-not: 'std::string $COPY;
+
+    $COPY.append($BUFFER);
+
+    xmlParser->ParseBuffer($COPY.c_str(), $COPY.size(), $FLAG);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected multiple calls to `xmlParser->ParseBuffer()` with potentially
+    overlapping buffer regions, which can lead to quadratic complexity and performance
+    degradation. This vulnerability was fixed by using a single `std::string` to accumulate
+    the buffer contents before parsing. Replace repeated `ParseBuffer()` calls with
+    a single call using a pre-processed buffer.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/8c53e4687b19b1951b6860bdc89962d420b1b624
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp
+- id: vuln-exiv2-f2ec4ce3
+  pattern: 'std::string $VAR = $KEYWORD + ''\0'';
+
+    ...
+
+    $VAR += ''\0'';
+
+    ...
+
+    byte $LENGTH[4];
+
+    ul2Data($LENGTH, static_cast<uint32_t>($VAR.size() + $COMPRESSED_LENGTH), $ENDIAN);
+
+    ...
+
+    return std::string((const char*)$LENGTH, 4) + $CHUNKTYPE + $VAR;
+
+    '
+  pattern-not: 'const byte* $HEADER = (const byte*) "ICC PROFILE\0\0";
+
+    const byte* $TYPE = (const byte*) "iCCP";
+
+    uint32_t $HEADERLEN = 13;
+
+    uint32_t $TYPELEN = 4;
+
+    uint32_t $CHUNKLENGTH = $HEADERLEN + $COMPRESSED_SIZE;
+
+    byte $LENGTH[4];
+
+    ul2Data($LENGTH, $CHUNKLENGTH, $ENDIAN);
+
+    uLong $TMP = crc32(0L, Z_NULL, 0);
+
+    $TMP = crc32($TMP, (const Bytef*)$HEADER, $HEADERLEN);
+
+    $TMP = crc32($TMP, (const Bytef*)$COMPRESSED_DATA, $COMPRESSED_SIZE);
+
+    byte $CRC[4];
+
+    ul2Data($CRC, $TMP, $ENDIAN);
+
+    ...
+
+    outIo.write($LENGTH, 4) != 4
+
+    || outIo.write($TYPE, $TYPELEN) != $TYPELEN
+
+    || outIo.write($HEADER, $HEADERLEN) != $HEADERLEN
+
+    || outIo.write($COMPRESSED_DATA, $COMPRESSED_SIZE) != $COMPRESSED_SIZE
+
+    || outIo.write($CRC, 4) != 4
+
+    '
+  languages:
+  - cpp
+  message: 'The original code constructs a PNG iCCP chunk header in an insecure manner,
+    potentially leading to incorrect chunk formation or security vulnerabilities.
+    The fixed version properly calculates the chunk length, includes CRC checks, and
+    ensures correct header formation. Always use secure methods for constructing binary
+    data headers, including proper length calculations and checksums.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/f2ec4ce36adb3f233e3b39df1f7a49fad8f1104c
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.w3.org/TR/PNG/
+    technology:
+    - cpp
+- id: vuln-exiv2-ccde30af
+  pattern: '$RESULT = atoi(strchr($BUFFER, '' ''));
+
+    '
+  pattern-not: "$FIRSTSPACE = strchr($BUFFER, ' ');\nif ($FIRSTSPACE) {\n    $RESULT\
+    \ = atoi($FIRSTSPACE);\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly calls `atoi` on the result of `strchr` without checking
+    if the pointer is null. This can lead to undefined behavior if `strchr` returns
+    null. Always check the result of `strchr` before using it in `atoi`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/ccde30afa8ca787a3fe17388a15977f107a53b72
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp
+- id: vuln-exiv2-0f9eb74c
+  pattern: '$IO.read($VAR1, $LEN);
+
+    $IO.read($VAR2, $LEN);
+
+    $IO.read($VAR3, $LEN);
+
+    '
+  pattern-not: 'readOrThrow($IO, $VAR1, $LEN, $ERROR);
+
+    readOrThrow($IO, $VAR2, $LEN, $ERROR);
+
+    readOrThrow($IO, $VAR3, $LEN, $ERROR);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe read operations without error handling. This can lead
+    to corrupted data or undefined behavior if the read operation fails. Replace with
+    readOrThrow or similar error-handling mechanisms to ensure proper validation of
+    input data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/0f9eb74c44c908e170a64cab590949d53749af8e
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - cpp
+- id: vuln-exiv2-962962a8
+  pattern: 'byte* $BYTES = new byte[$SIZE];
+
+    ...
+
+    IptcData::printStructure($OUT, $BYTES, $SIZE, $DEPTH);
+
+    ...
+
+    delete[] $BYTES;
+
+    '
+  pattern-not: 'std::vector<byte> $BYTES($SIZE);
+
+    ...
+
+    IptcData::printStructure($OUT, makeSliceUntil(&$BYTES[0], $READ_BYTES), $DEPTH);
+
+    '
+  languages:
+  - cpp
+  message: "Detected unsafe manual memory management when reading IPTC data. \nThis\
+    \ can lead to memory leaks or undefined behavior if exceptions are thrown. \n\
+    Use std::vector or Slice to manage memory safely and avoid manual allocation/deletion.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exiv2/exiv2/commit/962962a8e9885ccbca28f624492f1427152a0695
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-789
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.cppreference.com/w/cpp/container/vector
+    technology:
+    - cpp

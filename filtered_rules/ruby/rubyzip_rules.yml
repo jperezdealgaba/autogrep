@@ -1,0 +1,61 @@
+rules:
+- id: vuln-rubyzip-6e0d2317
+  pattern: "def extract($DEST_PATH = $NAME, &$BLOCK)\n  ...\n  if $NAME.squeeze('/')\
+    \ =~ /\\.{2}(?:\\/|\\z)/\n    ...\n  end\nend\n"
+  pattern-not: "def extract($DEST_PATH = nil, &$BLOCK)\n  if $DEST_PATH.nil? && Pathname.new($NAME).absolute?\n\
+    \    ...\n  elsif $NAME.squeeze('/') =~ /\\.{2}(?:\\/|\\z)/\n    ...\n  end\n\
+    end\n"
+  languages:
+  - ruby
+  message: 'Detected a potential path traversal vulnerability in RubyZip''s `extract`
+    method.
+
+    The original implementation allows extraction to arbitrary paths based on the
+    zip entry name,
+
+    which could lead to files being written outside the intended directory.
+
+    The vulnerability has been fixed by checking for absolute paths and providing
+    a default destination path.
+
+    To fix this, ensure that the destination path is validated and not directly derived
+    from the zip entry name.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rubyzip/rubyzip/commit/6e0d23178a39f1b9ee0debc4fffb6d90994c6955
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-23
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://snyk.io/vuln/SNYK-RUBY-RUBYZIP-20288
+    technology:
+    - ruby
+- id: vuln-rubyzip-fd81bd52
+  pattern: 'VERSION = ''1.3.0''
+
+    '
+  pattern-not: 'VERSION = ''1.2.2''
+
+    '
+  languages:
+  - ruby
+  message: "Detected an insecure version of rubyzip (1.3.0) which contains vulnerabilities.\
+    \ \nUsing this version can expose your application to security risks. \nDowngrade\
+    \ to version 1.2.2 or upgrade to a patched version to mitigate these risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/rubyzip/rubyzip/commit/fd81bd523cd53096c1a1dce1e950ef0b7658a02c
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/rubyzip/rubyzip/releases
+    technology:
+    - ruby

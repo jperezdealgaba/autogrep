@@ -1,0 +1,100 @@
+rules:
+- id: vuln-nasm-9b7ee09a
+  pattern: "if ($TYPE == TOK_PREPROC_ID && $TEXT[1] == '!') {\n  ...\n}\n"
+  pattern-not: "if ($TYPE == TOK_PREPROC_ID && $TEXT &&\n    $TEXT[0] && $TEXT[1]\
+    \ == '!') {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential null pointer dereference in the preprocessor token\
+    \ check. \nThe code accesses `t->text[1]` without first verifying that `t->text`\
+    \ is non-null and `t->text[0]` is valid. \nThis can lead to undefined behavior\
+    \ or crashes if `t->text` is null. \nTo fix this, ensure that `t->text` is checked\
+    \ for null and that `t->text[0]` is valid before accessing `t->text[1]`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/9b7ee09abfd426b99aa1ea81d19a3b2818eeabf9
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-nasm-e996d28c
+  pattern: "if (!$VAR) {\n  nasm_error($ERR, $MSG);\n}\nif ($COND1 && $COND2 && $COND3)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!$VAR) {\n  nasm_error($ERR, $MSG);\n} else if ($COND1 && $COND2\
+    \ && $COND3) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected an issue where conditional checks are not properly chained, which
+    could lead to incorrect error handling. The vulnerability occurs when two separate
+    if statements are used instead of an if-else chain, potentially causing unintended
+    behavior. To fix this, ensure that the second condition is checked only if the
+    first condition fails by using an else if statement.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/e996d28c70d45008085322b442b44a9224308548
+    category: security
+    cwe:
+    - CWE-670
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/670.html
+    technology:
+    - c
+- id: vuln-nasm-c713b5f9
+  pattern: 'return sizes[bsii($STR, $NAMES, $SIZE)+1];
+
+    '
+  pattern-not: 'return $STR ? sizes[bsii($STR, $NAMES, $SIZE)+1] : 0;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential null pointer dereference vulnerability. The function
+    `bsii` may return a value that leads to accessing an invalid index in the `sizes`
+    array if `$STR` is null. This can cause undefined behavior or crashes. To fix
+    this, add a null check before accessing the array, as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/c713b5f994cf7b29164c3b6838b91f0499591434
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-nasm-2d4e6952
+  pattern: "while ($NBS--)\n  *$Q++ = '\\\\';\n"
+  pattern-not: '$Q = mempset($Q, ''\\'', $NBS);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe manual memory copy operation using a while
+    loop. This pattern can lead to buffer overflows or other memory-related vulnerabilities.
+    Replace the manual loop with a safer function like `memset` or `mempset` to ensure
+    proper memory handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/netwide-assembler/nasm/commit/2d4e6952417ec6f08b6f135d2b5d0e19b7dae30d
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

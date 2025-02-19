@@ -1,0 +1,30 @@
+rules:
+- id: vuln-swtpm-9f740868
+  pattern: '*$DATAOFFSET = ntohs($BH->hdrsize);
+
+    '
+  pattern-not: '*$DATAOFFSET = $HDRSIZE;
+
+    '
+  languages:
+  - c
+  message: 'Directly using ntohs(bh->hdrsize) as a data offset without validation
+    can lead to incorrect memory access or buffer overflows if the header size is
+    malformed. This vulnerability was fixed by first validating the header size before
+    using it as an offset. Always validate network-derived values before using them
+    in memory operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/stefanberger/swtpm/commit/9f740868fc36761de27df3935513bdebf8852d19
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

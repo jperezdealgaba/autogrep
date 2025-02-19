@@ -1,0 +1,165 @@
+rules:
+- id: vuln-systemd-stable-764b7411
+  pattern: 'char *p, *s;
+
+    ...
+
+    p = strdupa($F);
+
+    ...
+
+    p = skip_leading_chars(p, "/");
+
+    ...
+
+    s = unit_name_escape(p);
+
+    '
+  pattern-not: '_cleanup_free_ char *p = NULL;
+
+    ...
+
+    p = strdup($F);
+
+    ...
+
+    s = unit_name_escape(skip_leading_chars(p, "/"));
+
+    '
+  languages:
+  - c
+  message: 'The use of `strdupa` for dynamic string allocation is dangerous because
+    it uses stack memory, which can lead to stack overflow vulnerabilities. Additionally,
+    the code does not properly handle memory cleanup, potentially leading to memory
+    leaks. Replace `strdupa` with `strdup` and ensure proper memory management using
+    `_cleanup_free_` to avoid these issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd-stable/commit/764b74113e36ac5219a4b82a05f311b5a92136ce
+    category: security
+    cwe:
+    - CWE-787
+    - CWE-401
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://man7.org/linux/man-pages/man3/strdupa.3.html
+    technology:
+    - c
+- id: vuln-systemd-5de6cce5
+  pattern: '$FUNC = open($PATH, $FLAGS1|$FLAGS2|$FLAGS3|$FLAGS4|$FLAGS5|$FLAGS6);
+
+    '
+  pattern-not: '$FUNC = open($PATH, $FLAGS1|$FLAGS2|$FLAGS3|$FLAGS4|$FLAGS5);
+
+    '
+  languages:
+  - c
+  message: 'The use of O_NONBLOCK with O_DIRECTORY in open() can lead to race conditions
+    and security vulnerabilities.
+
+    This flag combination can cause the function to fail unexpectedly, especially
+    in directory operations.
+
+    Remove O_NONBLOCK from the flags when opening directories to ensure consistent
+    behavior and avoid potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/5de6cce58b3e8b79239b6e83653459d91af6e57c
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://man7.org/linux/man-pages/man2/open.2.html
+    technology:
+    - c
+- id: vuln-systemd-63748626
+  pattern: "if ($R < 0) {\n    $R = sd_bus_reply_method_errno($REQUEST, $R, NULL);\n\
+    \    goto $FINISH;\n}\n"
+  pattern-not: "if ($R < 0)\n    goto $FAIL;\n"
+  languages:
+  - c
+  message: 'The original code fails to properly handle asynchronous PolicyKit replies,
+    leading to potential memory leaks and incorrect error handling. The patch introduces
+    a deferred event source to clean up resources after the asynchronous operation
+    completes. Ensure proper cleanup of resources in asynchronous operations to prevent
+    memory leaks and improve error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb
+    category: security
+    cwe:
+    - 'CWE-401: Improper Release of Memory Before Removing Last Reference'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-systemd-1dfa7e79
+  pattern: 'void *$P;
+
+    ...
+
+    free($P);
+
+    '
+  pattern-not: '_cleanup_free_ void *$P = NULL;
+
+    ...
+
+    free($P);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe memory management where a pointer is not automatically
+    freed using `_cleanup_free_`.
+
+    This can lead to memory leaks or use-after-free vulnerabilities if the pointer
+    is not properly freed.
+
+    Use `_cleanup_free_` to ensure automatic cleanup of allocated memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/1dfa7e79a60de680086b1d93fcc3629b463f58bd
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-401
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-systemd-fc3c1c6e
+  pattern: 'strappend($PATH, "/X11/display")
+
+    '
+  pattern-not: 'strappend($PATH, "/X11-display")
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe path concatenation using "/X11/display".
+    This can lead to directory traversal vulnerabilities if the input is not properly
+    sanitized. Use "/X11-display" instead to avoid creating nested directories that
+    could be exploited.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/systemd/systemd/commit/fc3c1c6e091ea16ad5600b145201ec535bbb5d7c
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - c

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-go-libp2p-45d3c6ff
+  pattern: "if ok && $SIGNED_PEER_RECORD != nil {\n  _, $ERR := $CAB.ConsumePeerRecord($SIGNED_PEER_RECORD,\
+    \ $TTL)\n  if $ERR != nil {\n    log.Debugf(\"error adding signed addrs to peerstore:\
+    \ %v\", $ERR)\n  }\n}\n"
+  pattern-not: "if ok && $SIGNED_PEER_RECORD != nil && $SIGNED_PEER_RECORD.PublicKey\
+    \ != nil {\n  $ID, $ERR := peer.IDFromPublicKey($SIGNED_PEER_RECORD.PublicKey)\n\
+    \  if $ERR != nil {\n    log.Debugf(\"failed to derive peer ID from peer record:\
+    \ %s\", $ERR)\n  } else if $ID != $C.RemotePeer() {\n    log.Debugf(\"received\
+    \ signed peer record for unexpected peer ID. expected %s, got %s\", $C.RemotePeer(),\
+    \ $ID)\n  } else if _, $ERR := $CAB.ConsumePeerRecord($SIGNED_PEER_RECORD, $TTL);\
+    \ $ERR != nil {\n    log.Debugf(\"error adding signed addrs to peerstore: %v\"\
+    , $ERR)\n  }\n}\n"
+  languages:
+  - go
+  message: 'The code fails to validate the peer ID in a signed peer record before
+    consuming it. This can allow an attacker to inject malicious peer records with
+    incorrect peer IDs, potentially leading to man-in-the-middle attacks or incorrect
+    routing. Always validate the peer ID in the signed peer record matches the expected
+    remote peer ID before consuming the record.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libp2p/go-libp2p/commit/45d3c6fff662ddd6938982e7e9309ad5fa2ad8dd
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - go

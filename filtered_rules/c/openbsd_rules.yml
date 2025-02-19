@@ -1,0 +1,51 @@
+rules:
+- id: vuln-src-7afb2d41
+  pattern: "if ($PEERKEY && !EVP_PKEY_cmp($PEERKEY, $LOCALKEY)) {\n  ...\n}\n"
+  pattern-not: "if ($PEERKEY && EVP_PKEY_cmp($PEERKEY, $LOCALKEY) != 1) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code incorrectly checks the result of EVP_PKEY_cmp by using the logical
+    NOT operator (!) instead of comparing the result to 1. This can lead to incorrect
+    validation of cryptographic keys, potentially allowing unauthorized access. The
+    correct approach is to explicitly check if the result equals 1, indicating a successful
+    match.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openbsd/src/commit/7afb2d41c6d373cf965285840b85c45011357115
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - c
+- id: vuln-src-13053edc
+  pattern: "if (!$CLASS && $PWD && $PWD->pw_class && $PWD->pw_class[0] != '\\0')\n\
+    \  $CLASS = strdup($PWD->pw_class);\nif (($LC = login_getclass($CLASS)) == NULL)\n\
+    \  $LOGIN_DEFCLASS;\n"
+  pattern-not: "if ($PW_CLASS == NULL && $PWD != NULL)\n  $PW_CLASS = $PWD->pw_class;\n\
+    if (($LC = login_getclass($PW_CLASS)) == NULL)\n  $LOGIN_DEFCLASS;\n"
+  languages:
+  - c
+  message: 'The code directly uses `strdup` on a potentially uninitialized or NULL
+    pointer `pw_class`, which can lead to undefined behavior or crashes. Instead,
+    a temporary variable should be used to safely handle the `pw_class` value. This
+    vulnerability can be fixed by using a separate variable to store the `pw_class`
+    value and checking for NULL before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openbsd/src/commit/13053edc2f30540fa66763e29d0a8eec43f1aa53
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

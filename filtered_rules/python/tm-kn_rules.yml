@@ -1,0 +1,22 @@
+rules:
+- id: vuln-django-basic-auth-ip-whitelist-effe05ed
+  pattern: "if $USERNAME == $CONFIGURED_USERNAME and $PASSWORD == $CONFIGURED_PASSWORD:\n\
+    \  ...\n"
+  pattern-not: "if constant_time_compare($USERNAME, $CONFIGURED_USERNAME) & constant_time_compare($PASSWORD,\
+    \ $CONFIGURED_PASSWORD):\n  ...\n"
+  languages:
+  - python
+  message: Detected insecure comparison of credentials using '=='. This can lead to
+    timing attacks. Use 'django.utils.crypto.constant_time_compare' for secure comparison.
+  severity: ERROR
+  metadata:
+    source-url: github.com/tm-kn/django-basic-auth-ip-whitelist/commit/effe05ed1ed9e1ccc675a65b69d36217e5c5dfc6
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://docs.djangoproject.com/en/stable/topics/security/#timing-attacks
+    technology:
+    - python

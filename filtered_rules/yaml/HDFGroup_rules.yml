@@ -1,0 +1,36 @@
+rules:
+- id: vuln-hdf5-119e694f
+  pattern: 'group: ${{ github.workflow }}-${{ github.sha || github.event.pull_request.number
+    }}
+
+    '
+  pattern-not: 'group: ${{ github.workflow }}-${{ github.head_ref && github.ref ||
+    github.run_id }}
+
+    '
+  languages:
+  - yaml
+  message: 'Detected a potentially insecure GitHub Actions workflow group naming pattern.
+
+    The previous pattern used `github.sha` or `github.event.pull_request.number`,
+    which could lead to ambiguous or non-unique group names.
+
+    This could cause confusion or security issues in workflow tracking and management.
+
+    The fix uses `github.head_ref && github.ref || github.run_id` for more reliable
+    and unique group names.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/HDFGroup/hdf5/commit/119e694f971470b26876d227ceedbaab36eef275
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021
+    references:
+    - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idgroup
+    technology:
+    - yaml
+    - github-actions

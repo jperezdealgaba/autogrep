@@ -1,0 +1,135 @@
+rules:
+- id: vuln-libsndfile-6be89067
+  pattern: 'byte_count += $FUNC($PSF, $PTR, $SIZE);
+
+    '
+  pattern-not: "$READ_BYTES = $FUNC($PSF, $PTR, $SIZE);\nif ($READ_BYTES > 0 && byte_count\
+    \ > (INT_MAX - $READ_BYTES)) {\n  ...\n} else {\n  byte_count += $READ_BYTES;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Integer overflow vulnerability detected. The code adds the result of a
+    function call directly to `byte_count` without checking for potential overflow,
+    which can lead to undefined behavior or security issues. To fix this, ensure that
+    the addition does not exceed `INT_MAX` by checking the result before adding it
+    to `byte_count`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/6be8906740cdca067f12920bb4a63f728485aff0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c
+- id: vuln-libsndfile-9e0e55f8
+  pattern: '#define $CONSTANT 666
+
+    ...
+
+    return $CONSTANT ;
+
+    '
+  pattern-not: '#define $CONSTANT $VALUE
+
+    ...
+
+    return $CONSTANT ;
+
+    '
+  languages:
+  - c
+  message: 'The use of a hardcoded error code value (666) is a security vulnerability.
+    This can lead to ambiguous error handling and potential confusion in error management.
+    Replace the hardcoded value with a meaningful and descriptive constant to improve
+    code readability and maintainability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/9e0e55f8bfa60bddca083ff85699f855c91c42e7
+    category: security
+    cwe:
+    - 'CWE-547: Use of Hard-coded, Security-relevant Constants'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/547.html
+    technology:
+    - c
+- id: vuln-libsndfile-e4cc9d35
+  pattern: "if ($VAR->blocksize == 0) {\n    ...\n}\n"
+  pattern-not: "if ($VAR->blocksize <= 0) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a comparison of `blocksize` with zero, which should be checked
+    for being less than or equal to zero instead. This can lead to incorrect handling
+    of invalid block sizes. The fix ensures that any non-positive value is caught,
+    preventing potential issues in block processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/e4cc9d350ab162374ebe2e88d712dba70e511a3b
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c
+- id: vuln-libsndfile-deb669ee
+  pattern: "if ($BLOCKALIGN < 7 * $CHANNELS) {\n    psf_log_printf($PSF, \"*** Error\
+    \ blockalign (%d) should be > %d.\\n\", $BLOCKALIGN, 7 * $CHANNELS);\n    ...\n\
+    }\n"
+  pattern-not: "if (2 * $BLOCKALIGN < $SAMPLESPERBLOCK * $CHANNELS) {\n    psf_log_printf($PSF,\
+    \ \"*** Error blockalign (%d) should be >= %d.\\n\", $BLOCKALIGN, $SAMPLESPERBLOCK\
+    \ * $CHANNELS / 2);\n    ...\n}\n"
+  languages:
+  - c
+  message: "The code contains a vulnerability where the block alignment check is insufficient.\
+    \ \nThe original check only ensures that blockalign is greater than 7 times the\
+    \ number of channels, \nbut it should also ensure that blockalign is at least\
+    \ half of samplesperblock times the number of channels. \nThis can lead to incorrect\
+    \ block alignment and potential buffer overflows or data corruption. \nTo fix\
+    \ this, ensure that blockalign is checked against both conditions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/deb669ee8be55a94565f6f8a6b60890c2e7c6f32
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-libsndfile-cb3c87aa
+  pattern: '$STRUCT->sf.frames = $STRUCT->datalength / $STRUCT->blockwidth;
+
+    '
+  pattern-not: '$STRUCT->sf.frames = $STRUCT->blockwidth > 0 ? $STRUCT->datalength
+    / $STRUCT->blockwidth : $VALUE;
+
+    '
+  languages:
+  - c
+  message: 'Division by zero vulnerability detected. The code performs a division
+    by `blockwidth` without checking if it is zero, which can lead to undefined behavior.
+    Always check if the divisor is greater than zero before performing the division.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/erikd/libsndfile/commit/cb3c87aa3bba868dd6477d35cf4b86d67c3e1f77
+    category: security
+    cwe:
+    - 'CWE-369: Divide By Zero'
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

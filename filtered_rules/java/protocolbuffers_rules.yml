@@ -1,0 +1,30 @@
+rules:
+- id: vuln-protobuf-4728531c
+  pattern: '$SCHEMA.mergeOneFieldFrom($UNKNOWN_FIELDS, $READER)
+
+    '
+  pattern-not: '$SCHEMA.mergeOneFieldFrom($UNKNOWN_FIELDS, $READER, $CURRENT_DEPTH)
+
+    '
+  languages:
+  - java
+  message: 'Missing recursion depth check in protocol buffer parsing. This can lead
+    to stack overflow
+
+    or denial of service attacks via deeply nested messages. Always pass and check
+    the current
+
+    recursion depth when parsing nested fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/protocolbuffers/protobuf/commit/4728531c162f2f9e8c2ca1add713cfee2db6be3b
+    category: security
+    cwe:
+    - CWE-674
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - java
+    - protocol-buffers

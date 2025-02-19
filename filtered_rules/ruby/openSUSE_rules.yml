@@ -1,0 +1,52 @@
+rules:
+- id: vuln-open-build-service-7cc32c8e
+  pattern: "class $CLASS < Redcarpet::Render::HTML\n  ...\nend\n"
+  pattern-not: "class $CLASS < Redcarpet::Render::Safe\n  ...\nend\n"
+  languages:
+  - ruby
+  message: 'Using `Redcarpet::Render::HTML` can lead to XSS vulnerabilities as it
+    does not automatically escape HTML content. Switch to `Redcarpet::Render::Safe`
+    to ensure proper HTML escaping and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openSUSE/open-build-service/commit/7cc32c8e2ff7290698e101d9a80a9dc29a5500fb
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://github.com/vmg/redcarpet#rendering
+    technology:
+    - ruby
+- id: vuln-open-build-service-b15cf19e
+  pattern: '$VAR.state = $HASH.delete(''state'') { raise ArgumentError, ''no state''
+    }
+
+    $VAR.state = $VAR.state.to_sym
+
+    '
+  pattern-not: '$VAR.state = :new
+
+    $HASH.delete(''state'')
+
+    '
+  languages:
+  - ruby
+  message: "The code directly assigns and converts the 'state' value from user input\
+    \ to a symbol, which can lead to symbol DoS vulnerabilities. \nSymbols are not\
+    \ garbage collected in Ruby, and converting user input to symbols can lead to\
+    \ memory exhaustion. \nThe fix is to set a predefined symbol value and remove\
+    \ the state from the hash without converting it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openSUSE/open-build-service/commit/b15cf19e9e01115f653c76ffdc8f54cd97566553
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - ruby

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-librenms-35a69050
+  pattern: 'echo $_POST[...];
+
+    '
+  pattern-not: 'echo htmlspecialchars($_POST[...]);
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of $_POST data, which can lead to Cross-Site
+    Scripting (XSS) vulnerabilities. Always use htmlspecialchars() or similar functions
+    to escape user input before outputting it to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/librenms/librenms/commit/35a69050922692e3aa69dae74bff981f30ee7689
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

@@ -1,0 +1,54 @@
+rules:
+- id: vuln-core-484753b2
+  pattern: '$CONFIG[''widgets''][''column_count''] = $_POST[''column_count''];
+
+    '
+  pattern-not: '$CONFIG[''widgets''][''column_count''] = filter_var($_POST[''column_count''],
+    FILTER_SANITIZE_NUMBER_INT);
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of $_POST data to a variable without proper sanitization
+    can lead to security vulnerabilities such as XSS or SQL injection. Always sanitize
+    user input using functions like filter_var() with appropriate filters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opnsense/core/commit/484753b2abe3fd0fcdb73d8bf00c3fc3709eb8b7
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://www.php.net/manual/en/function.filter-var.php
+    technology:
+    - php
+- id: vuln-core-d218b225
+  pattern: "if (!$GLOBALS['csrf']['defer']) {\n  csrf_check();\n}\n"
+  pattern-not: 'csrf_check();
+
+    '
+  languages:
+  - php
+  message: 'The CSRF check is conditionally deferred based on the `$GLOBALS[''csrf''][''defer'']`
+    setting, which can lead to security bypass if the setting is improperly configured.
+    This vulnerability allows attackers to bypass CSRF protection by manipulating
+    the global defer setting. Ensure that CSRF checks are always enforced without
+    relying on conditional deferral.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opnsense/core/commit/d218b225ccaf885a959f2a6e595d7a235acea8fc
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php

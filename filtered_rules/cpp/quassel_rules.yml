@@ -1,0 +1,106 @@
+rules:
+- id: vuln-quassel-e678873
+  pattern: 'return 0;
+
+    '
+  pattern-not: 'return nullptr;
+
+    '
+  languages:
+  - cpp
+  message: "Returning 0 instead of nullptr in C++ can lead to type safety issues and\
+    \ potential null pointer dereferences. \nThis is dangerous because it can cause\
+    \ undefined behavior or crashes when the returned value is used as a pointer.\
+    \ \nAlways use nullptr for pointer types in C++ to ensure type safety and avoid\
+    \ such issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/e678873
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.cppreference.com/w/cpp/language/nullptr
+    technology:
+    - cpp
+- id: vuln-quassel-da215fcb
+  pattern: 'QByteArray $VARNAME($SIZE, 0);
+
+    ...
+
+    $VARNAME.replace($POS, $REPLY.size(), $REPLY);
+
+    '
+  pattern-not: 'QByteArray $VARNAME;
+
+    $VARNAME.reserve($SIZE);
+
+    ...
+
+    $VARNAME.append($REPLY);
+
+    '
+  languages:
+  - cpp
+  message: "Detected potentially unsafe use of QByteArray::replace with a fixed-size\
+    \ buffer. \nThis pattern can lead to buffer overflows if the size of the data\
+    \ being replaced \nexceeds the preallocated buffer size. Use QByteArray::append\
+    \ instead, which \ndynamically manages the buffer size.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/da215fcb9cd3096a3e223c87577d5d4ab8f8518b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp
+- id: vuln-quassel-aa1008be
+  pattern: "void $CLASS::initDbSession(QSqlDatabase &$DB) {\n  ...\n}\n"
+  pattern-not: "bool $CLASS::initDbSession(QSqlDatabase &$DB) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "The function `initDbSession` should return a boolean value to indicate\
+    \ success or failure. \nFailing to do so can lead to unhandled database initialization\
+    \ errors, which may result in security vulnerabilities or data corruption.\nTo\
+    \ fix this, change the return type of `initDbSession` to `bool` and ensure it\
+    \ returns `true` on success and `false` on failure.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/aa1008be162cb27da938cce93ba533f54d228869
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - cpp
+- id: vuln-quassel-6605882f
+  pattern: 'QSqlDatabase::database($VAR)
+
+    '
+  pattern-not: 'QSqlDatabase::database($VAR, false)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential database connection vulnerability where the connection
+    is not checked for being open. This can lead to application crashes or undefined
+    behavior if the connection is lost. Always check if the database connection is
+    open and attempt to reconnect if necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/quassel/quassel/commit/6605882f41331c80f7ac3a6992650a702ec71283
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

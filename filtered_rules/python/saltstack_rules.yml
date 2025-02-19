@@ -1,0 +1,160 @@
+rules:
+- id: vuln-salt-84d91931
+  pattern: '["ssh-keygen", "-P", ''""'', ..., "-f", $PATH, ..., "-q"]
+
+    '
+  pattern-not: '["ssh-keygen", "-P", "", ..., "-f", $PATH, ..., "-q"]
+
+    '
+  languages:
+  - python
+  message: 'Detected potentially unsafe SSH key generation with an empty passphrase.
+    Using ''""'' as a passphrase can lead to security vulnerabilities as it may be
+    interpreted differently across systems. Use an empty string "" instead to ensure
+    consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/84d91931865626a9b53558f88d6c8919a270df3a
+    category: security
+    cwe: 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - python
+- id: vuln-salt-80d90307
+  pattern: "def clean_id($ID):\n    ...\n    if re.search(r'\\.\\.\\{sep}'.format(sep=os.sep),\
+    \ $ID):\n        return False\n    return True\n"
+  pattern-not: "def clean_id($ID):\n    ...\n    if any($X in $ID for $X in ('/',\
+    \ '\\\\', '\\0')):\n        return False\n    return True\n"
+  languages:
+  - python
+  message: Path traversal vulnerability detected. The clean_id function was not properly
+    checking for path separators, which could allow directory traversal attacks. Update
+    the function to explicitly check for '/', '\', and null bytes.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/80d90307b07b3703428ecbb7c8bb468e28a9ae6d
+    category: security
+    cwe: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python
+- id: vuln-salt-86e18b91
+  pattern: 'os.open($PATH, os.O_CREAT | os.O_WRONLY, $MODE)
+
+    '
+  pattern-not: 'os.open($PATH, os.O_CREAT | os.O_RDWR, $MODE)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure file creation using os.O_WRONLY. This can lead to race
+    conditions or incomplete file operations. Use os.O_RDWR instead to ensure proper
+    file handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/86e18b91ae006de381f71b972f1daab9239bad3c
+    category: security
+    cwe: CWE-362
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://man7.org/linux/man-pages/man2/open.2.html
+    technology:
+    - python
+- id: vuln-salt-e9c59e9b
+  pattern: '$CONN.create_internet_gateway($VPC_ID)
+
+    '
+  pattern-not: '$CONN.create_internet_gateway()
+
+    '
+  languages:
+  - python
+  message: Detected potential security issue where VPC ID is passed directly to create_internet_gateway.
+    This can lead to unauthorized access or misconfiguration. Use the method without
+    explicit VPC ID parameter to ensure proper context.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/e9c59e9b8ff011e742a1c1030ee2c2504a291382
+    category: security
+    cwe: CWE-284
+    owasp: A6:2017-Security Misconfiguration
+    technology: python
+- id: vuln-salt-777ffe61
+  pattern: '$CMD = $QUERY + $PACKAGE
+
+    $CMD = shlex.split($CMD)
+
+    '
+  pattern-not: '$CMD = $QUERY[:]
+
+    $CMD.append($PACKAGE)
+
+    '
+  languages:
+  - python
+  message: Detected unsafe command construction using string concatenation and shlex.split.
+    This can lead to command injection vulnerabilities. Use list-based command construction
+    instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/777ffe612e612fb443018c1d7983d4abe4632bb2
+    category: security
+    cwe: CWE-78
+    owasp: A1:2017-Injection
+    technology:
+    - python
+- id: vuln-salt-6e34c2b5
+  pattern: 'os.stat($PATH).st_mode
+
+    '
+  pattern-not: '__salt__[''cp.stat_file'']($PATH, saltenv=$SALTENV, octal=True)
+
+    '
+  languages:
+  - python
+  message: "Detected direct file mode checking using os.stat(). This can lead to inconsistencies\
+    \ when \ncomparing file modes between master and minion. Use cp.stat_file() instead\
+    \ to ensure \nconsistent mode checking across different environments, especially\
+    \ with salt-ssh.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/6e34c2b5e5e849302af7ccd00509929c3809c658
+    category: security
+    cwe: CWE-284
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.cp.html#salt.modules.cp.stat_file
+    technology:
+    - python
+    - saltstack
+- id: vuln-salt-97b0f649
+  pattern: 'raise IOError(''Access denied to roster "{}"''.format($TEMPLATE))
+
+    '
+  pattern-not: 'raise IOError(''Access denied to roster "{0}"''.format($TEMPLATE))
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure string formatting in error message. Using ''{}'' style
+    formatting can lead to format string vulnerabilities when user input is involved.
+    Use explicit positional formatting with ''{0}'' instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saltstack/salt/commit/97b0f64923bc5382531b931625267a3c30d2f17e
+    category: security
+    cwe: 'CWE-134: Use of Externally-Controlled Format String'
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/string.html#format-string-syntax
+    technology:
+    - python

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-bundler-02e7f677
+  pattern: 'Pathname.new(Bundler.rubygems.user_home)
+
+    '
+  pattern-not: 'Bundler.user_home
+
+    '
+  languages:
+  - ruby
+  message: 'Direct use of `Bundler.rubygems.user_home` can lead to security issues
+    if the home directory is not properly set or writable. This can cause failures
+    in file operations or expose sensitive data. Use `Bundler.user_home` instead,
+    which handles these edge cases by checking and creating a temporary home directory
+    if necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bundler/bundler/commit/02e7f67727b45f59ec0aec4df410e05921d94928
+    category: security
+    cwe:
+    - CWE-378
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://bundler.io/v2.3/man/bundle-install.1.html
+    technology:
+    - ruby

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-framework-d3b5aeae
+  pattern: "protected function unserialize(string $data) {\n  ...\n}\n"
+  pattern-not: "protected function unserialize($data) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The `unserialize` method in the cache driver is vulnerable to type juggling
+    attacks due to strict type hinting on the `$data` parameter. This can lead to
+    unexpected behavior or security issues when non-string data is passed. Remove
+    the `string` type hint to allow proper handling of various data types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/top-think/framework/commit/d3b5aeae94bc71bae97977d05cd12c3e0550905c
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

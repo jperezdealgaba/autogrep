@@ -1,0 +1,23 @@
+rules:
+- id: vuln-web2py-292af5ad
+  pattern: "if len($A) != len($B):\n    return False\n$RESULT = 0\nfor $X, $Y in zip($A,\
+    \ $B):\n    $RESULT |= ord($X) ^ ord($Y)\n"
+  pattern-not: "$RESULT = len($A) ^ len($B)\nfor $I in xrange(len($B)):\n    $RESULT\
+    \ |= ord($A[$I%len($A)]) ^ ord($B[$I])\n"
+  languages:
+  - python
+  message: 'Detected a timing attack vulnerability in string comparison logic. The
+    original implementation uses a length check followed by a byte-by-byte comparison,
+    which can leak information through timing differences. This can allow an attacker
+    to guess the correct string through timing analysis. Fix by using a constant-time
+    comparison algorithm.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/web2py/web2py/commit/292af5adc6e508806a627a23cc1eae83702267d6
+    category: security
+    cwe: 'CWE-208: Observable Timing Discrepancy'
+    owasp: A02:2021 - Cryptographic Failures
+    technology:
+    - python

@@ -1,0 +1,129 @@
+rules:
+- id: vuln-rpm-c815822c
+  pattern: "if (S_ISDIR($FMODE) && S_ISLNK($SB.st_mode) && stat($FN, &$SB) != 0) {\n\
+    \    ...\n}\n"
+  pattern-not: "if (S_ISDIR($FMODE) && S_ISLNK($SB.st_mode)) {\n    struct stat $DSB;\n\
+    \    if (stat($FN, &$DSB) == 0 && S_ISDIR($DSB.st_mode)) {\n        ...\n    }\n\
+    }\n"
+  languages:
+  - c
+  message: "Detected a vulnerability related to improper handling of symbolic links\
+    \ in directory verification. \nThe original code checks if a file is a directory\
+    \ and a symbolic link but fails to properly verify if the symlink points to a\
+    \ valid directory and if the user is legitimate. \nThis could lead to security\
+    \ issues such as privilege escalation or unauthorized access. \nTo fix this, ensure\
+    \ that the symlink points to a valid directory and verify the user's legitimacy\
+    \ before proceeding.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/c815822c8bdb138066ff58c624ae83e3a12ebfa9
+    category: security
+    cwe:
+    - CWE-59
+    - CWE-287
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c
+- id: vuln-rpm-4d172a19
+  pattern: "if (lstat($PATH, &$STB) == 0) {\n  if (S_ISREG($STB.st_mode) && ($STB.st_mode\
+    \ & 06000) != 0) {\n    ...\n  }\n}\n"
+  pattern-not: "if (lstat($PATH, &$STB) == 0 && S_ISREG($STB.st_mode)) {\n  if (($STB.st_mode\
+    \ & 06000) != 0) {\n    #if WITH_CAP\n    if ($STB.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH))\
+    \ {\n      (void) cap_set_file($PATH, NULL);\n    }\n    #endif\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code checks for setuid/setgid bits without proper capability handling.
+    This can lead to security issues where files with these bits set are not properly
+    managed, potentially allowing privilege escalation. Ensure that files with setuid/setgid
+    bits are properly handled by checking for execute permissions and using capabilities
+    where available.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/4d172a194addc49851e558ea390d3045894e3230
+    category: security
+    cwe:
+    - CWE-269
+    owasp: A04:2021 - Insecure Design
+    technology:
+    - c
+- id: vuln-rpm-404ef011
+  pattern: 'Fopen($DEST, "w.ufdio")
+
+    '
+  pattern-not: 'Fopen($DEST, "wx.ufdio")
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe file opening with mode "w.ufdio" which does not ensure
+    exclusive access. This can lead to race conditions or unintended file overwrites.
+    Use "wx.ufdio" to ensure exclusive creation of the file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/404ef011c300207cdb1e531670384564aae04bdc
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - c
+- id: vuln-rpm-96ec957e
+  pattern: 'mkdir($PATH, $MODE)
+
+    '
+  pattern-not: 'mkdirat($DIRFD, $PATH, $MODE)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of insecure `mkdir` function which is vulnerable to TOCTOU
+    (Time-of-Check to Time-of-Use) attacks. Use `mkdirat` instead to safely create
+    directories relative to a directory file descriptor.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/96ec957e281220f8e137a2d5eb23b83a6377d556
+    category: security
+    cwe:
+    - CWE-367
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://man7.org/linux/man-pages/man2/mkdir.2.html
+    - https://man7.org/linux/man-pages/man2/mkdirat.2.html
+    technology:
+    - c
+- id: vuln-rpm-ca2d6b2b
+  pattern: "if ($FLAGS & $CPIO_SBIT_CHECK) {\n    struct stat $STB;\n    if (lstat($PATH,\
+    \ &$STB) == 0 && S_ISREG($STB.st_mode) && ($STB.st_mode & 06000) != 0)\n     \
+    \   chmod($PATH, $STB.st_mode & 0777);\n}\n"
+  pattern-not: "if ($FLAGS & $CPIO_SBIT_CHECK)\n    removeSBITS($PATH);\n"
+  languages:
+  - c
+  message: 'Detected insecure handling of file permissions with SUID/SGID bits. The
+    code directly modifies file permissions without proper encapsulation, which can
+    lead to race conditions or inconsistent state. The vulnerability was fixed by
+    encapsulating the permission check and modification logic in a separate function
+    (removeSBITS) and calling it twice to ensure proper handling. To fix this, refactor
+    the code to use a dedicated function for permission modifications and ensure atomic
+    operations where necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rpm-software-management/rpm/commit/ca2d6b2b484f1501eafdde02e1688409340d2383
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

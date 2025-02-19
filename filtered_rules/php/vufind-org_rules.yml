@@ -1,0 +1,24 @@
+rules:
+- id: vuln-vufind-51f2ddac
+  pattern: "if (str_starts_with(strtolower($CONTENT_TYPE), 'image/')) {\n    ...\n\
+    }\n"
+  pattern-not: "if ($this->isValidProxyImageContentType($CONTENT_TYPE)) {\n    ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected insecure image content type validation. The original code only
+    checks if the content type starts with ''image/'', which could allow malicious
+    image types. Use a strict whitelist of allowed image types to prevent security
+    risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vufind-org/vufind/commit/51f2ddac0dc1047e6fd3b27e6d984b19e1601d00
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - php

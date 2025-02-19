@@ -1,0 +1,30 @@
+rules:
+- id: vuln-phpfastcache-c4527205
+  pattern: 'isset($_COOKIE[$VAR]) ? $VAR2->decode(json_decode($_COOKIE[$VAR], true))
+    : false
+
+    '
+  pattern-not: 'isset($_COOKIE[$VAR]) ? json_decode($_COOKIE[$VAR], true) : false
+
+    '
+  languages:
+  - php
+  message: 'The code directly decodes and processes untrusted cookie data without
+    proper validation, which can lead to security vulnerabilities such as deserialization
+    attacks. This is dangerous because it can allow attackers to inject malicious
+    data or execute arbitrary code. The fix removes the unnecessary decode method
+    call, ensuring that the data is handled more securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PHPSocialNetwork/phpfastcache/commit/c4527205cb7a402b595790c74310791f5b04a1a4
+    category: security
+    cwe:
+    - 502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization
+    technology:
+    - php

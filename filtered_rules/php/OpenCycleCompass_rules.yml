@@ -1,0 +1,30 @@
+rules:
+- id: vuln-server-php-fa0d9bcf
+  pattern: '$QUERY = "SELECT `password` FROM `admin_users` WHERE `name` = ''".$_GET["user"]."'';"
+
+    '
+  pattern-not: '$QUERY = "SELECT `password` FROM `admin_users` WHERE `name` = ''".$my->real_escape_string($_GET["user"])."'';"
+
+    '
+  languages:
+  - php
+  message: 'Detected SQL injection vulnerability due to direct user input concatenation
+    in SQL query.
+
+    This is dangerous because it allows attackers to manipulate the query, potentially
+    leading to unauthorized data access or database manipulation.
+
+    To fix this, always use parameterized queries or proper escaping functions like
+    `real_escape_string`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenCycleCompass/server-php/commit/fa0d9bcf81c711a88172ad0d37a842f029ac3782
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

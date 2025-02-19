@@ -1,0 +1,82 @@
+rules:
+- id: vuln-testlink-code-d99bd827
+  pattern: '$where_clause = " WHERE id = {$node_id}";
+
+    '
+  pattern-not: "$safe = intval($node_id);\nif ($safe <= 0) {\n  throw new Exception(\"\
+    BAD node_id\", 1);\n}\n$where_clause = \" WHERE id = $safe\";\n"
+  languages:
+  - php
+  message: 'Detected unsafe SQL query construction with unvalidated input. This can
+    lead to SQL injection vulnerabilities. Always validate and sanitize user inputs,
+    especially when used in SQL queries. Use prepared statements or parameterized
+    queries to prevent SQL injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/d99bd8277d384f3417e917ce20bef5d061110343
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php
+- id: vuln-testlink-code-72271ef0
+  pattern: '$args->viewer = $pParams[''viewer''];
+
+    '
+  pattern-not: '$args->viewer = '''';
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of user input to object properties without validation
+    can lead to security vulnerabilities such as injection attacks or data manipulation.
+    Always sanitize or validate user input before using it in your application.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/72271ef057e6e4a95c6128973902ea646f7b5462
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Injection_Flaws
+    technology:
+    - php
+- id: vuln-testlink-code-bcf7b971
+  pattern: '$VAR->$FIELD = isset($_REQUEST[''$KEY'']) ? $_REQUEST[''$KEY''] : $DEFAULT;
+
+    '
+  pattern-not: '$VAR->$FIELD = isset($_REQUEST[''$KEY'']) ? intval($_REQUEST[''$KEY''])
+    : $DEFAULT;
+
+    '
+  languages:
+  - php
+  message: 'Detected potential type confusion vulnerability where user input is directly
+    assigned to a variable without proper type validation. This can lead to security
+    issues if the input is used in contexts expecting specific types. Always validate
+    and sanitize user input using appropriate functions like intval() for integers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TestLinkOpenSourceTRMS/testlink-code/commit/bcf7b971b5c88ea08d2dc47685f319be3b02cea8
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Type_Confusion
+    - https://cwe.mitre.org/data/definitions/843.html
+    technology:
+    - php

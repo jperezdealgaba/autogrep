@@ -1,0 +1,87 @@
+rules:
+- id: vuln-server-6716b3fc
+  pattern: "foreach ($FORWARDED_FOR_HEADERS as $HEADER) {\n  ...\n  foreach (explode(',',\
+    \ $SERVER[$HEADER]) as $IP) {\n    ...\n  }\n}\n"
+  pattern-not: "foreach (array_reverse($FORWARDED_FOR_HEADERS) as $HEADER) {\n  ...\n\
+    \  foreach (array_reverse(explode(',', $SERVER[$HEADER])) as $IP) {\n    if ($THIS->isTrustedProxy($TRUSTED_PROXIES,\
+    \ $IP)) {\n      continue;\n    }\n    ...\n  }\n}\n"
+  languages:
+  - php
+  message: "The X-Forwarded-For header is being processed in the wrong order, which\
+    \ can lead to IP spoofing vulnerabilities. \nAttackers can manipulate the order\
+    \ of IP addresses in the header to bypass security checks. \nTo fix this, reverse\
+    \ the order of the headers and IP addresses, and ensure trusted proxies are properly\
+    \ validated.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/6716b3fc0005282862666fbc4d288909e981dfa5
+    category: security
+    cwe:
+    - CWE-350
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For#selecting_an_ip_address
+    technology:
+    - php
+- id: vuln-server-1e35ece8
+  pattern: '$update = $stored[''password''] !== $event->getPassword();
+
+    ...
+
+    $update = $stored[''user''] !== $event->getLoginName();
+
+    '
+  pattern-not: '$update = isset($stored[''password'']) && $stored[''password''] !==
+    $event->getPassword();
+
+    ...
+
+    $update = isset($stored[''user'']) && $stored[''user''] !== $event->getLoginName();
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential undefined index access vulnerability. Accessing array
+    keys without checking their existence can lead to PHP notices and unexpected behavior.
+    This can be exploited to cause information disclosure or application crashes.
+    Always use `isset()` to check if an array key exists before accessing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/server/commit/1e35ece8e59ed31c0ae7a578aced99d257e97e67
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - php
+- id: vuln-server-82498bc5
+  pattern: '$freeSpace = (int)((INF > 0) ? INF : PHP_INT_MAX);
+
+    '
+  pattern-not: '$freeSpace = (INF > 0) ? INF : PHP_INT_MAX;
+
+    '
+  languages:
+  - php
+  message: 'The code casts the result of a ternary operation to an integer, which
+    can lead to incorrect handling of infinite values. This is dangerous because it
+    can cause unexpected behavior when dealing with large or infinite values, potentially
+    leading to security issues or incorrect calculations. The fix removes the unnecessary
+    cast to ensure proper handling of INF and PHP_INT_MAX.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/nextcloud/server/commit/82498bc50f176c84bbf62f02b3fc843daef3e844
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://bugs.php.net/bug.php?id=69188
+    technology:
+    - php

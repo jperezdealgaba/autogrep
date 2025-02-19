@@ -1,0 +1,1271 @@
+rules:
+- id: vuln-go-618120c1
+  pattern: "const $MAX_CACHED_HEADERS = $N\n...\nif len($SC.canonHeader) < $MAX_CACHED_HEADERS\
+    \ {\n    ...\n}\n"
+  pattern-not: "const $MAX_CACHED_HEADERS_SIZE = $SIZE\n...\nif $SC.canonHeaderKeysSize\
+    \ + $SIZE <= $MAX_CACHED_HEADERS_SIZE {\n    $SC.canonHeaderKeysSize += $SIZE\n\
+    \    ...\n}\n"
+  languages:
+  - go
+  message: "Detected a vulnerable header cache size check that could lead to unbounded\
+    \ memory usage. \nThe original code only checks the number of cached headers but\
+    \ doesn't account for their size, \nwhich could allow an attacker to cause excessive\
+    \ memory consumption by sending many unique headers.\nFix by implementing a size-based\
+    \ limit on the total size of cached headers, as shown in the patch.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/618120c165669c00a1606505defea6ca755cdc27
+    category: security
+    cwe:
+    - 'CWE-770: Allocation of Resources Without Limits or Throttling'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - go
+- id: vuln-go-7a75a55c
+  pattern: 'C.FetchPEMRoots($DATA)
+
+    '
+  pattern-not: 'C.FetchPEMRoots($DATA, $UNTRUSTED_DATA)
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure usage of FetchPEMRoots without checking untrusted certificates.
+
+    This can lead to acceptance of untrusted root certificates in the certificate
+    chain.
+
+    Update to use the new FetchPEMRoots API that separates trusted and untrusted certificates.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/7a75a55cc44b92836f342e9eeb0f5b1ce20821eb
+    category: security
+    cwe: 'CWE-295: Improper Certificate Validation'
+    owasp: A09:2021 - Security Logging and Monitoring Failures
+    technology: go
+- id: vuln-go-8fcee8ab
+  pattern: "if $HEADER.Get(\"Content-Type\") == \"\" {\n  $HEADER.Set(\"Content-Type\"\
+    , \"text/html; charset=utf-8\")\n}\n"
+  pattern-not: "if _, hasType := $HEADER[\"Content-Type\"]; $CODE != http.StatusNotModified\
+    \ && !hasType {\n  $HEADER.Set(\"Content-Type\", http.DetectContentType($P))\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected hardcoded Content-Type header without content sniffing. This
+    can lead to incorrect content type detection, potentially causing security issues
+    or rendering problems. Use http.DetectContentType to automatically detect the
+    appropriate content type based on the content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/8fcee8abbea1bb959c63a6944f9ddf490a97f802
+    category: security
+    cwe:
+    - CWE-436
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - go
+- id: vuln-go-e46abcb8
+  pattern: "$P[0] = -1\n$P[1] = -1\n...\ngoto error\n...\nerror:\nif $P[0] >= 0 {\n\
+    \    Close($P[0])\n    Close($P[1])\n}\n"
+  pattern-not: '$P[0] = -1
+
+    $P[1] = -1
+
+    ...
+
+    Close($P[0])
+
+    Close($P[1])
+
+    ForkLock.Unlock()
+
+    return 0, $ERR
+
+    '
+  languages:
+  - go
+  message: 'Detected a potential resource leak in error handling. The original code
+    skips closing file descriptors when jumping to the error label, which can lead
+    to resource exhaustion. Ensure that file descriptors are always closed, even in
+    error cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/e46abcb816fb20663483f84fe52e370790a99bee
+    category: security
+    cwe:
+    - CWE-772
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    technology:
+    - go
+- id: vuln-go-d86e53e8
+  pattern: "if $TOKEN, $ERR = $DECODER.rawToken(); $ERR != nil {\n    switch {\n \
+    \   case $ERR == io.EOF && $DECODER.t != nil:\n        $ERR = nil\n    case $ERR\
+    \ == io.EOF && $DECODER.stk != nil && $DECODER.stk.kind != stkEOF:\n        $ERR\
+    \ = $DECODER.syntaxError(\"unexpected EOF\")\n    }\n    return $TOKEN, $ERR\n\
+    }\n"
+  pattern-not: "if $TOKEN, $ERR = $DECODER.rawToken(); $TOKEN == nil && $ERR != nil\
+    \ {\n    if $ERR == io.EOF && $DECODER.stk != nil && $DECODER.stk.kind != stkEOF\
+    \ {\n        $ERR = $DECODER.syntaxError(\"unexpected EOF\")\n    }\n    return\
+    \ nil, $ERR\n}\n"
+  languages:
+  - go
+  message: 'Incomplete EOF handling in XML decoder can cause incorrect error propagation.
+
+    The original code fails to properly handle EOF conditions when processing XML
+    tokens,
+
+    which can lead to incorrect error handling or silent failures. The fix ensures
+    proper
+
+    error handling for EOF conditions and maintains token processing consistency.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/d86e53e896eca907ad67300c0bb495e3dd925358
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - go
+- id: vuln-go-fa2d41d0
+  pattern: "func Glob(fsys FS, pattern string) (matches []string, err error) {\n \
+    \ ...\n  m, err = Glob(fsys, $DIR)\n  ...\n}\n"
+  pattern-not: "func globWithLimit(fsys FS, pattern string, depth int) (matches []string,\
+    \ err error) {\n  ...\n  m, err = globWithLimit(fsys, $DIR, $DEPTH+1)\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected recursive glob implementation without depth limit which could
+    lead to
+
+    stack exhaustion. This vulnerability (CVE-2022-30630) allows attackers to cause
+
+    denial of service through deep recursive paths. Add a depth limit check to
+
+    prevent stack exhaustion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/fa2d41d0ca736f3ad6b200b2a4e134364e9acc59
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-30630
+    technology:
+    - go
+- id: vuln-go-9b6e9f0c
+  pattern: '$HANDLE, $ERR = loadsystemlibrary($FILENAME)
+
+    '
+  pattern-not: '$HANDLE, $ERR = loadsystemlibrary($FILENAME, $ABSOLUTEPATH)
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure loading of system libraries without specifying an absolute
+    path. This can lead to DLL hijacking vulnerabilities where an attacker could place
+    a malicious DLL in a directory searched before the system directory. Use `loadsystemlibrary`
+    with the absolute path parameter to ensure the correct system DLL is loaded.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/9b6e9f0c8c66355c0f0575d808b32f52c8c6d21c
+    category: security
+    cwe:
+    - CWE-426
+    owasp:
+    - 'A08: Software and Data Integrity Failures'
+    references:
+    - https://learn.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order
+    technology:
+    - go
+- id: vuln-go-0d347544
+  pattern: "{\n    \"_html_template_attrescaper\": true,\n    \"_html_template_nospaceescaper\"\
+    : true,\n    \"_html_template_htmlescaper\": true,\n}\n"
+  pattern-not: "{\n    \"_html_template_attrescaper\": true,\n    \"_html_template_htmlescaper\"\
+    : true,\n}\n"
+  languages:
+  - go
+  message: 'Detected the presence of ''_html_template_nospaceescaper'' in the template
+    escaper map. This can lead to incorrect handling of empty attribute values in
+    HTML templates, potentially causing XSS vulnerabilities. Remove ''_html_template_nospaceescaper''
+    to ensure proper escaping of empty attributes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0d347544cbca0f42b160424f6bc2458ebcc7b3fc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - go
+- id: vuln-go-0bf7ee99
+  pattern: "$VAR, $ERR := io.ReadAll($R)\n...\nif $ERR != nil {\n  ...\n}\n"
+  pattern-not: "$VAR, $ERR := readSpecialFile($R)\n...\nif $ERR != nil {\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected use of io.ReadAll without size limit on special file reading.
+
+    This can lead to unbounded memory allocation when reading malicious
+
+    tar archives. Use readSpecialFile instead which enforces a maximum
+
+    size limit of 1MB on special file content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0bf7ee9977c0218562c50a0b0f0d9cbdf33f65e6
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - go
+- id: vuln-go-6435d0cf
+  pattern: "if $LIFETIME > 7*24*time.Hour {\n  ...\n}\n"
+  pattern-not: "if $LIFETIME > maxSessionTicketLifetime {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected hardcoded session ticket lifetime check. Using a hardcoded value
+    for session ticket lifetime can lead to inconsistencies and potential security
+    issues if the value needs to be updated across the codebase. Instead, use the
+    defined constant `maxSessionTicketLifetime` to ensure consistency and maintainability.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/6435d0cfbf72f405f31430e60766add6d6762fe1
+    category: security
+    cwe:
+    - 'CWE-547: Use of Hard-coded, Security-relevant Constants'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - go
+- id: vuln-go-300d9a21
+  pattern: "func fixTransferEncoding($METHOD string, $HEADER Header) ([]string, error)\
+    \ {\n  ...\n  delete($HEADER, \"Content-Length\")\n  ...\n}\n"
+  pattern-not: "func fixTransferEncoding($ISRESPONSE bool, $METHOD string, $HEADER\
+    \ Header) ([]string, error) {\n  ...\n  if len($HEADER[\"Content-Length\"]) >\
+    \ 0 {\n    if !$ISRESPONSE {\n      return nil, errors.New(\"http: invalid Content-Length\
+    \ with Transfer-Encoding\")\n    }\n    delete($HEADER, \"Content-Length\")\n\
+    \  }\n  ...\n}\n"
+  languages:
+  - go
+  message: "Detected a potential HTTP request smuggling vulnerability due to improper\
+    \ handling of Content-Length and Transfer-Encoding headers. \nThe original code\
+    \ deleted the Content-Length header without proper validation when Transfer-Encoding\
+    \ was present, which could allow request smuggling attacks. \nTo fix this, ensure\
+    \ proper validation of Content-Length headers when Transfer-Encoding is present,\
+    \ especially for HTTP requests.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/300d9a21583e7cf0149a778a0611e76ff7c6680f
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.3.2
+    technology:
+    - go
+- id: vuln-go-222ee24a
+  pattern: "if !ascii.EqualFold(textproto.TrimString($VAR), \"chunked\") {\n  ...\n\
+    }\n"
+  pattern-not: "if !ascii.EqualFold($VAR, \"chunked\") {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected use of textproto.TrimString with ascii.EqualFold which can lead
+    to improper chunked transfer encoding validation. This can allow malicious clients
+    to bypass security checks by adding whitespace or other characters. Remove textproto.TrimString
+    and use direct string comparison with ascii.EqualFold.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/222ee24a0046ae61679f4d97967e3b4058a3b90e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A07: Identification and Authentication Failures'
+    references:
+    - https://pkg.go.dev/net/textproto#TrimString
+    - https://pkg.go.dev/strings#EqualFold
+    technology:
+    - go
+- id: vuln-go-43063521
+  pattern: '$Z[$N-1] = $C1 + $C2
+
+    if $Z[$N-1] < $C1 { ... }
+
+    '
+  pattern-not: '$CX := $C1 + $C2
+
+    $CY := $CX + $C3
+
+    $Z[$N-1] = $CY
+
+    if $CX < $C2 || $CY < $C3 { ... }
+
+    '
+  languages:
+  - go
+  message: 'The original code contains a vulnerability in the Montgomery multiplication
+    implementation where it fails to properly handle carry propagation. This can lead
+    to incorrect results in cryptographic operations, potentially causing security
+    vulnerabilities. The fix introduces additional carry checks to ensure correctness.
+    To fix this, ensure that all carry bits are properly accounted for and checked.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/4306352182bf94f86f0cfc6a8b0ed461cbf1d82c
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - go
+- id: vuln-go-77013065
+  pattern: "func ($C *Certificate) buildChains($CACHE map[int][][]*Certificate, $CURRENT_CHAIN\
+    \ []*Certificate, $OPTS *VerifyOptions) ([][]*Certificate, error) {\n  $ROOTS,\
+    \ $FAILED_ROOT, $ROOT_ERR := $OPTS.Roots.findVerifiedParents($C)\n  ...\n  $INTERMEDIATES,\
+    \ $FAILED_INTERMEDIATE, $INTERMEDIATE_ERR := $OPTS.Intermediates.findVerifiedParents($C)\n\
+    \  ...\n}\n"
+  pattern-not: "func ($C *Certificate) buildChains($CACHE map[*Certificate][][]*Certificate,\
+    \ $CURRENT_CHAIN []*Certificate, $SIG_CHECKS *int, $OPTS *VerifyOptions) ([][]*Certificate,\
+    \ error) {\n  ...\n  for _, $ROOT_NUM := range $OPTS.Roots.findPotentialParents($C)\
+    \ {\n    ...\n  }\n  for _, $INTERMEDIATE_NUM := range $OPTS.Intermediates.findPotentialParents($C)\
+    \ {\n    ...\n  }\n}\n"
+  languages:
+  - go
+  message: 'Detected use of findVerifiedParents in certificate chain verification
+    which can lead to excessive signature checks and potential DoS. The function may
+    perform an unbounded number of signature verification attempts when processing
+    malicious certificate chains. Use findPotentialParents with a signature check
+    counter instead to limit the number of verification attempts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/770130659b6fb2acf271476579a3644e093dda7f
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://go.dev/issue/47143
+    technology:
+    - go
+- id: vuln-go-cdcd0284
+  pattern: "func (r *Resolver) LookupCNAME(ctx context.Context, host string) (string,\
+    \ error) {\n  return r.lookupCNAME(ctx, host)\n}\n"
+  pattern-not: "func (r *Resolver) LookupCNAME(ctx context.Context, host string) (string,\
+    \ error) {\n  cname, err := r.lookupCNAME(ctx, host)\n  if err != nil {\n    return\
+    \ \"\", err\n  }\n  if !isDomainName(cname) {\n    return \"\", &DNSError{Err:\
+    \ \"CNAME target is invalid\", Name: host}\n  }\n  return cname, nil\n}\n"
+  languages:
+  - go
+  message: 'The LookupCNAME function does not validate the CNAME target domain name,
+    which could lead to DNS spoofing or injection attacks. Always validate domain
+    names using isDomainName to ensure they are properly formatted and safe to use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/cdcd02842da7c004efd023881e3719105209c908
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - go
+- id: vuln-go-1102616c
+  pattern: "func validateRepoRootScheme($REPO_ROOT string) error {\n    $END := strings.Index($REPO_ROOT,\
+    \ \"://\")\n    if $END <= 0 {\n        return errors.New(\"no scheme\")\n   \
+    \ }\n    ...\n    return nil\n}\n"
+  pattern-not: "func validateRepoRoot($REPO_ROOT string) error {\n    $URL, $ERR :=\
+    \ url.Parse($REPO_ROOT)\n    if $ERR != nil {\n        return $ERR\n    }\n  \
+    \  if $URL.Scheme == \"\" {\n        return errors.New(\"no scheme\")\n    }\n\
+    \    return nil\n}\n"
+  languages:
+  - go
+  message: 'The vulnerable function validateRepoRootScheme uses manual string parsing
+    to validate URL schemes, which can lead to incorrect validation of malicious URLs.
+    This could allow attackers to bypass URL scheme restrictions. Use the standard
+    library''s url.Parse function instead, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/1102616c772c262175f5ba5f12d6b574d0ad9101
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A6:2021 - Vulnerable and Outdated Components
+    technology:
+    - go
+- id: vuln-go-d39cd4d6
+  pattern: "func pathOK($R rune) bool {\n  ...\n  return false\n}\n"
+  pattern-not: "func pathOK($R rune) bool {\n  ...\n  return unicode.IsLetter($R)\n\
+    }\n"
+  languages:
+  - go
+  message: 'The path validation function incorrectly rejects Unicode letters, which
+    can lead to
+
+    security issues by blocking valid import paths. This restriction could be exploited
+
+    to bypass security checks or prevent legitimate package imports. The fix is to
+    use
+
+    unicode.IsLetter() to properly validate Unicode characters in paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/d39cd4d6d73ffc8f47c8f3cec7dbe57a4f3f4980
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp: A03:2021 - Injection
+    references:
+    - https://golang.org/issue/29101
+    technology:
+    - go
+- id: vuln-go-1dd24caf
+  pattern: "if ($SIZE - $DIR_SIZE)/$DIV >= $RECORDS {\n  ...\n}\n"
+  pattern-not: "if $DIR_SIZE < $SIZE && ($SIZE - $DIR_SIZE)/$DIV >= $RECORDS {\n \
+    \ ...\n}\n"
+  languages:
+  - go
+  message: "Detected potential integer overflow vulnerability in archive/zip reader.\
+    \ \nThe code performs arithmetic operations without checking for overflow conditions,\n\
+    which could allow bypassing security checks. Always verify that the first operand\
+    \ \nis smaller than the second before subtraction to prevent overflow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/1dd24caf08985066b309af6bc461780c73e05c35
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A10:2021 - Server-Side Request Forgery
+    technology:
+    - go
+- id: vuln-go-c77980bc
+  pattern: 'rsa.EncryptPKCS1v15($CONFIG.rand(), $CERT.PublicKey.(*rsa.PublicKey),
+    $PREMASTERSECRET)
+
+    '
+  pattern-not: "$RSAKEY, $OK := $CERT.PublicKey.(*rsa.PublicKey)\nif !$OK {\n    return\
+    \ $_, $_, errors.New($MSG)\n}\nrsa.EncryptPKCS1v15($CONFIG.rand(), $RSAKEY, $PREMASTERSECRET)\n"
+  languages:
+  - go
+  message: 'Detected unsafe type assertion when using RSA encryption. Directly casting
+    the certificate''s public key without type checking can lead to runtime panics
+    if the key type is incorrect. Always validate the key type using a type assertion
+    with a boolean check before proceeding with encryption operations.
+
+    This vulnerability can cause the application to crash when dealing with certificates
+    that don''t contain RSA public keys, potentially leading to denial of service.
+
+    To fix this, use a type assertion with a boolean check and handle the error case
+    appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/c77980bc077f3774276ab2deba78d8e6bfe4b3bd
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://pkg.go.dev/crypto/rsa#EncryptPKCS1v15
+    technology:
+    - go
+- id: vuln-go-91a4e74b
+  pattern: "if 4+$N < len($B) {\n  return $ERROR\n}\n"
+  pattern-not: "if $N > $MAX {\n  $ERR = fmt.Errorf($MSG, $N, $MAX)\n  break\n}\n\
+    if len($B) < 4+$N {\n  $ERR = $ERROR\n}\n"
+  languages:
+  - go
+  message: 'The code fails to properly validate handshake message length, which could
+    allow
+
+    for buffer overflows or excessive memory allocation. The vulnerability occurs
+
+    when checking if the handshake message fits within the buffer without first
+
+    verifying that the message length is within acceptable bounds. This could be
+
+    exploited by an attacker to cause a denial of service or potentially execute
+
+    arbitrary code. The fix adds proper bounds checking by first verifying the
+
+    message length against a maximum allowed value before checking if it fits in
+
+    the buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/91a4e74b98179f63a27dbff1ad68ddd0ed64363a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-130
+    owasp:
+    - A2:2021-Cryptographic Failures
+    technology:
+    - go
+- id: vuln-go-da7aa869
+  pattern: 're(`-D([A-Za-z_].*)`)
+
+    '
+  pattern-not: 're(`-D([A-Za-z_][A-Za-z0-9_]*)(=[^@\-]*)?`)
+
+    '
+  languages:
+  - go
+  message: 'Insecure regular expression pattern detected. The previous pattern allowed
+    for potentially dangerous characters in macro definitions. Use the updated pattern
+    that restricts characters to alphanumeric and underscores, and properly handles
+    assignment values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/da7aa86917811a571e6634b45a457f918b8e6561
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - go
+- id: vuln-go-3226f2d4
+  pattern: "func portOnly(hostport string) string {\n  ...\n  return $RET\n}\n"
+  pattern-not: "func portOnly(hostport string) string {\n  ...\n  _, port := splitHostPort(hostport)\n\
+    \  return port\n}\n"
+  languages:
+  - go
+  message: 'The function `portOnly` does not properly validate port numbers, which
+    can lead to incorrect handling of invalid ports. This can cause security issues
+    when processing URLs with malformed ports. Use `splitHostPort` instead, which
+    properly validates port numbers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/3226f2d492963d361af9dfc6714ef141ba606713
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://golang.org/issue/33600
+    technology:
+    - go
+- id: vuln-go-0765da58
+  pattern: "url := *$URL\nif len($ELEM) > 0 {\n  $ELEM = append([]string{$URL.EscapedPath()},\
+    \ $ELEM...)\n  $P := path.Join($ELEM...)\n  if strings.HasSuffix($ELEM[len($ELEM)-1],\
+    \ \"/\") && !strings.HasSuffix($P, \"/\") {\n    $P += \"/\"\n  }\n  url.setPath($P)\n\
+    }\n"
+  pattern-not: "$ELEM = append([]string{$URL.EscapedPath()}, $ELEM...)\nvar $P string\n\
+    if !strings.HasPrefix($ELEM[0], \"/\") {\n  $ELEM[0] = \"/\" + $ELEM[0]\n  $P\
+    \ = path.Join($ELEM...)[1:]\n} else {\n  $P = path.Join($ELEM...)\n}\nif strings.HasSuffix($ELEM[len($ELEM)-1],\
+    \ \"/\") && !strings.HasSuffix($P, \"/\") {\n  $P += \"/\"\n}\nurl := *$URL\n\
+    url.setPath($P)\n"
+  languages:
+  - go
+  message: 'The original code does not properly handle relative paths in URL construction,
+    which can lead to path traversal vulnerabilities. This can allow attackers to
+    access unauthorized resources by manipulating the path elements. The fix ensures
+    that relative paths are properly normalized and do not contain any ''../'' elements
+    that could lead to traversal. Always validate and normalize paths when constructing
+    URLs to prevent such vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0765da5884adcc8b744979303a36a27092d8fc51
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - go
+- id: vuln-go-73e862ec
+  pattern: 'strings.ReplaceAll($S, "{"+$K+"}", $V)
+
+    '
+  pattern-not: 'strings.NewReplacer($OLDNEW...).Replace($S)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of strings.ReplaceAll in a loop for multiple replacements.
+    This can lead to inconsistent results due to iteration order and multiple replacements
+    of the same pattern. Use strings.NewReplacer instead, which ensures each match
+    is replaced exactly once and is independent of iteration order.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/73e862eced80553479b7f19d572e9ca4e07bf585
+    category: security
+    cwe:
+    - CWE-1234
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/strings#Replacer
+    technology:
+    - go
+- id: vuln-go-f66925e8
+  pattern: "if uint32($GID) == $ST.Gid || isGroupMember($GID) {\n    ...\n}\n"
+  pattern-not: "if uint32($GID) == $ST.Gid || isGroupMember(int($ST.Gid)) {\n    ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected a potential vulnerability where `isGroupMember` is called with
+    a raw GID value instead of the GID from the file stat. This can lead to incorrect
+    group membership checks and potential privilege escalation. Always use the GID
+    from the file stat (`st.Gid`) when checking group membership.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/f66925e854e71e0c54b581885380a490d7afa30c
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - go
+- id: vuln-go-9210eaf7
+  pattern: "if int64(uint($EXP)) != $EXP {\n  panic(\"exponent too large\")\n}\n"
+  pattern-not: "if $EXP < -1e7 || $EXP > 1e7 {\n  return nil, false\n}\n"
+  languages:
+  - go
+  message: "Detected an unsafe exponent check that could lead to denial of service.\
+    \ \nThe original code panics when an exponent is too large, which can be exploited\
+    \ to crash the application. \nInstead, return an error or handle the large exponent\
+    \ gracefully to avoid service disruption.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/9210eaf7dc704612a6eda97c482012f779fd833b
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://github.com/golang/go/issues/45910
+    technology:
+    - go
+- id: vuln-go-23c943e5
+  pattern: "scheme := $VCS.Scheme[0]\nif $VCS.PingCmd != \"\" {\n  ...\n  if $VCS.Ping($S,\
+    \ $REPO) == nil {\n    scheme = $S\n    break\n  }\n}\n"
+  pattern-not: "scheme, err := func() (string, error) {\n  ...\n  if $VCS.PingCmd\
+    \ == \"\" {\n    return $S, nil\n  }\n  if err := $VCS.Ping($S, $REPO); err ==\
+    \ nil {\n    return $S, nil\n  }\n  return \"\", fmt.Errorf(\"no %sprotocol found\
+    \ for repository\", $SECURITYFRAG)\n}()\nif err != nil {\n  return nil, err\n\
+    }\n"
+  languages:
+  - go
+  message: 'The code directly assigns the first scheme without proper error handling
+    when pinging repositories.
+
+    This can lead to using insecure protocols when secure ones are available.
+
+    The fix adds proper error handling and security checks when selecting repository
+    protocols.
+
+    Always handle errors properly and verify protocol security when working with VCS
+    repositories.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/23c943e5296c6fa3a6f9433bd929306c4dbf2aa3
+    category: security
+    cwe:
+    - CWE-358
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/358.html
+    - https://owasp.org/www-project-top-ten/2021/A02_2021-Cryptographic_Failures
+    technology:
+    - go
+- id: vuln-go-cbd1ca84
+  pattern: "$HV := $OUTREQ.Header.Get($H)\nif $HV == \"\" {\n    ...\n}\nif $H ==\
+    \ \"Te\" && $HV == \"trailers\" {\n    ...\n}\n"
+  pattern-not: "if httpguts.HeaderValuesContainsToken($REQ.Header[\"Te\"], \"trailers\"\
+    ) {\n    $OUTREQ.Header.Set(\"Te\", \"trailers\")\n}\n"
+  languages:
+  - go
+  message: 'The code directly checks for the "Te" header value using `Header.Get`
+    without considering multiple values or tokens. This can lead to incorrect handling
+    of HTTP trailers. Use `httpguts.HeaderValuesContainsToken` to properly check for
+    the "trailers" token in the header values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/cbd1ca84453fecf3825a6bb9f985823e8bc32b76
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - go
+- id: vuln-go-ae080c1a
+  pattern: "if !strings.Contains(strings.ToLower($HEADER.get(\"Connection\")), \"\
+    keep-alive\") {\n  ...\n}\n"
+  pattern-not: "if headerValuesContainsToken($HEADER[\"Connection\"], \"close\") ||\
+    \ !headerValuesContainsToken($HEADER[\"Connection\"], \"keep-alive\") {\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected insecure handling of HTTP Connection headers. The original code
+    uses a simple string comparison which can be bypassed due to improper handling
+    of multiple values and whitespace. This can lead to misinterpretation of the Connection
+    header, potentially causing security issues. Use headerValuesContainsToken for
+    proper token matching.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/ae080c1aecb129a3230e7afecdb4a16ad3da9b3c
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-6.1
+    technology:
+    - go
+- id: vuln-go-7478ea5d
+  pattern: 'defer $FILE.Close()
+
+    '
+  pattern-not: "if $CERR := $FILE.Close(); $ERR == nil {\n  $ERR = $CERR\n}\n"
+  languages:
+  - go
+  message: "Using defer with file.Close() without error handling can silently ignore\
+    \ errors. \nThis is dangerous as it may lead to resource leaks or unhandled file\
+    \ system errors. \nInstead, explicitly handle the Close() error by checking and\
+    \ propagating it.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/7478ea5dba7ed02ddffd91c1d17ec8141f7cf184
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - go
+- id: vuln-go-7917b5f3
+  pattern: "func readMIMEHeader($R *textproto.Reader, $LIM int64) (textproto.MIMEHeader,\
+    \ error) {\n  ...\n}\n"
+  pattern-not: "func readMIMEHeader($R *textproto.Reader, $MAXMEMORY, $MAXHEADERS\
+    \ int64) (textproto.MIMEHeader, error) {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Detected use of deprecated `readMIMEHeader` function with only a memory
+    limit parameter.
+
+    This can lead to denial of service attacks by allowing an attacker to send an
+    excessive number of headers.
+
+    Update to the new version that includes both `maxMemory` and `maxHeaders` parameters
+    to properly limit header processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/7917b5f31204528ea72e0629f0b7d52b35b27538
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - go
+- id: vuln-go-ef41a4e2
+  pattern: 'io.Copy($FILE, io.MultiReader($BUFFER, $PART))
+
+    '
+  pattern-not: 'io.CopyBuffer(writerOnly{$FILE}, $PART, $COPYBUF)
+
+    '
+  languages:
+  - go
+  message: "Using io.Copy with io.MultiReader can lead to inefficient memory usage\
+    \ and potential resource exhaustion. \nThe fix introduces a reusable buffer and\
+    \ uses io.CopyBuffer for more efficient copying. \nReplace io.Copy with io.CopyBuffer\
+    \ and use a reusable buffer for better memory management.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/ef41a4e2face45e580c5836eaebd51629fc23f15
+    category: performance
+    cwe:
+    - CWE-400
+    owasp: A9:2021 - Security Logging and Monitoring Failures
+    technology:
+    - go
+- id: vuln-go-8ac275bb
+  pattern: '$VAR = os.TempDir() + $PATH
+
+    '
+  pattern-not: '$VAR = filepath.Join($DIR, $PATH)
+
+    '
+  languages:
+  - go
+  message: 'Detected unsafe path concatenation using os.TempDir(). This can lead to
+    path traversal vulnerabilities or unexpected behavior if the temporary directory
+    contains spaces. Use filepath.Join() to safely construct paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/8ac275bb01588a8c0e6c0fe2de7fd11f08feccdd
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/path/filepath#Join
+    technology:
+    - go
+- id: vuln-go-fa60c381
+  pattern: 'fmt.Fprintf($FFLG, "_CGO_%s=%s\n", $K, strings.Join($V, " "))
+
+    '
+  pattern-not: "for _, $ARG := range $V {\n  fmt.Fprintf($FFLG, \"_CGO_%s=%s\\n\"\
+    , $ARG)\n}\n"
+  languages:
+  - go
+  message: 'The vulnerable code uses strings.Join to concatenate arguments, which
+    can lead to incorrect handling of flags. This can cause security issues when processing
+    untrusted input. The fix is to iterate over the arguments and process them individually.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/fa60c381ed06c12f9c27a7b50ca44c5f84f7f0f4
+    category: security
+    cwe:
+    - CWE-88
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - go
+- id: vuln-go-0d1615b2
+  pattern: "if _, ok := $E.(bailout); !ok {\n  ...\n}\n"
+  pattern-not: "$BAIL, $OK := $E.(bailout)\nif !$OK {\n  ...\n} else if $BAIL.$MSG\
+    \ != \"\" {\n  ...\n}\n"
+  languages:
+  - go
+  message: "Potential stack exhaustion vulnerability detected. The code does not properly\
+    \ handle \nbailout panics with message and position information, which could lead\
+    \ to \ninsufficient error reporting and potential stack exhaustion. Update the\
+    \ code to \nproperly handle bailout panics with message and position information\
+    \ as shown in \nthe pattern-not example.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/0d1615b23f9a558aa0a1957b4c81596220eb8ec4
+    category: security
+    cwe:
+    - CWE-400
+    - CWE-755
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - go
+- id: vuln-go-33d725e5
+  pattern: "if $N + $DIRLEN + $I <= len($B) {\n  return $I\n}\n"
+  pattern-not: "if $N + $DIRLEN + $I > len($B) {\n  return -1\n}\nreturn $I\n"
+  languages:
+  - go
+  message: 'Detected unsafe ZIP comment boundary check that could lead to truncated
+    comment processing.
+
+    This vulnerability could allow malicious ZIP files to bypass validation checks
+    by hiding
+
+    additional data in truncated comments. The fix is to return -1 when the comment
+    is truncated
+
+    rather than proceeding with potentially invalid data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/33d725e5758bf1fea62e6c77fc70b57a828a49f5
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - go
+- id: vuln-go-42b42f71
+  pattern: "for $X.Sign() == -1 {\n  ...\n}\n"
+  pattern-not: "if $X.Sign() == -1 {\n  ...\n}\n"
+  languages:
+  - go
+  message: "The use of a loop to check for a negative sign is inefficient and potentially\
+    \ dangerous. \nThis can lead to unnecessary iterations and performance issues.\
+    \ \nReplace the loop with a simple conditional check to ensure the code is both\
+    \ efficient and safe.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/42b42f71cf8f5956c09e66230293dfb5db652360
+    category: security
+    cwe:
+    - CWE-835
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/835.html
+    technology:
+    - go
+- id: vuln-go-fb979a50
+  pattern: "func ($DEC *Decoder) decIgnoreOpFor($WIREID typeId, $INPROGRESS map[typeId]*decOp)\
+    \ *decOp {\n    ...\n    $ELEMOP := $DEC.decIgnoreOpFor($ELEMID, $INPROGRESS)\n\
+    \    ...\n}\n"
+  pattern-not: "func ($DEC *Decoder) decIgnoreOpFor($WIREID typeId, $INPROGRESS map[typeId]*decOp,\
+    \ $DEPTH int) *decOp {\n    ...\n    if $DEPTH > maxIgnoreNestingDepth {\n   \
+    \     error_(errors.New(\"invalid nesting depth\"))\n    }\n    $ELEMOP := $DEC.decIgnoreOpFor($ELEMID,\
+    \ $INPROGRESS, $DEPTH+1)\n    ...\n}\n"
+  languages:
+  - go
+  message: 'Detected recursive decoding operation without depth limit check.
+
+    This can lead to unbounded recursion and stack exhaustion when decoding maliciously
+    crafted data.
+
+    Add a depth parameter and check against maxIgnoreNestingDepth to prevent stack
+    overflow attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/fb979a50823e5a0575cf6166b3f17a13364cbf81
+    category: security
+    cwe:
+    - CWE-674
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/674.html
+    technology:
+    - go
+- id: vuln-go-2a7adf4c
+  pattern: "func dedupEnv($ENV []string) []string {\n    ...\n}\n"
+  pattern-not: "func dedupEnv($ENV []string) ([]string, error) {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'The function `dedupEnv` does not handle environment variables containing
+    NUL characters, which can lead to security vulnerabilities. NUL characters in
+    environment variables can cause unexpected behavior or security issues when passed
+    to child processes. Update the function to return an error and filter out any
+    environment variables containing NUL characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/2a7adf4ccde9734becf41acf8274d1a190f2ec64
+    category: security
+    cwe:
+    - CWE-78
+    - CWE-88
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/os/exec#Cmd
+    technology:
+    - go
+- id: vuln-go-179821c9
+  pattern: "if $COND {\n  return errors.New(\"http: invalid Host header\")\n}\n"
+  pattern-not: "if $COND {\n  $HOST = \"\"\n} else {\n  return errors.New(\"http:\
+    \ invalid Host header\")\n}\n"
+  languages:
+  - go
+  message: 'Detected a potential Host header validation vulnerability. Previously,
+    invalid Host headers would return an error, which could lead to header or request
+    smuggling. The fix ensures that invalid Host headers are zeroed out when not using
+    a proxy, preventing potential smuggling vectors. Update the code to handle invalid
+    Host headers by setting them to an empty string when not using a proxy.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/179821c9e12d18c8134429fabe50d3dfaecb948e
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://go.dev/issue/61431
+    technology:
+    - go
+- id: vuln-go-027d7241
+  pattern: "for i := 0; ; i++ {\n  ...\n  if $COND {\n    ...\n  }\n}\n"
+  pattern-not: "for i := 0; i < MaxVarintLen64; i++ {\n  ...\n  if $COND {\n    ...\n\
+    \  }\n  return $X, overflow\n}\n"
+  languages:
+  - go
+  message: 'Detected an unbounded loop in varint decoding that can lead to excessive
+    memory consumption or denial of service.
+
+    The original code lacked a maximum iteration limit, potentially allowing malicious
+    input to cause resource exhaustion.
+
+    Fix by adding a maximum iteration limit (MaxVarintLen64) and proper overflow handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/027d7241ce050d197e7fabea3d541ffbe3487258
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - go
+- id: vuln-go-32dedaa6
+  pattern: "func $FUNC(...) (ok bool) {\n  ...\n  return $EXPR\n}\n"
+  pattern-not: "func $FUNC(...) error {\n  ...\n  return $EXPR\n}\n"
+  languages:
+  - go
+  message: 'Detected a function returning a boolean status instead of an error. This
+    pattern
+
+    is vulnerable as it doesn''t provide proper error handling context. In cryptographic
+
+    operations, returning detailed errors is crucial for proper error handling and
+
+    security. Replace the boolean return type with error and return specific error
+
+    messages instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/32dedaa69e22f1a058ae90b9484fd4c3b46fbcbf
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021-Server Side Request Forgery
+    technology:
+    - go
+- id: vuln-go-c9b9a010
+  pattern: "if $N.Cmp($PARAMS.N) >= 0 {\n  ...\n}\n"
+  pattern-not: "if $N.Cmp($PARAMS.N) >= 0 || len($IN) > len($OUT) {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Missing bounds check on input length in elliptic curve scalar multiplication.
+
+    This vulnerability could allow for buffer overflows when processing maliciously
+
+    crafted inputs. The fix adds a length check to ensure the input doesn''t exceed
+
+    the output buffer size. Always validate input lengths before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/c9b9a010eb06e32e424dc8ffffcc37c8717ad03a
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp: A1:2017-Injection
+    references:
+    - https://github.com/golang/go/issues/52075
+    - https://en.wikipedia.org/wiki/Buffer_overflow
+    technology:
+    - go
+- id: vuln-go-1008486a
+  pattern: 'fmt.Fprintf($F, "_CGO_%s=%s\n", $ARG)
+
+    '
+  pattern-not: 'fmt.Fprintf($F, "_CGO_%s=%s\n", $K, $ARG)
+
+    '
+  languages:
+  - go
+  message: 'Incorrect format string usage in fmt.Fprintf detected. The format string
+    expects two
+
+    arguments but only one is provided. This can lead to format string vulnerabilities
+
+    and undefined behavior. Always ensure the number of format specifiers matches
+    the
+
+    number of arguments provided. The fix is to add the missing argument.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/1008486a9ff979dbd21c7466eeb6abf378f9c637
+    category: security
+    cwe:
+    - CWE-134
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://pkg.go.dev/fmt#Fprintf
+    technology:
+    - go
+- id: vuln-go-63f55967
+  pattern: 'const maxLineCol = 1<<30 - 1
+
+    '
+  pattern-not: 'const maxLineCol = 1 << 30
+
+    '
+  languages:
+  - go
+  message: "The constant `maxLineCol` is defined as `1<<30 - 1`, which can lead to\
+    \ integer overflow issues. \nThis vulnerability can cause incorrect handling of\
+    \ line and column numbers in the scanner, \npotentially leading to security issues\
+    \ or unexpected behavior in the code. \nThe fix changes the constant to `1 <<\
+    \ 30` to prevent overflow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/63f5596788af3f126994a155319956c90f978f8d
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - go
+- id: vuln-go-ce7bd333
+  pattern: 'bytes.TrimRight($VAR, "\t\n\f\r \u2028\u2029")
+
+    '
+  pattern-not: 'bytes.TrimRight($VAR, jsWhitespace)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of incomplete JS whitespace characters in bytes.TrimRight.
+    This can lead to improper handling of JavaScript whitespace characters, potentially
+    causing security issues in template escaping. Replace with the `jsWhitespace`
+    constant to ensure all JS whitespace characters are properly trimmed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/ce7bd33345416e6d8cac901792060591cafc2797
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
+    technology:
+    - go
+- id: vuln-go-4c8b09e9
+  pattern: 'hasSignatureAndHash: $CONDITION
+
+    '
+  pattern-not: 'hasSignatureAlgorithm: $CONDITION
+
+    '
+  languages:
+  - go
+  message: 'The use of hasSignatureAndHash indicates outdated TLS 1.2 support. This
+    field was renamed to hasSignatureAlgorithm
+
+    to better reflect its purpose and align with modern cryptographic standards. Using
+    the old field name may lead
+
+    to compatibility issues and reduced security. Replace hasSignatureAndHash with
+    hasSignatureAlgorithm.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/golang/go/commit/4c8b09e9183390d6ab80d3f53a9fe5f6ace92f06
+    category: security
+    cwe: 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp: 'A6: Security Misconfiguration'
+    references:
+    - https://tools.ietf.org/html/rfc5246#section-7.4.1.4.1
+    - https://golang.org/pkg/crypto/tls/
+    technology:
+    - go
+- id: vuln-go-e4ba4003
+  pattern: '$X.abs, $_, $_, $ERR = $X.abs.scan($R, 10, true)
+
+    '
+  pattern-not: '$X.abs, $_, $_, $ERR = $X.abs.scan($R, 0, true)
+
+    '
+  languages:
+  - go
+  message: 'The code uses a hardcoded base of 10 for scanning floating-point numbers,
+    which can lead to incorrect parsing of non-decimal numbers. This can cause security
+    issues when handling untrusted input. Use a base of 0 to allow automatic detection
+    of the number base.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/golang/go/commit/e4ba40030f9ba4b61bb28dbf78bb41a7b14e6788
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - go

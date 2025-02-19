@@ -1,0 +1,29 @@
+rules:
+- id: vuln-antisamy-e76f02a7
+  pattern: '<regexp name="onsiteURL" value="([\p{L}\p{N}\\\.\#@\$%\+&amp;;\-_~,\?=/!]+|\#(\w)+)"/>
+
+    '
+  pattern-not: '<regexp name="onsiteURL" value="^(?![\p{L}\p{N}\\\.\#@\$%\+&amp;;\-_~,\?=/!]*(&amp;colon))[\p{L}\p{N}\\\.\#@\$%\+&amp;;\-_~,\?=/!]*"/>
+
+    '
+  languages:
+  - xml
+  message: 'The regular expression for ''onsiteURL'' is vulnerable to URL injection
+    attacks. The original pattern does not properly validate URLs, potentially allowing
+    malicious input. The updated pattern includes a negative lookahead to prevent
+    specific injection patterns. Update the regex to the fixed version to mitigate
+    this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nahsra/antisamy/commit/e76f02a77afb4e43b897f13d17b5bc1260b8afde
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/URL_Injection
+    technology:
+    - xml

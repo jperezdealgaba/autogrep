@@ -1,0 +1,74 @@
+rules:
+- id: vuln-calibre-web-965352c8
+  pattern: 'img = requests.get($URL, timeout=($TIMEOUT))
+
+    '
+  pattern-not: 'img = requests.get($URL, timeout=($TIMEOUT), allow_redirects=False)
+
+    '
+  languages:
+  - python
+  message: 'Detected a request without `allow_redirects=False`. This can lead to security
+    vulnerabilities such as SSRF (Server Side Request Forgery) by allowing redirects
+    to malicious endpoints. Always disable redirects unless explicitly required.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/janeczku/calibre-web/commit/965352c8d96c9eae7a6867ff76b0db137d04b0b8
+    category: security
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    technology:
+    - python
+- id: vuln-calibre-web-0c0313f3
+  pattern: 'is_public = 1 if $TO_SAVE.get("is_public") else 0
+
+    '
+  pattern-not: 'is_public = 1 if $TO_SAVE.get("is_public") == "on" else 0
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe boolean conversion of a string value. The original code
+    converts any non-empty string to 1, which can lead to incorrect public/private
+    status settings. Always explicitly check for the expected value (e.g., "on") to
+    avoid unintended behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/janeczku/calibre-web/commit/0c0313f375bed7b035c8c0482bbb09599e16bfcf
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - python
+- id: vuln-calibre-web-3b216bfa
+  pattern: '$LOG($_(u"$MESSAGE"))
+
+    raise Exception($_(u"$MESSAGE"))
+
+    '
+  pattern-not: '$LOG($_("$MESSAGE"))
+
+    raise Exception($_("$MESSAGE"))
+
+    '
+  languages:
+  - python
+  message: Detected use of Unicode string literals (u-prefix) in logging and exception
+    messages. This can lead to compatibility issues and is unnecessary in Python 3.
+    Use plain string literals instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/janeczku/calibre-web/commit/3b216bfa07ec7992eff03e55d61732af6df9bb92
+    category: code-quality
+    cwe:
+    - CWE-116
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

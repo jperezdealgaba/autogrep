@@ -1,0 +1,96 @@
+rules:
+- id: vuln-flatpak-e26ac758
+  pattern: 'seccomp_rule_add($SECCOMP, SCMP_ACT_ERRNO(EPERM), $SCALL, $ARG_COUNT,
+    $ARG)
+
+    '
+  pattern-not: 'seccomp_rule_add($SECCOMP, SCMP_ACT_ERRNO($ERRNUM), $SCALL, $ARG_COUNT,
+    $ARG)
+
+    '
+  languages:
+  - c
+  message: 'The seccomp rule is using a hardcoded EPERM error code instead of a variable
+    that can be validated. This can lead to security issues if the error code is not
+    properly checked. Use a variable for the error code and ensure it is validated
+    against acceptable values (e.g., EPERM or ENOSYS) before using it in the seccomp
+    rule.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/e26ac7586c392b5eb35ff4609fe232c52523b2cf
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c
+- id: vuln-flatpak-d9a8f9d8
+  pattern: "if (g_key_file_load_from_bytes($METADATA, $BYTES, G_KEY_FILE_NONE, NULL))\n\
+    {\n  $RESOLVED_METADATA = g_bytes_ref($BYTES);\n  $RESOLVED_METAKEY = g_steal_pointer(&$METAKEY);\n\
+    }\nelse\n{\n  g_message(\"Warning: Failed to parse metadata for %s\\n\", $REF);\n\
+    }\n"
+  pattern-not: "if (!g_key_file_load_from_bytes($METADATA, $BYTES, G_KEY_FILE_NONE,\
+    \ NULL))\n  return flatpak_fail_error($ERROR, FLATPAK_ERROR_INVALID_DATA, \"Metadata\
+    \ for %s is invalid\", $REF);\n\n$RESOLVED_METADATA = g_bytes_ref($BYTES);\n$RESOLVED_METAKEY\
+    \ = g_steal_pointer(&$METAKEY);\n"
+  languages:
+  - c
+  message: "The code fails to properly handle errors when parsing metadata, which\
+    \ can lead to undefined behavior or security issues. \nThe patch introduces proper\
+    \ error handling by returning an error and ensuring the function fails safely.\
+    \ \nTo fix this, ensure that all error conditions are properly checked and handled,\
+    \ and use appropriate error reporting mechanisms.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/d9a8f9d8ccc0b7c1135d0ecde006a75d25f66aee
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology:
+    - c
+- id: vuln-flatpak-cc140104
+  pattern: 'g_environ_setenv($ENV, $VAR, $VAL, TRUE)
+
+    '
+  pattern-not: 'g_environ_setenv($ENV, $VAR, $VAL, TRUE);
+
+    if ($VAR[0] == ''\0'') { ... }
+
+    if (strchr($VAR, ''='') != NULL) { ... }
+
+    g_string_append($ENV_STRING, $VAR);
+
+    g_string_append_c($ENV_STRING, ''='');
+
+    g_string_append($ENV_STRING, $VAL);
+
+    g_string_append_c($ENV_STRING, ''\0'');
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe environment variable handling. The code does not validate
+    the environment variable name, which could allow an attacker to inject malicious
+    code. Ensure that environment variable names are not empty and do not contain
+    ''='' characters to prevent security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/flatpak/flatpak/commit/cc1401043c075268ecc652eac557ef8076b5eaba
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - c

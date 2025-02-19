@@ -1,0 +1,24 @@
+rules:
+- id: vuln-navigate-cms-88b41c76
+  pattern: '$THIS->file = $_REQUEST[''file''];
+
+    '
+  pattern-not: '$THIS->file = str_replace(array(''../'', ''..\\''), '''', $_REQUEST[''file'']);
+
+    '
+  languages:
+  - php
+  message: "Detected unvalidated file path assignment from user input, which can lead\
+    \ to path traversal vulnerabilities. \nAttackers can manipulate the 'file' parameter\
+    \ to access unauthorized files or directories. \nSanitize the input using str_replace\
+    \ to remove '../' and '..\\\\' sequences.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/NavigateCMS/Navigate-CMS/commit/88b41c7665ac7181be063b7a541dded7b207d9e7
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

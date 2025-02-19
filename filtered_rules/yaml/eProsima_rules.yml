@@ -1,0 +1,26 @@
+rules:
+- id: vuln-fast-dds-c2980432
+  pattern: "env:\n  TSAN_OPTIONS: second_deadlock_stack=1 history_size=7 memory_limit_mb=5000\n\
+    \  SHELL: /bin/bash\n  CC: gcc-12\n  CXX: g++-12\n"
+  pattern-not: "env:\n  FASTDDS_BRANCH: ${{ github.head_ref || github.event.inputs.fastdds_branch\
+    \ || 'master' }}\n  TSAN_OPTIONS: second_deadlock_stack=1 history_size=7 memory_limit_mb=5000\n\
+    \  CC: gcc-12\n  CXX: g++-12\n"
+  languages:
+  - yaml
+  message: "The workflow file contains hardcoded environment variables that may lead\
+    \ to inconsistent builds. \nInstead, use dynamic environment variables and ensure\
+    \ proper branch handling to avoid potential security risks and build inconsistencies.\n\
+    Update the workflow to use dynamic environment variables and branch handling as\
+    \ shown in the fixed version.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/eProsima/Fast-DDS/commit/c29804320e4688af2d8b43a61986682fa4f9e50b
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.github.com/en/actions/learn-github-actions/environment-variables
+    technology:
+    - yaml

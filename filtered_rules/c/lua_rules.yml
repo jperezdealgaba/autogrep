@@ -1,0 +1,92 @@
+rules:
+- id: vuln-lua-cf613cdc
+  pattern: 'checkstackGC($L, $SIZE);
+
+    '
+  pattern-not: 'checkstackGCp($L, $SIZE - $DELTA, $FUNC);
+
+    '
+  languages:
+  - c
+  message: 'The function `checkstackGC` is called without considering the delta value,
+    which can lead to stack overflow vulnerabilities. This vulnerability occurs because
+    the stack size calculation does not account for the delta, potentially causing
+    insufficient stack space to be allocated. The fix involves using `checkstackGCp`
+    with the correct delta calculation to ensure proper stack space management. Always
+    ensure that stack size calculations account for any necessary adjustments to prevent
+    overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/cf613cdc6fa367257fc61c256f63d917350858b5
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c
+- id: vuln-lua-066e0f93
+  pattern: 'const char *kind = (isLua($CI)) ? funcnamefromcode($L, $CI, &$NAME) :
+    NULL;
+
+    '
+  pattern-not: 'const char *kind = funcnamefromcall($L, $CI, &$NAME);
+
+    '
+  languages:
+  - c
+  message: 'The function `funcnamefromcode` is being used to retrieve a function name,
+    which can lead to incorrect or incomplete information about the calling function.
+    This can cause issues in error handling and debugging, particularly in cases involving
+    finalizers or hooks. The fix replaces `funcnamefromcode` with `funcnamefromcall`,
+    which provides a more reliable way to determine the function name based on how
+    it was called. Ensure to use `funcnamefromcall` for accurate function name resolution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/066e0f93c4901e601d93e31fb700f8f66f95feb8
+    category: security
+    cwe:
+    - CWE-685
+    technology:
+    - c
+- id: vuln-lua-0bfc572e
+  pattern: 'global_State *$G;
+
+    ...
+
+    $G = G($L);
+
+    ...
+
+    $G->gcrunning = $VALUE;
+
+    '
+  pattern-not: "global_State *$G = G($L);\n...\nif ($G->gcstp & GCSTPGC)\n  return\
+    \ -1;\n...\n$G->gcstp = $VALUE;\n"
+  languages:
+  - c
+  message: 'Detected unsafe modification of the garbage collector state without proper
+    checks.
+
+    This could lead to incorrect garbage collection behavior, potentially causing
+    memory leaks or crashes.
+
+    Ensure the garbage collector state is checked and updated safely using the new
+    ''gcstp'' mechanism.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lua/lua/commit/0bfc572e51d9035a615ef6e9523f736c9ffa8e57
+    category: security
+    cwe:
+    - CWE-665
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

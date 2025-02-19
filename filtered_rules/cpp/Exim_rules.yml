@@ -1,0 +1,25 @@
+rules:
+- id: vuln-exim-7e3ce68e
+  pattern: "typedef enum {\n  CHUNKING_NOT_OFFERED,\n  CHUNKING_OFFERED,\n  CHUNKING_ACTIVE,\n\
+    \  CHUNKING_LAST\n} chunking_state_t;\n"
+  pattern-not: "typedef enum {\n  CHUNKING_NOT_OFFERED = -1,\n  CHUNKING_OFFERED,\n\
+    \  CHUNKING_ACTIVE,\n  CHUNKING_LAST\n} chunking_state_t;\n"
+  languages:
+  - cpp
+  message: 'The enumeration `chunking_state_t` is missing an explicit initializer
+    for `CHUNKING_NOT_OFFERED`, which can lead to undefined behavior or incorrect
+    state handling. This vulnerability was fixed by explicitly setting `CHUNKING_NOT_OFFERED
+    = -1` to ensure consistent and predictable behavior. To fix this, always explicitly
+    initialize enumeration values to avoid ambiguity.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/7e3ce68e68ab9b8906a637d352993abf361554e2
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - cpp

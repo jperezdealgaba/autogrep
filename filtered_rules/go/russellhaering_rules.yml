@@ -1,0 +1,53 @@
+rules:
+- id: vuln-gosaml2-f9d66040
+  pattern: "func maybeDeflate($DATA []byte, $DECODER func([]byte) error) error {\n\
+    \  ...\n  $DEFLATED, $ERR := ioutil.ReadAll(flate.NewReader(bytes.NewReader($DATA)))\n\
+    \  ...\n}\n"
+  pattern-not: "func maybeDeflate($DATA []byte, $MAXSIZE int64, $DECODER func([]byte)\
+    \ error) error {\n  ...\n  $LR := io.LimitReader(flate.NewReader(bytes.NewReader($DATA)),\
+    \ $MAXSIZE+1)\n  $DEFLATED, $ERR := io.ReadAll($LR)\n  if int64(len($DEFLATED))\
+    \ > $MAXSIZE {\n    return fmt.Errorf(\"deflated response exceeds maximum size\
+    \ of %d bytes\", $MAXSIZE)\n  }\n  ...\n}\n"
+  languages:
+  - go
+  message: 'The function `maybeDeflate` is vulnerable to compression bomb attacks
+    as it doesn''t limit the size of decompressed data. This can lead to resource
+    exhaustion. Add a maximum size parameter and use `io.LimitReader` to restrict
+    the decompressed data size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/russellhaering/gosaml2/commit/f9d66040241093e8702649baff50cc70d2c683c0
+    category: security
+    cwe:
+    - CWE-409
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - go
+- id: vuln-gosaml2-0f0fb74d
+  pattern: 'err = validator.Validate(bytes.NewReader($VAR))
+
+    '
+  pattern-not: 'err = rtvalidator.Validate(bytes.NewReader($VAR))
+
+    '
+  languages:
+  - go
+  message: 'The code is using an unqualified import of the xml-roundtrip-validator
+    package, which can lead to XML injection vulnerabilities. The validator should
+    be imported with a qualified alias (rtvalidator) to ensure proper validation of
+    XML responses. This vulnerability can be exploited by attackers to inject malicious
+    XML content. Use the qualified import and validation method to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/russellhaering/gosaml2/commit/0f0fb74d103c2e42a10a5379151619502fecc57b
+    category: security
+    cwe:
+    - CWE-91
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    technology:
+    - go

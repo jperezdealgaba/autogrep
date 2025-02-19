@@ -1,0 +1,28 @@
+rules:
+- id: vuln-wpscan-87d7657d
+  pattern: "<vulnerability>\n  <title>CVE-2013-2173: WordPress 3.5.1 DoS in class-phpass.php</title>\n\
+    \  ...\n</vulnerability>\n"
+  pattern-not: "<vulnerability>\n  <title>CVE-2013-2173: WordPress 3.4-3.5.1 DoS in\
+    \ class-phpass.php</title>\n  ...\n</vulnerability>\n"
+  languages:
+  - xml
+  message: 'Detected an outdated vulnerability entry for CVE-2013-2173 in WordPress.
+    The title incorrectly specifies only WordPress 3.5.1 as affected, while the correct
+    range is 3.4-3.5.1. This could lead to incomplete vulnerability tracking and missing
+    affected versions. Update the title to include the correct version range.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wpscanteam/wpscan/commit/87d7657decda521fa36c1c0d2d715da24a0f3ee9
+    category: security
+    cwe:
+    - CWE-1035
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - http://seclists.org/fulldisclosure/2013/Jun/65
+    - http://secunia.com/advisories/53676/
+    - http://osvdb.org/94235
+    technology:
+    - xml

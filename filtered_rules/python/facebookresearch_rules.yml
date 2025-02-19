@@ -1,0 +1,19 @@
+rules:
+- id: vuln-parlai-4374fa2a
+  pattern: yaml.load($READ)
+  pattern-not: yaml.safe_load($READ)
+  languages:
+  - python
+  message: Detected unsafe YAML deserialization using yaml.load(). This can lead to
+    arbitrary code execution when loading untrusted data. Use yaml.safe_load() instead
+    to prevent this vulnerability.
+  severity: ERROR
+  metadata:
+    source-url: github.com/facebookresearch/ParlAI/commit/4374fa2aba383db6526ab36e939eb1cf8ef99879
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://pyyaml.org/wiki/PyYAMLDocumentation
+    technology:
+    - python

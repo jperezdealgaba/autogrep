@@ -1,0 +1,35 @@
+rules:
+- id: vuln-wireshark-bb48c859
+  pattern: "QTreeView::timerEvent($EVENT);\nif ($EVENT->timerId() == $TIMER_ID\n \
+    \       && $CONDITION1\n        && $CONDITION2\n        && $CONDITION3) {\n  \
+    \  $ACTION;\n    $RESET;\n} else if ($EVENT->timerId() == $OTHER_TIMER_ID && !$CONDITION4)\
+    \ {\n    if ($CONDITION5) $ACTION1;\n    if ($CONDITION6) $ACTION2;\n}\n"
+  pattern-not: "if ($EVENT->timerId() == $TIMER_ID) {\n    if ($CONDITION1 && $CONDITION2\
+    \ && $CONDITION3) {\n        $ACTION;\n        $RESET;\n    }\n} else if ($EVENT->timerId()\
+    \ == $OTHER_TIMER_ID) {\n    if (!$CONDITION4) {\n        if ($CONDITION5) $ACTION1;\n\
+    \        if ($CONDITION6) $ACTION2;\n    }\n} else {\n    QTreeView::timerEvent($EVENT);\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'Missing base class timerEvent call in timer event handler. This vulnerability
+    occurs
+
+    when a derived class overrides a timer event handler but fails to call the base
+    class
+
+    implementation for unhandled events. This can lead to missed event processing
+    and
+
+    potential application instability. Always call the base class timerEvent for unhandled
+
+    timer IDs, typically in an else clause.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/bb48c859c98b00320398f54f14fd9b16f4fa3cf2
+    category: security
+    cwe:
+    - CWE-664
+    technology:
+    - cpp

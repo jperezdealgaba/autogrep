@@ -1,0 +1,75 @@
+rules:
+- id: vuln-coturn-e09bcd9f
+  pattern: "char *post_data = (char*)calloc($DATA_LEN + 1, sizeof(char));\nmemcpy(post_data,\
+    \ $DATA, $DATA_LEN);\nchar *fmarker = NULL;\nchar *fsplit = strtok_r(post_data,\
+    \ \"&\", &fmarker);\nstruct headers_list *list = (struct headers_list*)malloc(sizeof(struct\
+    \ headers_list));\nbzero(list,sizeof(struct headers_list));\nwhile (fsplit !=\
+    \ NULL) {\n  char *vmarker = NULL;\n  char *key = strtok_r(fsplit, \"=\", &vmarker);\n\
+    \  char *value = strtok_r(NULL, \"=\", &vmarker);\n  char empty[1];\n  empty[0]=0;\n\
+    \  value = value ? value : empty;\n  value = evhttp_decode_uri(value);\n  char\
+    \ *p = value;\n  while (*p) {\n    if (*p == '+')\n      *p = ' ';\n    p++;\n\
+    \  }\n  list->keys = (char**)realloc(list->keys,sizeof(char*)*(list->n+1));\n\
+    \  list->keys[list->n] = strdup(key);\n  list->values = (char**)realloc(list->values,sizeof(char*)*(list->n+1));\n\
+    \  list->values[list->n] = value;\n  ++(list->n);\n  fsplit = strtok_r(NULL, \"\
+    &\", &fmarker);\n}\nfree(post_data);\nreturn list;\n"
+  pattern-not: "if ($DATA_LEN) {\n  char *post_data = (char*)calloc($DATA_LEN + 1,\
+    \ sizeof(char));\n  if (post_data != NULL) {\n    memcpy(post_data, $DATA, $DATA_LEN);\n\
+    \    char *fmarker = NULL;\n    char *fsplit = strtok_r(post_data, \"&\", &fmarker);\n\
+    \    struct headers_list *list = (struct headers_list*)malloc(sizeof(struct headers_list));\n\
+    \    bzero(list,sizeof(struct headers_list));\n    while (fsplit != NULL) {\n\
+    \      char *vmarker = NULL;\n      char *key = strtok_r(fsplit, \"=\", &vmarker);\n\
+    \      if (key == NULL)\n        break;\n      else {\n        char *value = strtok_r(NULL,\
+    \ \"=\", &vmarker);\n        char empty[1];\n        empty[0]=0;\n        value\
+    \ = value ? value : empty;\n        value = evhttp_decode_uri(value);\n      \
+    \  char *p = value;\n        while (*p) {\n          if (*p == '+')\n        \
+    \    *p = ' ';\n          p++;\n        }\n        list->keys = (char**)realloc(list->keys,sizeof(char*)*(list->n+1));\n\
+    \        list->keys[list->n] = strdup(key);\n        list->values = (char**)realloc(list->values,sizeof(char*)*(list->n+1));\n\
+    \        list->values[list->n] = value;\n        ++(list->n);\n        fsplit\
+    \ = strtok_r(NULL, \"&\", &fmarker);\n      }\n    }\n    free(post_data);\n \
+    \   return list;\n  }\n}\nreturn NULL;\n"
+  languages:
+  - c
+  message: 'The code does not check if the memory allocation for `post_data` was successful
+    before using it. This can lead to a NULL pointer dereference if `calloc` fails,
+    potentially causing a crash or undefined behavior. Always check the return value
+    of memory allocation functions before using the allocated memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/coturn/coturn/commit/e09bcd9f7af5b32c81b37f51835b384b5a7d03a8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c
+- id: vuln-coturn-51a7c2b9
+  pattern: 'while((*$DATA == ''\r'') || (*$DATA == ''\n'')) ++$DATA;
+
+    '
+  pattern-not: 'while((*$DATA == ''\r'') || (*$DATA == ''\n'')) { ++$DATA; --$DATA_LEN;
+    }
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to missing decrement
+    of data length while incrementing the data pointer. This can lead to reading beyond
+    the allocated buffer, causing crashes or security vulnerabilities.
+
+    To fix this, ensure that the data length is decremented in sync with the data
+    pointer increment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/coturn/coturn/commit/51a7c2b9bf924890c7a3ff4db9c4976c5a93340a
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

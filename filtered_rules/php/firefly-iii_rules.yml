@@ -1,0 +1,28 @@
+rules:
+- id: vuln-firefly-iii-47fa9e39
+  pattern: 'Route::any(''logout'', [''uses'' => $CONTROLLER, ''as'' => $NAME])
+
+    '
+  pattern-not: 'Route::post(''logout'', [''uses'' => $CONTROLLER, ''as'' => $NAME])
+
+    '
+  languages:
+  - php
+  message: 'Detected use of Route::any for logout endpoint. Using Route::any allows
+    multiple HTTP methods (GET, POST, etc.), which can lead to CSRF vulnerabilities.
+    The logout endpoint should only accept POST requests to prevent CSRF attacks.
+    Replace Route::any with Route::post to fix this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/firefly-iii/firefly-iii/commit/47fa9e39561a9ec9e210e4023d090a7b33381684
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php

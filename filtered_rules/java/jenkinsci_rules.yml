@@ -1,0 +1,270 @@
+rules:
+- id: vuln-jenkins-9de62915
+  pattern: "if ($PATH.isEmpty() || $PATH.contains(\"..\") || $PATH.contains(\"%\"\
+    ) || $PATHUC.contains(\"META-INF\") || $PATHUC.contains(\"WEB-INF\")) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($PATH.isEmpty() || $PATH.contains(\"..\") || $PATH.startsWith(\"\
+    .\") || $PATH.contains(\"%\") || $PATHUC.contains(\"META-INF\") || $PATHUC.contains(\"\
+    WEB-INF\")) {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Potential path traversal vulnerability detected. The code fails to check\
+    \ for paths starting with a dot (.), which could allow attackers to bypass security\
+    \ checks. \nThis vulnerability could lead to unauthorized access to sensitive\
+    \ files. \nTo fix this, ensure that paths starting with a dot (.) are explicitly\
+    \ checked, as shown in the patch.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/9de62915807deab61d6e780eed660428f9889b51
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - java
+- id: vuln-inedo-proget-plugin-9634846c
+  pattern: "public void setPassword(String $VALUE) {\n  $PASSWORD = Secret.fromString($VALUE);\n\
+    }\n"
+  pattern-not: "public void setPassword(Secret $VALUE) {\n  $PASSWORD = $VALUE;\n\
+    }\n"
+  languages:
+  - java
+  message: 'Insecure handling of password as plain text detected. Passwords should
+    be handled using the Secret type directly to prevent exposure in memory. Update
+    the method to accept Secret type instead of String.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/inedo-proget-plugin/commit/9634846c65f204c2b54237674b2cecf66d5d5fdb
+    category: security
+    cwe: CWE-312
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - java
+- id: vuln-kubernetes-plugin-8dadc216
+  pattern: "public static String substituteEnv($S) {\n    return replaceMacro($S,\
+    \ System.getenv());\n}\n"
+  pattern-not: "public static String substituteEnv($S) {\n    return SUBSTITUTE_ENV\
+    \ ? replaceMacro($S, System.getenv()) : $S;\n}\n"
+  languages:
+  - java
+  message: Potential insecure environment variable substitution detected. The method
+    `substituteEnv` directly substitutes environment variables without any guard,
+    which can lead to security vulnerabilities. Use a guard condition to control when
+    substitution should occur.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/kubernetes-plugin/commit/8dadc2168b108eb45c68037fa941d2594da46d79
+    category: security
+    cwe: CWE-200
+    owasp: A01:2021-Broken Access Control
+    references: https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - java
+- id: vuln-embeddable-build-status-plugin-63f82f28
+  pattern: "if (style == null) {\n  ...\n}\n"
+  pattern-not: "if (style == null || !Arrays.asList(\"flat-square\", \"plastic\").contains(style))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Missing validation of 'style' parameter allows potential XSS attacks.\
+    \ \nThe patch explicitly lists allowed values to prevent injection of malicious\
+    \ styles. \nEnsure all user inputs are validated against a whitelist of allowed\
+    \ values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/embeddable-build-status-plugin/commit/63f82f28d989d30a23089a0a66c11f222651a8c6
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    technology: java
+- id: vuln-embeddable-build-status-plugin-40214878
+  pattern: "if ($THROW_ERROR_WHEN_NOT_FOUND && ($OBJ == null || !$OBJ.hasPermission($VIEW_STATUS)))\
+    \ {\n    throw $HTTP_RESPONSE;\n}\n"
+  pattern-not: "if ($OBJ == null || !$OBJ.hasPermission($VIEW_STATUS)) {\n    if ($THROW_ERROR_WHEN_NOT_FOUND)\
+    \ {\n        throw $HTTP_RESPONSE;\n    }\n    return null;\n}\n"
+  languages:
+  - java
+  message: 'The code directly throws an HTTP not found response when permissions are
+    not met, without proper handling of the `throwErrorWhenNotFound` flag. This can
+    lead to inconsistent error handling and potential security issues. The fix ensures
+    that the `throwErrorWhenNotFound` flag is properly checked before throwing the
+    exception, and returns null otherwise.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/embeddable-build-status-plugin/commit/402148784b3f4b029eaf47cc26ebf6b9bc636183
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    references: https://cwe.mitre.org/data/definitions/284.html
+    technology: java
+- id: vuln-jenkins-23f4809e
+  pattern: "if ($REQ != null && $REQ.getMethod().equals(\"POST\")) {\n  ...\n}\n"
+  pattern-not: "if ($REQ == null || $REQ.getMethod().equals(\"POST\")) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Insecure request method validation detected. The condition should allow
+    requests with null or POST methods to prevent unauthorized access. Fix by using
+    '== null ||' instead of '!= null &&'.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/23f4809e6c10a221e9d67f2e841536845387b42d
+    category: security
+    cwe: CWE-285
+    owasp: A01:2021-Broken Access Control
+    technology:
+    - java
+- id: vuln-script-security-plugin-35119273
+  pattern: 'new GroovyShell($CLASS_LOADER).parse($SCRIPT)
+
+    '
+  pattern-not: 'new GroovyShell($CLASS_LOADER, GroovySandbox.createSecureCompilerConfiguration()).parse($SCRIPT)
+
+    '
+  languages:
+  - java
+  message: 'Insecure Groovy script parsing detected. The GroovyShell is being initialized
+    without a secure compiler configuration, which could allow unsafe script execution.
+    Use GroovySandbox.createSecureCompilerConfiguration() to ensure scripts are executed
+    in a secure sandbox.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/script-security-plugin/commit/35119273101af26792457ec177f34f6f4fa49d99
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - java
+- id: vuln-jenkins-fbf96734
+  pattern: "if (!$U.isPasswordCorrect($PASSWORD)) {\n  throw new BadCredentialsException($MESSAGE);\n\
+    }\n"
+  pattern-not: "if (!$U.isPasswordCorrect($PASSWORD)) {\n  String $MESSAGE;\n  try\
+    \ {\n    $MESSAGE = ResourceBundle.getBundle($BUNDLE).getString($KEY);\n  } catch\
+    \ (MissingResourceException $X) {\n    $MESSAGE = \"Bad credentials\";\n  }\n\
+    \  throw new BadCredentialsException($MESSAGE);\n}\n"
+  languages:
+  - java
+  message: "Detected a hardcoded error message in authentication failure handling.\
+    \ \nThis can expose sensitive information or make the application more vulnerable\
+    \ to attacks. \nUse localized error messages from a resource bundle instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/fbf96734470caba9364f04e0b77b0bae7293a1ec
+    category: security
+    cwe:
+    - CWE-209
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - java
+- id: vuln-jenkins-0530a664
+  pattern: '$OWNER.checkPermission(Jenkins.ADMINISTER)
+
+    '
+  pattern-not: '$OWNER.checkPermission(Jenkins.RUN_SCRIPTS)
+
+    '
+  languages:
+  - java
+  message: 'Incorrect permission check detected. The code was using Jenkins.ADMINISTER
+    permission where Jenkins.RUN_SCRIPTS should have been used. This could lead to
+    improper access control. Ensure the correct permission is checked to maintain
+    proper security boundaries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/0530a6645aac10fec005614211660e98db44b5eb
+    category: security
+    cwe: CWE-285
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://www.jenkins.io/doc/developer/security/permissions/
+    technology: java
+- id: vuln-script-security-plugin-3228c88e
+  pattern: "private static final List<Class<? extends Annotation>> BLOCKED_TRANSFORMS\
+    \ = ImmutableList.of($CLASS1.class, $CLASS2.class);\n...\nfor (Class<? extends\
+    \ Annotation> blockedAnnotation : BLOCKED_TRANSFORMS) {\n    if (blockedAnnotation.getSimpleName().equals($VAR.getName()))\
+    \ {\n        throw new SecurityException(\"Annotation \" + blockedAnnotation.getSimpleName()\
+    \ + \" cannot be used in the sandbox.\");\n    }\n}\n"
+  pattern-not: "private static final List<String> BLOCKED_TRANSFORMS = ImmutableList.of($CLASS1.class.getCanonicalName(),\
+    \ $CLASS2.class.getCanonicalName());\n...\nfor (String blockedAnnotation : getBlockedTransforms())\
+    \ {\n    if (blockedAnnotation.equals($VAR.getName()) || blockedAnnotation.endsWith(\"\
+    .\" + $VAR.getName())) {\n        throw new SecurityException(\"Annotation \"\
+    \ + $VAR.getName() + \" cannot be used in the sandbox.\");\n    }\n}\n"
+  languages:
+  - java
+  message: Insecure annotation handling detected. The original code used simple class
+    names for blocked annotations, which could be bypassed using fully qualified class
+    names or imports. Use canonical names and check for both exact matches and suffix
+    matches to prevent bypass.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/script-security-plugin/commit/3228c88e84f0b2f24845b6466cae35617e082059
+    category: security
+    cwe: CWE-470
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/470.html
+    technology: java
+- id: vuln-ec2-plugin-78c3c49a
+  pattern: 'logInfo($COMPUTER, $LISTENER, "Using key: " + $KEY.getKeyName() + "\n"
+    + $KEY.getKeyFingerprint() + "\n" + $KEY.getKeyMaterial().substring(0, 160));
+
+    '
+  pattern-not: 'logInfo($COMPUTER, $LISTENER, String.format("Using private key %s
+    (SHA-1 fingerprint %s)", $KEY.getKeyName(), $KEY.getKeyFingerprint()));
+
+    '
+  languages:
+  - java
+  message: "Sensitive key material is being logged in plaintext, which can expose\
+    \ private keys to unauthorized users. \nThis vulnerability can lead to unauthorized\
+    \ access to EC2 instances. \nUse a secure logging method that does not expose\
+    \ sensitive information, such as logging only the key name and fingerprint.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/ec2-plugin/commit/78c3c49a227ac8eccb8b1be7193d5605363fe251
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - java
+- id: vuln-jenkins-3cd946cb
+  pattern: "class $CLASS {\n    private final User user;\n    public $CONSTRUCTOR(User\
+    \ user, String message) {\n        super($MESSAGE);\n        this.user = user;\n\
+    \    }\n}\n"
+  pattern-not: "class $CLASS {\n    private transient User user;\n    private @CheckForNull\
+    \ String userId;\n    public $CONSTRUCTOR(@CheckForNull User user, @CheckForNull\
+    \ String message) {\n        this(user != null ? user.getId() : null, message);\n\
+    \    }\n    private $CONSTRUCTOR(String userId, String message) {\n        super($MESSAGE);\n\
+    \        this.userId = userId;\n    }\n}\n"
+  languages:
+  - java
+  message: Storing User objects directly in fields can lead to deserialization issues
+    and information exposure. Instead, store user IDs and retrieve the User object
+    when needed.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jenkinsci/jenkins/commit/3cd946cbef82c6da5ccccf3890d0ae4e091c4265
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/502.html
+    technology:
+    - java

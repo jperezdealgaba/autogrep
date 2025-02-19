@@ -1,0 +1,83 @@
+rules:
+- id: vuln-guava-a70f0099
+  pattern: 'Map<$K, Collection<$V>> $MAP = new $HASHMAP($CAPACITY);
+
+    '
+  pattern-not: 'Map<$K, Collection<$V>> $MAP = new $HASHMAP();
+
+    '
+  languages:
+  - java
+  message: Potential memory inefficiency or incorrect capacity calculation. Use default
+    constructor instead of specifying capacity manually.
+  severity: WARNING
+  metadata:
+    source-url: github.com/google/guava/commit/a70f009926809b9a37ebbc16ebbc9cf71030be11
+    category: performance
+    cwe:
+    - CWE-400
+    references:
+    - https://github.com/google/guava/commit/a70f009926809b9a37ebbc16ebbc9cf71030be11
+    technology:
+    - java
+- id: vuln-guava-7ec8718f
+  pattern: '$LIST = new ArrayList<>($LENGTH);
+
+    '
+  pattern-not: '$LIST = new ArrayList<>();
+
+    '
+  languages:
+  - java
+  message: 'Potential vulnerability detected: Initializing ArrayList with a predefined
+    length can lead to unexpected behavior. Use the default constructor instead.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/google/guava/commit/7ec8718f1e6e2814dabaa4b9f96b6b33a813101c
+    category: security
+    cwe:
+    - CWE-664
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - java
+- id: vuln-data-transfer-project-9ddcb02e
+  pattern: 'File.createTempFile($PREFIX, $SUFFIX)
+
+    '
+  pattern-not: 'Files.createTempFile($PREFIX, $SUFFIX).toFile()
+
+    '
+  languages:
+  - java
+  message: "Using `File.createTempFile` can lead to security vulnerabilities due to\
+    \ its less secure file creation mechanism. \nInstead, use `Files.createTempFile`\
+    \ which provides better security guarantees and returns a `Path` object that can\
+    \ be converted to a `File` if needed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/google/data-transfer-project/commit/9ddcb02edb9c13d2713460e347f8b343c84aa2f4
+    category: security
+    cwe: CWE-377
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#createTempFile-java.lang.String-java.lang.String-java.nio.file.attribute.FileAttribute...-
+    technology:
+    - java
+- id: vuln-guava-acf29b38
+  pattern: "if (\"amd64\".equals($ARCH) || \"aarch64\".equals($ARCH)) {\n  ...\n}\n"
+  pattern-not: "if (\"amd64\".equals($ARCH)) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Unsafe platform check detected. The use of Unsafe.getLong() should be restricted
+    to platforms that are specifically known to work, such as amd64. Including aarch64
+    in the platform check can lead to unsafe behavior on 32-bit Android systems.
+  severity: ERROR
+  metadata:
+    source-url: github.com/google/guava/commit/acf29b389bc9ff8701f69d05b30e9d899bc10e35
+    category: security
+    cwe:
+    - CWE-250
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - java

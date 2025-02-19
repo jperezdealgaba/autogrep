@@ -1,0 +1,363 @@
+rules:
+- id: vuln-symfony-c935e4a3
+  pattern: "$granted = false;\nforeach ($attributes as $key => $value) {\n    if ($this->accessDecisionManager->decide($token,\
+    \ [$key => $value], $request)) {\n        $granted = true;\n        break;\n \
+    \   }\n}\nif (!$granted) {\n    ...\n}\n"
+  pattern-not: "if (!$this->accessDecisionManager->decide($token, $attributes, $request,\
+    \ true)) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Multiple attributes in access control checks are being evaluated incorrectly,
+    potentially leading to security bypasses. The original code evaluates attributes
+    in a loop with an OR condition, which could allow access if any single attribute
+    is granted. The fixed version evaluates all attributes together with an AND condition.
+    To fix this, pass the attributes array directly to the `decide` method with the
+    `allowMultipleAttributes` parameter set to true.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/c935e4a3fba6cc2ab463a6ca382858068d63cebf
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://symfony.com/doc/current/security.html
+    technology:
+    - php
+- id: vuln-symfony-cf802245
+  pattern: 'new ErrorHandler($LOGGER)
+
+    '
+  pattern-not: 'new ErrorHandler($LOGGER, $DEBUG)
+
+    '
+  languages:
+  - php
+  message: 'The ErrorHandler constructor is being called without the debug parameter,
+    which can lead to incorrect error rendering. This vulnerability can expose sensitive
+    information or fail to handle errors properly. Always pass the debug parameter
+    to ensure proper error handling and rendering.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/cf80224589ac05402d4f72f5ddf80900ec94d5ad
+    category: security
+    cwe:
+    - CWE-209
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://symfony.com/doc/current/components/error_handler.html
+    technology:
+    - php
+- id: vuln-symfony-a29ce281
+  pattern: 'hash_hmac(''sha256'', $class.$username.$expires.$password, $this->getSecret())
+
+    '
+  pattern-not: 'hash_hmac(''sha256'', $class.self::COOKIE_DELIMITER.$username.self::COOKIE_DELIMITER.$expires.self::COOKIE_DELIMITER.$password,
+    $this->getSecret())
+
+    '
+  languages:
+  - php
+  message: 'Detected a vulnerable token generation pattern in RememberMe functionality.
+    The code concatenates user inputs directly without delimiters, which can lead
+    to token collision vulnerabilities. An attacker could potentially craft malicious
+    input that results in the same token as another user. Fix by adding proper delimiters
+    between concatenated values using a constant like self::COOKIE_DELIMITER.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/a29ce2817cf43bb1850cf6af114004ac26c7a081
+    category: security
+    cwe:
+    - CWE-347
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A2_2021-Cryptographic_Failures.html
+    technology:
+    - php
+- id: vuln-symfony-d320d276
+  pattern: "if ($THIS->fragmentPath !== rawurldecode($REQUEST->getPathInfo())) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($REQUEST->attributes->has('_controller') || $THIS->fragmentPath\
+    \ !== rawurldecode($REQUEST->getPathInfo())) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'A security vulnerability exists where fragment URLs are not properly validated
+    when a controller is already defined.
+
+    This could allow attackers to bypass security checks by manipulating fragment
+    URLs.
+
+    To fix this, ensure that fragment validation is only performed when no controller
+    is defined.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/d320d27699abcea12479cf608908fa91bcc133d4
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://symfony.com/doc/current/components/http_kernel.html
+    technology:
+    - php
+- id: vuln-symfony-691486e4
+  pattern: 'passthru(sprintf($this->cmd, escapeshellarg($path)), $return);
+
+    '
+  pattern-not: 'passthru(sprintf($this->cmd, escapeshellarg((0 === strpos($path, ''-'')
+    ? ''./'' : '''').$path)), $return);
+
+    '
+  languages:
+  - php
+  message: 'Detected potential command injection vulnerability due to improper handling
+    of file paths starting with a dash. When passing user-controlled file paths to
+    shell commands, paths starting with ''-'' can be interpreted as command options,
+    leading to arbitrary command execution. To fix this, prepend ''./'' to paths that
+    start with a dash before passing them to shell commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/691486e43ce0e4893cd703e221bafc10a871f365
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://www.php.net/manual/en/function.escapeshellarg.php
+    - https://symfony.com/doc/current/components/http_foundation.html
+    technology:
+    - php
+- id: vuln-symfony-99a0cec0
+  pattern: 'preg_match(''#^https?://[^/]++#i'', $path, $host)
+
+    '
+  pattern-not: 'preg_match(''#^https?:[/\\\\]{2,}+[^/]++#i'', $path, $host)
+
+    '
+  languages:
+  - php
+  message: "The URL validation pattern is insufficient and can be bypassed by using\
+    \ alternative URL formats. \nThis could lead to security vulnerabilities such\
+    \ as open redirects or SSRF attacks. \nUpdate the pattern to handle various URL\
+    \ formats, including those with backslashes and multiple slashes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/99a0cec0a6be39ce5ef38386e57339603b33ee5b
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-community/attacks/Open_redirect
+    - https://cwe.mitre.org/data/definitions/601.html
+    technology:
+    - php
+- id: vuln-symfony-8128c302
+  pattern: 'new Response(sprintf(''No parser found for webhook of type "%s".'', $VAR),
+    404)
+
+    '
+  pattern-not: 'new Response(''No webhook parser found for the type given in the URL.'',
+    404, [''Content-Type'' => ''text/plain''])
+
+    '
+  languages:
+  - php
+  message: 'The response message includes user-controlled input directly, which can
+    lead to information disclosure or XSS vulnerabilities. Avoid including dynamic
+    content in error messages without proper sanitization. Instead, use generic error
+    messages without revealing internal details.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/8128c302430394f639e818a7103b3f6815d8d962
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-209
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/200.html
+    technology:
+    - php
+- id: vuln-symfony-3084764a
+  pattern: '$request->attributes->set(''_security_firewall_run'', true)
+
+    '
+  pattern-not: '$request->attributes->set(''_security_firewall_run'', $this->sessionKey)
+
+    '
+  languages:
+  - php
+  message: "The use of a hardcoded 'true' value for '_security_firewall_run' can lead\
+    \ to security bypass issues. \nThis is dangerous because it may allow unauthorized\
+    \ access across different firewalls. \nThe fix involves using a unique session\
+    \ key to ensure proper firewall isolation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/3084764ad82f29dbb025df19978b9cbc3ab34728
+    category: security
+    cwe: 'CWE-287: Improper Authentication'
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - php
+- id: vuln-symfony-3da6f2d4
+  pattern: '$result[$parentKey.$key] = "\t".$value;
+
+    '
+  pattern-not: '$result[$parentKey.$key] = "''".$value;
+
+    '
+  languages:
+  - php
+  message: "The code is vulnerable to CSV injection due to improper escaping of formula\
+    \ characters. \nThis can allow attackers to inject malicious formulas into CSV\
+    \ files, potentially leading to code execution when the file is opened in spreadsheet\
+    \ software. \nThe fix is to prepend a single quote (') instead of a tab character\
+    \ (\\t) to escape formula characters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/3da6f2d45e7536ccb2a26f52fbaf340917e208a8
+    category: security
+    cwe:
+    - CWE-1236
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/CSV_Injection
+    technology:
+    - php
+- id: vuln-symfony-5129d3f5
+  pattern: '$METADATA->addConstraint(new Valid(array(''traverse'' => true)));
+
+    '
+  pattern-not: '$METADATA->addConstraint(new Valid(array(''traverse'' => true, ''deep''
+    => $DEEP)));
+
+    '
+  languages:
+  - php
+  message: 'The Valid constraint is missing the ''deep'' parameter, which can lead
+    to incomplete validation of nested collections. This could allow invalid data
+    to pass validation, potentially leading to security vulnerabilities or data integrity
+    issues. Always specify the ''deep'' parameter explicitly to ensure proper validation
+    of nested structures.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/5129d3f5d897ce876bbb22b617c1513afbc686ab
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://symfony.com/doc/current/validation/custom_constraint.html
+    technology:
+    - php
+- id: vuln-symfony-7467bd7e
+  pattern: "if ('' !== ($VAR1 ?? '') && $VAR1 === $VAR2) {\n  ...\n}\n"
+  pattern-not: "if ('' !== ($VAR1 ?? '') && $VAR1 === $VAR2 && \\get_class($VAR3)\
+    \ === \\get_class($VAR4)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to session fixation attacks because it only checks
+    if the user identifier matches without verifying the token type. This could allow
+    an attacker to reuse a session with a different token type, potentially bypassing
+    security measures. To fix this, ensure that both the user identifier and the token
+    type are verified.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/7467bd7e3f888b333102bc664b5e02ef1e7f88b9
+    category: security
+    cwe:
+    - CWE-384
+    owasp:
+    - A2: Broken Authentication
+    references:
+    - https://symfony.com/doc/current/security/session_fixation.html
+    technology:
+    - php
+- id: vuln-symfony-7bd4a92f
+  pattern: "$this->userProvider->expects($this->once())\n  ->method('loadUserByUsername')->with($USERNAME)\n\
+    \  ->willReturn($USER);\n"
+  pattern-not: "$this->userProvider->expects($this->exactly(2))\n  ->method('loadUserByUsername')\n\
+    \  ->withConsecutive([$USERNAME], [$CURRENT_USERNAME])\n  ->will($this->onConsecutiveCalls($USER,\
+    \ $this->throwException(new UsernameNotFoundException())));\n"
+  languages:
+  - php
+  message: 'Detected a potential user enumeration vulnerability in user switching
+    logic.
+
+    The code only calls `loadUserByUsername` once, which can allow attackers to determine
+    valid usernames via timing attacks.
+
+    To fix, ensure that both successful and unsuccessful user loads are performed
+    to prevent timing-based enumeration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/7bd4a92fc9cc15d9a9fbb9eb1041e01b977f8332
+    category: security
+    cwe:
+    - CWE-203
+    owasp:
+    - A2:2017 - Broken Authentication
+    references:
+    - https://symfony.com/doc/current/security/user_provider.html
+    technology:
+    - php
+- id: vuln-symfony-d2f6322a
+  pattern: "class $CLASS {\n  private $locks;\n  public function __construct(string\
+    \ $root) {\n    ...\n  }\n}\n"
+  pattern-not: "class $CLASS {\n  private $locks = [];\n  private $options;\n  public\
+    \ function __construct(string $root, array $options = []) {\n    $this->options\
+    \ = array_merge([\n        'private_headers' => ['Set-Cookie'],\n    ], $options);\n\
+    \    ...\n  }\n}\n"
+  languages:
+  - php
+  message: 'The constructor does not initialize the `$locks` array and does not handle
+    private headers properly, which can lead to security vulnerabilities. The `$locks`
+    array should be initialized to prevent potential null reference issues, and private
+    headers like ''Set-Cookie'' should be excluded from caching to avoid exposing
+    sensitive information. To fix this, initialize `$locks` as an empty array and
+    add the `$options` parameter to handle private headers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/symfony/symfony/commit/d2f6322af9444ac5cd1ef3ac6f280dbef7f9d1fb
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

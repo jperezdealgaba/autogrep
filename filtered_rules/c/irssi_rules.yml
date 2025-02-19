@@ -1,0 +1,47 @@
+rules:
+- id: vuln-irssi-e32e9d63
+  pattern: "if (*$VAR == '\\\\') {\n  ...\n}\n"
+  pattern-not: "if (*$VAR == '\\\\' && $VAR[1] != '\\0') {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a potential out-of-bounds read vulnerability where a
+    backslash character is checked without ensuring the next character is not the
+    null terminator. This can lead to reading beyond the intended memory boundary,
+    causing undefined behavior or crashes. Always check for the null terminator before
+    accessing the next character.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/e32e9d63c67ab95ef0576154680a6c52334b97af
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-irssi-5a4e7ab6
+  pattern: 'g_hash_table_insert($SERVER->cap_supported, $KEY, $VAL);
+
+    '
+  pattern-not: 'g_hash_table_replace($SERVER->cap_supported, $KEY, $VAL);
+
+    '
+  languages:
+  - c
+  message: 'The use of `g_hash_table_insert` can lead to memory leaks or unexpected
+    behavior if the key already exists in the hash table. Use `g_hash_table_replace`
+    instead, which ensures the old value is properly freed if the key exists.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/irssi/irssi/commit/5a4e7ab659aba2855895c9f43e9a7a131f4e89b3
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

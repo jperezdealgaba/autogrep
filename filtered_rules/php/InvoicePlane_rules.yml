@@ -1,0 +1,27 @@
+rules:
+- id: vuln-invoiceplane-5f2337fb
+  pattern: '$token = md5(time() . $email);
+
+    '
+  pattern-not: '$token = md5(time() . $email . $this->crypt->salt());
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure generation of a password reset token using only time
+    and email. This can lead to predictable tokens that are vulnerable to brute force
+    attacks. To fix, include a cryptographically secure salt when generating the token.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/InvoicePlane/InvoicePlane/commit/5f2337fb598d326cfbedc52ba54fb4045594c311
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

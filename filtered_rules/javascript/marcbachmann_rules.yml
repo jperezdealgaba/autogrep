@@ -1,0 +1,26 @@
+rules:
+- id: vuln-node-html-pdf-c12d6977
+  pattern: 'if ($OPTIONS.localUrlAccess) $OPTIONS.phantomArgs.push(''--local-url-access=false'')
+
+    '
+  pattern-not: 'if (!$OPTIONS.localUrlAccess) $OPTIONS.phantomArgs.push(''--local-url-access=false'')
+
+    '
+  languages:
+  - javascript
+  message: 'Incorrect local URL access control detected. The condition was mistakenly
+    allowing local file access when `localUrlAccess` was true, which could lead to
+    security vulnerabilities. The condition should be negated to properly restrict
+    local file access when `localUrlAccess` is false.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcbachmann/node-html-pdf/commit/c12d6977778014139183c9f8da7579fd7ac65362
+    category: security
+    cwe: CWE-284
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - javascript

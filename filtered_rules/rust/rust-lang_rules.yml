@@ -1,0 +1,145 @@
+rules:
+- id: vuln-rust-877c7cbe
+  pattern: 'unsafe { &mut $VAR[$TAIL..$HEAD] }
+
+    '
+  pattern-not: 'unsafe { RingSlices::ring_slices($VAR, $HEAD, $TAIL).0 }
+
+    '
+  languages:
+  - rust
+  message: 'Direct slicing of buffer regions without proper boundary checks can lead
+    to unsafe memory access.
+
+    This vulnerability occurs when accessing contiguous regions of a buffer without
+    considering wrap-around cases,
+
+    potentially leading to out-of-bounds access or incorrect memory handling.
+
+    Use `RingSlices::ring_slices` to safely handle buffer regions in a circular buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/877c7cbe142a373f93d38a23741dcc3a0a17a2af
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://doc.rust-lang.org/std/collections/struct.VecDeque.html
+    technology:
+    - rust
+- id: vuln-rust-f97769a2
+  pattern: "pub(super) fn drop_remaining(&mut self) {\n    unsafe {\n        ptr::drop_in_place(self.as_mut_slice());\n\
+    \    }\n    self.ptr = self.end;\n}\n"
+  pattern-not: "pub(super) fn forget_allocation_drop_remaining(&mut self) {\n    let\
+    \ remaining = self.as_raw_mut_slice();\n    unsafe {\n        ptr::drop_in_place(remaining);\n\
+    \    }\n}\n"
+  languages:
+  - rust
+  message: 'The original `drop_remaining` function drops elements and updates the
+    pointer but does not properly handle memory allocation. This can lead to memory
+    leaks or undefined behavior if the allocation is not properly managed. The fix
+    combines dropping elements and relinquishing the backing allocation in a single
+    operation, ensuring proper memory management. Use `forget_allocation_drop_remaining`
+    instead to handle both operations safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/f97769a2b7bc5a6b3d8f7140613cf26352f2b518
+    category: security
+    cwe:
+    - CWE-401
+    - CWE-908
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://doc.rust-lang.org/std/vec/struct.IntoIter.html
+    technology:
+    - rust
+- id: vuln-rust-406cc071
+  pattern: "Ok(ReadDir {\n    cookie: Some(0),\n    buf: vec![0; 128],\n    offset:\
+    \ 0,\n    cap: 0,\n    inner: Arc::new(ReadDirInner { dir, root: $PATH.to_path_buf()\
+    \ }),\n})\n"
+  pattern-not: 'Ok(ReadDir::new($DIR, $PATH.to_path_buf()))
+
+    '
+  languages:
+  - rust
+  message: 'Direct instantiation of `ReadDir` struct can lead to inconsistent state
+    or security issues. Use the `ReadDir::new` constructor method instead, which ensures
+    proper initialization and encapsulation of internal fields.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/406cc071d6cfdfdb678bf3d83d766851de95abaf
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://doc.rust-lang.org/std/fs/struct.ReadDir.html
+    technology:
+    - rust
+- id: vuln-rust-08504fbb
+  pattern: 'let mut $S = String::with_capacity($LEN * $N);
+
+    $S.extend((0..$N).map(|_| $SELF));
+
+    $S
+
+    '
+  pattern-not: "if $N == 0 {\n    return String::new();\n}\nlet mut $S = Vec::with_capacity($LEN\
+    \ * $N);\n$S.extend($SELF.as_bytes());\nlet mut $M = $N >> 1;\nwhile $M > 0 {\n\
+    \    let $LEN = $S.len();\n    unsafe {\n        ptr::copy_nonoverlapping($S.as_ptr(),\
+    \ ($S.as_mut_ptr() as *mut u8).add($LEN), $LEN);\n        $S.set_len($LEN * 2);\n\
+    \    }\n    $M >>= 1;\n}\nlet $RES_LEN = $N * $LEN;\nif $RES_LEN > $S.len() {\n\
+    \    unsafe {\n        ptr::copy_nonoverlapping(\n            $S.as_ptr(),\n \
+    \           ($S.as_mut_ptr() as *mut u8).add($S.len()),\n            $RES_LEN\
+    \ - $S.len(),\n        );\n        $S.set_len($RES_LEN);\n    }\n}\nunsafe { String::from_utf8_unchecked($S)\
+    \ }\n"
+  languages:
+  - rust
+  message: 'The code directly extends a String with repeated content without proper
+    capacity management, which can lead to inefficient memory usage and potential
+    security vulnerabilities. The fixed version uses a more efficient approach with
+    Vec and unsafe pointer operations to manage memory more effectively. Always ensure
+    proper capacity management when dealing with repeated string operations.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/08504fbb0b05abdd9543f08102b0d6275dde210c
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://doc.rust-lang.org/std/string/struct.String.html
+    technology:
+    - rust
+- id: vuln-rust-0148b971
+  pattern: '$X.to_string().len()
+
+    '
+  pattern-not: "$X = $NUM;\nlet mut $DIGITS = 0;\nloop {\n    $DIGITS += 1;\n    $X\
+    \ /= 10;\n    if $X == 0 {\n        break $DIGITS;\n    }\n}\n"
+  languages:
+  - rust
+  message: "Using `.to_string().len()` to count digits is inefficient as it involves\
+    \ unnecessary string allocation. \nThis can lead to performance issues, especially\
+    \ in hot code paths. \nReplace it with an iterative approach that counts digits\
+    \ directly without string conversion.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/rust-lang/rust/commit/0148b971c921a0831fbf3357e5936eec724e3566
+    category: performance
+    cwe:
+    - CWE-400
+    technology:
+    - rust

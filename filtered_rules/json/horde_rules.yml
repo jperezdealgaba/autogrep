@@ -1,0 +1,53 @@
+rules:
+- id: vuln-horde-54b48f14
+  pattern: '"pear-pear.horde.org/Horde_Service_Weather": ">=2.1.0@stable,<=3.0.0alpha1@stable"'
+  pattern-not: '"pear-pear.horde.org/Horde_Service_Weather": ">=2.2.0@stable,<=3.0.0alpha1@stable"'
+  languages:
+  - json
+  message: "The dependency `pear-pear.horde.org/Horde_Service_Weather` is using a\
+    \ potentially vulnerable version range (>=2.1.0@stable,<=3.0.0alpha1@stable).\
+    \ \nThis could expose the application to known security vulnerabilities in versions\
+    \ prior to 2.2.0. \nUpdate the dependency to use version 2.2.0 or later to mitigate\
+    \ these risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/54b48f1499bf319d9a784a6b661ba17e7a578e9b
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/937.html
+    technology:
+    - json
+- id: vuln-horde-4e8642d7
+  pattern: '"php": "^5.3"
+
+    '
+  pattern-not: '"php": "^5.3 || ^7"
+
+    '
+  pattern-inside: "\"require\": {\n  ...\n}\n"
+  languages:
+  - json
+  message: 'Outdated PHP version requirement detected. The package requires PHP 5.3
+    which is
+
+    no longer maintained and may contain security vulnerabilities. Update the
+
+    requirement to include PHP 7 or higher to ensure secure PHP version support.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/horde/horde/commit/4e8642d754cac676ac3b6949cd2d94ce751d82ad
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://www.php.net/supported-versions.php
+    technology:
+    - json

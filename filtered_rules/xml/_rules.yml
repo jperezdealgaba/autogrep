@@ -1,0 +1,26 @@
+rules:
+- id: vuln-plantuml-93e5964e
+  pattern: '<javac target="1.7" source="1.7" ... />
+
+    '
+  pattern-not: '<javac target="1.8" source="1.8" ... />
+
+    '
+  languages:
+  - xml
+  message: 'Detected outdated Java version (1.7) in the javac task. Using older Java
+    versions can expose the application to security vulnerabilities and compatibility
+    issues. Upgrade the target and source attributes to at least Java 1.8 to ensure
+    better security and performance.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: https://github.com/plantuml/plantuml/commit/93e5964e5f35914f3f7b89de620c596795550083
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - xml

@@ -1,0 +1,188 @@
+rules:
+- id: vuln-puppet-9ee12151
+  pattern: 'Puppet::SSL::Certificate.find($VAR)
+
+    '
+  pattern-not: 'Puppet::SSL::Certificate.indirection.find($VAR)
+
+    '
+  languages:
+  - ruby
+  message: "Direct use of `Puppet::SSL::Certificate.find` is deprecated and insecure.\
+    \ \nUse `Puppet::SSL::Certificate.indirection.find` instead to ensure proper indirector\
+    \ handling and security.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/9ee12151e9c83d2b477ea5b04dd7d52e749a6992
+    category: security
+    cwe:
+    - CWE-749
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://puppet.com/docs/puppet/7/ssl_architecture.html
+    technology:
+    - ruby
+- id: vuln-puppet-88512e88
+  pattern: 'File.chown($UID, nil, $TARGET)
+
+    '
+  pattern-not: "Puppet::Util::SUIDManager.asuser(...) {\n    ...\n    File.chmod($PERM,\
+    \ $TARGET)\n}\n"
+  languages:
+  - ruby
+  message: 'Detected insecure use of File.chown without proper privilege escalation
+    context.
+
+    Directly changing file ownership without switching to the target user can lead
+    to privilege escalation vulnerabilities.
+
+    Ensure file ownership changes are performed within the context of the target user
+    using Puppet::Util::SUIDManager.asuser.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/88512e880bd2a03694b5fef42540dc7b3da05d30
+    category: security
+    cwe:
+    - 'CWE-269: Improper Privilege Management'
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://puppet.com/docs/puppet/7/man/utils.html#suidmanager
+    technology:
+    - ruby
+- id: vuln-puppet-d8047820
+  pattern: '$HOST.gsub("..", ".")
+
+    '
+  pattern-not: "if $HOST =~ Regexp.union(/[#{SEPARATOR}]/, /\\A\\.\\.?\\Z/)\n  raise\
+    \ ArgumentError, \"Invalid node name #{$HOST.inspect}\"\nend\n"
+  languages:
+  - ruby
+  message: "Detected insecure hostname sanitization that could lead to directory traversal.\
+    \ \nThe use of `gsub(\"..\", \".\")` is insufficient to prevent path traversal\
+    \ attacks. \nReplace with proper validation using a regex pattern to reject invalid\
+    \ node names containing path separators or sequences like '..' and '.'.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/d80478208d79a3e6d6cb1fbc525e24817fe8c4c6
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/73.html
+    technology:
+    - ruby
+- id: vuln-puppet-91e7ce47
+  pattern: '$NET_TELNET.new(..., "Output_log" => $LOG_PATH)
+
+    '
+  pattern-not: '$NET_TELNET.new(..., "Prompt" => $PROMPT)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected insecure file logging in Telnet transport. Writing sensitive
+    network data to a file can expose credentials and other sensitive information.
+    Remove the "Output_log" parameter to prevent file-based logging.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/91e7ce478649490d87684661f79d70b5ca46ddd0
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - ruby
+- id: vuln-puppet-ab9150ba
+  pattern: 'ip? ? pattern.include?(IPAddr.new(ip)) : matchname?(name)
+
+    '
+  pattern-not: "if ip?\n  if pattern.include?(IPAddr.new(ip))\n    Puppet.deprecation_warning\
+    \ \"Authentication based on IP address is deprecated; please use certname-based\
+    \ rules instead\"\n    true\n  else\n    false\n  end\nelse\n  matchname?(name)\n\
+    end\n"
+  languages:
+  - ruby
+  message: 'Authentication based on IP addresses is deprecated and insecure. This
+    pattern matches IP addresses directly, which can be spoofed or manipulated. Use
+    certname-based authentication instead to ensure secure and reliable authentication.
+    The fix includes a deprecation warning and a more secure authentication method.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/ab9150baa1b738467a33b01df1d90e076253fbbd
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://puppet.com/docs/puppet/latest/ssl_authentication.html
+    technology:
+    - ruby
+- id: vuln-puppet-e01e61e8
+  pattern: '{ :acl => "/report", :method => :save, :authenticated => true }
+
+    '
+  pattern-not: '{ :acl => "~ ^\/report\/([^\/]+)$", :method => :save, :allow => ''$1'',
+    :authenticated => true }
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a vulnerability similar to CVE-2013-2275 in Puppet. The ACL configuration
+    for report submission does not properly restrict access to the node matching the
+    certname, potentially allowing unauthorized report submissions. To fix this, update
+    the ACL pattern to include a regex that matches only the specific node and add
+    the `allow` parameter to enforce the restriction.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/e01e61e8909ec3ad4c873905a4dd9b952e3f4009
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A01: Broken Access Control'
+    references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2013-2275
+    technology:
+    - ruby
+- id: vuln-puppet-bab9310d
+  pattern: 'Puppet::SSL::CertificateFactory.new($CERT_TYPE, $CSR, $ISSUER, $SERIAL)
+
+    '
+  pattern-not: 'Puppet::SSL::CertificateFactory.build($CERT_TYPE, $CSR, $ISSUER, $SERIAL)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `Puppet::SSL::CertificateFactory.new` is vulnerable as it directly
+    exposes instance variables and lacks proper encapsulation. This can lead to improper
+    certificate generation and potential security issues. Instead, use the `build`
+    method which provides a safer, more controlled way to generate certificates.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet/commit/bab9310d2800dd3c24e002f9d85c808ee38c9d3c
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - ruby

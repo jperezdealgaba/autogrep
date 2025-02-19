@@ -1,0 +1,183 @@
+rules:
+- id: vuln-dolibarr-7ade4e37
+  pattern: '$statut=GETPOST("statut",''alpha'')
+
+    '
+  pattern-not: '$statut=GETPOST("statut",''intcomma'')
+
+    '
+  languages:
+  - php
+  message: 'The use of ''alpha'' type in GETPOST function can lead to security vulnerabilities
+    as it does not properly sanitize input. This can allow for injection attacks or
+    unexpected behavior. Use ''intcomma'' or another appropriate sanitization type
+    to ensure the input is properly validated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/7ade4e37f24d6859987bb9f6232f604325633fdd
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-dolibarr-796b2d20
+  pattern: 'preg_replace_callback(''/&#(x?[0-9][0-9a-f]+);/i'', ''realCharForNumericEntities'',
+    $out)
+
+    '
+  pattern-not: 'preg_replace_callback(''/&#(x?[0-9][0-9a-f]+;?)/i'', ''realCharForNumericEntities'',
+    $out)
+
+    '
+  languages:
+  - php
+  message: 'The original regex pattern in the `preg_replace_callback` function does
+    not properly handle HTML entities ending with a semicolon, which can lead to incomplete
+    sanitization and potential injection vulnerabilities. This can allow attackers
+    to bypass security checks by encoding malicious characters using numeric HTML
+    entities. The fix ensures that entities ending with a semicolon are properly processed,
+    preventing such bypasses. Update the regex pattern to include an optional semicolon
+    (`;?`) to ensure all numeric entities are correctly handled.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/796b2d201acb9938b903fb2afa297db289ecc93e
+    category: security
+    cwe:
+    - 'CWE-116: Improper Encoding or Escaping of Output'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php
+- id: vuln-dolibarr-d08d28c0
+  pattern: "function test_sql_and_script_inject($val, $get) {\n    ...\n    $sql_inj\
+    \ += preg_match('/<script/i', $val);\n    $sql_inj += preg_match('/base[\\s]+href/i',\
+    \ $val);\n    if ($get) $sql_inj += preg_match('/img[\\s]+src/i', $val);\n   \
+    \ if ($get) $sql_inj += preg_match('/style[\\s]*=/i', $val);\n    if ($get) $sql_inj\
+    \ += preg_match('/javascript:/i', $val);\n    if ($get) $sql_inj += preg_match('/\"\
+    /i', $val);\n    ...\n}\n"
+  pattern-not: "function test_sql_and_script_inject($val, $type) {\n    ...\n    $sql_inj\
+    \ += preg_match('/<script/i', $val);\n    $sql_inj += preg_match('/base[\\s]+href/i',\
+    \ $val);\n    if ($type == 1) {\n        $sql_inj += preg_match('/img[\\s]+src/i',\
+    \ $val);\n        $sql_inj += preg_match('/style[\\s]*=/i', $val);\n        $sql_inj\
+    \ += preg_match('/javascript:/i', $val);\n    }\n    if ($type == 1) $sql_inj\
+    \ += preg_match('/\"/i', $val);\n    if ($type == 2) $sql_inj += preg_match('/[\\\
+    s;\"]/', $val);\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a vulnerable implementation of SQL and XSS injection checks.
+    The original code did not properly validate PHP_SELF and had inconsistent checks
+    for different input types. This could lead to bypassing security filters and potential
+    SQL injection or XSS attacks. Update the function to properly handle different
+    input types (GET, POST, PHP_SELF) with appropriate validation patterns.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/d08d28c0cda1f762a47cc205d4363de03df16675
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-dolibarr-526a80dd
+  pattern: '$paramclear = " \"".str_replace("\"", "\\\"", $code)."\" \"".str_replace("\"",
+    "\\\"", strtoupper($encoding))."\"";
+
+    '
+  pattern-not: '$paramclear = " ".escapeshellarg($code)." ".escapeshellarg(strtoupper($encoding));
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential command injection vulnerability due to improper shell
+    argument escaping.
+
+    The code constructs a shell command without properly escaping user input, which
+    could allow an attacker to inject arbitrary commands.
+
+    Use `escapeshellarg()` to safely escape shell arguments and prevent command injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/526a80dd202bbca396687a502d52c27e06e97fff
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php
+- id: vuln-dolibarr-8f9b9987
+  pattern: '$VAR = GETPOST(''$X'');
+
+    ...
+
+    header("Location: ".GETPOST(''$Y''));
+
+    '
+  pattern-not: '$VAR = GETPOST(''$X'', ''$TYPE'');
+
+    ...
+
+    header("Location: ".$VAR);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe use of GETPOST without type validation before header redirection.
+
+    This can lead to open redirect vulnerabilities if user input is not properly validated.
+
+    Always validate input with a specific type (e.g., ''alpha'', ''int'') and use
+    the validated variable for redirection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/8f9b9987ffb42cfbe907fe31ded3001bfc1b3417
+    category: security
+    cwe: 'CWE-601: URL Redirection to Untrusted Site (''Open Redirect'')'
+    owasp: 'A1: Injection'
+    technology:
+    - php
+- id: vuln-dolibarr-66765186
+  pattern: 'preg_match(''/<.*onmouseover/si'', $VAR)
+
+    '
+  pattern-not: 'preg_match(''/<.*onmouse/si'', $VAR)
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential XSS vulnerability due to insufficient validation
+    of `onmouseover` event handlers in HTML content. This can allow attackers to inject
+    malicious JavaScript code, leading to cross-site scripting (XSS) attacks. To fix
+    this, ensure that all event handlers are properly sanitized or use a broader pattern
+    to catch all variations of mouse-related event handlers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Dolibarr/dolibarr/commit/667651860d1417329488cf123069ca700e8acdae
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

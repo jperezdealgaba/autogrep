@@ -1,0 +1,20 @@
+rules:
+- id: vuln-novnc-6048299a
+  pattern: '$ELEMENT.innerHTML = $DATA
+
+    '
+  pattern-not: '$ELEMENT.textContent = $DATA
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unsafe use of innerHTML. Use textContent
+    instead to safely set text content.
+  severity: ERROR
+  metadata:
+    source-url: github.com/novnc/noVNC/commit/6048299a138e078aed210f163111698c8c526a13
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

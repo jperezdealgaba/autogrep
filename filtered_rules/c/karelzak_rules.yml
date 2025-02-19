@@ -1,0 +1,116 @@
+rules:
+- id: vuln-util-linux-57202f57
+  pattern: "char *$USER_ID = NULL;\nsize_t $SZ;\nuid_t $UID;\nchar $UIDSTR[sizeof(stringify_value(ULONG_MAX))];\n\
+    ...\nif (mnt_optstr_get_option($OPTSTR, \"user_id\", &$USER_ID, &$SZ) != 0)\n\
+    \  return 0;\n...\nsnprintf($UIDSTR, sizeof($UIDSTR), \"%lu\", (unsigned long)\
+    \ $UID);\nreturn strncmp($USER_ID, $UIDSTR, $SZ) == 0;\n"
+  pattern-not: "uid_t $UID, $ENTRY_UID;\n...\nif (mnt_optstr_get_uid($OPTSTR, \"user_id\"\
+    , &$ENTRY_UID) != 0)\n  return 0;\n...\nreturn $UID == $ENTRY_UID;\n"
+  languages:
+  - c
+  message: 'Detected a vulnerable pattern in user ID comparison. The original code
+    uses string comparison for user IDs, which can lead to incorrect comparisons and
+    potential security issues. The fixed version uses direct uid_t comparison for
+    accuracy and safety. Replace string-based comparison with direct uid_t comparison
+    using mnt_optstr_get_uid().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/57202f5713afa2af20ffbb6ab5331481d0396f8d
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c
+- id: vuln-util-linux-89e90ae7
+  pattern: "strchr($VALUE + 1, '\"');\nif (!$END) {\n  ...\n}\n"
+  pattern-not: "char *$P = $END = $VALUE + 1;\nwhile (*$P) {\n  if (*$P == '\\\\')\
+    \ {\n    $P++;\n    *$END = *$P;\n  } else {\n    *$END = *$P;\n    if (*$P ==\
+    \ '\"')\n      break;\n  }\n  $P++;\n  $END++;\n}\nif (*$END != '\"') {\n  $END\
+    \ = ++$P;\n}\n"
+  languages:
+  - c
+  message: 'The code uses `strchr` to find the end of a quoted string without properly
+    handling escaped quotes. This can lead to incorrect parsing of strings containing
+    escaped quotes, potentially causing security vulnerabilities such as injection
+    attacks. The fix involves iterating through the string and properly handling escaped
+    quotes by converting them to their unescaped form.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/89e90ae7b2826110ea28c1c0eb8e7c56c3907bdc
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-util-linux-ebbeb2c7
+  pattern: 'setuid(getuid());
+
+    setgid(getgid());
+
+    '
+  pattern-not: "if(setgid(getgid()) < 0)\n  die(EX_FAIL, _(\"$MSG: cannot set group\
+    \ id: %s\"), strerror(errno));\nif(setuid(getuid()) < 0)\n  die(EX_FAIL, _(\"\
+    $MSG: cannot set user id: %s\"), strerror(errno));\n"
+  languages:
+  - c
+  message: "Detected unsafe privilege drop without error handling. \nThe code attempts\
+    \ to drop privileges using setuid() and setgid() but does not check for errors.\
+    \ \nIf these calls fail, the program may continue running with elevated privileges,\
+    \ leading to potential privilege escalation vulnerabilities. \nAlways check the\
+    \ return value of setuid() and setgid() and handle errors appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/ebbeb2c7ac1b00b6083905957837a271e80b187e
+    category: security
+    cwe:
+    - CWE-273
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://man7.org/linux/man-pages/man2/setuid.2.html
+    - https://man7.org/linux/man-pages/man2/setgid.2.html
+    technology:
+    - c
+- id: vuln-util-linux-687cc5d5
+  pattern: "bool $PERMITTED;\n...\nif (getuid() == 0)\n    $PERMITTED = TRUE;\nelse\
+    \ {\n    if (($SET || $SYSTOHC || $ADJUST) && !$TESTING) {\n        warnx(_(\"\
+    Sorry, only the superuser can change the Hardware Clock.\"));\n        $PERMITTED\
+    \ = FALSE;\n    } else if (($SYSTZ || $HCTOSYS) && !$TESTING) {\n        warnx(_(\"\
+    Sorry, only the superuser can change the System Clock.\"));\n        $PERMITTED\
+    \ = FALSE;\n    } else if ($SETEPOCH && !$TESTING) {\n        warnx(_(\"Sorry,\
+    \ only the superuser can change the Hardware Clock epoch in the kernel.\"));\n\
+    \        $PERMITTED = FALSE;\n    } else\n        $PERMITTED = TRUE;\n}\n...\n\
+    if (!$PERMITTED)\n    $EXIT(EX_NOPERM);\n"
+  pattern-not: "if (getuid() != 0) {\n    warnx(_(\"Sorry, only the superuser can\
+    \ use the Hardware Clock.\"));\n    $EXIT(EX_NOPERM);\n}\n"
+  languages:
+  - c
+  message: 'The code uses a complex permission check that can be bypassed by setting
+    the testing flag.
+
+    This vulnerability allows non-superusers to perform privileged operations by manipulating
+    the testing flag.
+
+    To fix this, ensure that all privileged operations explicitly check for superuser
+    status at the point of use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karelzak/util-linux/commit/687cc5d58942b24a9f4013c68876d8cbea907ab1
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp:
+    - 'A01: Broken Access Control'
+    references:
+    - https://cwe.mitre.org/data/definitions/862.html
+    technology:
+    - c

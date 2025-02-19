@@ -1,0 +1,58 @@
+rules:
+- id: vuln-phpmailer-833c35fe
+  pattern: 'sprintf(''%s -f%s'', escapeshellcmd($SENDMAIL), escapeshellarg($SENDER))
+
+    '
+  pattern-not: 'sprintf(''%s -f%s'', escapeshellcmd($SENDMAIL), $SENDER)
+
+    '
+  languages:
+  - php
+  message: 'Detected potentially unsafe shell command construction that could lead
+    to command injection vulnerabilities (CVE-2016-10033, CVE-2016-10045). The use
+    of escapeshellcmd and escapeshellarg together can be bypassed in certain scenarios.
+    Ensure that the sender address is validated using a method like isShellSafe before
+    using it in shell commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PHPMailer/PHPMailer/commit/833c35fe39715c3d01934508987e97af1fbc1ba0
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/PHPMailer/PHPMailer/issues/924
+    technology:
+    - php
+- id: vuln-phpmailer-ad4cb096
+  pattern: "if (substr($url, 0, 4) !== 'cid:' && !preg_match('#^[a-z][a-z0-9+.-]*://#i',\
+    \ $url)) {\n  ...\n}\n"
+  pattern-not: "if (\n  !empty($basedir)\n  && (strpos($url, '..') === false)\n  &&\
+    \ substr($url, 0, 4) !== 'cid:'\n  && !preg_match('#^[a-z][a-z0-9+.-]*:?//#i',\
+    \ $url)\n) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where user-supplied paths
+    are used without proper validation. This can lead to directory traversal attacks
+    or the inclusion of malicious files. Always validate and sanitize user input,
+    ensure `$basedir` is provided and non-empty, and check for parent directory traversal
+    (..) in paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/PHPMailer/PHPMailer/commit/ad4cb09682682da2217799a0c521d4cdc6753402
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

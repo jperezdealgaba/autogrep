@@ -1,0 +1,28 @@
+rules:
+- id: vuln-server-49fff155
+  pattern: "if( strpos($extension,'/') || strpos($extension,\"\\\\\") or !file_exists($path\
+    \ = $WEBCONFIG['sitefusionPath'].'/extensions/'.$extension) ) {\n    ...\n}\n"
+  pattern-not: "$allowedRoot = realpath($WEBCONFIG['sitefusionPath'].'/extensions');\n\
+    $path = realpath($allowedRoot.'/'.$extension);\nif (!(substr($path, 0, strlen($allowedRoot))\
+    \ == $allowedRoot && file_exists($path))) {\n    ...\n}\n"
+  languages:
+  - php
+  message: "The code is vulnerable to path traversal attacks due to insufficient validation\
+    \ of the $extension parameter. \nAn attacker can manipulate the $extension variable\
+    \ to access files outside the intended directory. \nTo fix this, ensure the resolved\
+    \ path is within the allowed directory by using realpath and checking the path\
+    \ prefix.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/sitefusion/server/commit/49fff155c303d6cd06ce8f97bba56c9084bf08ac
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - A1:2017-Injection
+    - A5:2017-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology:
+    - php

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-croogo-cafaaabe
+  pattern: '$title .= ''<span>'' . $VAR[''title''] . ''</span>'';
+
+    '
+  pattern-not: '$title .= ''<span>'' . h($VAR[''title'']) . ''</span>'';
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability in HTML string concatenation. \n\
+    The user input in `$VAR['title']` is not properly escaped before being included\
+    \ in the HTML output, which could allow an attacker to inject malicious scripts.\
+    \ \nUse the `h()` function to properly escape the input before including it in\
+    \ the HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/croogo/croogo/commit/cafaaabe2cef3d1d83652370e30563e6ad7c4158
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

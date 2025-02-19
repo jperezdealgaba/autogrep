@@ -1,0 +1,28 @@
+rules:
+- id: vuln-spacewalk-a1447d9a
+  pattern: '<form name="form1" action="/rhn/Search.do" method="get">
+
+    '
+  pattern-not: '<form name="form1" action="/rhn/Search.do" method="post">
+
+    '
+  languages:
+  - html
+  message: 'Detected a form using the GET method, which can expose sensitive data
+    in URLs and logs. This is dangerous because it can lead to information disclosure,
+    especially in error pages. Use the POST method instead to ensure data is transmitted
+    securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/spacewalkproject/spacewalk/commit/a1447d9a892756af6d90f9c6d7454c9630ca03d6
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - html

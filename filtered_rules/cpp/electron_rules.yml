@@ -1,0 +1,28 @@
+rules:
+- id: vuln-electron-9e7fbc70
+  pattern: 'node::AllowWasmCodeGenerationCallback($CONTEXT, v8::String::Empty($ISOLATE))
+
+    '
+  pattern-not: 'node::AllowWasmCodeGenerationCallback($CONTEXT, $SOURCE)
+
+    '
+  languages:
+  - cpp
+  message: 'The code uses `v8::String::Empty()` as a placeholder for the source string
+    in `AllowWasmCodeGenerationCallback`, which can lead to unsafe WebAssembly code
+    generation. This can be exploited to execute arbitrary code. Use the actual source
+    string instead of an empty string to ensure proper code generation checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/electron/electron/commit/9e7fbc7021d8d716c43782249a552e55289c35db
+    category: security
+    cwe:
+    - 'CWE-94: Improper Control of Generation of Code (''Code Injection'')'
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://v8docs.nodesource.com/node-0.8/d4/da0/v8_8h_source.html
+    technology:
+    - cpp

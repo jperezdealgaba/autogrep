@@ -1,0 +1,78 @@
+rules:
+- id: vuln-ntp-c4cd4aaf
+  pattern: "$VALLEN = ntohl($EP->vallen);\n...\nif ($VALLEN == 0 || $VALLEN > $MAXHOSTNAME\
+    \ || $LEN - $VALUE_LEN < $VALLEN) {\n  ...\n}\n"
+  pattern-not: "$LEN = exten_payload_size($EP);\nif ($LEN == 0 || $LEN > $MAX_VALLEN)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code is vulnerable to a buffer overflow due to insufficient validation
+    of the length field in an extension packet. The original code directly uses `ntohl(ep->vallen)`
+    without proper bounds checking, which could allow an attacker to craft a malicious
+    packet that exceeds the expected size, leading to memory corruption. The fix introduces
+    a new function `exten_payload_size` to properly validate the payload size against
+    the packet''s declared frame size. Always validate the length of incoming packets
+    against expected bounds and use helper functions to ensure consistency.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/c4cd4aaf418f57f7225708a93bf48afb2bc9c1da
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-ntp-ba716a46
+  pattern: 'REQUIRE(strlen($VAR) < sizeof($NAME));
+
+    '
+  pattern-not: "if (strlen($VAR) >= sizeof($NAME)) {\n  return 0;\n}\n"
+  languages:
+  - c
+  message: 'The code uses REQUIRE to check if the length of a string is less than
+    the size of a buffer, but this is dangerous because REQUIRE is not a standard
+    C function and may not handle the condition safely. This can lead to buffer overflows
+    if the condition is not met. Replace REQUIRE with an explicit check and handle
+    the condition properly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/ba716a464ecb20618560075f2e4e1051e5b6f24f
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-ntp-1bb40157
+  pattern: "if (NULL == $SK->secret) {\n  $SK->secret = emalloc($LEN);\n}\n"
+  pattern-not: "if (NULL != $SK->secret) {\n  memset($SK->secret, 0, $SK->secretsize);\n\
+    \  free($SK->secret);\n}\n$SK->secret = emalloc($LEN);\n"
+  languages:
+  - c
+  message: 'This rule detects insecure memory handling in NTP''s authkeys.c where
+    a buffer is allocated without properly clearing or freeing the existing secret.
+    This can lead to sensitive information leakage or use-after-free vulnerabilities.
+    Always ensure that existing buffers are properly cleared and freed before reallocating
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntp/ntp/commit/1bb401576f412532d8cdcca5509b85ad29605913
+    category: security
+    cwe:
+    - CWE-244
+    - CWE-908
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

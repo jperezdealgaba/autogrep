@@ -1,0 +1,62 @@
+rules:
+- id: vuln-mediawiki-5d1e4d7f
+  pattern: '$conds[''redirect''][] = "rd_from $rel $offset";
+
+    $conds[''templatelinks''][] = "tl_from $rel $offset";
+
+    $conds[''pagelinks''][] = "pl_from $rel $offset";
+
+    $conds[''imagelinks''][] = "il_from $rel $offset";
+
+    '
+  pattern-not: "$conds['redirect'][] = \"rd_from $rel $offsetPageID\";\n$conds['templatelinks'][]\
+    \ = \"(tl_from_namespace = $offsetNamespace AND tl_from $rel $offsetPageID \"\
+    \ .\n    \"OR tl_from_namespace $rel $offsetNamespace)\";\n$conds['pagelinks'][]\
+    \ = \"(pl_from_namespace = $offsetNamespace AND pl_from $rel $offsetPageID \"\
+    \ .\n    \"OR pl_from_namespace $rel $offsetNamespace)\";\n$conds['imagelinks'][]\
+    \ = \"(il_from_namespace = $offsetNamespace AND il_from $rel $offsetPageID \"\
+    \ .\n    \"OR il_from_namespace $rel $offsetNamespace)\";\n"
+  languages:
+  - php
+  message: "The code is vulnerable due to improper handling of offset in SQL conditions,\
+    \ which can lead to incorrect query results or potential security issues. The\
+    \ offset should include namespace information to ensure accurate and secure querying.\
+    \ \nTo fix this, update the conditions to include both namespace and page ID as\
+    \ shown in the fixed version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/5d1e4d7fd4a50e48385abcfe042ee9f9a9ffc3cc
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php
+- id: vuln-mediawiki-extensions-i18ntags-b4bc3cbb
+  pattern: "public static function $FUNC( $data, $params, $parser ) {\n  ...\n  return\
+    \ $VAR;\n}\n"
+  pattern-not: "public static function $FUNC( $data, $params, $parser, $frame ) {\n\
+    \  ...\n  $text = $VAR;\n  return $parser->recursiveTagParse( $text, $frame );\n\
+    }\n"
+  languages:
+  - php
+  message: 'Directly returning unparsed text from functions like formatNumber, grammar,
+    plural, and linktrail can lead to security vulnerabilities. The text should be
+    parsed using recursiveTagParse to ensure proper handling of embedded tags and
+    prevent potential injection attacks. Always pass the text through recursiveTagParse
+    with the frame parameter before returning it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki-extensions-I18nTags/commit/b4bc3cbbb099eab50cf2b544cf577116f1867b94
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.mediawiki.org/wiki/Manual:Tag_extensions#Handling_parameters
+    technology:
+    - php

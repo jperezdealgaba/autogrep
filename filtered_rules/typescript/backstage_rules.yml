@@ -1,0 +1,27 @@
+rules:
+- id: vuln-backstage-edf65d7d
+  pattern: "const $TARGET_PATH = resolvePath($BASE, $PATH);\nif (!isChildPath(resolveRealPath($BASE),\
+    \ resolveRealPath($TARGET_PATH))) {\n  ...\n}\n"
+  pattern-not: "const $RESOLVED_BASE_PATH = resolveRealPath($BASE);\nconst $TARGET_PATH\
+    \ = resolvePath($RESOLVED_BASE_PATH, $PATH);\nif (!isChildPath($RESOLVED_BASE_PATH,\
+    \ resolveRealPath($TARGET_PATH))) {\n  ...\n}\n"
+  languages:
+  - typescript
+  message: "The code resolves the base path and target path separately, which can\
+    \ lead to incorrect path resolution and potential security issues. \nThis is dangerous\
+    \ because it can allow path traversal attacks if the base path is not properly\
+    \ resolved before checking if the target path is a child of it. \nTo fix this,\
+    \ ensure the base path is resolved first and then use the resolved base path for\
+    \ both path resolution and child path checks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/backstage/backstage/commit/edf65d7d31e027599c2415f597d085ee84807871
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - typescript

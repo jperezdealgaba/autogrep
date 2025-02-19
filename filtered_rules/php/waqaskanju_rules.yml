@@ -1,0 +1,22 @@
+rules:
+- id: vuln-chitor-cms-69d34420
+  pattern: "if ($SCHOOL_CHANGES == \"0\") {\n  ...\n}\n"
+  pattern-not: "if ($SCHOOL_CHANGES != 1) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code uses a string comparison ("0") instead of a strict integer comparison
+    (0 or 1). This can lead to unexpected behavior and security vulnerabilities due
+    to PHP''s type juggling. Use strict comparisons (!= 1) to ensure the logic is
+    correctly evaluated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/waqaskanju/Chitor-CMS/commit/69d34420ad382c91b0c285432418c1b0810128c1
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

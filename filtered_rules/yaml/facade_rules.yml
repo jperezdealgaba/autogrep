@@ -1,0 +1,21 @@
+rules:
+- id: vuln-ignition-70c6fc09
+  pattern: "exclude:\n  - $PATH\n"
+  pattern-not: "not-name:\n  - $NAME\n"
+  languages:
+  - yaml
+  message: 'Using ''exclude'' with a full path in .styleci.yml can lead to security
+    issues as it may inadvertently exclude files that should be checked. Use ''not-name''
+    with specific filenames instead to ensure proper file exclusion.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/facade/ignition/commit/70c6fc090a7675d067bf6cb1dfbb171a327a7dc3
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - yaml

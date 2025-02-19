@@ -1,0 +1,26 @@
+rules:
+- id: vuln-yara-4a342f01
+  pattern: 'count = yr_max(64, ($INDEX + 1) * 2);
+
+    '
+  pattern-not: "count = 64;\nwhile (count <= $INDEX)\n  count *= 2;\n"
+  message: 'The original code uses `yr_max(64, (index + 1) * 2)` to calculate the
+    array size, which can lead to insufficient allocation if `index` is large. This
+    can cause buffer overflow or out-of-bounds access. The fix uses a while loop to
+    ensure the allocated size is sufficient by doubling the count until it exceeds
+    the index. Always ensure dynamic array sizes are calculated safely to prevent
+    memory corruption.
+
+    '
+  languages:
+  - c
+  severity: ERROR
+  metadata:
+    source-url: github.com/VirusTotal/yara/commit/4a342f01e5439b9bb901aff1c6c23c536baeeb3f
+    category: security
+    cwe:
+    - CWE-787
+    - CWE-125
+    owasp: 'A1: Injection'
+    technology:
+    - c

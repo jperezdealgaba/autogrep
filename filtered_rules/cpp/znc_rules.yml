@@ -1,0 +1,28 @@
+rules:
+- id: vuln-znc-d22fef86
+  pattern: '$VAR.TrimRight("\n\r")
+
+    '
+  pattern-not: '$VAR.Replace("\n", "");
+
+    $VAR.Replace("\r", "");
+
+    '
+  languages:
+  - cpp
+  message: 'Using `TrimRight("\n\r")` to remove newline characters can be unsafe as
+    it may not handle all variations of line endings correctly. This can lead to unexpected
+    behavior or security issues. Replace it with separate `Replace("\n", "")` and
+    `Replace("\r", "")` calls to ensure all newline characters are properly removed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/znc/znc/commit/d22fef8620cdd87490754f607e7153979731c69d
+    category: security
+    cwe:
+    - CWE-170
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

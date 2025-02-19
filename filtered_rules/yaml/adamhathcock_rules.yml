@@ -1,0 +1,29 @@
+rules:
+- id: vuln-sharpcompress-0209d001
+  pattern: "- uses: actions/setup-dotnet@v1\n  with:\n    dotnet-version: 5.0.300\n"
+  pattern-not: "- uses: actions/setup-dotnet@v1\n  with:\n    dotnet-version: 5.0.400\n"
+  languages:
+  - yaml
+  message: 'The workflow is using an outdated version of .NET Core (5.0.300) which
+    may contain security vulnerabilities.
+
+    Using outdated versions can expose the application to known vulnerabilities that
+    have been patched in later versions.
+
+    Update the `dotnet-version` to at least 5.0.400 to ensure the latest security
+    patches are applied.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/adamhathcock/sharpcompress/commit/0209d001641b3c7713e4cfe69c789d93b5f2580f
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://docs.microsoft.com/en-us/dotnet/core/releases-and-support
+    technology:
+    - yaml
+    - dotnet

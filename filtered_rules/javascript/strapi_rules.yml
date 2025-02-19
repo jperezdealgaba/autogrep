@@ -1,0 +1,72 @@
+rules:
+- id: vuln-strapi-private-attributes
+  pattern: 'privateAttributes: []
+
+    '
+  pattern-not: '$ATTRIBUTE.private === true
+
+    '
+  languages:
+  - javascript
+  message: "Use of empty privateAttributes array detected. This can lead to security\
+    \ issues as private attributes may not be properly protected. \nInstead, explicitly\
+    \ define private attributes or use the private property on individual attributes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/2fa8f30371bfd1db44c15e5747860ee5789096de
+    category: security
+    cwe: CWE-200
+    owasp: A01:2021 - Broken Access Control
+    technology: javascript
+- id: vuln-strapi-921d3096
+  pattern: 'const _ = require(''lodash'');
+
+    ...
+
+    _.trim($VAR)
+
+    '
+  pattern-not: 'const { trim } = require(''lodash/fp'');
+
+    ...
+
+    trim($VAR)
+
+    '
+  languages:
+  - javascript
+  message: Using lodash directly instead of the functional programming version (lodash/fp)
+    can lead to unnecessary code bloat and potential security issues. Import specific
+    functions from lodash/fp instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/strapi/strapi/commit/921d30961d6ba96cc098f2aea197350a49f990bd
+    category: security
+    cwe: CWE-1104
+    owasp: A09:2021 - Security Logging and Monitoring Failures
+    references:
+    - https://lodash.com/docs/4.17.15
+    technology:
+    - javascript
+- id: vuln-strapi-55a6a2bc
+  pattern: '..._.omit($USER, [''password'', ''resetPasswordToken'', ''roles''])
+
+    '
+  pattern-not: '..._.omit($USER, [''password'', ''resetPasswordToken'', ''registrationToken'',
+    ''roles''])
+
+    '
+  languages:
+  - javascript
+  message: 'Sensitive data exposure: The ''registrationToken'' field is not being
+    omitted from the user object, which could lead to information disclosure. Ensure
+    all sensitive fields are properly omitted to prevent exposure of sensitive data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/55a6a2bc0b6f52ce5a10ffb174336ea5a30d78fe
+    category: security
+    cwe: CWE-200
+    owasp: A3:2017-Sensitive Data Exposure
+    technology: javascript

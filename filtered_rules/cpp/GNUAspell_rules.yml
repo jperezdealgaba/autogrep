@@ -1,0 +1,23 @@
+rules:
+- id: vuln-aspell-80fa26c7
+  pattern: 'if ($RES.back() == '':'') $RES.pop_back();
+
+    '
+  pattern-not: 'if (!$RES.empty() && $RES.back() == '':'') $RES.pop_back();
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe string manipulation without empty check. Accessing back()
+    on an empty string can lead to undefined behavior. Always check if the string
+    is empty before calling back() or pop_back().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNUAspell/aspell/commit/80fa26c74279fced8d778351cff19d1d8f44fe4e
+    category: security
+    cwe: 'CWE-476: NULL Pointer Dereference'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp

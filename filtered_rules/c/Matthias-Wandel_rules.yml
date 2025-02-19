@@ -1,0 +1,129 @@
+rules:
+- id: vuln-jhead-76d11094
+  pattern: "if(strpbrk($VAR, \"\\\";'&|`\")) {\n  ...\n}\n"
+  pattern-not: "if(strpbrk($VAR, \"\\\";'&|`$\")) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected use of `strpbrk` without checking for the '$' character, which\
+    \ could allow shell command injection. \nThis is dangerous because it can lead\
+    \ to arbitrary command execution when the string is passed to `system()`. \nTo\
+    \ fix this, ensure that the '$' character is also included in the character set\
+    \ for `strpbrk`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/76d11094d17380d51a7ad53da2287c9f53a72726
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c
+- id: vuln-jhead-f0a88421
+  pattern: "void process_EXIF (unsigned char * $EXIF, int $LEN) {\n    ...\n    return;\n\
+    \    ...\n}\n"
+  pattern-not: "int process_EXIF (unsigned char * $EXIF, int $LEN) {\n    ...\n  \
+    \  return $RET;\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The function `process_EXIF` previously returned `void`, which could lead
+    to undefined behavior when handling malformed EXIF sections. This could potentially
+    cause memory leaks or other undefined behavior. The function should return an
+    integer to indicate success or failure, and the caller should handle the return
+    value appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/f0a884210cc46830b176f71fd61569adc8f230a7
+    category: security
+    cwe:
+    - CWE-252
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-jhead-a50953a2
+  pattern: "if ($OFFSETVAL + $BYTECOUNT > $EXIFLENGTH || $OFFSETVAL < 0 || $OFFSETVAL\
+    \ > 65536) {\n  ...\n}\n"
+  pattern-not: "if ($OFFSETVAL + $BYTECOUNT > $EXIFLENGTH || $OFFSETVAL > 65536) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'The code contains a potentially unsafe integer overflow check. The comparison
+    `OffsetVal < 0` is redundant when `OffsetVal` is declared as an unsigned integer,
+    and it can lead to incorrect behavior. This vulnerability could allow for out-of-bounds
+    memory access if the check is not properly enforced. To fix this, ensure that
+    `OffsetVal` is declared as an unsigned integer and remove the redundant negative
+    check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/a50953a266583981b51a181c2fce73dad2ac5d7d
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-jhead-4827ed31
+  pattern: 'if ($CH == ''\r'' && $DATA[$A+1] == ''\n'') $CONTINUE;
+
+    '
+  pattern-not: 'if ($CH == ''\r'' && $A < $LENGTH-1 && $DATA[$A+1] == ''\n'') $CONTINUE;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds array access vulnerability. The code
+    checks for a carriage return followed by a line feed without verifying if the
+    next index is within bounds. This could lead to undefined behavior or memory corruption.
+    To fix, ensure the index is within the valid range by adding a bounds check before
+    accessing the array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/4827ed31c226dc5ed93603bd649e0e387a1778da
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-jhead-b8d78e5e
+  pattern: 'memmove($SECTIONS + $A, $SECTIONS + $A + 1, sizeof($SECTION_T) * ($SECTIONS_READ
+    - $A))
+
+    '
+  pattern-not: 'memmove($SECTIONS + $A, $SECTIONS + $A + 1, sizeof($SECTION_T) * ($SECTIONS_READ
+    - $A - 1))
+
+    '
+  languages:
+  - c
+  message: 'The memmove operation is missing a -1 in the size calculation, which could
+    lead to an off-by-one error and potential memory corruption. This is dangerous
+    as it can cause undefined behavior, crashes, or security vulnerabilities. To fix
+    it, ensure the size calculation includes the -1 to correctly account for the elements
+    being moved.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matthias-Wandel/jhead/commit/b8d78e5ec982e86cdd70ebfc1ebbb2273c982eea
+    category: security
+    cwe:
+    - CWE-193
+    owasp:
+    - 'A8: Software and Data Integrity Failures'
+    technology:
+    - c

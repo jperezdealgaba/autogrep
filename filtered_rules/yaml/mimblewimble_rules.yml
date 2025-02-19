@@ -1,0 +1,28 @@
+rules:
+- id: vuln-grin-de94f95c
+  pattern: 'vmImage: ubuntu-18.04
+
+    '
+  pattern-not: 'vmImage: ubuntu-22.04
+
+    '
+  languages:
+  - yaml
+  message: 'Using an outdated Ubuntu version (18.04) in CI/CD pipelines can expose
+    the build process to security vulnerabilities due to unsupported or unpatched
+    software. Upgrade to Ubuntu 22.04 or later to ensure security updates and support.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/de94f95cda4e680f28910b7725698bde54d7877f
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://ubuntu.com/about/release-cycle
+    technology:
+    - yaml
+    - azure-pipelines

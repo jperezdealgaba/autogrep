@@ -1,0 +1,83 @@
+rules:
+- id: vuln-directus-826404bc
+  pattern: "$CONFIG = {\n  ...,\n  CORS_ENABLED: true,\n  CORS_ORIGIN: true,\n  ...\n\
+    }\n"
+  pattern-not: "$CONFIG = {\n  ...,\n  CORS_ENABLED: false,\n  CORS_ORIGIN: false,\n\
+    \  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Detected insecure CORS configuration where both CORS_ENABLED and CORS_ORIGIN
+    are set to true. This can allow any domain to make cross-origin requests, potentially
+    exposing sensitive data or allowing unauthorized actions. To fix this, set CORS_ENABLED
+    and CORS_ORIGIN to false or restrict CORS_ORIGIN to specific trusted domains.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/directus/directus/commit/826404bcbe769f9bcd526baec41e696237b78ebb
+    category: security
+    cwe:
+    - CWE-942
+    owasp:
+    - A5:2021-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A5_2021-Security_Misconfiguration.html
+    technology:
+    - typescript
+- id: vuln-directus-6da3f1ed
+  pattern: 'logger.warn(`Couldn''t fetch file from url "${$IMPORT_URL}"`);
+
+    logger.warn($ERR);
+
+    '
+  pattern-not: 'logger.warn($ERR, `Couldn''t fetch file from url "${$IMPORT_URL}"`);
+
+    '
+  languages:
+  - typescript
+  message: 'Detected insecure error logging in URL fetching. The original code logs
+    the URL and error separately, which can lead to incomplete or misleading logs.
+    This can make it harder to diagnose issues and may expose sensitive information
+    in logs. The fix combines the error and URL in a single log statement for better
+    context and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/directus/directus/commit/6da3f1ed5034115b1da00440008351bf0d808d83
+    category: security
+    cwe:
+    - 'CWE-532: Information Exposure Through Log Files'
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - typescript
+- id: vuln-directus-454cb534
+  pattern: "if ($USER?.status !== 'active') {\n  ...\n  if ($USER?.status === 'suspended')\
+    \ {\n    ...\n  } else {\n    ...\n  }\n} else if ($USER.provider !== $PROVIDER)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($USER?.status !== 'active' || $USER?.provider !== $PROVIDER) {\n\
+    \  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Detected an authentication bypass vulnerability where provider validation
+    is performed after status validation, allowing potential bypass of provider checks.
+    This can lead to unauthorized access if a user''s status is ''active'' but their
+    provider is invalid. Combine both status and provider checks in a single condition
+    to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/directus/directus/commit/454cb534d6ffa547feb11f4d74b932ae7368dae2
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - typescript

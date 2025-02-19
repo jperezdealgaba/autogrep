@@ -1,0 +1,31 @@
+rules:
+- id: vuln-joplin-9c20d594
+  pattern: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'', ''embed'', ''link'', ''meta''];
+
+    '
+  pattern-not: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'', ''embed'', ''link'', ''meta'', ''noscript''];
+
+    '
+  languages:
+  - typescript
+  message: 'The disallowed tags list in the sanitizeHtml function is missing ''noscript'',
+    which can lead to XSS vulnerabilities. ''noscript'' tags can execute JavaScript
+    in certain browsers when scripts are disabled, making them a potential security
+    risk. To fix this, ensure that ''noscript'' is included in the disallowed tags
+    list.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/9c20d5947d1fa4678a8b640792ff3d31224f0adf
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - typescript

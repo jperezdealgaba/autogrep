@@ -1,0 +1,86 @@
+rules:
+- id: vuln-miniupnp-f0f1f4b2
+  pattern: 'if($VAR >= (int)($EXPR1 + $EXPR2)) { ... }
+
+    '
+  pattern-not: 'if($VAR >= 0 && (unsigned int)$VAR >= ($EXPR1 + $EXPR2)) { ... }
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe integer comparison in buffer size checks. This vulnerability
+    can lead to integer overflow and buffer overflows. The comparison between signed
+    and unsigned integers can cause incorrect evaluations, potentially leading to
+    security issues. Always ensure proper type casting and explicit checks for non-negative
+    values when comparing buffer sizes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/miniupnp/miniupnp/commit/f0f1f4b22d6a98536377a1bb07e7c20e4703d229
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-680
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/680.html
+    technology:
+    - c
+- id: vuln-ngiflib-19913ae4
+  pattern: '$GIF->input.bytes = $BUFFER;
+
+    '
+  pattern-not: '$GIF->input.buffer.bytes = $BUFFER;
+
+    $GIF->input.buffer.count = (unsigned long)$FILESIZE;
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe direct assignment to `input.bytes` without proper buffer
+    size tracking. This can lead to buffer overrun vulnerabilities. Always use `input.buffer.bytes`
+    and `input.buffer.count` to ensure proper buffer management and prevent overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/miniupnp/ngiflib/commit/19913ae4b4ff58ebcb84e9dc9fbef81da5c8d850
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-miniupnp-7aeb624b
+  pattern: '$DATA->l_head = NULL;
+
+    $DATA->portListing = NULL;
+
+    $DATA->portListingLength = 0;
+
+    '
+  pattern-not: 'memset($DATA, 0, sizeof(struct NameValueParserData));
+
+    '
+  languages:
+  - c
+  message: 'Detected insecure initialization of struct fields. Manually setting individual
+    fields to NULL instead of using memset() can lead to uninitialized memory, potentially
+    causing memory corruption or information disclosure. Use memset() to ensure all
+    fields are properly initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/miniupnp/miniupnp/commit/7aeb624b44f86d335841242ff427433190e7168a
+    category: security
+    cwe:
+    - 'CWE-909: Missing Initialization of Resource'
+    technology:
+    - c

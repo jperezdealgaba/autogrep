@@ -1,0 +1,24 @@
+rules:
+- id: vuln-flask-unchained-71e36b28
+  pattern: 'urlquote($URL, safe=":/?#[]@!$&''()*+,;=")
+
+    '
+  pattern-not: 'urlquote($URL, safe=":/?#[]@!$&''()*+,;=<>")
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe URL quoting that does not include '<>' in the safe characters\
+    \ list. \nThis can lead to security vulnerabilities such as open redirects or\
+    \ injection attacks \nwhen processing URLs. Always include '<>' in the safe characters\
+    \ list when using urlquote.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/briancappello/flask-unchained/commit/71e36b28166f9ffbe0a991f51127f0984f7e6a40
+    category: security
+    cwe: CWE-601
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/urllib.parse.html#urllib.parse.quote
+    technology:
+    - python

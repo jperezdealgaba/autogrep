@@ -1,0 +1,84 @@
+rules:
+- id: vuln-wagtail-ff806ab1
+  pattern: "return mark_safe(\n    '<a href=\"%s\">%s <span class=\"meta\">(%s, %s)</span></a>'\n\
+    \    % (\n        $URL,\n        $TITLE,\n        $EXTENSION,\n        $SIZE,\n\
+    \    )\n)\n"
+  pattern-not: "return format_html(\n    '<a href=\"{}\">{} <span class=\"meta\">({},\
+    \ {})</span></a>',\n    $URL,\n    $TITLE,\n    $EXTENSION,\n    $SIZE,\n)\n"
+  languages:
+  - python
+  message: 'Detected unsafe HTML construction using mark_safe(). This can lead to
+    XSS vulnerabilities.
+
+    Use format_html() instead to safely escape HTML content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/ff806ab173a504395fdfb3139eb0a29444ab4b91
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.html.format_html
+    technology: python
+- id: vuln-wagtail-cfa11bbe
+  pattern: "with open($PATH, \"rb\") as $FH:\n    $FILE = BytesIO($FH.read())\n"
+  pattern-not: '$FILE = $DATA
+
+    '
+  languages:
+  - python
+  message: Directly reading file content into memory can lead to excessive memory
+    usage and potential denial of service. Use Django's `TemporaryUploadedFile` instead
+    to handle large files efficiently.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/cfa11bbe00dbe7ce8cd4c0bbfe2a898a690df2bf
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://github.com/wagtail/Willow/issues/108
+    technology:
+    - python
+- id: vuln-wagtail-3c941136
+  pattern: 're.finditer($REGEX, $QUERY_STRING)
+
+    '
+  pattern-not: '$REGEX.finditer($QUERY_STRING)
+
+    '
+  languages:
+  - python
+  message: 'Detected use of re.finditer with a raw string regex pattern. This can
+    lead to inefficient handling of long queries and potential denial of service.
+    Use a compiled regex pattern instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/3c941136f79c48446e3858df46e5b668d7f83797
+    category: security
+    cwe: CWE-400
+    owasp: A1:2017-Injection
+    technology:
+    - python
+- id: vuln-wagtail-0ac91917
+  pattern: VERSION = (2, 12, 4, 'final', 1)
+  pattern-not: VERSION = (2, 12, 5, 'final', 1)
+  languages:
+  - python
+  message: Detected outdated Wagtail version 2.12.4. This version may contain security
+    vulnerabilities. Upgrade to version 2.12.5 or later to ensure security patches
+    are applied.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wagtail/wagtail/commit/0ac9191705225fd2fb3b5974fc6b6743ba00b5bb
+    category: security
+    cwe: 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - python

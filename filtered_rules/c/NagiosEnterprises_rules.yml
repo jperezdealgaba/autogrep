@@ -1,0 +1,28 @@
+rules:
+- id: vuln-nagioscore-8a61ba39
+  pattern: "if ($BUF == NULL || !strcmp($BUF, \"help\")) {\n  ...\n}\n"
+  pattern-not: "if (*$BUF == 0 || !strcmp($BUF, \"help\")) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential NULL pointer dereference vulnerability. Checking
+    if a buffer is NULL before using it in strcmp() can lead to undefined behavior
+    if the buffer is NULL. Instead, check if the buffer is empty by using !*buf or
+    *buf == 0.
+
+    This vulnerability is dangerous because it can cause crashes or undefined behavior
+    when processing NULL buffers. To fix it, replace the NULL check with a check for
+    an empty buffer.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NagiosEnterprises/nagioscore/commit/8a61ba397a15fef42489b53e533d2329c8b7bd49
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-sofa-hessian-764ef4b2
+  pattern: 'final String $TEST_CLASS_NAME = java.awt.Color.class.getName();
+
+    '
+  pattern-not: 'final String $TEST_CLASS_NAME = java.util.Date.class.getName();
+
+    '
+  languages:
+  - java
+  message: 'Detected usage of `java.awt.Color` in serialization context. This can
+    lead to security vulnerabilities due to potential deserialization of untrusted
+    data. Replace with a safer class like `java.util.Date`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sofastack/sofa-hessian/commit/764ef4b216aee6aeb4b111aec8947a4e8b53bb87
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - java

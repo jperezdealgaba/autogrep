@@ -1,0 +1,102 @@
+rules:
+- id: vuln-radare2-f41e9413
+  pattern: 'sprintf($BUF, $FMT, ...)
+
+    '
+  pattern-not: 'snprintf($BUF, sizeof($BUF), $FMT, ...)
+
+    '
+  languages:
+  - c
+  message: "Detected use of `sprintf` which is vulnerable to buffer overflow. \nThis\
+    \ can lead to memory corruption, crashes, or arbitrary code execution. \nReplace\
+    \ `sprintf` with `snprintf` and specify the buffer size to prevent overflow.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/f41e941341e44aa86edd4483c4487ec09a074257
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-radare2-e5c14c16
+  pattern: "for ($I = $J = 0; $I < sizeof($BUF) - 1 && $STR[$I]; $I++, $J++) {\n \
+    \ ...\n}\n"
+  pattern-not: "for ($I = $J = 0; $I < sizeof($BUF) - 1 && $STR[$J]; $I++, $J++) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'The loop condition incorrectly uses the wrong index variable, potentially
+    leading to out-of-bounds access or incorrect string processing. This can cause
+    undefined behavior, crashes, or security vulnerabilities. Fix by ensuring the
+    correct index variable is used in the condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/e5c14c167b0dcf0a53d76bd50bacbbcc0dfc1ae7
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp: 'A1: Injection'
+    technology:
+    - c
+- id: vuln-radare2-c84b7232
+  pattern: 'ut64 offset = va2pa($VAR, hdr->mappingCount, $MAPS, $BUF, 0, NULL, NULL);
+
+    '
+  pattern-not: 'ut64 offset = va2pa($VAR, R_MIN(hdr->mappingCount, $N_MAPS), $MAPS,
+    $BUF, 0, NULL, NULL);
+
+    '
+  languages:
+  - c
+  message: 'The function `va2pa` is called with `hdr->mappingCount` directly, which
+    can lead to out-of-bounds access if `hdr->mappingCount` exceeds the valid range.
+    This vulnerability can result in memory corruption or crashes. To fix this, ensure
+    `hdr->mappingCount` is bounded by `n_maps` using `R_MIN(hdr->mappingCount, n_maps)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/c84b7232626badd075caf3ae29661b609164bac6
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-radare2-ba25be49
+  pattern: 'const char *$NAME, *$KEY = $FUNC($ADDR, $BUF, $BASE);
+
+    '
+  pattern-not: 'const char *$KEY = $FUNC($ADDR, $BUF, $BASE);
+
+    const char *$NAME;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe declaration pattern where multiple variables
+    are declared in a single statement. This can lead to confusion and bugs, especially
+    when initializing pointers. Split the declarations into separate statements for
+    clarity and safety.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/radareorg/radare2/commit/ba25be4934ecd65b71170f7381655325157bde09
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9-Using Components with Known Vulnerabilities
+    technology:
+    - c

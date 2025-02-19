@@ -1,0 +1,130 @@
+rules:
+- id: vuln-libgit2-84d30d56
+  pattern: "if ($PKT == NULL) {\n    continue;\n}\n"
+  pattern-not: "if ($PKT == NULL) {\n    giterr_set_str(GITERR_NET, \"Invalid empty\
+    \ packet\");\n    return GIT_ERROR;\n}\n"
+  languages:
+  - c
+  message: 'Detected handling of empty packets without proper error reporting. The
+    Git protocol does not specify empty lines as part of the protocol, and not knowing
+    what to do with an empty line should result in an error being returned. This vulnerability
+    could lead to undefined behavior or security issues when processing malformed
+    packets. To fix this, ensure that empty packets are handled by returning an appropriate
+    error.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/84d30d569ada986f3eef527cbdb932643c2dd037
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://git-scm.com/docs/protocol-common
+    technology:
+    - c
+- id: vuln-libgit2-64c612cc
+  pattern: 'unsigned int $FLAGS = GIT_PATH_REJECT_WORKDIR_DEFAULTS;
+
+    '
+  pattern-not: 'unsigned int $FLAGS = GIT_PATH_REJECT_WORKDIR_DEFAULTS | GIT_PATH_REJECT_DOT_GIT_NTFS;
+
+    '
+  languages:
+  - c
+  message: 'The code is missing the GIT_PATH_REJECT_DOT_GIT_NTFS flag, which is necessary
+    to prevent NTFS alternate data stream vulnerabilities on Windows. This could allow
+    malicious actors to exploit NTFS features to create hidden or malicious files.
+    To fix this, ensure the GIT_PATH_REJECT_DOT_GIT_NTFS flag is included when initializing
+    the flags variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/64c612cc3e25eff5fb02c59ef5a66ba7a14751e4
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://github.com/libgit2/libgit2/commit/64c612cc3e25eff5fb02c59ef5a66ba7a14751e4
+    technology:
+    - c
+- id: vuln-libgit2-3207ddb0
+  pattern: 'size_t $VARINT_LEN;
+
+    size_t $STRIP_LEN = git_decode_varint((const unsigned char *)$PATH_PTR, &$VARINT_LEN);
+
+    size_t $LAST_LEN = strlen($LAST);
+
+    size_t $PREFIX_LEN = $LAST_LEN - $STRIP_LEN;
+
+    size_t $SUFFIX_LEN = strlen($PATH_PTR + $VARINT_LEN);
+
+    size_t $PATH_LEN;
+
+    '
+  pattern-not: 'size_t $VARINT_LEN, $LAST_LEN, $PREFIX_LEN, $SUFFIX_LEN, $PATH_LEN;
+
+    uintmax_t $STRIP_LEN;
+
+    $STRIP_LEN = git_decode_varint((const unsigned unsigned char *)$PATH_PTR, &$VARINT_LEN);
+
+    $LAST_LEN = strlen($LAST);
+
+    if ($VARINT_LEN == 0 || $LAST_LEN < $STRIP_LEN)
+
+    $PREFIX_LEN = $LAST_LEN - $STRIP_LEN;
+
+    $SUFFIX_LEN = strlen($PATH_PTR + $VARINT_LEN);
+
+    '
+  languages:
+  - c
+  message: "Detected potential integer underflow vulnerability due to missing bounds\
+    \ check on `strip_len`. \nThis can lead to undefined behavior or memory corruption\
+    \ if `last_len` is less than `strip_len`. \nThe fix includes adding a check to\
+    \ ensure `last_len` is not less than `strip_len` before performing the subtraction.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/3207ddb0103543da8ad2139ec6539f590f9900c1
+    category: security
+    cwe:
+    - CWE-191
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/191.html
+    technology:
+    - c
+- id: vuln-libgit2-9a64e62f
+  pattern: 'int $VAR;
+
+    ...
+
+    $VAR = $ERROR != $GIT_ECERTIFICATE;
+
+    '
+  pattern-not: 'int $VAR = ($ERROR == $GIT_OK);
+
+    '
+  languages:
+  - c
+  message: "The variable 'is_valid' was incorrectly initialized, leading to potential\
+    \ security issues. \nThe original code only checked for non-certificate errors,\
+    \ which could allow invalid certificates to be accepted. \nThis vulnerability\
+    \ could lead to man-in-the-middle attacks. \nThe fix ensures that the variable\
+    \ is correctly initialized to check for a successful response (GIT_OK).\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgit2/libgit2/commit/9a64e62f0f20c9cf9b2e1609f037060eb2d8eb22
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    technology:
+    - c

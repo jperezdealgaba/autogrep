@@ -1,0 +1,38 @@
+rules:
+- id: vuln-origin-server-32564a08
+  pattern: 'shell_exec("/usr/sbin/oo-restorer-wrapper.sh $uuid");
+
+    ...
+
+    $url=str_replace("/$uuid", "", $_SERVER["PATH_INFO"]);
+
+    header("Location: $url");
+
+    '
+  pattern-not: "if (preg_match('/[0-9a-fA-F]{32}/', $uuid)) {\n    shell_exec(\"/usr/sbin/oo-restorer-wrapper.sh\
+    \ $uuid\");\n    sleep(2);\n    $host = $_SERVER['HTTP_HOST'];\n    $proto = \"\
+    http\" . ( isset($_SERVER['HTTPS']) ? 's' : '' ) . '://';\n    $url=str_replace(\"\
+    /$uuid\", \"\", $_SERVER[\"PATH_INFO\"]);\n    header(\"Location: $proto$host$url\"\
+    );\n} else {\n    error_log(\"Invalid uuid $uuid given to restorer.php\");\n \
+    \   header('HTTP/1.0 403 Forbidden');\n}\n"
+  languages:
+  - php
+  message: 'The code directly executes a shell command with user-controlled input
+    (`$uuid`) without proper validation, leading to potential command injection vulnerabilities.
+    This is dangerous as an attacker could inject arbitrary commands to be executed
+    on the server. To fix this, validate the input using a regular expression to ensure
+    it matches the expected format (e.g., a UUID) before using it in shell commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openshift/origin-server/commit/32564a0839b1517d762afab2013c26c0959bac00
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

@@ -1,0 +1,117 @@
+rules:
+- id: vuln-contiki-ng-280019dc
+  pattern: "if($VAR + $LEN > $MTU) {\n  ...\n}\n"
+  pattern-not: "if($LEN > $MTU - $VAR) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in buffer size calculation.
+
+    The original code adds the current index and payload length before comparing to
+    the MTU,
+
+    which could lead to an overflow and bypass the size check.
+
+    To fix, subtract the current index from the MTU before comparing with the payload
+    length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/280019dce685bd5cfa217880762976980aeecf30
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-contiki-ng-6e21dd29
+  pattern: 'char $VARNAME[INDEX_NAME_LENGTH];
+
+    '
+  pattern-not: 'char $VARNAME[INDEX_NAME_LENGTH + 1];
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially dangerous buffer declaration that does not account
+    for the null terminator.
+
+    This can lead to buffer overflows when the string is used, as the null terminator
+    will be written outside the allocated buffer.
+
+    To fix this, ensure the buffer size includes space for the null terminator by
+    adding +1 to the length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/6e21dd2955642818a31f5f32c7ae2f78c7f9dd0a
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    technology:
+    - c
+- id: vuln-contiki-ng-99a92574
+  pattern: 'uint8_t *$ADDR_PTR = ((uint8_t *)$RH_HEADER) + $RPL_RH_LEN + $RPL_SRH_LEN
+    + ($I * (16 - $CMPRI));
+
+    '
+  pattern-not: "ptrdiff_t $RH_OFFSET = (uint8_t *)$RH_HEADER - $UIP_BUF;\nsize_t $ADDR_OFFSET\
+    \ = $RPL_RH_LEN + $RPL_SRH_LEN + ($I * (16 - $CMPRI));\nif($RH_OFFSET + $ADDR_OFFSET\
+    \ + 16 - $CMPR > $UIP_BUFSIZE) {\n  LOG_ERR(\"Invalid SRH address pointer\\n\"\
+    );\n  return 0;\n}\nuint8_t *$ADDR_PTR = ((uint8_t *)$RH_HEADER) + $ADDR_OFFSET;\n"
+  languages:
+  - c
+  message: 'The code calculates a pointer without checking if it exceeds the buffer
+    bounds, leading to potential out-of-bounds memory access. This vulnerability can
+    cause memory corruption, crashes, or even remote code execution. The fix adds
+    bounds checking before calculating the pointer. Always validate buffer boundaries
+    before performing pointer arithmetic.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/99a9257421ca5305ef6a360c02f63561e63ecc60
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-contiki-ng-3216ebf5
+  pattern: 'uint8_t $I = $CID - $CONST;
+
+    ...
+
+    return &$ARRAY[$CID - $CONST];
+
+    '
+  pattern-not: 'int16_t $I = $CID - $CONST;
+
+    ...
+
+    return &$ARRAY[$I];
+
+    '
+  languages:
+  - c
+  message: 'The use of uint8_t for array indexing can lead to integer underflow when
+    the result of the subtraction is negative, causing out-of-bounds memory access.
+    This vulnerability can be exploited to read or write arbitrary memory locations.
+    Fix by using a signed integer type like int16_t for the index variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/contiki-ng/contiki-ng/commit/3216ebf59e698b6dc71d0ba3e8052d5d5e09d2bd
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A1:2017-Injection
+    technology:
+    - c

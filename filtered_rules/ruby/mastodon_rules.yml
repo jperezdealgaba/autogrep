@@ -1,0 +1,137 @@
+rules:
+- id: vuln-mastodon-a06dda41
+  pattern: '''X-XSS-Protection'' => ''1; mode=block''
+
+    '
+  pattern-not: '''X-XSS-Protection'' => ''0''
+
+    '
+  languages:
+  - ruby
+  message: 'The X-XSS-Protection header is set to ''1; mode=block'', which is deprecated
+    and can introduce security risks. Modern browsers have deprecated this header,
+    and it can lead to vulnerabilities if not properly managed. Instead, set the X-XSS-Protection
+    header to ''0'' to disable it and rely on Content Security Policy (CSP) for XSS
+    protection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/a06dda41d04b073a9cc41930a9c80bd91c2111e5
+    category: security
+    cwe:
+    - CWE-693
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+    - https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS).html
+    technology:
+    - ruby
+- id: vuln-mastodon-b31af34c
+  pattern: '$USER.find_for_oauth($AUTH, $RESOURCE)
+
+    '
+  pattern-not: '$USER.find_for_omniauth($AUTH, $RESOURCE)
+
+    '
+  languages:
+  - ruby
+  message: 'The method `find_for_oauth` is deprecated and insecure. It has been replaced
+    with `find_for_omniauth` which includes additional security checks. Using the
+    old method can lead to authentication bypass and account takeover vulnerabilities.
+    Update the code to use `find_for_omniauth` instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/b31af34c9716338e4a32a62cc812d1ca59e88d15
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - ruby
+- id: vuln-mastodon-9fee5e85
+  pattern: 'stub_request(:get, $URL).to_return(status: $STATUS, body: $BODY)
+
+    '
+  pattern-not: 'stub_request(:get, $URL).to_return(status: $STATUS, body: $BODY, headers:
+    { ''Content-Type'': ''application/activity+json'' })
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a missing Content-Type header validation in HTTP responses. This
+    can lead to processing of untrusted data as ActivityPub content, potentially enabling
+    content spoofing or injection attacks. Always validate the Content-Type header
+    to ensure it matches ''application/activity+json'' or properly validated ''application/ld+json''
+    with the correct profile.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/9fee5e852669e26f970e278021302e1a203fc022
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.w3.org/TR/activitypub/
+    technology:
+    - ruby
+- id: vuln-mastodon-c8dbbd60
+  pattern: 'find_by_sql([$SQL, $LIMIT, $OFFSET])
+
+    '
+  pattern-not: 'find_by_sql([$SQL, $PARAMS])
+
+    '
+  languages:
+  - ruby
+  message: "Directly passing limit and offset parameters to find_by_sql can lead to\
+    \ SQL injection vulnerabilities. \nUse named parameters instead to safely bind\
+    \ values in SQL queries.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/c8dbbd60eb072a5f433b1a6aefd0be5ca2bfdb80
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - ruby
+- id: vuln-mastodon-eeab3560
+  pattern: '$DOMAIN.delete(''/'')
+
+    '
+  pattern-not: '$DOMAIN.delete_suffix(''/'')
+
+    '
+  languages:
+  - ruby
+  message: 'Using `delete(''/'')` instead of `delete_suffix(''/'')` can lead to unintended
+    string modifications, potentially causing security vulnerabilities. The `delete`
+    method removes all occurrences of the specified characters, which can alter the
+    domain in unexpected ways. Use `delete_suffix(''/'')` to safely remove only the
+    trailing slash.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mastodon/mastodon/commit/eeab3560fc0516070b3fb97e089b15ecab1938c8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://ruby-doc.org/core-2.7.0/String.html#method-i-delete
+    - https://ruby-doc.org/core-2.7.0/String.html#method-i-delete_suffix
+    technology:
+    - ruby

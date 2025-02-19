@@ -1,0 +1,34 @@
+rules:
+- id: vuln-mono-b371da6b
+  pattern: "private byte[] ReadClientHelloV2(Stream $RECORD)\n{\n  int $MSGLENGTH\
+    \ = $RECORD.ReadByte();\n  if ($RECORD.CanSeek && ($MSGLENGTH + 1 > $RECORD.Length))\n\
+    \  {\n    return null;\n  }\n  byte[] $MESSAGE = new byte[$MSGLENGTH];\n  $RECORD.Read($MESSAGE,\
+    \ 0, $MSGLENGTH);\n  ...\n  byte[] $CHALLENGE = new byte[$CHALLENGELENGTH];\n\
+    \  Buffer.BlockCopy($MESSAGE, $OFFSET, $CHALLENGE, 0, $CHALLENGELENGTH);\n  ...\n\
+    \  if ($CHALLENGELENGTH < 16 || $CIPHERSPECLENGTH == 0 || ($CIPHERSPECLENGTH %\
+    \ 3) != 0)\n  {\n    ...\n  }\n}\n"
+  pattern-not: "private byte[] ReadClientHelloV2(Stream $RECORD)\n{\n  int $MSGLENGTH\
+    \ = $RECORD.ReadByte();\n  if ($RECORD.CanSeek && ($MSGLENGTH + 1 > $RECORD.Length))\n\
+    \  {\n    return null;\n  }\n  byte[] $MESSAGE = new byte[$MSGLENGTH];\n  $RECORD.Read($MESSAGE,\
+    \ 0, $MSGLENGTH);\n  ...\n  int $LENGTH = ($CHALLENGELENGTH > 32) ? 32 : $CHALLENGELENGTH;\n\
+    \  byte[] $CHALLENGE = new byte[$CHALLENGELENGTH];\n  Buffer.BlockCopy($MESSAGE,\
+    \ $OFFSET, $CHALLENGE, 0, $CHALLENGELENGTH);\n  ...\n  if ($CHALLENGELENGTH <\
+    \ 16 || $CIPHERSPECLENGTH == 0 || ($CIPHERSPECLENGTH % 3) != 0)\n  {\n    ...\n\
+    \  }\n}\n"
+  languages:
+  - csharp
+  message: "The vulnerability allows for insufficient validation of challenge length\
+    \ in SSL/TLS ClientHello message processing. \nThis could lead to buffer overflow\
+    \ or incorrect handling of client random data. \nThe fix ensures challenge length\
+    \ is properly constrained to 32 bytes.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/mono/mono/commit/b371da6b2d68b4cdd0f21d6342af6c42794f998b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-130
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - csharp

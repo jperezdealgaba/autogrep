@@ -1,0 +1,48 @@
+rules:
+- id: vuln-foreman-98e584f5
+  pattern: '"#{icon($RECORD, $OPTS)} #{$RECORD.to_label}".html_safe'
+  pattern-not: icon($RECORD, $OPTS).html_safe << $RECORD.to_label
+  languages:
+  - ruby
+  message: "Detected unsafe HTML escaping in string interpolation. \nThis can lead\
+    \ to XSS vulnerabilities as the combined string is marked as HTML safe without\
+    \ proper escaping of the individual components.\nTo fix, ensure each component\
+    \ is safely escaped before combining them.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/98e584f5a7860fb92a9916d5e5ec524372e3f8ae
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://guides.rubyonrails.org/security.html#cross-site-scripting-xss
+    technology:
+    - ruby
+- id: vuln-foreman-87697568
+  pattern: '$WIDGET = $USER.widgets.where("id = #{$ID}").first
+
+    '
+  pattern-not: '$WIDGET = $USER.widgets.where(:id => $ID).first
+
+    '
+  languages:
+  - ruby
+  message: 'Detected SQL injection vulnerability. Using string interpolation in SQL
+    queries can lead to SQL injection attacks. Always use parameterized queries or
+    ActiveRecord''s safe query methods to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/theforeman/foreman/commit/8769756840f31d808a2d2d93f0992291cce9ea22
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://guides.rubyonrails.org/security.html#sql-injection
+    technology:
+    - ruby

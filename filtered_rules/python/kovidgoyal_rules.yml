@@ -1,0 +1,49 @@
+rules:
+- id: vuln-calibre-bcd0ab12
+  pattern: '$SRC_PATH = make_long_path_useable(os.path.join($FULL_BOOK_PATH, $RELPATH))
+
+    '
+  pattern-not: "$EXTRA_FILE_PATH = os.path.abspath(os.path.join($FULL_BOOK_PATH, $RELPATH))\n\
+    if not $EXTRA_FILE_PATH.startswith($FULL_BOOK_PATH):\n    raise FileNotFoundError($ERROR_MSG)\n\
+    $SRC_PATH = make_long_path_useable($EXTRA_FILE_PATH)\n"
+  languages:
+  - python
+  message: 'Detected potential path traversal vulnerability. The code joins paths
+    without validating if the resulting path is within the expected directory. This
+    can allow an attacker to access files outside the intended directory. Fix this
+    by validating the resulting path using `os.path.abspath` and checking if it starts
+    with the expected base directory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/kovidgoyal/calibre/commit/bcd0ab12c41a887f8290a9b56e46c3a29038d9c4
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - python
+- id: vuln-calibre-235b7e38
+  pattern: '$VAR = $MATCH.group(1)
+
+    '
+  pattern-not: '$VAR = $MATCH.group(1).strip()
+
+    '
+  languages:
+  - python
+  message: Detected missing .strip() on regex group extraction. This can lead to unexpected
+    behavior or security issues due to leading/trailing whitespace. Always use .strip()
+    to remove unwanted whitespace.
+  severity: ERROR
+  metadata:
+    source-url: github.com/kovidgoyal/calibre/commit/235b7e38c197ba4a3c17531e516610af8795e348
+    category: security
+    cwe: CWE-20
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/re.html#re.Match.group
+    technology:
+    - python

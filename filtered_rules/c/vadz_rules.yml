@@ -1,0 +1,131 @@
+rules:
+- id: vuln-libtiff-3ca657a8
+  pattern: "static void $FUNC(TIFF* $TIFF, uint8* $CP0, tmsize_t $CC) {\n  ...\n \
+    \ assert(($CC%$STRIDE)==0);\n  ...\n}\n"
+  pattern-not: "static int $FUNC(TIFF* $TIFF, uint8* $CP0, tmsize_t $CC) {\n  ...\n\
+    \  if(($CC%$STRIDE)!=0) {\n    TIFFErrorExt($TIFF->tif_clientdata, \"$FUNC\",\
+    \ \"%s\", \"($CC%$STRIDE)!=0\");\n    return 0;\n  }\n  ...\n  return 1;\n}\n"
+  languages:
+  - c
+  message: "The function uses `assert` to validate input conditions, which can be\
+    \ disabled in production builds, leading to potential vulnerabilities. \nThis\
+    \ can cause undefined behavior if the assertion fails in a production environment.\
+    \ \nReplace `assert` with proper error handling that returns an error code and\
+    \ logs the issue.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/3ca657a8793dd011bf869695d72ad31c779c3cc1
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c
+- id: vuln-libtiff-4f020c28
+  pattern: 'TIFFClose($IN);
+
+    return (-1);
+
+    '
+  pattern-not: "goto $ERROR;\n...\n$ERROR:\n  if ($IN)\n    TIFFClose($IN);\n  return\
+    \ (-1);\n"
+  languages:
+  - c
+  message: 'Detected a potential resource leak vulnerability where TIFF file handles
+    are not properly cleaned up in error paths. This can lead to resource exhaustion
+    and undefined behavior. The issue was fixed by using a centralized error handling
+    block with proper cleanup. Ensure all resources are properly freed in error paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/4f020c28a8374f26b2796900cdd805f3988a176b
+    category: security
+    cwe:
+    - CWE-772
+    owasp: A9:2021 - Security Logging and Monitoring Failures
+    technology:
+    - c
+- id: vuln-libtiff-b6af137b
+  pattern: 'assert($VAR <= 0xFFFFFFFFUL);
+
+    '
+  pattern-not: "if($VAR > 0xFFFFFFFFUL) {\n    TIFFErrorExt($TIF->tif_clientdata,\
+    \ $MODULE, \"Illegal value for SubIFD tag\");\n    _TIFFfree($O);\n    return(0);\n\
+    }\n"
+  languages:
+  - c
+  message: 'The code uses an assert statement to check if a value is within the 32-bit
+    range, which can be optimized out in release builds, leading to potential security
+    vulnerabilities. Instead, proper error handling should be implemented to ensure
+    the value is validated at runtime. This vulnerability could allow an attacker
+    to pass illegal values that bypass the assert check, potentially leading to undefined
+    behavior or crashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/b6af137bf9ef852f1a48a50a5afb88f9e9da01cc
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c
+- id: vuln-libtiff-d6033205
+  pattern: '$VAR = (uint8*) _TIFFmalloc($SIZE);
+
+    '
+  pattern-not: '$VAR = (uint8*) _TIFFcalloc(1, $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected use of _TIFFmalloc without initialization, which can lead to
+    uninitialized memory buffers. This is dangerous because it can expose sensitive
+    data or cause undefined behavior if the buffer is read before being written. Use
+    _TIFFcalloc instead to ensure the memory is zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/d60332057b9575ada4f264489582b13e30137be1
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - http://bugzilla.maptools.org/show_bug.cgi?id=2651
+    technology:
+    - c
+- id: vuln-libtiff-5c080298
+  pattern: '(void) TIFFGetField($IN, TIFFTAG_PLANARCONFIG, &$VAR);
+
+    '
+  pattern-not: '(void) TIFFGetFieldDefaulted($IN, TIFFTAG_PLANARCONFIG, &$VAR);
+
+    '
+  languages:
+  - c
+  message: 'The function TIFFGetField is used without a default value check, which
+    can lead to undefined behavior if the field is not present. This vulnerability
+    can cause the application to crash or behave unexpectedly. Use TIFFGetFieldDefaulted
+    instead to ensure a default value is provided when the field is missing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vadz/libtiff/commit/5c080298d59efa53264d7248bbe3a04660db6ef7
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

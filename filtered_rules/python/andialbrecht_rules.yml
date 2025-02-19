@@ -1,0 +1,23 @@
+rules:
+- id: vuln-sqlparse-8238a9e4
+  pattern: 're.search(r''((\r\n|\r|\n)+) *$'', $VAR)
+
+    '
+  pattern-not: 're.search(r''((\r|\n)+) *$'', $VAR)
+
+    '
+  languages:
+  - python
+  message: 'Detected inconsistent handling of line breaks in regex patterns. The pattern
+    includes unnecessary variations of line breaks (\r\n, \r, \n), which can lead
+    to inconsistent behavior across different platforms. Use a simplified pattern
+    to handle line breaks consistently.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/andialbrecht/sqlparse/commit/8238a9e450ed1524e40cb3a8b0b3c00606903aeb
+    category: correctness
+    cwe: CWE-116
+    technology:
+    - python

@@ -1,0 +1,105 @@
+rules:
+- id: vuln-espruino-013cb1be
+  pattern: 'char $FILENAME[6] = ".bootX";
+
+    '
+  pattern-not: 'char $FILENAME[7] = ".bootX";
+
+    '
+  languages:
+  - c
+  message: 'The array `$FILENAME` is declared with insufficient size to hold the string
+    ".bootX" and the null terminator. This can lead to buffer overflow vulnerabilities.
+    Increase the array size to 7 to accommodate the string and the null terminator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/013cb1be964e4ca06b5246d72467130a9abd7f10
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - c
+- id: vuln-espruino-ce192419
+  pattern: "while (*$S && $L<$LEN) {\n  ...\n}\n"
+  pattern-not: "while ($S[$L] && $L<$LEN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses pointer dereferencing (*s) in a loop condition, which can
+    lead to out-of-bounds access if the pointer is incremented incorrectly. This is
+    dangerous because it can cause memory corruption or crashes. Use array indexing
+    (s[l]) instead to ensure bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/ce1924193862d58cb43d3d4d9dada710a8361b89
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-espruino-bed844f1
+  pattern: 'strncpy($STR, $SRC, $LEN);
+
+    '
+  pattern-not: 'strcpy($STR, $SRC);
+
+    '
+  languages:
+  - c
+  message: 'The use of `strncpy` without proper length checking can lead to buffer
+    overflows or truncation issues. In this case, `strncpy` was replaced with `strcpy`
+    after ensuring the destination buffer is large enough to handle the source string.
+    This change prevents potential truncation and ensures the string is copied correctly.
+    Always validate buffer sizes before using `strcpy` or ensure `strncpy` is used
+    with proper length checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/bed844f109b6c222816740555068de2e101e8018
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-espruino-c1043117
+  pattern: 'jsvGetString($VAR, $BUF, sizeof($TYPE) + 1)
+
+    '
+  pattern-not: 'jsvGetStringChars($VAR, 0, $BUF, sizeof($TYPE))
+
+    '
+  languages:
+  - c
+  message: 'Detected use of `jsvGetString` with buffer size calculation including
+    an extra byte for trailing zero. This can lead to buffer overflow vulnerabilities
+    when the buffer size is incorrectly calculated. Use `jsvGetStringChars` instead,
+    which does not add a trailing zero and ensures the buffer size matches the data
+    size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/espruino/Espruino/commit/c1043117262abef28903adbb944c0861da8dd8ec
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

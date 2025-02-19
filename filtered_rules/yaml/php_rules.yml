@@ -1,0 +1,33 @@
+rules:
+- id: vuln-php-src-af809ef0
+  pattern: "run: >-\n  php benchmark/generate_diff.php\n  ${{ github.event.pull_request.head.sha\
+    \ }}\n  $(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha\
+    \ }})\n  > $GITHUB_STEP_SUMMARY\n"
+  pattern-not: "run: |-\n  php benchmark/generate_diff.php \\\n    ${{ github.sha\
+    \ }} \\\n    $(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.sha\
+    \ }}) \\\n    > $GITHUB_STEP_SUMMARY\n"
+  languages:
+  - yaml
+  message: 'The workflow uses `github.event.pull_request.head.sha` which can be unsafe
+    as it relies on the pull request''s head SHA. This can be manipulated by an attacker.
+    Use `github.sha` instead, which is more secure and reliable.
+
+    - Why it''s dangerous: Using `github.event.pull_request.head.sha` can lead to
+    potential security issues as it can be influenced by external actors.
+
+    - How to fix it: Replace `github.event.pull_request.head.sha` with `github.sha`
+    to ensure the correct SHA is used.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/af809ef028e1e3ed59284e2506cab0f275b55d8e
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A01:2021
+    references:
+    - https://docs.github.com/en/actions/learn-github-actions/contexts
+    technology:
+    - yaml

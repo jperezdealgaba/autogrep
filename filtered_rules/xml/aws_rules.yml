@@ -1,0 +1,28 @@
+rules:
+- id: vuln-aws-iot-device-sdk-java-v2-67950ad2
+  pattern: '<version>0.12.6</version>
+
+    '
+  pattern-not: '<version>0.12.8</version>
+
+    '
+  languages:
+  - xml
+  message: 'The version of the AWS IoT Device SDK for Java is outdated and may contain
+    security vulnerabilities. Using an outdated version can expose the application
+    to known exploits and security risks. Update to version 0.12.8 or later to mitigate
+    these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aws/aws-iot-device-sdk-java-v2/commit/67950ad2a02f2f9355c310b69dc9226b017f32f2
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/aws/aws-iot-device-sdk-java-v2/commit/67950ad2a02f2f9355c310b69dc9226b017f32f2
+    technology:
+    - xml

@@ -1,0 +1,129 @@
+rules:
+- id: vuln-libav-9f0193c7
+  pattern: '$X->bit_rate += ($Y << $Z) * $W;
+
+    '
+  pattern-not: "$Y <<= $Z;\nif ($Y < INT_MAX / $W &&\n    $Y * $W < INT_MAX - $X->bit_rate)\
+    \ {\n    $X->bit_rate += $Y * $W;\n} else\n    $X->bit_rate = 0;\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in bit rate calculation.
+
+    The code performs arithmetic operations without proper bounds checking, which
+    could lead to integer overflows.
+
+    To fix this, add bounds checking before performing arithmetic operations and handle
+    overflow cases appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/9f0193c778175cea3fb43f17acf9b90b4d862d33
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A2: Cryptographic Failures'
+    technology:
+    - c
+- id: vuln-libav-76f7e70a
+  pattern: 'init_get_bits(&$GB, $DATA + $OFFSET, ($SIZE - $OFFSET) * 8);
+
+    '
+  pattern-not: "$RET = init_get_bits8(&$GB, $DATA + $OFFSET, $SIZE - $OFFSET);\nif\
+    \ ($RET < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly calls `init_get_bits` without checking the return value,
+    which can lead to processing invalid or zero-sized data. This can cause undefined
+    behavior or crashes. Always check the return value of `init_get_bits8` and handle
+    errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/76f7e70aa04fc5dbef5242b11cbf8fe4499f61d4
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-libav-8c802589
+  pattern: '$DEST = $BASE + ($EXPR << $SHIFT)
+
+    '
+  pattern-not: '$DEST = $BASE + $EXPR * (1 << $SHIFT)
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects a potentially unsafe use of bitwise shift operations
+    in pointer arithmetic, which can lead to incorrect memory access. The original
+    code used a bitwise shift (`<<`) directly in the pointer arithmetic, which can
+    be error-prone and less readable. The fix replaces the shift with a multiplication
+    by `(1 << SHIFT)`, which is safer and more explicit. Always prefer arithmetic
+    operations that clearly express the intent to avoid potential memory corruption
+    or undefined behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/8c80258913b7b412185a2038b4e852bee572767a
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/682.html
+    technology:
+    - c
+- id: vuln-libav-83b2b34d
+  pattern: "while ($LENGTH >= 4) {\n  ...\n  if ($EXTRACT_LENGTH > $LENGTH) {\n  \
+    \  ...\n  }\n  ...\n  $LENGTH -= $CONSUMED;\n}\n"
+  pattern-not: "while (bytestream2_get_bytes_left(&$BC) >= 4) {\n  ...\n  if ($EXTRACT_LENGTH\
+    \ > bytestream2_get_bytes_left(&$BC)) {\n    ...\n  }\n  ...\n  bytestream2_skip(&$BC,\
+    \ $CONSUMED);\n}\n"
+  languages:
+  - c
+  message: 'The code directly manipulates buffer length and pointer without proper
+    bounds checking, which can lead to out-of-bounds access vulnerabilities. This
+    pattern was fixed by using the `bytestream2` API for safer buffer handling. Replace
+    direct buffer manipulation with `bytestream2` functions to ensure proper bounds
+    checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/83b2b34d06e74cc8775ba3d833f9782505e17539
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - c
+- id: vuln-libav-fe6eea99
+  pattern: 'av_get_packet($PB, $PKT, $SIZE);
+
+    '
+  pattern-not: "if ((ret = av_get_packet($PB, $PKT, $SIZE)) < 0)\n    return ret;\n"
+  languages:
+  - c
+  message: 'Detected unhandled return value of `av_get_packet`. This can lead to unhandled
+    errors when reading packets, potentially causing crashes or undefined behavior.
+    Always check the return value of `av_get_packet` and handle errors appropriately
+    by returning the error code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libav/libav/commit/fe6eea99efac66839052af547426518efd970b24
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Security Misconfiguration
+    technology:
+    - c

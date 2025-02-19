@@ -1,0 +1,31 @@
+rules:
+- id: vuln-home-assistant-bd58a0de
+  pattern: '$URL = ''http://api.macvendors.com/'' + $OUI
+
+    ...
+
+    $RESP = yield from $WEBSESSION.get($URL)
+
+    '
+  pattern-not: '$URL = ''https://api.macvendors.com/'' + $OUI
+
+    ...
+
+    $RESP = yield from $WEBSESSION.get($URL)
+
+    '
+  languages:
+  - python
+  message: Detected insecure HTTP request to macvendors.com API. This exposes sensitive
+    MAC address data to potential interception or manipulation. Use HTTPS instead
+    of HTTP to encrypt the communication.
+  severity: ERROR
+  metadata:
+    source-url: github.com/home-assistant/home-assistant/commit/bd58a0de7dab6dc8119ddea5878f27ed1fb25c1e
+    category: security
+    cwe: CWE-319
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - python

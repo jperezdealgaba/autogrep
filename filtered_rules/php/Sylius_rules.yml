@@ -1,0 +1,27 @@
+rules:
+- id: vuln-syliusresourcebundle-73d9aba1
+  pattern: 'is_string($VAR) ? sprintf(''"%s"'', $VAR) : $VAR
+
+    '
+  pattern-not: 'is_string($VAR) ? sprintf(''"%s"'', addslashes($VAR)) : $VAR
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where string variables are
+    not properly escaped before being used in a formatted string. This can lead to
+    injection attacks or other security issues. To fix this, ensure that the string
+    is properly escaped using `addslashes()` or a similar function before being passed
+    to `sprintf()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Sylius/SyliusResourceBundle/commit/73d9aba182947473a5935b31caf65ca263091e00
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

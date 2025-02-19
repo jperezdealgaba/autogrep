@@ -1,0 +1,27 @@
+rules:
+- id: vuln-websvn-b8c09bbd
+  pattern: '$cmd = ''list -R --search '' . $searchstring . '' --xml'';
+
+    '
+  pattern-not: '$cmd = ''list -R --search '' . escapeshellarg($term) . '' --xml'';
+
+    '
+  languages:
+  - php
+  message: "Detected potential command injection vulnerability due to unescaped user\
+    \ input in shell command construction. \nThe variable `$searchstring` is directly\
+    \ concatenated into a shell command without proper escaping, which could allow\
+    \ an attacker to inject arbitrary commands. \nTo fix this, always use `escapeshellarg()`\
+    \ to sanitize user input before including it in shell commands.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/websvnphp/websvn/commit/b8c09bbd688fe838f9f14fbbb2cf897f3480c9b4
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

@@ -1,0 +1,50 @@
+rules:
+- id: vuln-open5gs-2f8ae91b
+  pattern: 'const char *$VAR[argc];
+
+    '
+  pattern-not: 'const char *$VAR[argc+1];
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to insufficient
+    array size.
+
+    The array size should account for the null-terminator to prevent buffer overflows.
+
+    Always ensure the array size is at least argc+1 to safely store all arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/2f8ae91b0b9467f94f128090c88cae91bd73e008
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-open5gs-71a1516b
+  pattern: "if ($VAR->version > $OGS_PFCP_VERSION) {\n  ...\n}\n"
+  pattern-not: "if ($VAR->version != $OGS_PFCP_VERSION) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses a greater-than comparison (`>`) to check the version of
+    the PFCP protocol, which is incorrect and can lead to security issues. The correct
+    comparison should be an equality check (`!=`) to ensure compatibility with the
+    exact version. This vulnerability can cause protocol mismatches and potential
+    security vulnerabilities. Replace the `>` comparison with `!=`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/open5gs/open5gs/commit/71a1516b0376340d267caa85920cb0a4da261176
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-calibre-web-7ad419dc
+  pattern: '$("$SELECTOR").html($DATA)
+
+    '
+  pattern-not: '$("$SELECTOR").text($DATA)
+
+    '
+  languages:
+  - javascript
+  message: 'Potential XSS vulnerability detected. Using .html() with untrusted input
+    can lead to cross-site scripting attacks. Use .text() instead to safely insert
+    content as plain text.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/janeczku/calibre-web/commit/7ad419dc8c12180e842a82118f4866ac3d074bc5
+    category: security
+    cwe: CWE-79
+    owasp: 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

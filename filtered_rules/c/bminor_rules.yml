@@ -1,0 +1,26 @@
+rules:
+- id: vuln-newlib-5f15d7c5
+  pattern: '$TP->tv_usec = $TS.tv_nsec * 1000;
+
+    '
+  pattern-not: '$TP->tv_usec = $TS.tv_nsec / 1000;
+
+    '
+  languages:
+  - c
+  message: 'Detected incorrect conversion of nanoseconds to microseconds by multiplication
+    instead of division.
+
+    This can lead to incorrect time calculations and potential time-related vulnerabilities.
+
+    The correct conversion should use division by 1000 instead of multiplication.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bminor/newlib/commit/5f15d7c5817b07a6b18cbab17342c95cb7b42be4
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    technology:
+    - c

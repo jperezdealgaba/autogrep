@@ -1,0 +1,27 @@
+rules:
+- id: vuln-bigbluebutton-3092eaa6
+  pattern: "\"trim-newlines\": {\n  \"version\": \"3.0.1\",\n  \"resolved\": \"https://registry.npmjs.org/trim-newlines/-/trim-newlines-3.0.1.tgz\"\
+    ,\n  \"integrity\": \"sha512-c1PTsA3tYrIsLGkJkzHF+w9F2EyxfXGo4UyJc4pFL++FMjnq0HJS69T3M7d//gKrFKwy429bouPescbjecU+Zw==\"\
+    \n}\n"
+  pattern-not: "\"trim-newlines\": {\n  \"version\": \"4.0.2\",\n  \"resolved\": \"\
+    https://registry.npmjs.org/trim-newlines/-/trim-newlines-4.0.2.tgz\",\n  \"integrity\"\
+    : \"sha512-GJtWyq9InR/2HRiLZgpIKv+ufIKrVrvjQWEj7PxAXNc5dwbNJkqhAUoAGgzRmULAnoOM5EIpveYd3J2VeSAIew==\"\
+    \n}\n"
+  languages:
+  - json
+  message: "The version of 'trim-newlines' (3.0.1) is vulnerable and should be updated\
+    \ to version 4.0.2 or later. \nUsing outdated versions of dependencies can expose\
+    \ the application to security vulnerabilities and bugs. \nUpdate the package to\
+    \ the latest version to ensure security and stability.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/bigbluebutton/bigbluebutton/commit/3092eaa684858a8201f918e992e59a2dff49025a
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://npmjs.com/package/trim-newlines
+    technology:
+    - json

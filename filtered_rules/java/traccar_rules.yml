@@ -1,0 +1,100 @@
+rules:
+- id: vuln-traccar-3fbdcd81
+  pattern: "if ($UNIQUEID.contains(\"../\") || $UNIQUEID.contains(\"..\\\\\")) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($UNIQUEID.contains(\"..\")) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Incomplete path traversal check detected. The original check for ''../''
+    or ''..\\'' is insufficient as it does not catch all forms of path traversal.
+    Use a more comprehensive check that detects all variations of ''..''.
+
+    This vulnerability can allow attackers to traverse directories and access unauthorized
+    files.
+
+    To fix this, use a more robust check that captures all potential path traversal
+    sequences.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/traccar/traccar/commit/3fbdcd81566bc72e319ec05c77cf8a4120b87b8f
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: java
+- id: vuln-traccar-cc69a990
+  pattern: 'String $JAVA_BINARY = $JAVA_HOME + "\\bin\\java.exe";
+
+    '
+  pattern-not: 'String $JAVA_BINARY = "\"" + $JAVA_HOME + "\\bin\\java.exe\"";
+
+    '
+  languages:
+  - java
+  message: Unquoted file path in command execution. This can lead to command injection
+    or path manipulation vulnerabilities if the path contains spaces or special characters.
+    Always quote file paths in command executions.
+  severity: ERROR
+  metadata:
+    source-url: github.com/traccar/traccar/commit/cc69a9907ac9878db3750aa14ffedb28626455da
+    category: security
+    cwe: CWE-78
+    owasp: OWASP Top 10 2021:A03 - Injection
+    technology: java
+- id: vuln-traccar-d7f6c53f
+  pattern: 'DocumentBuilderFactory.newInstance().newDocumentBuilder()
+
+    '
+  pattern-not: 'DocumentBuilderFactory $BUILDER = DocumentBuilderFactory.newInstance();
+
+    $BUILDER.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+    $BUILDER.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
+    $BUILDER.setFeature("http://xml.org/sax/features/external-parameter-entities",
+    false);
+
+    $BUILDER.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",
+    false);
+
+    $BUILDER.setXIncludeAware(false);
+
+    $BUILDER.setExpandEntityReferences(false);
+
+    $BUILDER.newDocumentBuilder()
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure XML parsing configuration. The DocumentBuilderFactory
+    is instantiated without security features enabled, which can lead to XML External
+    Entity (XXE) attacks. To mitigate this, configure the DocumentBuilderFactory with
+    the following security features:
+
+    - disallow-doctype-decl: true
+
+    - external-general-entities: false
+
+    - external-parameter-entities: false
+
+    - load-external-dtd: false
+
+    - setXIncludeAware(false)
+
+    - setExpandEntityReferences(false)
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/traccar/traccar/commit/d7f6c53fd88635885914013649b6807ec53227bf
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology:
+    - java

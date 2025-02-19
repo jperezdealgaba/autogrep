@@ -1,0 +1,71 @@
+rules:
+- id: vuln-weblate-d9e136ff
+  pattern: "if $TEXT and $TEXT[0] in ('=', '+', '-', '@'):\n    return \"'\" + $TEXT\n"
+  pattern-not: "if $TEXT and $TEXT[0] in ('=', '+', '-', '@', '|', '%'):\n    return\
+    \ \"'{0}'\".format($TEXT.replace('|', '\\|'))\n"
+  languages:
+  - python
+  message: 'Detected unsafe string concatenation when handling special characters.
+    This can lead to injection vulnerabilities when the text is used in contexts like
+    YAML or other formats. Always use proper escaping or formatting to safely handle
+    special characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WeblateOrg/weblate/commit/d9e136ff228e3760fd6dd7572869ac38e9a81809
+    category: security
+    cwe: CWE-116
+    owasp: A1:2017-Injection
+    references:
+    - https://yaml.org/spec/1.2/spec.html#id2767112
+    technology:
+    - python
+- id: vuln-weblate-b6a7eace
+  pattern: 'os.path.join($PROJECT.full_path, $NAME[$VCS_PREFIX_LEN:])
+
+    '
+  pattern-not: "$PATH = $NAME[$VCS_PREFIX_LEN:]\nif $PATH != os.path.normpath($PATH):\n\
+    \    ...\nos.path.join($PROJECT.full_path, $PATH)\n"
+  languages:
+  - python
+  message: 'Detected unsafe path joining operation without path normalization. This
+    can lead to path traversal vulnerabilities where an attacker could manipulate
+    the path to access unauthorized files or directories. Always normalize paths before
+    joining them to ensure they are safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WeblateOrg/weblate/commit/b6a7eace155fa0feaf01b4ac36165a9c5e63bfdd
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/os.path.html#os.path.normpath
+    technology:
+    - python
+- id: vuln-weblate-f6753a1a
+  pattern: 'label = str($EXPR)
+
+    '
+  pattern-not: 'label = escape($EXPR)
+
+    '
+  languages:
+  - python
+  message: Detected unescaped string conversion of potentially unsafe input. This
+    can lead to XSS vulnerabilities. Use django.utils.html.escape() to sanitize the
+    output.
+  severity: ERROR
+  metadata:
+    source-url: github.com/WeblateOrg/weblate/commit/f6753a1a1c63fade6ad418fbda827c6750ab0bda
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.html.escape
+    technology:
+    - python

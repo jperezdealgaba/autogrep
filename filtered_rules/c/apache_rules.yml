@@ -1,0 +1,74 @@
+rules:
+- id: vuln-trafficserver-92f729f5
+  pattern: "if (strstr($STR, $VALUE) != NULL) {\n  ...\n}\n"
+  pattern-not: "if ($LEN >= $MIN_LEN && strstr($STR, $VALUE) != NULL) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential vulnerability due to missing length check before\
+    \ using strstr(). \nThis can lead to security issues such as buffer overflows\
+    \ or incorrect string matching. \nAlways verify the length of the string before\
+    \ performing operations like strstr() to ensure safety.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/trafficserver/commit/92f729f5edaa17fa69355216da6c71ba5ea8de5b
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-subversion-df961c8f
+  pattern: '$VAR = "$SVN_SSH ssh -q"
+
+    '
+  pattern-not: '$VAR = "$SVN_SSH ssh -q --"
+
+    '
+  languages:
+  - c
+  message: 'The SSH command is missing the ''--'' argument separator, which can lead
+    to command injection if the hostname starts with a ''-''. This is dangerous because
+    an attacker could craft a malicious hostname to execute arbitrary commands. To
+    fix this, always include ''--'' in SSH commands to separate options from arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/subversion/commit/df961c8f7d48f435a631716ff7d164f323940da5
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-subversion-e4d42eb1
+  pattern: '$FUNC($PROPNAME, $VALUE, $RESOURCE->pool);
+
+    '
+  pattern-not: '$FUNC($PROPNAME, $VALUE, $SUBPOOL);
+
+    '
+  languages:
+  - c
+  message: "Detected a potential resource leak due to improper pool management. \n\
+    The code uses the parent pool (`$RESOURCE->pool`) directly for property operations,\
+    \ which can lead to resource exhaustion in scenarios with multiple calls. \nThis\
+    \ vulnerability can cause memory leaks or degraded performance. \nTo fix, create\
+    \ and use a subpool (`svn_pool_create`) for these operations and destroy it (`svn_pool_destroy`)\
+    \ after use.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/subversion/commit/e4d42eb10e29caf907083f188f314c2eebfb8ae1
+    category: security
+    cwe:
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

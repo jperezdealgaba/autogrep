@@ -1,0 +1,28 @@
+rules:
+- id: vuln-magmi-git-a9566b14
+  pattern: 'echo $_REQUEST["prefix"] . ":" . $TIME;
+
+    '
+  pattern-not: 'echo htmlspecialchars($_REQUEST["prefix"]) . ":" . $TIME;
+
+    '
+  languages:
+  - php
+  message: 'Detected potential XSS vulnerability due to direct output of user input
+    from $_REQUEST without proper escaping. This can allow attackers to inject malicious
+    scripts into the page. Use htmlspecialchars() to properly escape user input before
+    outputting it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dweeves/magmi-git/commit/a9566b141b58bf40a9dd904a74e6efcc225a28a3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

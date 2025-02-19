@@ -1,0 +1,135 @@
+rules:
+- id: vuln-ceph-6171399f
+  pattern: '$SOCKET.remote_endpoint()
+
+    '
+  pattern-not: '$SOCKET.remote_endpoint($EC)
+
+    '
+  languages:
+  - cpp
+  message: 'Using `remote_endpoint()` without error handling can lead to undefined
+    behavior if the connection fails. Always check for errors by passing an error_code
+    parameter to `remote_endpoint()` and handle the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/6171399fdedd928b4249d135b4036e3de25079aa
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://www.boost.org/doc/libs/1_66_0/doc/html/boost_asio/reference/basic_stream_socket/remote_endpoint.html
+    technology:
+    - cpp
+- id: vuln-ceph-ab29bed2
+  pattern: 'parse_value_and_bound($INPUT, &$OUTPUT, $LOWER_BOUND, $UPPER_BOUND, $DEFAULT_VAL)
+
+    '
+  pattern-not: 'parse_value_and_bound($INPUT, $OUTPUT, $LOWER_BOUND, $UPPER_BOUND,
+    $DEFAULT_VAL)
+
+    '
+  languages:
+  - cpp
+  message: 'The function `parse_value_and_bound` is using a pointer to an integer
+    (`&$OUTPUT`) which can lead to incorrect bounds checking and potential security
+    vulnerabilities. This pattern should be replaced with a direct integer reference
+    (`$OUTPUT`) to ensure proper bounds enforcement.
+
+    This is dangerous because incorrect bounds checking can lead to out-of-bounds
+    access or other security issues. The fix involves changing the function to use
+    a reference instead of a pointer, ensuring that the bounds are correctly applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/ab29bed2fc9f961fe895de1086a8208e21ddaddc
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - cpp
+- id: vuln-ceph-55ad9b69
+  pattern: "if ($EC == http::error::partial_message || $EC == http::error::need_buffer)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($EC == http::error::need_buffer) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected a potential security vulnerability where both `http::error::partial_message`
+    and `http::error::need_buffer` are checked in the same condition. This could lead
+    to incorrect handling of partial messages, potentially causing security issues.
+    The fix involves removing the check for `http::error::partial_message`. Ensure
+    that only `http::error::need_buffer` is checked to handle buffer needs correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/55ad9b6937f09bbf81dea27b017ffa4e63d4f044
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - cpp
+- id: vuln-ceph-763aebb9
+  pattern: 'boost::replace_all_copy(std::back_inserter($S), $HEADER, "\n", "\\n")
+
+    '
+  pattern-not: 'std::string $TMP = boost::replace_all_copy($HEADER, "\n", "\\n");
+
+    boost::replace_all_copy(std::back_inserter($S), $TMP, "\r", "\\r");
+
+    '
+  languages:
+  - cpp
+  message: 'Detected incomplete header injection prevention. The code only escapes
+    newline characters (''\n'') but not carriage return characters (''\r''), which
+    could lead to HTTP response header injection attacks. To fix this, ensure both
+    ''\n'' and ''\r'' are properly escaped in header values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/763aebb94678018f89427137ffbc0c5205b1edc1
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - cpp
+- id: vuln-ceph-b3118cab
+  pattern: 'ceph_assert($EXPR);
+
+    '
+  pattern-not: "if ($EXPR $OP $VAL) {\n  $RETURN;\n}\n"
+  languages:
+  - cpp
+  message: "Using `ceph_assert` for validation can lead to undefined behavior if the\
+    \ assertion fails in production. \nReplace `ceph_assert` with proper conditional\
+    \ checks and appropriate error handling to ensure safe execution.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/b3118cabb8060a8cc6a01c4e8264cb18e7b1745a
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    references:
+    - https://github.com/ceph/ceph/commit/b3118cabb8060a8cc6a01c4e8264cb18e7b1745a
+    technology:
+    - cpp

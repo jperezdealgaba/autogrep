@@ -1,0 +1,22 @@
+rules:
+- id: vuln-orientdb-668ece96
+  pattern: 'private Random $RANDOM = new Random();
+
+    '
+  pattern-not: 'private Random $RANDOM = new SecureRandom();
+
+    '
+  languages:
+  - java
+  message: Insecure use of Random class detected. Use SecureRandom instead for cryptographic
+    operations.
+  severity: ERROR
+  metadata:
+    source-url: github.com/orientechnologies/orientdb/commit/668ece96be210e742a4e2820a3085b215cf55104
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - java

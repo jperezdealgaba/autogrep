@@ -1,0 +1,63 @@
+rules:
+- id: vuln-prost-04091d3e
+  pattern: 'skip_field($WIRE_TYPE, $TAG, $BUF)
+
+    '
+  pattern-not: 'skip_field($WIRE_TYPE, $TAG, $BUF, $CTX)
+
+    '
+  languages:
+  - rust
+  message: 'The function `skip_field` is being called without the required `ctx` parameter,
+    which can lead to insufficient recursion depth checking and potential stack overflow
+    vulnerabilities. This could allow an attacker to craft malicious input that causes
+    the application to crash. Always include the `ctx` parameter when calling `skip_field`
+    to ensure proper recursion depth checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/danburkert/prost/commit/04091d3e745c27590a5f1b7f581793e4159486b5
+    category: security
+    cwe:
+    - CWE-674
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - rust
+- id: vuln-prost-59f2a731
+  pattern: '$VAR.seconds += ($VAR.nanos / NANOS_PER_SECOND) as i64;
+
+    $VAR.nanos %= NANOS_PER_SECOND;
+
+    '
+  pattern-not: "if let Some($VAR2) = $VAR.seconds.checked_add(($VAR.nanos / NANOS_PER_SECOND)\
+    \ as i64) {\n    $VAR.seconds = $VAR2;\n    $VAR.nanos %= NANOS_PER_SECOND;\n\
+    } else if $VAR.nanos < 0 {\n    $VAR.seconds = i64::MIN;\n    $VAR.nanos = -NANOS_MAX;\n\
+    } else {\n    $VAR.seconds = i64::MAX;\n    $VAR.nanos = NANOS_MAX;\n}\n"
+  languages:
+  - rust
+  message: 'Detected potentially unsafe arithmetic operations on timestamp values
+    without overflow checks.
+
+    This can lead to undefined behavior or security vulnerabilities when handling
+    extreme values.
+
+    Use `checked_add`, `checked_sub`, or similar methods to safely handle arithmetic
+    operations
+
+    and explicitly handle overflow cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/danburkert/prost/commit/59f2a7311dd6540696bfd0145f5281ce495f4385
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://doc.rust-lang.org/std/primitive.i64.html#method.checked_add
+    technology:
+    - rust

@@ -1,0 +1,19 @@
+rules:
+- id: vuln-formidable-forms-febd8bb6
+  pattern: jQuery('.license-level').html($DATA)
+  pattern-not: jQuery('.license-level').text($DATA)
+  languages:
+  - javascript
+  message: Potential XSS vulnerability using .html() method. Use .text() instead to
+    safely set text content and prevent HTML injection.
+  severity: ERROR
+  metadata:
+    source-url: github.com/Strategy11/formidable-forms/commit/febd8bb6549fb92e01398289095b89a697927def
+    category: security
+    cwe: CWE-79
+    owasp: A3:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://api.jquery.com/html/
+    - https://api.jquery.com/text/
+    technology:
+    - javascript

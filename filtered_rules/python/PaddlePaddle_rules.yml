@@ -1,0 +1,31 @@
+rules:
+- id: vuln-paddle-bdf6234f
+  pattern: "subprocess.$METHOD(\n    $COMMAND_STRING + ...,\n    shell=True\n)\n"
+  pattern-not: "subprocess.$METHOD(\n    [$ARG1, $ARG2, ..., $ARGN],\n    ...\n)\n"
+  languages:
+  - python
+  message: Potential shell injection vulnerability from unsafe subprocess call with
+    shell=True. Use list arguments instead of string concatenation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/PaddlePaddle/Paddle/commit/bdf6234fdc22e6ee7948950d271cbbe1d27edc93
+    category: security
+    technology:
+    - python
+- id: vuln-paddle-26c419ca
+  pattern: 'eval("_" + $VAR)
+
+    '
+  pattern-not: 'window_function_register.get("_" + $VAR)
+
+    '
+  languages:
+  - python
+  message: Insecure use of eval() with dynamically constructed window function name,
+    potential code injection vulnerability
+  severity: ERROR
+  metadata:
+    source-url: github.com/PaddlePaddle/Paddle/commit/26c419ca386aeae3c461faf2b828d00b48e908eb
+    category: security
+    technology:
+    - python

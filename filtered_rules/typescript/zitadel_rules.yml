@@ -1,0 +1,26 @@
+rules:
+- id: vuln-zitadel-2ece8ffa
+  pattern: '$ARRAY.splice($INDEX)
+
+    '
+  pattern-not: '$ARRAY.splice($INDEX, 1)
+
+    '
+  languages:
+  - typescript
+  message: 'Detected unsafe use of `splice()` without specifying the number of elements
+    to remove. This can lead to unexpected behavior or data loss. Always specify the
+    number of elements to remove when using `splice()`. Fix by adding the second argument
+    to `splice()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/2ece8ffaa77673ff8fae21bce65eff98048bf0cb
+    category: security
+    cwe:
+    - CWE-483
+    owasp:
+    - A12:2021-Security Misconfiguration
+    technology:
+    - typescript

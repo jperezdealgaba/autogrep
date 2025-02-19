@@ -1,0 +1,31 @@
+rules:
+- id: vuln-filebrowser-74b7cd8e
+  pattern: "if !$SERVER.EnableExec || !$USER.CanExecute(strings.Split($RAW, \" \"\
+    )[0]) {\n  ...\n}\n"
+  pattern-not: "if !$SERVER.EnableExec || !$USER.CanExecute($COMMAND[0]) {\n  ...\n\
+    }\n"
+  languages:
+  - go
+  message: 'Detected a vulnerable command execution check that uses `strings.Split`
+    to parse the command. This can lead to incorrect command validation if the command
+    string is malformed. Instead, use the parsed command array directly to ensure
+    proper validation.
+
+    This vulnerability could allow unauthorized command execution if the command string
+    is manipulated.
+
+    Fix by using the parsed command array directly, as shown in the patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/filebrowser/filebrowser/commit/74b7cd8e81840537a8206317344f118093153e8d
+    category: security
+    cwe:
+    - CWE-77
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/77.html
+    technology:
+    - go

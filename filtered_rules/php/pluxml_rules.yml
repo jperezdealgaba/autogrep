@@ -1,0 +1,30 @@
+rules:
+- id: vuln-pluxml-72a120ab
+  pattern: 'if(!rename(PLX_ROOT.PLX_CONFIG_PATH,PLX_ROOT.$newpath))
+
+    '
+  pattern-not: 'if(!preg_match(''#^\w[\w\s/\\-]*/$#'', $newpath) or !rename(PLX_ROOT.PLX_CONFIG_PATH,PLX_ROOT.$newpath))
+
+    '
+  languages:
+  - php
+  message: 'The code directly renames a directory without validating the `$newpath`
+    input. This can lead to directory traversal or other path manipulation attacks
+    if `$newpath` contains malicious input. Always validate and sanitize paths before
+    using them in filesystem operations. Use a regex pattern to ensure the path is
+    safe, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluxml/PluXml/commit/72a120ab08090593e5ab033fa29ed4fd0b8f34e5
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

@@ -1,0 +1,51 @@
+rules:
+- id: vuln-generator-rs-f7d120a3
+  pattern: "pub struct Generator<'a, A, T> {\n  ...\n}\nunsafe impl<A, T> Send for\
+    \ Generator<'static, A, T> {}\n"
+  pattern-not: "pub struct GeneratorObj<'a, A, T, const LOCAL: bool> {\n  ...\n}\n\
+    unsafe impl<A: Send, T: Send> Send for Generator<'static, A, T> {}\n"
+  languages:
+  - rust
+  message: "The Generator struct is not enforcing Send constraints, which can lead\
+    \ to thread safety issues. \nThe fix adds the Send trait to ensure thread safety\
+    \ when the generator is used across threads. \nUpdate the Generator struct to\
+    \ enforce Send constraints on its type parameters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Xudong-Huang/generator-rs/commit/f7d120a3b724d06a7b623d0a4306acf8f78cb4f0
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://doc.rust-lang.org/std/marker/trait.Send.html
+    technology:
+    - rust
+- id: vuln-generator-rs-9209ce23
+  pattern: 'let $SCOPE = $G.get_scope();
+
+    $G.init(move || $CLOSURE($SCOPE));
+
+    '
+  pattern-not: '$G.scoped_init($CLOSURE);
+
+    '
+  languages:
+  - rust
+  message: 'Detected unsafe usage of `get_scope` followed by `init` with a closure.
+    This pattern can lead to undefined behavior due to improper handling of raw pointers
+    and lifetimes. The `scoped_init` method should be used instead, which safely manages
+    the scope and closure initialization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Xudong-Huang/generator-rs/commit/9209ce2336011f67662c047512e4378a3a5f60bd
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - rust

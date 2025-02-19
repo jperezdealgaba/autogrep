@@ -1,0 +1,52 @@
+rules:
+- id: vuln-helm-293b50c6
+  pattern: 'engine.Render($CHART, $VALUES)
+
+    '
+  pattern-not: '$E := engine.New($CONFIG)
+
+    $E.EnableDNS = $DNS
+
+    $E.Render($CHART, $VALUES)
+
+    '
+  languages:
+  - go
+  message: "Detected direct usage of engine.Render without enabling DNS lookups. \n\
+    This can lead to DNS resolution vulnerabilities in templating. \nTo fix this,\
+    \ create a new engine instance with EnableDNS set appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/helm/helm/commit/293b50c65d4d56187cd4e2f390f0ada46b4c4737
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://helm.sh/docs/chart_template_guide/functions_and_pipelines/#using-the-sprig-library
+    technology:
+    - go
+- id: vuln-helm-055dd41c
+  pattern: "if err := yaml.Unmarshal($DATA, $VAR); $ERR {\n  ...\n}\n"
+  pattern-not: "if err := yaml.UnmarshalStrict($DATA, $VAR); $ERR {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Using yaml.Unmarshal instead of yaml.UnmarshalStrict can lead to security
+    vulnerabilities by silently ignoring unknown fields. This can allow malicious
+    YAML content to bypass validation. Always use yaml.UnmarshalStrict to ensure strict
+    parsing and validation of YAML content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/helm/helm/commit/055dd41cbe53ce131ab0357524a7f6729e6e40dc
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://helm.sh/docs/chart_template_guide/yaml_techniques/
+    technology:
+    - go

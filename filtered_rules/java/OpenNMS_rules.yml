@@ -1,0 +1,23 @@
+rules:
+- id: vuln-opennms-51ac0888
+  pattern: '$TYPE $VAR = $GUAVA_METHOD();
+
+    '
+  pattern-not: '$TYPE $VAR = new $CONSTRUCTOR<>();
+
+    '
+  languages:
+  - java
+  message: 'Detected usage of Guava''s factory methods for collection initialization.
+    Direct usage of standard Java collection constructors is preferred for better
+    performance and reduced dependency on external libraries. Replace with ''new ArrayList<>()''
+    or ''new HashSet<>()''.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/OpenNMS/opennms/commit/51ac08882dd633ea7aca1bc730f996befce789d1
+    category: best-practice
+    cwe: CWE-1041
+    technology:
+    - java

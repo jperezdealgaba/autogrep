@@ -1,0 +1,26 @@
+rules:
+- id: vuln-npm-f4d31693
+  pattern: 'if (!$VAR) $VAR = "npm-" + process.pid
+
+    '
+  pattern-not: 'if (!$VAR) $VAR = "npm-" + process.pid + "-" + $RAND
+
+    '
+  languages:
+  - javascript
+  message: 'Detected use of process.pid without additional random entropy in temporary
+    folder naming. This can lead to predictable temporary folder names, potentially
+    causing security issues such as race conditions or symlink attacks. Add a random
+    string to ensure uniqueness.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/npm/npm/commit/f4d31693
+    category: security
+    cwe: CWE-377
+    owasp: 'A9: Insecure Deserialization'
+    references:
+    - https://cwe.mitre.org/data/definitions/377.html
+    technology:
+    - javascript

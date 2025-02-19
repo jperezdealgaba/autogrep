@@ -1,0 +1,24 @@
+rules:
+- id: vuln-i18next-dbf36939
+  pattern: "{\n  ...,\n  \"version\": \"3.4.2\",\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"3.4.3\",\n  ...\n}\n"
+  languages:
+  - json
+  message: 'Detected a vulnerable version of i18next (3.4.2). This version contains
+    security issues that have been patched in version 3.4.3. Using outdated versions
+    can expose your application to security risks. Update to version 3.4.3 or later
+    to mitigate these vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/i18next/i18next/commit/dbf369399e7e3519d7996a2818cbeed89ec2f3f8
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/i18next/i18next/releases/tag/v3.4.3
+    technology:
+    - json

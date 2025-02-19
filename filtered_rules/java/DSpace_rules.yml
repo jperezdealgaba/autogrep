@@ -1,0 +1,27 @@
+rules:
+- id: vuln-dspace-56e76049
+  pattern: 'String $DIR = $DESTINATION_DIR + System.getProperty("file.separator")
+    + $ZIPFILE.getName();
+
+    String $ZIP_DIR = $DESTINATION_DIR + System.getProperty("file.separator") + $ZIPFILE.getName()
+    + System.getProperty("file.separator");
+
+    '
+  pattern-not: "if(!$DESTINATION_DIR.endsWith(System.getProperty(\"file.separator\"\
+    ))) {\n    $DESTINATION_DIR += System.getProperty(\"file.separator\");\n}\nString\
+    \ $DIR = $DESTINATION_DIR + $ZIPFILE.getName();\nString $ZIP_DIR = $DESTINATION_DIR\
+    \ + $ZIPFILE.getName() + System.getProperty(\"file.separator\");\n"
+  languages:
+  - java
+  message: "Potential path traversal vulnerability due to insecure path concatenation.\
+    \ \nEnsure the destination directory ends with a file separator before concatenating\
+    \ paths.\nThis can prevent directory traversal attacks by ensuring files are extracted\
+    \ within the intended directory.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/DSpace/DSpace/commit/56e76049185bbd87c994128a9d77735ad7af0199
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology: java

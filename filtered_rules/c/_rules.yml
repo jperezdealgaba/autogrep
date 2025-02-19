@@ -1,0 +1,663 @@
+rules:
+- id: vuln-freetype-77930974
+  pattern: "if ( !$FUNC( $FACE, $TTAG_CFF, $STREAM, 0 ) )\n  $NUM_INSTANCES = 0;\n"
+  pattern-not: "if ( $FUNC( $FACE, $TTAG_glyf, $STREAM, 0 ) &&\n     !$FUNC( $FACE,\
+    \ $TTAG_CFF, $STREAM, 0 ) )\n  $NUM_INSTANCES = 0;\n"
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the absence of a specific table
+    (TTAG_CFF) is checked without first ensuring the presence of another required
+    table (TTAG_glyf). This can lead to incorrect handling of font data, potentially
+    causing crashes or undefined behavior. The fix involves adding a check for the
+    presence of the TTAG_glyf table before checking for the TTAG_CFF table.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/freetype/freetype/commit/779309744222a736eba0f1731e8162fce6288d4e
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2020-15999
+    technology:
+    - c
+- id: vuln-libmspack-72e70a92
+  pattern: "if ($VAR != 0xFFFFFFFF && $VAR > $LIMIT) {\n  ...\n}\n"
+  pattern-not: "if ($VAR != 0xFFFFFFFF && $VAR >= $LIMIT) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses a ''>'' comparison instead of ''>='' when checking if a
+    value exceeds a limit. This can lead to off-by-one errors and potential out-of-bounds
+    access. Replace ''>'' with ''>='' to properly handle boundary conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/kyz/libmspack/commit/72e70a921f0f07fee748aec2274b30784e1d312a
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-dosfstools-e8eff147
+  pattern: 'printf("%10d bytes per FAT (= %u sectors)\n", $FS->fat_size, $FS->fat_size
+    / $LSS);
+
+    '
+  pattern-not: 'printf("%10lld bytes per FAT (= %llu sectors)\n", (long long)$FS->fat_size,
+    (long long)$FS->fat_size / $LSS);
+
+    '
+  languages:
+  - c
+  message: 'The format specifiers in the printf statement do not match the type of
+    the variables being printed, which can lead to incorrect output or undefined behavior.
+    This is dangerous because it can cause misinterpretation of the FAT size and sector
+    count, potentially leading to filesystem corruption or incorrect diagnostics.
+    To fix this, ensure that the format specifiers match the variable types, using
+    %lld for long long and %llu for unsigned long long.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/dosfstools/dosfstools/commit/e8eff147e9da1185f9afd5b25948153a3b97cf52
+    category: security
+    cwe:
+    - CWE-686
+    owasp: A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/686.html
+    technology:
+    - c
+- id: vuln-libgit2-9844d38b
+  pattern: 'if ($CMD & $MASK1) $VAR1 = *$DELTA++;
+
+    if ($CMD & $MASK2) $VAR1 |= *$DELTA++ << $SHIFT1;
+
+    if ($CMD & $MASK3) $VAR1 |= *$DELTA++ << $SHIFT2;
+
+    if ($CMD & $MASK4) $VAR1 |= ((unsigned) *$DELTA++ << $SHIFT3);
+
+    '
+  pattern-not: '#define ADD_DELTA($O, $SHIFT) { if ($DELTA < $DELTA_END) ($O) |= ((unsigned)
+    *$DELTA++ << $SHIFT); else goto fail; }
+
+    if ($CMD & $MASK1) ADD_DELTA($VAR1, $SHIFT1);
+
+    if ($CMD & $MASK2) ADD_DELTA($VAR1, $SHIFT2);
+
+    if ($CMD & $MASK3) ADD_DELTA($VAR1, $SHIFT3);
+
+    if ($CMD & $MASK4) ADD_DELTA($VAR1, $SHIFT4);
+
+    #undef ADD_DELTA
+
+    '
+  languages:
+  - c
+  message: 'The code performs bitwise operations on a delta buffer without checking
+    bounds, which could lead to out-of-bounds memory access. This vulnerability could
+    be exploited to cause a crash or potentially execute arbitrary code. The fix introduces
+    a bounds check using the ADD_DELTA macro to ensure that the delta buffer is not
+    accessed beyond its end.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libgit2/libgit2/commit/9844d38bed10e9ff17174434b3421b227ae710f3
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-vim-d1ae8366
+  pattern: "if ($REG->y_size == 0) {\n  ...\n}\n"
+  pattern-not: "if ($REG->y_size == 0 || $YCURRENT->y_array == NULL) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential null pointer dereference vulnerability. \nThe code\
+    \ checks if `y_size` is zero but fails to verify if `y_array` is NULL, \nwhich\
+    \ could lead to a null pointer dereference. \nTo fix this, ensure both `y_size`\
+    \ and `y_array` are checked before accessing `y_array`.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/vim/vim/commit/d1ae8366aff286d41e7f5bc513cc0a1af5130aad
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-openssl-7725e7bf
+  pattern: "if ($RET == -1 && CRYPTO_THREAD_write_lock($LOCK)) {\n    $EX_FLAGS |=\
+    \ $EXFLAG_INVALID_POLICY;\n    CRYPTO_THREAD_unlock($LOCK);\n}\n"
+  pattern-not: "if ($RET == -1 && CRYPTO_THREAD_write_lock($LOCK)) {\n    $EX_FLAGS\
+    \ |= $EXFLAG_INVALID_POLICY;\n    CRYPTO_THREAD_unlock($LOCK);\n}\nelse {\n  \
+    \  $EX_FLAGS |= $EXFLAG_INVALID_POLICY;\n}\n"
+  languages:
+  - c
+  message: 'This pattern detects a potential race condition in OpenSSL where the EXFLAG_INVALID_POLICY
+    flag is set without proper error handling. The original code could lead to inconsistent
+    state if the lock acquisition fails, as the flag would not be set in that case.
+    This could result in incorrect policy validation. The fix ensures that the flag
+    is set regardless of whether the lock is acquired or not. Always ensure proper
+    error handling when working with thread locks and shared state.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/openssl/openssl/commit/7725e7bfe6f2ce8146b6552b44e0d226be7638e7
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization
+      (''Race Condition'')'
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - c
+- id: vuln-qemu-a71c775b
+  pattern: "if ($TYPE == TYPE_DISK && $CMD_BUF[2] == 0xb0) {\n  $MAX_TRANSFER = blk_get_max_transfer($BLK)\
+    \ / $BLOCKSIZE;\n  assert($MAX_TRANSFER);\n  stl_be_p(&$BUF[8], $MAX_TRANSFER);\n\
+    \  stl_be_p(&$BUF[12], MIN_NON_ZERO($MAX_TRANSFER, ldl_be_p(&$BUF[12])));\n}\n"
+  pattern-not: "if ($TYPE == TYPE_DISK && ($CMD_BUF[1] & 0x01)) {\n  $PAGE = $CMD_BUF[2];\n\
+    \  if ($PAGE == 0xb0) {\n    $MAX_TRANSFER = blk_get_max_transfer($BLK) / $BLOCKSIZE;\n\
+    \    assert($MAX_TRANSFER);\n    stl_be_p(&$BUF[8], $MAX_TRANSFER);\n    stl_be_p(&$BUF[12],\
+    \ MIN_NON_ZERO($MAX_TRANSFER, ldl_be_p(&$BUF[12])));\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code directly checks for the VPD Block Limits page (0xb0) without
+    verifying if the EVPD (Enable Vital Product Data) bit is set in the SCSI command.
+    This can lead to incorrect handling of SCSI commands and potential security issues.
+    The fix involves checking the EVPD bit before processing the VPD Block Limits
+    page.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/qemu/qemu/commit/a71c775b24ebc664129eb1d9b4c360590353efd5
+    category: security
+    cwe:
+    - 'CWE-862: Missing Authorization'
+    owasp: A04:2021 - Insecure Design
+    technology:
+    - c
+- id: vuln-openldap-6fe51a9a
+  pattern: 'assert(0);
+
+    '
+  pattern-not: '/* invalid input */
+
+    '
+  languages:
+  - c
+  message: 'The use of `assert(0)` in the code indicates a potential issue where the
+    program may terminate abruptly due to an invalid state. This can be dangerous
+    as it may lead to denial of service or unexpected behavior in production environments.
+    Instead of using `assert(0)`, handle the invalid input gracefully with appropriate
+    error handling or logging.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/openldap/openldap/commit/6fe51a9ab04fd28bbc171da3cf12f1c1040d6629
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c
+- id: vuln-slurm-750cc23e
+  pattern: "void *slurm_xmalloc(size_t $SIZE, bool $CLEAR, ...) {\n  ...\n}\n"
+  pattern-not: "void *slurm_xmalloc(uint64_t $SIZE, bool $CLEAR, ...) {\n  if ($SIZE\
+    \ > 0xffffffff)\n    fatal(\"attempt at overflow\");\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `slurm_xmalloc` uses `size_t` for the size parameter, which
+    can lead to integer overflow vulnerabilities. This is dangerous because it can
+    result in memory allocation of an incorrect size, potentially leading to buffer
+    overflows or other memory corruption issues. The fix changes the type to `uint64_t`
+    and adds a check to prevent overflow. To fix this, ensure the size parameter is
+    of a type that can handle large values and add bounds checking to prevent overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/SchedMD/slurm/commit/750cc23edcc6fddfff21d33bdaf4fb7deb28cfda
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-gnutls-3efb6c5f
+  pattern: "if ($DATA_SIZE <= (ssize_t) ($RESPONDER_IDS * 2)) {\n  ...\n}\n"
+  pattern-not: "if ($DATA_SIZE < (ssize_t)$RID_BYTES) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "The vulnerability involves an incorrect bounds check that could lead to\
+    \ memory corruption. \nThe original code checks if the data size is less than\
+    \ or equal to the product of responder IDs and 2, \nwhich may not correctly account\
+    \ for the actual data size. This could result in buffer overflows or \nother memory-related\
+    \ issues. The fix involves a more accurate bounds check using the actual byte\
+    \ count.\nEnsure that bounds checks accurately reflect the data size being processed.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/gnutls/gnutls/commit/3efb6c5fd0e3822ec11879d5bcbea0e8d322cd03
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-krb5-ea92d2f0
+  pattern: "if ($BUFFER->Offset < $HEADER_LEN || \n    $BUFFER->Offset + $BUFFER->cbBufferSize\
+    \ > $LEN) {\n  ...\n}\n"
+  pattern-not: "if ($BUFFER->Offset < $HEADER_LEN || \n    $BUFFER->Offset > $LEN\
+    \ ||\n    $BUFFER->cbBufferSize > $LEN - $BUFFER->Offset) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected an integer overflow vulnerability in buffer boundary checks.
+
+    The original check could allow for integer overflow when calculating the buffer
+    size,
+
+    potentially leading to out-of-bounds memory access. The fix ensures that the buffer
+
+    offset and size are properly validated to prevent overflow conditions.
+
+    To fix this, ensure that the buffer offset and size are checked separately and
+    that
+
+    the size does not exceed the remaining space after the offset.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/krb5/krb5/commit/ea92d2f0fcceb54a70910fa32e9a0d7a5afc3583
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-moddable-c31b8fd1
+  pattern: 'while (COMPARE($I) < 0) $I++;
+
+    while (COMPARE($J) > 0) $J--;
+
+    '
+  pattern-not: 'while ((COMPARE($I) < 0) && ($I <= $J)) $I++;
+
+    while ((COMPARE($J) > 0) && ($I <= $J)) $J--;
+
+    '
+  languages:
+  - c
+  message: 'The code contains a potential out-of-bounds access vulnerability due to
+    missing bounds checks in while loops. This could lead to undefined behavior or
+    memory corruption if the loop variables exceed valid bounds. To fix this, ensure
+    that bounds checks (e.g., `i <= j`) are included in the loop conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Moddable-OpenSource/moddable/commit/c31b8fd15df1ce5fdc11161d4d88fae278e974e1
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c
+- id: vuln-libplist-3a55ddd3
+  pattern: "int $W1, $W2, $W3, $W4;\n...\nwhile (...) {\n  $W1 = $TABLE[(int)$DATA[$N]];\n\
+    \  $W2 = $TABLE[(int)$DATA[$N+1]];\n  $W3 = $TABLE[(int)$DATA[$N+2]];\n  $W4 =\
+    \ $TABLE[(int)$DATA[$N+3]];\n  ...\n  if ($W2 >= 0) {\n    $TARGET[$I++] = (char)(($W1*4\
+    \ + ($W2 >> 4)) & 255);\n  }\n  if ($W3 >= 0) {\n    $TARGET[$I++] = (char)(($W2*16\
+    \ + ($W3 >> 2)) & 255);\n  }\n  if ($W4 >= 0) {\n    $TARGET[$I++] = (char)(($W3*64\
+    \ + $W4) & 255);\n  }\n}\n"
+  pattern-not: "int $WV, $W1, $W2, $W3, $W4;\nint $TMPVAL[4];\nint $TMPCNT = 0;\n\
+    ...\nif (($WV = $TABLE[(int)(unsigned char)*$PTR++]) == -1) {\n  continue;\n}\n\
+    $TMPVAL[$TMPCNT++] = $WV;\nif ($TMPCNT == 4) {\n  $TMPCNT = 0;\n  $W1 = $TMPVAL[0];\n\
+    \  $W2 = $TMPVAL[1];\n  $W3 = $TMPVAL[2];\n  $W4 = $TMPVAL[3];\n  if ($W2 >= 0)\
+    \ {\n    $OUTBUF[$P++] = (unsigned char)((($W1 << 2) + ($W2 >> 4)) & 0xFF);\n\
+    \  }\n  if ($W3 >= 0) {\n    $OUTBUF[$P++] = (unsigned char)((($W2 << 4) + ($W3\
+    \ >> 2)) & 0xFF);\n  }\n  if ($W4 >= 0) {\n    $OUTBUF[$P++] = (unsigned char)((($W3\
+    \ << 6) + $W4) & 0xFF);\n  }\n}\n"
+  languages:
+  - c
+  message: 'The original base64 decoding implementation processes input in fixed-size
+    blocks without proper validation, which can lead to out-of-bounds memory access
+    or incorrect decoding. The vulnerability arises from directly accessing the input
+    data without checking for invalid characters or buffer boundaries. The fix introduces
+    proper character validation and processes input in a safer manner using temporary
+    storage and explicit checks. To fix this, ensure that all input characters are
+    validated before processing and use temporary storage to handle decoded values
+    safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libimobiledevice/libplist/commit/3a55ddd3c4c11ce75a86afbefd085d8d397ff957
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://en.wikipedia.org/wiki/Base64
+    technology:
+    - c
+- id: vuln-libtiff-438274f9
+  pattern: '$STRIPSPERPLANE = (($TD->td_imagelength + $ROWSPERSTRIP - 1) / $ROWSPERSTRIP);
+
+    '
+  pattern-not: '$STRIPSPERPLANE = TIFFhowmany_32_maxuint_compat($TD->td_imagelength,
+    $ROWSPERSTRIP);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves an integer overflow in the calculation of strips
+    per plane in the TIFF library. The original calculation can lead to an overflow
+    when td_imagelength and rowsperstrip are large, potentially causing memory corruption
+    or other undefined behavior. The fix replaces the calculation with the TIFFhowmany_32_maxuint_compat
+    function, which safely handles the division. To fix this, replace the vulnerable
+    calculation with the safe function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/vadz/libtiff/commit/438274f938e046d33cb0e1230b41da32ffe223e1
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-clamav-26b19809
+  pattern: 'unsigned int max_jmp_loop = 100000;
+
+    '
+  pattern-not: 'unsigned int max_jmp_loop = 100000000;
+
+    '
+  languages:
+  - c
+  message: 'The variable `max_jmp_loop` is set to a low value (100000), which can
+    lead to insufficient loop iteration limits. This can cause the program to terminate
+    prematurely or fail to handle large inputs properly. Increase the value of `max_jmp_loop`
+    to 100000000 to ensure adequate loop iteration limits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Cisco-Talos/clamav/commit/26b19809fb3b940cb0fda0422d685fff02a53b5f
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    owasp:
+    - A12:2021-Security Misconfiguration
+    technology:
+    - c
+- id: vuln-cyrus-imapd-1ebd8ae4
+  pattern: "unsigned $RET_VAL = 0;\nint $I;\nwhile (*$STRING) {\n  $I = (int) *$STRING;\n\
+    \  $RET_VAL ^= $I;\n  $RET_VAL <<= 1;\n  $STRING++;\n}\nreturn $RET_VAL;\n"
+  pattern-not: "const unsigned char *$USTR = (const unsigned char *) $STRING;\nunsigned\
+    \ $HASH = 5381;\nint $C;\nif ($SEED) {\n  unsigned $I;\n  for ($I = 0; $I < sizeof\
+    \ $SEED; $I++) {\n    $C = $SEED & 0xff;\n    $HASH = (($HASH << 5) + $HASH) ^\
+    \ $C;\n    $SEED >>= 8;\n  }\n}\nwhile (($C = *$USTR++))\n  $HASH = (($HASH <<\
+    \ 5) + $HASH) ^ $C;\nreturn $HASH;\n"
+  languages:
+  - c
+  message: 'The original strhash function uses a weak hashing algorithm that is vulnerable
+    to collisions and predictability. This can lead to security issues such as hash-based
+    denial of service attacks. The patch introduces a more robust hashing algorithm
+    (djb2) with an optional seed to improve security. Replace the vulnerable hashing
+    implementation with a stronger algorithm like djb2.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/cyrusimap/cyrus-imapd/commit/1ebd8ae4d537c7397a81797c9f050cfa9d1066b8
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c
+- id: vuln-gvdb-d83587b2
+  pattern: 'g_file_replace_contents_async($FILE, $STR->str, $STR->len, ...)
+
+    '
+  pattern-not: 'g_file_replace_contents_async($FILE, g_bytes_get_data($BYTES, NULL),
+    g_bytes_get_size($BYTES), ...)
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of string length with g_file_replace_contents_async.
+    This can lead to buffer overflows or incorrect file writes. Use g_bytes_get_data
+    and g_bytes_get_size to ensure the correct data and size are passed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/GNOME/gvdb/commit/d83587b2a364eb9a9a53be7e6a708074e252de14
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-curl-cff89bc0
+  pattern: "while(fgets($LINE, $MAX_LEN, $FP)) {\n  ...\n}\n"
+  pattern-not: "while(get_line($LINE, $MAX_LEN, $FP)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of `fgets()` without proper line handling can lead to incomplete
+    or partial lines being processed, which may cause security vulnerabilities. The
+    function `fgets()` does not guarantee that the entire line is read, especially
+    if the line is longer than the buffer size. This can result in incorrect parsing
+    or processing of data. To fix this, use a custom function like `get_line()` that
+    ensures complete lines are read and processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/curl/curl/commit/cff89bc088b7884098ea0c5378bbda3d49c437bc
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://curl.se/docs/security.html
+    technology:
+    - c
+- id: vuln-flatpak-ba818f50
+  pattern: 'g_bytes_new($METADATA, strlen($METADATA) + 1)
+
+    '
+  pattern-not: 'g_bytes_new($METADATA, strlen($METADATA))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of `g_bytes_new` with `strlen + 1` which can lead
+    to buffer overflows or incorrect size calculations. This vulnerability occurs
+    when the size of a string is incorrectly calculated by adding 1 to the result
+    of `strlen`, potentially including the null terminator twice. This can lead to
+    memory corruption or incorrect data handling. Always use `strlen` directly without
+    adding 1 when passing the size to `g_bytes_new`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/flatpak/flatpak/commit/ba818f504c926baaf6e362be8159cfacf994310e
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-opensc-f015746d
+  pattern: "*$TNAME = malloc($SIZE);\nif (*$TNAME == NULL) {\n  ...\n}\n$FUNC($CARD,\
+    \ $OFFSET, (unsigned char *)*$TNAME, $SIZE, $FLAGS);\n...\nfree(*$TNAME);\n...\n\
+    if ((*$TNAME)[$R-1] != '\\0') {\n  (*$TNAME)[$R-1] = '\\0';\n}\n"
+  pattern-not: "$NAME = malloc($SIZE);\nif ($NAME == NULL) {\n  ...\n}\n$FUNC($CARD,\
+    \ $OFFSET, (unsigned char *)$NAME, $SIZE, $FLAGS);\n...\nfree($NAME);\n...\nif\
+    \ ($NAME[$R-1] != '\\0') {\n  $NAME[$R-1] = '\\0';\n}\n*$TNAME = $NAME;\n"
+  languages:
+  - c
+  message: "Directly using a double-pointer in memory allocation and manipulation\
+    \ can lead to unsafe memory access and potential vulnerabilities. \nThe original\
+    \ code dereferences the pointer multiple times, which can cause issues if the\
+    \ memory allocation fails or if the pointer is used incorrectly.\nTo fix this,\
+    \ allocate memory to a local pointer first, perform all necessary operations,\
+    \ and then assign it to the double-pointer.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/OpenSC/OpenSC/commit/f015746d
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c
+- id: vuln-opensc-ed55fcd2
+  pattern: "for ($I = 7; $I < 16; $I++) {\n  ...\n}\n"
+  pattern-not: "for ($I = 0x7; $I <= 0xF; $I++) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The loop condition uses an incorrect upper bound, which can lead to out-of-bounds
+    access. The condition should be adjusted to use hexadecimal notation and a less-than-or-equal
+    comparison to ensure proper iteration over the intended range. This vulnerability
+    can cause memory corruption or undefined behavior. Fix by using hexadecimal notation
+    and a less-than-or-equal comparison in the loop condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/OpenSC/OpenSC/commit/ed55fcd2996930bf58b9bb57e9ba7b1f3a753c43
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c
+- id: vuln-openjpeg-178194c0
+  pattern: "assert($CMAP[$I].mtyp == 0 || $CMAP[$I].mtyp == 1);\nif ($PCOL >= $NR_CHANNELS)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($CMAP[$I].mtyp != 0 && $CMAP[$I].mtyp != 1) {\n  opj_event_msg($MANAGER,\
+    \ EVT_ERROR, \"Invalid value for cmap[%d].mtyp = %d.\\n\", $I, $CMAP[$I].mtyp);\n\
+    \  $IS_SANE = OPJ_FALSE;\n} else if ($PCOL >= $NR_CHANNELS) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses an assert statement to validate the value of cmap[i].mtyp,
+    which can be disabled in production builds, leading to potential security vulnerabilities.
+    Instead, proper error handling should be implemented to ensure the value is always
+    validated. This can prevent undefined behavior or crashes when invalid values
+    are encountered.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/uclouvain/openjpeg/commit/178194c093422c9564efc41f9ecb5c630b43f723
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    references:
+    - "ISO 15444-1 Table I.14 \u2013 MTYPi field values"
+    technology:
+    - c
+- id: vuln-libical-04d84749
+  pattern: "if ($PREV_CHAR != '\\\\') {\n  ...\n}\n"
+  pattern-not: "if ($PREV_CHAR && $PREV_CHAR != '\\\\') {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks if a character is not a backslash without first ensuring
+    the character exists. This can lead to undefined behavior if the character is
+    null. Always check if the character exists before performing any operations on
+    it.
+
+    To fix this, ensure the character is not null before comparing it to a backslash.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/libical/libical/commit/04d84749e53db08c71ed0ce8b6ba5c11082743cd
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-freetype-cee5d593
+  pattern: 'unsigned long $VAR = $OLDSIZE + ($OLDSIZE >> 1) + 4;
+
+    '
+  pattern-not: 'unsigned long $VAR = $OLDSIZE + ($OLDSIZE >> 1) + 5;
+
+    '
+  languages:
+  - c
+  message: 'This rule detects an incorrect buffer size calculation that could lead
+    to buffer overflow vulnerabilities. The original calculation uses `oldsize + (oldsize
+    >> 1) + 4`, which might not allocate enough space in certain scenarios. The fix
+    changes the constant to `5` to ensure sufficient buffer size. This vulnerability
+    is dangerous because it could allow attackers to overwrite adjacent memory, potentially
+    leading to arbitrary code execution. To fix this, ensure the buffer size calculation
+    includes an appropriate safety margin.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/freetype/freetype/commit/cee5d593582801f65c5e127d9de9ca24ebcdc747
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

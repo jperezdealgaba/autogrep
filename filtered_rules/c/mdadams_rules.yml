@@ -1,0 +1,31 @@
+rules:
+- id: vuln-jasper-1f0dfe5a
+  pattern: '$VAR = $EXPR1 * (1 << ($EXPR2 + $EXPR3 - $EXPR4));
+
+    '
+  pattern-not: '$VAR = $EXPR1 * (JAS_CAST(uint_fast32_t, 1) << ($EXPR2 + $EXPR3 -
+    $EXPR4));
+
+    '
+  languages:
+  - c
+  message: 'Detected potential integer overflow vulnerability due to unchecked bitwise
+    shift operation.
+
+    This can lead to undefined behavior or security vulnerabilities when the result
+    exceeds the maximum value of the integer type.
+
+    To fix, use a cast to ensure the operation is performed on an appropriately sized
+    type, such as `uint_fast32_t`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mdadams/jasper/commit/1f0dfe5a42911b6880a1445f13f6d615ddb55387
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c

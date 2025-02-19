@@ -1,0 +1,29 @@
+rules:
+- id: vuln-tinyfilemanager-154947ef
+  pattern: '$fullPath = $path . ''/'' . str_replace("./","_",$_REQUEST[''fullpath'']);
+
+    '
+  pattern-not: '$fullPath = $path . ''/'' . basename($_REQUEST[''fullpath'']);
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses `$_REQUEST[''fullpath'']` without proper sanitization,
+    which can lead to path traversal vulnerabilities. An attacker can manipulate the
+    `fullpath` parameter to access or modify files outside the intended directory.
+    Use `basename()` to ensure only the filename is used.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/prasathmani/tinyfilemanager/commit/154947ef83efeb68fc2b921065392b6a7fc9c965
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1: Injection
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - php

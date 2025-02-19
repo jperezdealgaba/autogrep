@@ -1,0 +1,40 @@
+rules:
+- id: vuln-saml-aee3fb1e
+  pattern: "func (sp *ServiceProvider) validateSigned($RESPONSE *etree.Element) error\
+    \ {\n  ...\n  if $SIG != nil {\n    if err = sp.validateSignature($RESPONSE);\
+    \ err != nil {\n      return fmt.Errorf(\"cannot validate signature on Response:\
+    \ %v\", err)\n    }\n    $HAVE_SIG = true\n  }\n  ...\n  if !$HAVE_SIG {\n   \
+    \ return errors.New(\"either the Response or Assertion must be signed\")\n  }\n\
+    \  return nil\n}\n"
+  pattern-not: "func (sp *ServiceProvider) validateSignature($EL *etree.Element) error\
+    \ {\n  $SIG, err := findChild($EL, \"http://www.w3.org/2000/09/xmldsig#\", \"\
+    Signature\")\n  if $SIG == nil {\n    return errSignatureElementNotPresent\n \
+    \ }\n  return fmt.Errorf(\"cannot validate signature on %s: %v\", $EL.Tag, err)\n\
+    }\n"
+  languages:
+  - go
+  message: 'The SAML response validation incorrectly handles signature verification
+    by
+
+    only checking the Response element''s signature and not properly validating
+
+    Assertion signatures. This could allow unsigned or improperly signed
+
+    assertions to be accepted. The fix properly separates signature validation
+
+    logic and provides more specific error messages for each element type.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/crewjam/saml/commit/aee3fb1edeeaf1088fcb458727e0fd863d277f8b
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://www.oasis-open.org/committees/download.php/56776/sstc-saml-core-errata-2.0-wd-07.pdf
+    technology:
+    - go
+    - saml

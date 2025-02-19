@@ -1,0 +1,28 @@
+rules:
+- id: vuln-joplin-d2457a00
+  pattern: 'image: postgres:13
+
+    '
+  pattern-not: 'image: postgres:15
+
+    '
+  languages:
+  - yaml
+  message: 'Detected an outdated PostgreSQL image version (postgres:13). Using outdated
+    database versions can expose your application to known vulnerabilities and security
+    risks. Upgrade to postgres:15 or a more recent version to ensure security patches
+    and improvements are applied.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/d2457a007976c8378d22c147e3e08591c0ad4c3d
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.postgresql.org/support/versioning/
+    technology:
+    - yaml

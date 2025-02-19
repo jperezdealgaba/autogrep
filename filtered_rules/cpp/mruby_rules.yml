@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mruby-f5e10c5a
+  pattern: 'void mrb_proc_copy(struct RProc *$A, struct RProc *$B);
+
+    '
+  pattern-not: 'void mrb_proc_copy(mrb_state *$M, struct RProc *$A, struct RProc *$B);
+
+    '
+  languages:
+  - cpp
+  message: 'The function `mrb_proc_copy` is missing the `mrb_state` parameter, which
+    is required for proper memory management and context handling in mruby. This can
+    lead to undefined behavior, memory corruption, or security vulnerabilities. Always
+    include the `mrb_state` parameter to ensure proper context management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/f5e10c5a79a17939af763b1dcf5232ce47e24a34
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/mruby/mruby/commit/f5e10c5a79a17939af763b1dcf5232ce47e24a34
+    technology:
+    - cpp

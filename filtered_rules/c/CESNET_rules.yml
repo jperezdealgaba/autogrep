@@ -1,0 +1,53 @@
+rules:
+- id: vuln-libyang-59a0bff1
+  pattern: "if (!strcmp($NAME, $EXT_PLUGINS[$U].name) &&\n    !strcmp($MODULE, $EXT_PLUGINS[$U].module)\
+    \ &&\n    (!$EXT_PLUGINS[$U].revision || !strcmp($REVISION, $EXT_PLUGINS[$U].revision)))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!strcmp($NAME, $EXT_PLUGINS[$U].name) && !strcmp($MODULE, $EXT_PLUGINS[$U].module)\
+    \ &&\n    ((!$REVISION && !$EXT_PLUGINS[$U].revision) || ($REVISION && !strcmp($REVISION,\
+    \ $EXT_PLUGINS[$U].revision)))) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a logical error in the condition checking for plugin
+    revisions. The original code could lead to incorrect behavior when handling NULL
+    revisions, potentially causing security issues or unexpected behavior. The fix
+    ensures proper handling of NULL revisions by explicitly checking for NULL values
+    before performing string comparisons.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CESNET/libyang/commit/59a0bff1a5a2f0a0eac07e4bf94d4aea9dd3708d
+    category: security
+    cwe:
+    - CWE-697
+    owasp: A9:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/697.html
+    technology:
+    - c
+- id: vuln-libyang-f6d684ad
+  pattern: 'make_canonical($CTX, $TYPE, $VALUE, $ARG, $ARG2);
+
+    '
+  pattern-not: "if (make_canonical($CTX, $TYPE, $VALUE, $ARG, $ARG2) == -1) {\n  ...\n\
+    \  goto error;\n}\n"
+  languages:
+  - c
+  message: 'The function `make_canonical` is called without checking its return value,
+    which can lead to unhandled errors. This can cause the program to continue execution
+    in an inconsistent state, potentially leading to security vulnerabilities or crashes.
+    Always check the return value of `make_canonical` and handle errors appropriately
+    by using `goto error` or other error handling mechanisms.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/CESNET/libyang/commit/f6d684ade99dd37b21babaa8a856f64faa1e2e0d
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c

@@ -1,0 +1,18 @@
+rules:
+- id: vuln-astro-shield-12210193
+  pattern: "for (const scriptUrl of $SRIVAR.scriptsAllowListUrls) {\n  ...\n}\n"
+  pattern-not: "for (const scriptUrl of $SRIVAR.scriptsAllowListUrls ?? []) {\n  ...\n\
+    }\n"
+  languages:
+  - javascript
+  message: "Potential Null Reference Error when accessing `scriptsAllowListUrls`.\
+    \ \nDirectly iterating over `scriptsAllowListUrls` without null-checking can lead\
+    \ to runtime errors if the property is undefined. \nAlways use optional chaining\
+    \ or null coalescing to handle potentially undefined properties.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/kindspells/astro-shield/commit/1221019306f501bf5fa9bcfb5a23a2321d34ba0a
+    category: security
+    cwe: CWE-476
+    owasp: A10:2021-Server-Side Request Forgery
+    technology: javascript

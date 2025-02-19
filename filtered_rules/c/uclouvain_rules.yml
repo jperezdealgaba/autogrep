@@ -1,0 +1,101 @@
+rules:
+- id: vuln-openjpeg-e5285319
+  pattern: 'fscanf($F, "PG%[ \t]%c%c%[ \t+-]%d%[ \t]%d%[ \t]%d", ...)
+
+    '
+  pattern-not: 'fscanf($F, "PG%31[ \t]%c%c%31[ \t+-]%d%31[ \t]%d%31[ \t]%d", ...)
+
+    '
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability in fscanf due to missing\
+    \ field width specifiers. \nThis can lead to buffer overflow attacks by allowing\
+    \ input larger than the allocated buffer size. \nAlways specify a maximum field\
+    \ width in the format string to prevent buffer overflows.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/e5285319229a5d77bf316bb0d3a6cbd3cb8666d9
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-openjpeg-39f9934a
+  pattern: "for( $I = 0; $QUERY_PARAM.box_type[$I][0] != 0 && $I < $MAX_NUMOFBOX;\
+    \ $I++ ) {\n  ...\n}\n"
+  pattern-not: "for( $I = 0; $I < $MAX_NUMOFBOX && $QUERY_PARAM.box_type[$I][0] !=\
+    \ 0; $I++ ) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Potential out-of-bounds array access due to incorrect loop condition order.
+
+    The condition `query_param.box_type[i][0] != 0` is checked before `i < MAX_NUMOFBOX`,
+
+    which could lead to accessing memory beyond the array bounds if `i` exceeds `MAX_NUMOFBOX`.
+
+    Fix by reordering the conditions to check the array bounds first.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/39f9934a70f5f01ddb7adc70801e981efb146f05
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-openjpeg-79c7d7af
+  pattern: '$DIRPTR->filename_buf = (char*)malloc($SIZE * $OPJ_PATH_LEN * sizeof(char));
+
+    $DIRPTR->filename = (char**) malloc($SIZE * sizeof(char*));
+
+    '
+  pattern-not: '$DIRPTR->filename_buf = (char*)calloc($SIZE, $OPJ_PATH_LEN * sizeof(char));
+
+    $DIRPTR->filename = (char**) calloc($SIZE, sizeof(char*));
+
+    '
+  languages:
+  - c
+  message: 'The use of `malloc` without initialization can lead to uninitialized memory
+    access vulnerabilities. This is dangerous because it can expose sensitive data
+    or cause undefined behavior. Replace `malloc` with `calloc` to ensure memory is
+    zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/79c7d7af598b778c3cdcb455df23d50efc95eb3c
+    category: security
+    cwe:
+    - CWE-908
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-openjpeg-e03e9474
+  pattern: "if ($VAR->prec > 32) {\n  ...\n}\n"
+  pattern-not: "if ($VAR->prec > 31) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds issue where the precision value (`prec`)
+    is checked against 32 instead of 31. This could lead to invalid memory access
+    or undefined behavior. According to the JPEG2000 norm, OpenJpeg only supports
+    precision values up to 31. Fix the condition to check `if ($VAR->prec > 31)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/uclouvain/openjpeg/commit/e03e9474667e5117341351699f0b1dbb06f93346
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

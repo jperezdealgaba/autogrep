@@ -1,0 +1,73 @@
+rules:
+- id: vuln-moddable-ef5216cc
+  pattern: "if (!$VAR && ($BYTE != $CONST))\n  $FUNC($ERROR, $MSG, $ID);\n"
+  pattern-not: "if ($VAR) {\n  if ($VAR->$FIELD < 0)\n    $FUNC($ERROR, $MSG, $ID);\n\
+    }\nelse {\n  if ($BYTE != $CONST)\n    $FUNC($ERROR, $MSG, $ID);\n}\n"
+  languages:
+  - c
+  message: 'The code fails to check if a variable is initialized before accessing
+    it, which can lead to undefined behavior. This vulnerability can result in reference
+    errors and potential security issues. The fix involves adding a proper check to
+    ensure the variable is initialized before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/ef5216cc8bf87f8b16313eb13af0b54b06917c06
+    category: security
+    cwe:
+    - CWE-457
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references: []
+    technology:
+    - c
+- id: vuln-moddable-df143cb6
+  pattern: "if ($VAR->root->description->token == $TOKEN) {\n    ...\n}\n"
+  pattern-not: "if ($VAR->root->description && ($VAR->root->description->token ==\
+    \ $TOKEN)) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential null pointer dereference vulnerability. Accessing
+    `description->token` without first checking if `description` is null can lead
+    to a crash or undefined behavior. Always check for null pointers before dereferencing
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/df143cb68a45e5bbbc9bc95fdcd7478f3ac8c263
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-moddable-8e94a366
+  pattern: '(txSize)c_floor(c_log($INTEGER) / c_log($RADIX))
+
+    '
+  pattern-not: '(txSize)c_floor(c_log1p($INTEGER) / c_log($RADIX))
+
+    '
+  languages:
+  - c
+  message: 'The use of `c_log` instead of `c_log1p` can lead to precision loss and
+    incorrect calculations, especially for large values of `integer`. This can result
+    in incorrect length calculations, potentially leading to buffer overflows or other
+    memory corruption issues. Replace `c_log` with `c_log1p` to ensure accurate calculations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Moddable-OpenSource/moddable/commit/8e94a36699bfe8b1eab2218081badff1cb7f97ce
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://en.wikipedia.org/wiki/Logarithm#Logarithm_power_identity
+    technology:
+    - c

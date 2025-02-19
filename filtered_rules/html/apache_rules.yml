@@ -1,0 +1,28 @@
+rules:
+- id: vuln-tomcat-bb8f8ab3
+  pattern: '<h3><a href="$URL">$TEXT<font color="$COLOR"></a></font></h3>
+
+    '
+  pattern-not: '<h3><a href="$URL">$TEXT<font color="$COLOR"></font></a></h3>
+
+    '
+  languages:
+  - html
+  message: 'Detected improper HTML structure where the closing `</a>` tag appears
+    before the closing `</font>` tag. This can lead to rendering issues and potential
+    security vulnerabilities due to malformed HTML. Ensure the closing tags are correctly
+    nested to avoid such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/bb8f8ab3b2c9fba6f0b27938c7b2951bddbeee37
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)
+    technology:
+    - html

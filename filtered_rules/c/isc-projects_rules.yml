@@ -1,0 +1,80 @@
+rules:
+- id: vuln-bind9-69c1ee1c
+  pattern: "$RESULT = $FUNC(...);\nif ($RESULT != ISC_R_SUCCESS) {\n  goto error;\n\
+    }\n"
+  pattern-not: 'CHECK($FUNC(...));
+
+    '
+  languages:
+  - c
+  message: 'The code directly checks the return value of a function and uses ''goto
+    error'' for error handling. This pattern is error-prone and can lead to inconsistent
+    error handling. The patch introduces a CHECK macro that centralizes error handling,
+    making the code more robust and maintainable. Replace the direct error checks
+    with the CHECK macro to ensure consistent error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/69c1ee1ce9f801aaa082bb3abf5969b46699f70a
+    category: security
+    cwe:
+    - 'CWE-703: Improper Check or Handling of Exceptional Conditions'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-bind9-73df5c80
+  pattern: "if ($PRIV_KEY1 == NULL || $PRIV_KEY2 == NULL) {\n  return ($RETURN_VALUE);\n\
+    }\nif (BN_cmp($PRIV_KEY1, $PRIV_KEY2) != 0) {\n  return ($RETURN_VALUE);\n}\n"
+  pattern-not: "if ($PRIV_KEY1 == NULL || $PRIV_KEY2 == NULL ||\n    BN_cmp($PRIV_KEY1,\
+    \ $PRIV_KEY2) != 0) {\n  $DST_RET($RETURN_VALUE);\n}\n"
+  languages:
+  - c
+  message: 'The code contains multiple separate checks for NULL pointers and BN_cmp
+    comparisons,
+
+    which can lead to inconsistent error handling and resource leaks. The vulnerability
+
+    occurs because the function may return prematurely without proper cleanup. This
+    can
+
+    be dangerous as it may leave resources allocated or system state inconsistent.
+    The
+
+    fix combines these checks into a single conditional statement and uses a proper
+
+    error handling mechanism (DST_RET) to ensure consistent cleanup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/73df5c80538970ee1fbc4fe3348109bdc281e197
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/MEM12-C.+Consider+using+a+goto+chain+when+leaving+a+function+on+error+when+using+and+releasing+resources
+    technology:
+    - c
+- id: vuln-bind9-2e9d79f1
+  pattern: "if (!deletekey) {\n  ...\n}\n"
+  pattern-not: "if (secure && !deletekey) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "A security check for the 'secure' flag is missing before processing a\
+    \ key. \nThis could allow insecure keys to be processed, potentially leading to\
+    \ security vulnerabilities. \nEnsure the 'secure' flag is checked before proceeding\
+    \ with key operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/isc-projects/bind9/commit/2e9d79f169663c9aff5f0dcdc626a2cd2dbb5892
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - c

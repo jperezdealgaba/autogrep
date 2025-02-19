@@ -1,0 +1,133 @@
+rules:
+- id: vuln-libming-1a1d2704
+  pattern: "char *readBytes(FILE *f, int $SIZE) {\n  ...\n  SWF_warn(\"readBytes:\
+    \ want to read %i < 1 bytes: Handling a 0\\n\", $SIZE);\n  ...\n  int $I;\n  ...\n\
+    }\n"
+  pattern-not: "char *readBytes(FILE *f, unsigned long $SIZE) {\n  ...\n  SWF_warn(\"\
+    readBytes: want to read %lu < 1 bytes: Handling a 0\\n\", $SIZE);\n  ...\n  unsigned\
+    \ long $I;\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function `readBytes` uses a signed integer for the size parameter,
+    which can lead to integer overflow or underflow vulnerabilities. This is dangerous
+    because it can cause memory corruption or unexpected behavior when handling large
+    sizes. To fix this, use an unsigned long type for the size parameter and loop
+    variable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/1a1d2704cb19f2d3299f042bb3a4783c960b0a9a
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-191
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-libming-459fa79d
+  pattern: '$VAR->Password = readBytes($F, $LENGTH);
+
+    '
+  pattern-not: '$VAR->Password = readString($F);
+
+    '
+  languages:
+  - c
+  message: "Detected use of `readBytes` for password handling, which can lead to security\
+    \ vulnerabilities. \nThe function `readBytes` does not properly handle string\
+    \ termination, potentially resulting in buffer overflows or information leaks.\
+    \ \nUse `readString` instead, which ensures proper null-termination of the string.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/459fa79d04dcd240996765727a726e5dc5c38f34
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c
+- id: vuln-libming-efc75c28
+  pattern: '$T = malloc(10);
+
+    sprintf($T, "%ld", $VAR);
+
+    '
+  pattern-not: "{\n  char $LENGTH_FINDER[1];\n  int $NEEDED_LENGTH = snprintf($LENGTH_FINDER,\
+    \ 1, \"%ld\", $VAR) + 1;\n  if ($NEEDED_LENGTH <= 0) {\n    $WARN_FUNC(\"WARNING:\
+    \ could not evaluate size of buffer (memory issue ?).\\n\");\n    break;\n  }\n\
+    \  $T = malloc($NEEDED_LENGTH);\n  sprintf($T, \"%ld\", $VAR);\n}\n"
+  languages:
+  - c
+  message: "Detected a potential buffer overflow vulnerability due to unsafe use of\
+    \ `malloc` and `sprintf`. \nThe code allocates a fixed-size buffer without checking\
+    \ the actual size needed for the formatted string, \nwhich can lead to buffer\
+    \ overflow. To fix this, use `snprintf` to calculate the required buffer size\
+    \ \nand allocate memory dynamically based on the result.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/efc75c28e89fe864cf0412d5a5f0b4a451e14509
+    category: security
+    cwe:
+    - CWE-120
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-libming-2e5a98a0
+  pattern: '$FLAGS += fgetc($F) << 16;
+
+    $FLAGS += fgetc($F) << 8;
+
+    $FLAGS += fgetc($F);
+
+    '
+  pattern-not: "for ($I = 2; $I >= 0; --$I) {\n  if (($FLAGS_CHAR = fgetc($F)) ==\
+    \ EOF) {\n    error(\"truncated file\");\n  } else {\n    $FLAGS += $FLAGS_CHAR\
+    \ << ($I * 8);\n  }\n}\n"
+  languages:
+  - c
+  message: 'The code reads bytes from a file without checking for EOF, which can lead
+    to undefined behavior if the file is truncated. This can cause the program to
+    read invalid data or crash. The fix involves checking for EOF after each read
+    operation and handling the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libming/libming/commit/2e5a98a0dbbd9714294007c601e584aa201494ed
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-libming-8b29e8e7
+  pattern: '#define DEBUGSTACK
+
+    '
+  pattern-not: '//#define DEBUGSTACK
+
+    '
+  languages:
+  - c
+  message: 'The DEBUGSTACK macro is enabled, which can expose sensitive information
+    during debugging. This can lead to information disclosure vulnerabilities. To
+    fix this, comment out or remove the DEBUGSTACK macro definition.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/libming/libming/commit/8b29e8e7b321bbe102b3d543a7a5f20227371612
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

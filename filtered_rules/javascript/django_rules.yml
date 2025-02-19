@@ -1,0 +1,18 @@
+rules:
+- id: vuln-django-f68e5a99
+  pattern: $ELEMENT.innerHTML = $DATA
+  pattern-not: $ELEMENT.textContent = $DATA
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to use of innerHTML. Use textContent instead
+    to safely set text content and prevent XSS attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/django/django/commit/f68e5a99164867ab0e071a936470958ed867479d
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML
+    technology: javascript

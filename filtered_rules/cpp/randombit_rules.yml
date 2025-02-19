@@ -1,0 +1,134 @@
+rules:
+- id: vuln-botan-3fb31cef
+  pattern: "if($IN[0] == 0)\n{\n  $IN += 1;\n  $IN_LENGTH -= 1;\n}\nsecure_vector<byte>\
+    \ $INPUT($IN, $IN + $IN_LENGTH);\n"
+  pattern-not: 'byte $SKIP_FIRST = CT::is_zero<byte>($IN[0]) & 0x01;
+
+    secure_vector<byte> $INPUT($IN + $SKIP_FIRST, $IN + $IN_LENGTH);
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly checks and skips the first byte of input without using
+    constant-time operations, which could lead to timing side-channel vulnerabilities.
+    According to the OAEP standard (Section 7.1.1), the first byte can always be skipped
+    safely, but this should be done in a constant-time manner to prevent information
+    leakage. Use constant-time operations like `CT::is_zero` to handle such checks
+    securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/3fb31cef450cef82015170f8e825a2d656163ea6
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding
+    technology:
+    - cpp
+- id: vuln-botan-94e9154c
+  pattern: "if($P.bits() < 64 || $P.is_negative() || !is_bailie_psw_probable_prime($P))\n\
+    \  throw Decoding_Error(\"Invalid ECC p parameter\");\n"
+  pattern-not: "if($P.bits() < 112 || $P.bits() > 1024)\n  throw Decoding_Error(\"\
+    ECC p parameter is invalid size\");\n\nif($P.is_negative() || !is_bailie_psw_probable_prime($P))\n\
+    \  throw Decoding_Error(\"ECC p parameter is not a prime\");\n"
+  languages:
+  - cpp
+  message: 'The code checks for ECC p parameter validity with insufficient bit length
+    validation (less than 64 bits). This can lead to weak cryptographic keys, making
+    the system vulnerable to attacks. The fix ensures the parameter is within a secure
+    range (112 to 1024 bits) and properly validates primality.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/94e9154c143aa5264da6254a6a1be5bc66ee2b5a
+    category: security
+    cwe:
+    - 'CWE-326: Inadequate Encryption Strength'
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    references:
+    - https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Ar3.pdf
+    technology:
+    - cpp
+- id: vuln-botan-9a23e4e3
+  pattern: 'const size_t $K_BITS = $GROUP.exponent_bits();
+
+    const BigInt $K($RNG, $K_BITS);
+
+    '
+  pattern-not: 'const size_t $K_BITS = $GROUP.p_bits() - 1;
+
+    const BigInt $K($RNG, $K_BITS, false);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected use of short exponents in ElGamal implementation, which is unsafe
+    when the prime field p - 1 is smooth. This can lead to vulnerabilities in cryptographic
+    operations. Always use full-length exponents to ensure security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/9a23e4e3bc3966340531f2ff608fa9d33b5185a2
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://en.wikipedia.org/wiki/ElGamal_encryption
+    technology:
+    - cpp
+- id: vuln-botan-21dccc8f
+  pattern: "if($NAM.size() == $CONSTRAINT.size())\n{\n  return tolower_string($NAM)\
+    \ == tolower_string($CONSTRAINT);\n}\n"
+  pattern-not: "const std::string $CONSTRAINT = tolower_string($NAME);\nconst std::string\
+    \ $ISSUED = tolower_string($NAM);\n\nif($NAM.size() == $CONSTRAINT.size())\n{\n\
+    \  return $ISSUED == $CONSTRAINT;\n}\n"
+  languages:
+  - cpp
+  message: 'The code directly compares the lowercase versions of strings without first
+    converting them to lowercase. This can lead to inconsistent comparisons and potential
+    security vulnerabilities. Always convert strings to lowercase before comparing
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/21dccc8fef18c165ba3301d850ac61521f85637e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - cpp
+- id: vuln-botan-4db001ca
+  pattern: "alignas(64) static const uint8_t $TABLE[256] = {\n  ...\n};\n"
+  pattern-not: "uint8_t $FUNC(char $INPUT) noexcept\n{\n  const uint8_t $C = static_cast<uint8_t>($INPUT);\n\
+    \  ...\n  return $RET;\n}\n"
+  languages:
+  - cpp
+  message: "The code uses a static lookup table for character conversion, which can\
+    \ be vulnerable to timing attacks. \nThe patch replaces this with a constant-time\
+    \ implementation using CT::Mask operations. \nTo fix this, replace static lookup\
+    \ tables with constant-time functions that avoid data-dependent branches.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/randombit/botan/commit/4db001ca200cc124bd889482032013fdc0400282
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://www.bearssl.org/constanttime.html
+    technology:
+    - cpp

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-nfdump-7b26ee97
+  pattern: 'lzo1x_decompress($IN, $IN_LEN, $OUT, $OUT_LEN, $NULL)
+
+    '
+  pattern-not: 'lzo1x_decompress_safe($IN, $IN_LEN, $OUT, $OUT_LEN, $NULL)
+
+    '
+  languages:
+  - c
+  message: 'The use of `lzo1x_decompress` instead of `lzo1x_decompress_safe` can lead
+    to buffer overflow vulnerabilities. The `lzo1x_decompress` function does not perform
+    bounds checking, which can result in memory corruption if the input data is malformed
+    or too large. Always use `lzo1x_decompress_safe` to ensure proper bounds checking
+    and prevent potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phaag/nfdump/commit/7b26ee976ab64e4e30fef1b14df335e5977eb8e2
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.oberhumer.com/opensource/lzo/
+    technology:
+    - c

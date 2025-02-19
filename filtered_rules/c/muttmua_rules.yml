@@ -1,0 +1,28 @@
+rules:
+- id: vuln-mutt-3d9028fe
+  pattern: 'mutt_from_base64($OUT, $IN)
+
+    '
+  pattern-not: 'mutt_from_base64($OUT, $IN, $OLEN)
+
+    '
+  languages:
+  - c
+  message: 'The function `mutt_from_base64` is being called without the `olen` parameter,
+    which can lead to buffer overflow vulnerabilities. This is dangerous because it
+    allows for potential memory corruption and exploitation. Always provide the output
+    buffer length (`olen`) to ensure safe operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/muttmua/mutt/commit/3d9028fec8f4d08db2251096307c0bbbebce669a
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

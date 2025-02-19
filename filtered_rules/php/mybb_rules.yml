@@ -1,0 +1,80 @@
+rules:
+- id: vuln-mybb-238696e3
+  pattern: '$local = $DOMAIN[0].''.'';
+
+    '
+  pattern-not: '$local = htmlspecialchars_uni($DOMAIN[0]).''.'';
+
+    '
+  languages:
+  - php
+  message: "The code directly concatenates a domain value without proper escaping,\
+    \ which can lead to XSS vulnerabilities. \nAlways use htmlspecialchars_uni or\
+    \ similar functions to sanitize user input before displaying it in HTML context.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/238696e37d6a22b89e6bba11e4de3e6620cb5547
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-mybb-86894e1e
+  pattern: "$message = preg_replace_callback(\n  \"#<a\\\\s[^>]*>.*?</a>|([\\s\\(\\\
+    )\\[\\>])(http|https|ftp|news|irc|ircs|irc6){1}(://)([^\\/\\\"\\s\\<\\[\\.]+\\\
+    .([^\\/\\\"\\s\\<\\[\\.]+\\.)*[\\w]+(:[0-9]+)?(/([^\\\"\\s<\\[]|\\[\\])*)?([\\\
+    w\\/\\)]))#ius\",\n  array($this, 'mycode_auto_url_callback'),\n  $message\n);\n"
+  pattern-not: "$message = preg_replace_callback(\n  \"#<a\\\\s[^>]*>.*?</a>|([\\\
+    s\\(\\)\\[\\>])(http|https|ftp|news|irc|ircs|irc6){1}(://)([^\\/\\\"\\s\\<\\[\\\
+    .]+\\.([^\\/\\\"\\s\\<\\[\\.]+\\.)*[\\w]+(:[0-9]+)?(/([^\\\"\\s<\\[]|\\[\\])*)?([\\\
+    w\\/\\)]))(?![^<>]*?>)#ius\",\n  array($this, 'mycode_auto_url_callback'),\n \
+    \ $message\n);\n"
+  languages:
+  - php
+  message: 'The regular expression used to auto-detect URLs is vulnerable to HTML
+    injection due to missing negative lookahead assertion. This can allow attackers
+    to inject malicious HTML content. The fix adds a negative lookahead assertion
+    `(?![^<>]*?>)` to prevent matching URLs within HTML tags.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/86894e1e6837f7687ecf6d9e572a626fc2d5d4fc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-mybb-a43a6f22
+  pattern: 'if(preg_match($PATTERN, $VAR))
+
+    '
+  pattern-not: 'if(preg_match($PATTERN, $VAR) !== 0)
+
+    '
+  languages:
+  - php
+  message: 'The use of `preg_match` without strict comparison (`!== 0`) can lead to
+    false positives, potentially bypassing security checks. This is dangerous because
+    it may allow unintended code execution or data exposure. Always use strict comparison
+    when checking the result of `preg_match` to ensure accurate validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mybb/mybb/commit/a43a6f22944e769a6eabc58c39e7bc18c1cab4ca
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://www.php.net/manual/en/function.preg-match.php
+    technology:
+    - php

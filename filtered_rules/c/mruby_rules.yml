@@ -1,0 +1,46 @@
+rules:
+- id: vuln-mruby-70e57468
+  pattern: 'mrb_bool $VAR = $COND ? TRUE : FALSE;
+
+    '
+  pattern-not: 'mrb_bool $VAR = $COND ? FALSE : TRUE;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially dangerous ternary operation where the TRUE and
+    FALSE values are incorrectly assigned. This can lead to unintended behavior and
+    security vulnerabilities. Ensure the logic correctly assigns TRUE and FALSE based
+    on the condition. The fix should swap the TRUE and FALSE values in the ternary
+    operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/70e574689664c10ed2c47581999cc2ce3e3c5afb
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-mruby-c8c083cb
+  pattern: "if ($N == 14) {\n  ...\n}\n"
+  pattern-not: "if ($N == 13 || $N == 14) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a specific value (14) but does not account for a related
+    value (13) that should also be handled. This can lead to incorrect behavior or
+    security issues when the unhandled value is encountered. To fix this, ensure all
+    relevant values are checked in the condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mruby/mruby/commit/c8c083cb750606b2da81582cd8e43b442bb143e6
+    category: security
+    cwe:
+    - CWE-670
+    technology:
+    - c

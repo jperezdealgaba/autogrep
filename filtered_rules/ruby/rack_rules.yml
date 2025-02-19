@@ -1,0 +1,254 @@
+rules:
+- id: vuln-rack-231ef369
+  pattern: "$HEADER.to_s.split(/\\s*,\\s*/).map do |$PART|\n  $ATTRIBUTE, $PARAMETERS\
+    \ = $PART.split(/\\s*;\\s*/, 2)\n  ...\nend\n"
+  pattern-not: "$HEADER.to_s.split(\",\").each(&:strip!).map do |$PART|\n  $ATTRIBUTE,\
+    \ $PARAMETERS = $PART.split(\";\", 2).each(&:strip!)\n  ...\nend\n"
+  languages:
+  - ruby
+  message: 'The original code splits headers using a regex that includes whitespace
+    handling, which can lead to incorrect parsing of header values. This could potentially
+    cause security issues such as header injection or misinterpretation of headers.
+    The fix uses `split(",")` followed by `strip!` to ensure proper handling of whitespace.
+    Use the fixed version to avoid these issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/231ef369ad0b542575fb36c74fcfcfabcf6c530c
+    category: security
+    cwe:
+    - CWE-444
+    owasp:
+    - A6:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby
+- id: vuln-rack-4e33ad10
+  pattern: 'MULTIPART_CONTENT_DISPOSITION = /Content-Disposition:.*\s+name=(#{VALUE})/ni
+
+    '
+  pattern-not: 'MULTIPART_CONTENT_DISPOSITION = /Content-Disposition:[^:]*;\s+name=(#{VALUE})/ni
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression for `MULTIPART_CONTENT_DISPOSITION` is vulnerable
+    to header injection attacks due to insufficiently strict matching. The pattern
+    allows for arbitrary characters after `Content-Disposition:`, which could lead
+    to malicious input being processed incorrectly. This can be exploited to bypass
+    security checks or inject malicious content. To fix this, ensure that the pattern
+    explicitly disallows colons after `Content-Disposition:` by using `[^:]*` to match
+    only non-colon characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/4e33ad10bf5f16d25c156f905bcc548e7f787bc3
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - ruby
+- id: vuln-rack-c9f65df3
+  pattern: 'DISPPARM = /;\s*(#{TOKEN})=("(?:\\"|[^"])*"|#{TOKEN})*/
+
+    '
+  pattern-not: 'DISPPARM = /;\s*(#{TOKEN})=("(?:\\"|[^"])*"|#{TOKEN})/
+
+    '
+  languages:
+  - ruby
+  message: 'The regular expression in the Content-Disposition header parser is vulnerable
+    to ReDoS (Regular Expression Denial of Service) due to the use of a greedy quantifier
+    (*) at the end of the pattern. This can be exploited by an attacker to cause excessive
+    backtracking, leading to a denial of service. The fix removes the greedy quantifier
+    to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/c9f65df37a151821eb88ddd1dc404b83e52c52d5
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html
+    technology:
+    - ruby
+- id: vuln-rack-d9c163a4
+  pattern: '$CONTENT_TYPE.split($SPLIT_PATTERN, 2).first.tap &:downcase!
+
+    '
+  pattern-not: "if $TYPE = $CONTENT_TYPE.split($SPLIT_PATTERN, 2).first\n  $TYPE.rstrip!\n\
+    \  $TYPE.downcase!\n  $TYPE\nend\n"
+  languages:
+  - ruby
+  message: 'The use of `tap` with `downcase!` on a potentially nil value can lead
+    to a NoMethodError. This is dangerous because it can cause the application to
+    crash when processing malformed content types. Instead, explicitly check for nil
+    and handle the string manipulation safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/d9c163a443b8cadf4711d84bd2c58cb9ef89cf49
+    category: security
+    cwe:
+    - 476
+    owasp:
+    - A10
+    references:
+    - https://github.com/rack/rack/commit/d9c163a443b8cadf4711d84bd2c58cb9ef89cf49
+    technology:
+    - ruby
+- id: vuln-rack-c43217a8
+  pattern: 'BUFSIZE = 16384
+
+    '
+  pattern-not: 'BUFSIZE = 1_048_576
+
+    '
+  languages:
+  - ruby
+  message: 'The buffer size is set to a low value (16384) which can lead to performance
+    issues or denial of service when handling large multipart uploads. Increase the
+    buffer size to a more appropriate value, such as 1_048_576, to improve performance
+    and avoid potential DoS attacks.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/rack/rack/commit/c43217a81917de03aa6ceb1aa485ae69b8bb4598
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2017-Insufficient Attack Protection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A9_2017-Insufficient_Attack_Protection.html
+    technology:
+    - ruby
+- id: vuln-rack-f9511340
+  pattern: '$READ_BUFFER = $IO.gets
+
+    ...
+
+    raise EOFError, "bad content body" if $READ_BUFFER.nil?
+
+    '
+  pattern-not: "$CONTENT = $IO.read($BUFSIZE)\nraise EOFError, \"bad content body\"\
+    \ unless $CONTENT\n$BUF << $CONTENT\nwhile $BUF.gsub!(/\\A([^\\n]*\\n)/, '')\n\
+    \  $READ_BUFFER = $1\n  return if $READ_BUFFER == $FULL_BOUNDARY\nend\nraise EOFError,\
+    \ \"bad content body\" if Utils.bytesize($BUF) >= $BUFSIZE\n"
+  languages:
+  - ruby
+  message: "Detected a vulnerable pattern in multipart parsing that could lead to\
+    \ denial of service (DoS) attacks. \nThe original code reads unbounded data using\
+    \ `gets`, which can be exploited by sending extremely long boundaries.\nThe fix\
+    \ introduces a bounded read using `BUFSIZE` and checks for excessive buffer size.\
+    \ \nTo fix, replace unbounded reads with bounded reads and add size validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/f95113402b7239f225282806673e1b6424522b18
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Denial_of_Service
+    technology:
+    - ruby
+- id: vuln-rack-0cd7e9aa
+  pattern: '$DIGEST == generate_hmac($DATA, $SECRET)
+
+    '
+  pattern-not: 'Rack::Utils.secure_compare($DIGEST, generate_hmac($DATA, $SECRET))
+
+    '
+  languages:
+  - ruby
+  message: 'Detected insecure string comparison of HMAC digests. Using `==` for comparison
+    can lead to timing attacks, as the comparison may leak information about the correct
+    HMAC value. Use `Rack::Utils.secure_compare` to perform a constant-time comparison,
+    which mitigates timing attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/0cd7e9aa397f8ebb3b8481d67dbac8b4863a7f07
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://github.com/rack/rack/commit/0cd7e9aa397f8ebb3b8481d67dbac8b4863a7f07
+    technology:
+    - ruby
+- id: vuln-rack-contrib-0eec2a98
+  pattern: '(request.params[''profiler_runs''] || $TIMES).to_i
+
+    '
+  pattern-not: "if profiler_runs = request.params['profiler_runs']\n  profiler_runs\
+    \ = profiler_runs.to_i\n  if profiler_runs > @maximum_runs\n    return @maximum_runs\n\
+    \  else\n    return profiler_runs\n  end\nelse\n  return @times\nend\n"
+  languages:
+  - ruby
+  message: 'The code directly converts the ''profiler_runs'' parameter from the request
+    to an integer without validating it against a maximum limit. This can lead to
+    excessive resource consumption or denial of service if a malicious user provides
+    a very large value. The fix introduces a maximum limit check to prevent this vulnerability.
+    Always validate and limit user-provided values that control resource usage.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack-contrib/commit/0eec2a9836329051c6742549e65a94a4c24fe6f7
+    category: security
+    cwe:
+    - 'CWE-400: Uncontrolled Resource Consumption'
+    owasp:
+    - 'A6: Vulnerable and Outdated Components'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Vulnerable_and_Outdated_Components.html
+    technology:
+    - ruby
+- id: vuln-rack-dc50f8e4
+  pattern: 'ATTRIBUTE_CHAR = %r{[^ \t\v\n\r)(><@,;:\\"/\[\]?=''*%]}
+
+    '
+  pattern-not: 'ATTRIBUTE_CHAR = %r{[^ \x00-\x1f\x7f)(><@,;:\\"/\[\]?=''*%]}
+
+    '
+  languages:
+  - ruby
+  message: 'The regex pattern used for ATTRIBUTE_CHAR is vulnerable because it does
+    not properly exclude all control characters. This can lead to security issues
+    such as header injection or other parsing vulnerabilities. The fix includes excluding
+    all control characters (0x00-0x1f and 0x7f) to ensure proper handling of multipart
+    form data. Update the regex to include all control characters as shown in the
+    fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rack/rack/commit/dc50f8e495f67eb933b1fc33ebee550908d945e6
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/HTTP_Response_Splitting
+    technology:
+    - ruby

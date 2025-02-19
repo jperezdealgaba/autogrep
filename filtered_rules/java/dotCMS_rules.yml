@@ -1,0 +1,84 @@
+rules:
+- id: vuln-core-15fc20ab
+  pattern: 'this.anyMatchFilter($WEBINTERCEPTOR, $REQUEST.getRequestURI())
+
+    '
+  pattern-not: 'this.anyMatchFilter($WEBINTERCEPTOR, $REQUEST.getRequestURI().toLowerCase())
+
+    '
+  languages:
+  - java
+  message: Potential case-sensitive path matching vulnerability. Ensure request URIs
+    are normalized to lowercase to prevent bypass attempts.
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/15fc20ab95b8674078f3c32661721ff6a0871a6b
+    category: security
+    cwe: CWE-178
+    owasp: A1:2017-Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology: java
+- id: vuln-core-33305e9f
+  pattern: '$MAP.put("baseType", $TYPE.baseType())
+
+    '
+  pattern-not: '$MAP.put("baseType", $TYPE.baseType().name())
+
+    '
+  languages:
+  - java
+  message: "Potential vulnerability due to missing method call on baseType(). \nDirectly\
+    \ using baseType() without calling name() may lead to unexpected behavior or security\
+    \ issues. \nAlways use baseType().name() to ensure proper type handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/33305e9f55b4e7c7e1fdd94b1ca295b05623363d
+    category: security
+    cwe: CWE-20
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - java
+- id: vuln-core-282c38a4
+  pattern: '$RESPONSE.getWriter().print($CONTENT);
+
+    $RESPONSE.getWriter().close();
+
+    '
+  pattern-not: "try(PrintWriter $WRITER = $RESPONSE.getWriter()){\n  $WRITER.print($CONTENT);\n\
+    }\n"
+  languages:
+  - java
+  message: "Detected unsafe use of PrintWriter without proper resource management.\
+    \ \nThis can lead to resource leaks and potential security vulnerabilities. \n\
+    Always use try-with-resources to ensure the writer is properly closed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dotCMS/core/commit/282c38a4f901afa1d91a9dc72709ba0ddfee5576
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - java
+- id: vuln-core-c7c335df
+  pattern: '$VAR = $NAME.trim().toLowerCase()
+
+    '
+  pattern-not: '$VAR = $NAME.trim()
+
+    '
+  languages:
+  - java
+  message: Potential case-sensitivity issue in string handling. Avoid using toLowerCase()
+    on untrusted input as it may lead to security vulnerabilities. Consider using
+    a case-insensitive comparison instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/dotCMS/core/commit/c7c335df37f1573651943c268b96a0898d32a17d
+    category: security
+    cwe: 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp: "A03:2021 \u2013 Injection"
+    technology: java

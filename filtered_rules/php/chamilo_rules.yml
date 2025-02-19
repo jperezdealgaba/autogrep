@@ -1,0 +1,168 @@
+rules:
+- id: vuln-chamilo-lms-36149c1f
+  pattern: '$courseId = $courseInfo[''real_id''];
+
+    '
+  pattern-not: "$courseId = $courseInfo['real_id'] ?? 0;\n$documentId = (int) $documentId;\n\
+    if (empty($courseId) || empty($documentId)) {\n    return false;\n}\n"
+  languages:
+  - php
+  message: 'Detected unsafe direct array access without null coalescing or empty checks.
+    This can lead to undefined behavior or security vulnerabilities if the array is
+    empty or the key does not exist. Always use null coalescing operator (??) or check
+    for empty values before accessing array elements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/36149c1ff99973840a809bb865f23e1b23d6df00
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://www.php.net/manual/en/language.operators.comparison.php#language.operators.comparison.coalesce
+    technology:
+    - php
+- id: vuln-chamilo-lms-546a18b0
+  pattern: '$form->addElement(''text'', $NAME, $LABEL, $OPTIONS)
+
+    '
+  pattern-not: '$form->addText($NAME, $LABEL, $REQUIRED, $OPTIONS)
+
+    '
+  languages:
+  - php
+  message: "The use of `addElement('text', ...)` is deprecated and potentially insecure.\
+    \ \nIt does not enforce input validation by default, which could lead to security\
+    \ vulnerabilities \nsuch as XSS or SQL injection. Use `addText()` instead, which\
+    \ provides built-in validation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/546a18b0bd1446123f4e29f81f42e71b761f51b7
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-chamilo-lms-d939402d
+  pattern: '$VAR = isset($_REQUEST[''$TYPE'']) ? $_REQUEST[''$TYPE''] : $DEFAULT;
+
+    '
+  pattern-not: '$VAR = isset($_REQUEST[''$TYPE'']) && in_array($_REQUEST[''$TYPE''],
+    $ARRAY, true) ? $_REQUEST[''$TYPE''] : $DEFAULT;
+
+    '
+  languages:
+  - php
+  message: 'Unvalidated user input from $_REQUEST can lead to security vulnerabilities
+    such as injection attacks or unexpected behavior. Always validate user input against
+    a whitelist of allowed values using in_array() or similar functions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/d939402d83bf68af5377b629883d8e5437d843ec
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Injection_Flaws
+    technology:
+    - php
+- id: vuln-chamilo-lms-0de84700
+  pattern: "$decoded = str_replace(['-', '_', '.'], ['+', '/', '='], $encoded);\n\
+    $mod4 = strlen($decoded) % 4;\nif ($mod4) {\n    $decoded .= substr('====', $mod4);\n\
+    }\n$b64Decoded = base64_decode($decoded);\nreturn unserialize($b64Decoded);\n"
+  pattern-not: '$decoded = json_decode($encoded);
+
+    return $decoded;
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to unsafe deserialization of user-controlled data.
+    The `unserialize` function is used on base64-decoded input, which can lead to
+    arbitrary object injection and remote code execution. This is especially dangerous
+    when the input is controlled by an attacker. The fix replaces the unsafe deserialization
+    with `json_decode`, which is safer as it does not execute arbitrary code. Always
+    validate and sanitize input data and avoid using `unserialize` on untrusted data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/0de84700648f098c1fbf6b807dee28ec640efe62
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php
+- id: vuln-chamilo-lms-f65d0650
+  pattern: 'preg_replace(''/\.(php.?|phtml.?)(\.){0,1}.*$/i'', ''.phps'', $VAR)
+
+    '
+  pattern-not: 'preg_replace(''/\.(phar.?|php.?|phtml.?)(\.){0,1}.*$/i'', ''.phps'',
+    $VAR)
+
+    '
+  languages:
+  - php
+  message: 'The vulnerability involves insufficient file extension filtering in the
+    file upload functionality. The original code only filters `.php` and `.phtml`
+    extensions, but fails to block `.phar` files, which can also execute PHP code.
+    This can allow attackers to upload malicious files and execute arbitrary code
+    on the server. The fix includes adding `.phar` to the list of filtered extensions.
+    Always ensure all potentially dangerous file extensions are properly filtered
+    in file upload handlers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/f65d065061a77bb2e84f73217079ce3998cf3453
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+    technology:
+    - php
+- id: vuln-chamilo-lms-dc7bfce4
+  pattern: 'str_replace([''.htaccess'', ''.HTACCESS''], [''htaccess.txt'', ''htaccess.txt''],
+    $VAR)
+
+    '
+  pattern-not: '$VAR = strtolower($VAR);
+
+    str_replace(''.htaccess'', ''htaccess.txt'', $VAR)
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure handling of .htaccess files. The code does not normalize
+    file names to lowercase before renaming .htaccess files, potentially allowing
+    bypass of access restrictions. This can lead to security vulnerabilities where
+    attackers can upload malicious .htaccess files with different case variations.
+    To fix, ensure all file names are converted to lowercase before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/chamilo/chamilo-lms/commit/dc7bfce429fbd843a95a57c184b6992c4d709549
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - A05:2021-Security Misconfiguration
+    technology:
+    - php

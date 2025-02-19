@@ -1,0 +1,27 @@
+rules:
+- id: vuln-kubeclarity-1d117884
+  pattern: '$TX.Or(fmt.Sprintf("%s = ''%s'' AND %s is not null", $FILTER_ID, $ID,
+    $LOOKUP_ID))
+
+    '
+  pattern-not: '$TX.Or("? = ? AND ? is not null", $FILTER_ID, $ID, $LOOKUP_ID)
+
+    '
+  languages:
+  - go
+  message: "Detected a potential SQL injection vulnerability due to the use of fmt.Sprintf\
+    \ for SQL query construction. \nThis can allow attackers to inject malicious SQL\
+    \ code. \nUse parameterized queries instead to safely bind values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openclarity/kubeclarity/commit/1d1178840703a72d9082b7fc4aea0a3326c5d294
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    - https://github.com/securego/gosec#sql-injection
+    technology:
+    - go

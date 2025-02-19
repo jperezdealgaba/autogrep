@@ -1,0 +1,20 @@
+rules:
+- id: vuln-zulip-1207a08b
+  pattern: '$OBJ.$FIND($SELECTOR).html($DATA)
+
+    '
+  pattern-not: '$OBJ.$FIND($SELECTOR).text($DATA)
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unsafe use of .html(). Use .text() instead
+    to safely insert content.
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/1207a08b36c7696397855ef7fd6ae6cff2c8c4be
+    category: security
+    cwe: CWE-79
+    owasp: 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - javascript

@@ -1,0 +1,238 @@
+rules:
+- id: vuln-jasper-f94e7499
+  pattern: 'jas_image_setcmpttype($IMAGE, dec->chantocmptlut[$I], ...)
+
+    '
+  pattern-not: "unsigned $COMPNO = dec->chantocmptlut[$I];\nif ($COMPNO >= jas_image_numcmpts($IMAGE))\
+    \ {\n  ...\n}\njas_image_setcmpttype($IMAGE, $COMPNO, ...)\n"
+  languages:
+  - c
+  message: 'The code directly uses `dec->chantocmptlut[i]` as an index without checking
+    if it is within bounds. This can lead to out-of-bounds access, potentially causing
+    memory corruption or crashes. Always validate array indices before using them
+    to ensure they are within the valid range of the array.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/f94e7499a8b1471a4905c4f9c9e12e60fe88264b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    - 'A8: Insecure Deserialization'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c
+- id: vuln-jasper-5dbe57e4
+  pattern: "if (JAS_CAST(int, $VAR->compno) > $DEC->numcomps) {\n  ...\n}\n"
+  pattern-not: "if (JAS_CAST(int, $VAR->compno) >= $DEC->numcomps) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The comparison operator ''>'' is used instead of ''>='' to check if a
+    component number is within bounds. This can lead to an off-by-one error, potentially
+    causing out-of-bounds access. Replace ''>'' with ''>='' to ensure the boundary
+    check is inclusive and prevents access beyond the valid range.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/5dbe57e4808bea4b83a97e2f4aaf8c91ab6fdecb
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-jasper-d42b2388
+  pattern: "if (!(image = jas_image_decode($INSTREAM, $FMTID, 0))) {\n  ...\n}\n"
+  pattern-not: "if (!(image = jas_image_decode($INSTREAM, $FMTID, $OPTSTR))) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability is caused by passing a hardcoded value of 0 as the options
+    string to jas_image_decode. This can lead to improper handling of image decoding
+    options, potentially resulting in security issues such as buffer overflows or
+    improper memory access. The fix involves passing a properly constructed options
+    string (optstr) to the function. Always validate and sanitize input parameters
+    when dealing with image decoding operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/d42b2388f7f8e0332c846675133acea151fc557a
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c
+- id: vuln-jasper-411a4068
+  pattern: '$VAR = jas_matrix_create(...);
+
+    assert($VAR);
+
+    '
+  pattern-not: "if (!($VAR = jas_matrix_create(...))) {\n  goto error;\n}\n"
+  languages:
+  - c
+  message: 'The code directly asserts the result of `jas_matrix_create` without proper
+    error handling, which can lead to undefined behavior if the allocation fails.
+    Instead, check the return value and handle the error appropriately by using a
+    goto statement to clean up resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/411a4068f8c464e883358bf403a3e25158863823
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/617.html
+    technology:
+    - c
+- id: vuln-jasper-0d64bde2
+  pattern: '#if !defined(HAVE_VLA)
+
+    #else
+
+    jpc_fix_t $VAR[bufsize * $VAR2];
+
+    #endif
+
+    '
+  pattern-not: '#if !defined(HAVE_VLA)
+
+    #endif
+
+    '
+  languages:
+  - c
+  message: "The use of variable-length arrays (VLAs) in this code can lead to stack\
+    \ overflow vulnerabilities. \nVLAs are dangerous because they allocate memory\
+    \ on the stack without bounds checking, which can be exploited to cause a denial\
+    \ of service or arbitrary code execution. \nThe patch removes the use of VLAs\
+    \ to mitigate this risk. \nConsider using fixed-size arrays or dynamic memory\
+    \ allocation with proper bounds checking instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/0d64bde2b3ba7e1450710d540136a8ce4199ef30
+    category: security
+    cwe:
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c
+- id: vuln-jasper-c7634141
+  pattern: "if ($COND) {\n  ...\n  bmp_info_destroy($INFO);\n  return 0;\n  ...\n\
+    }\n"
+  pattern-not: "if ($COND) {\n  ...\n  goto error;\n  ...\n}\nerror:\nif ($INFO) {\n\
+    \  bmp_info_destroy($INFO);\n}\nreturn 0;\n"
+  languages:
+  - c
+  message: 'The code directly returns after destroying the BMP info without proper
+    error handling, which can lead to resource management issues and potential security
+    vulnerabilities. The patch introduces a consistent error handling mechanism using
+    `goto error` to ensure proper cleanup. Always use a centralized error handling
+    approach to manage resources safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/c76341412ea7924c554955f21d2e564f9133a1e5
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/703.html
+    technology:
+    - c
+- id: vuln-jasper-1e84674d
+  pattern: 'assert($N >= 0 && $N < 32);
+
+    '
+  pattern-not: "if ($N < 0 || $N >= 32) {\n  return ...;\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves the use of `assert` for input validation, which
+    can be disabled in production builds, leading to potential undefined behavior.
+    This is dangerous because it can result in security vulnerabilities if the input
+    is not properly validated. Replace the `assert` with proper error handling using
+    conditional checks and return statements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/1e84674d95353c64e5c4c0e7232ae86fd6ea813b
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/ERR33-C.+Detect+and+handle+standard+library+errors
+    technology:
+    - c
+- id: vuln-jasper-44a524e3
+  pattern: "if (!(buf = jas_realloc2($VAR, $BUFSIZE, sizeof(unsigned char)))) {\n\
+    \  ...\n}\n"
+  pattern-not: "if (!(buf = jas_realloc2($VAR, $BUFSIZE, sizeof(unsigned char))) &&\n\
+    \  $BUFSIZE) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code performs a memory reallocation without checking if the buffer
+    size is zero. This can lead to undefined behavior or memory corruption if the
+    reallocation fails due to a zero buffer size. Always ensure that the buffer size
+    is non-zero before performing reallocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/44a524e367597af58d6265ae2014468b334d0309
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-jasper-a4dc77cc
+  pattern: "if ($PREC > 38) {\n  ...\n}\n"
+  pattern-not: "if ($PREC < 1U + $SGND || $PREC > 38) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected insufficient precision validation in image processing code. This
+    vulnerability can lead to incorrect handling of image data, potentially causing
+    crashes or security issues. Ensure that precision values are validated to be at
+    least 1 bit for unsigned samples and 2 bits for signed samples.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jasper-software/jasper/commit/a4dc77cca1163347d0aa677d56da332c3f119021
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

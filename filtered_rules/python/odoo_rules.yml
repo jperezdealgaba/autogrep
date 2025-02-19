@@ -1,0 +1,105 @@
+rules:
+- id: vuln-odoo-050806b9
+  pattern: "def $FUNC(...):\n  ...\n  self.filtered(lambda $CHANNEL: $CHANNEL.channel_type\
+    \ == 'chat').mapped('channel_last_seen_partner_ids').write({'is_pinned': True})\n\
+    \  ...\n"
+  pattern-not: "def $FUNC(...):\n  ...\n  self.filtered(lambda $CHANNEL: $CHANNEL.channel_type\
+    \ == 'chat').mapped('channel_last_seen_partner_ids').sudo().write({'is_pinned':\
+    \ True})\n  ...\n"
+  languages:
+  - python
+  message: Detected unsafe write operation without sudo() in Odoo channel management.
+    This can lead to unauthorized modifications. Always use sudo() for operations
+    that require elevated privileges.
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/050806b936c9707274d9a64e4281f4258aabeeee
+    category: security
+    cwe: CWE-862
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://www.odoo.com/documentation/16.0/developer/reference/backend/security.html#sudo
+    technology:
+    - python
+- id: vuln-odoo-ef6f86dd
+  pattern: '$RECORD = request.env[$OBJECT].browse($RES_ID)
+
+    ...
+
+    $RECORD.check_access_rule(''read'')
+
+    '
+  pattern-not: "$RECORD = request.env[$OBJECT].browse($RES_ID).exists()\nif not $RECORD:\n\
+    \    return False\n$RECORD.check_access_rights('read')\n$RECORD.check_access_rule('read')\n"
+  languages:
+  - python
+  message: 'Detected insecure object access in Odoo. The code directly accesses an
+    object without checking if it exists or verifying access rights. This can lead
+    to security vulnerabilities such as unauthorized access or information disclosure.
+    Always use `.exists()` to verify the object''s existence and check access rights
+    before performing operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/ef6f86dde4628b15aeb5879d268017c4a56f21fc
+    category: security
+    cwe:
+    - CWE-285
+    - CWE-862
+    owasp: A01:2021-Broken Access Control
+    references:
+    - https://www.odoo.com/documentation/14.0/developer/reference/backend/security.html
+    technology:
+    - python
+    - odoo
+- id: vuln-odoo-d18d606a
+  pattern: '$NAME = os.path.normpath(os.path.join($BASEDIR, $PATH))
+
+    '
+  pattern-not: "$NAME = os.path.normpath(os.path.normcase(os.path.join($BASEDIR, $PATH)))\n\
+    ...\nfor $ADDONS_PATH in $PATHS:\n    $ADDONS_PATH = os.path.normpath(os.path.normcase($ADDONS_PATH))\
+    \ + os.sep\n    if $NAME.startswith($ADDONS_PATH):\n        break\nelse:\n   \
+    \ raise ValueError(\"Unknown path: %s\" % $NAME)\n"
+  languages:
+  - python
+  message: 'Detected unsafe path construction without proper validation. This can
+    lead to path traversal attacks or access to unauthorized files. The fix includes
+    normalizing the path case and validating it against a list of allowed paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/d18d606a55330a6b9fd19596d8b12c4e9e0a4b57
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - python
+- id: vuln-odoo-a1b92ad2
+  pattern: 're.compile(r"^(\w+)\((.*)\)$")
+
+    '
+  pattern-not: 're.compile(r"^([a-zA-Z]\w+)\((.*)\)$")
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure regular expression pattern in onchange_v7. The original
+    pattern allows for potentially unsafe method names that don''t start with a letter.
+    This could lead to security vulnerabilities if untrusted input is processed. Use
+    the fixed pattern that enforces method names to start with a letter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/odoo/odoo/commit/a1b92ad2b8aa2873e8707ef13660771fd75dba8e
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/re.html
+    technology:
+    - python

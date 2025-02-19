@@ -1,0 +1,25 @@
+rules:
+- id: vuln-wildfly-67ef84fd
+  pattern: '<version.io.opentracing.interceptors>0.0.4</version.io.opentracing.interceptors>
+
+    '
+  pattern-not: '<version.io.opentracing.interceptors>0.0.4.1</version.io.opentracing.interceptors>
+
+    '
+  languages:
+  - xml
+  message: "The version of io.opentracing.interceptors is outdated and potentially\
+    \ vulnerable. \nUsing version 0.0.4 may expose the application to security risks.\
+    \ \nUpgrade to version 0.0.4.1 to mitigate these vulnerabilities.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wildfly/wildfly/commit/67ef84fd7aab789a535b137e5e506fd29d212455
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - xml

@@ -1,0 +1,26 @@
+rules:
+- id: vuln-template-28cff3ac
+  pattern: 'pongo2.SetAutoescape(false)
+
+    '
+  pattern-not: 'pongo2.SetAutoescape(true)
+
+    '
+  languages:
+  - go
+  message: "Disabling auto-escaping in templates can lead to Cross-Site Scripting\
+    \ (XSS) vulnerabilities. \nAuto-escaping should be enabled to prevent malicious\
+    \ input from being interpreted as HTML or JavaScript. \nEnsure `pongo2.SetAutoescape(true)`\
+    \ is used to enable auto-escaping globally.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gofiber/template/commit/28cff3ac4d4c117ab25b5396954676d624b6cb46
+    category: security
+    cwe:
+    - 79
+    owasp:
+    - A7
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - go

@@ -1,0 +1,161 @@
+rules:
+- id: vuln-mantisbt-46880ef6
+  pattern: "if( $f_confirm_hash != $t_token_confirm_hash ) {\n  ...\n}\n"
+  pattern-not: "if( $t_token_confirm_hash == null || $f_confirm_hash !== $t_token_confirm_hash\
+    \ ) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "Detected a potentially insecure hash comparison that does not check for\
+    \ null values. \nThis can lead to authentication bypass if the token hash is null.\
+    \ \nTo fix, ensure the token hash is not null before comparing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/46880ef6a8596e0a342913ca3fde238215d4b5a1
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    technology:
+    - php
+- id: vuln-mantisbt-d00745f5
+  pattern: '$t_path = str_replace(basename($_SERVER[''PHP_SELF'']), '''', $_SERVER[''PHP_SELF'']);
+
+    '
+  pattern-not: "$t_self = $_SERVER['SCRIPT_NAME'];\n$t_self = filter_var($t_self,\
+    \ FILTER_SANITIZE_STRING);\n$t_path = str_replace(basename($t_self), '', $t_self);\n\
+    if (strpos($t_path, '&#')) {\n  echo 'Can not safely determine $g_path. Please\
+    \ set $g_path manually in config_inc.php';\n  die;\n}\n"
+  languages:
+  - php
+  message: 'The vulnerability involves using `$_SERVER[''PHP_SELF'']` directly without
+    proper sanitization, which can lead to security issues such as XSS (Cross-Site
+    Scripting). This is dangerous because it allows attackers to inject malicious
+    scripts into the application. To fix this, use `$_SERVER[''SCRIPT_NAME'']` instead
+    and sanitize the input using `filter_var()` with `FILTER_SANITIZE_STRING`. Additionally,
+    ensure that the path does not contain potentially harmful sequences by checking
+    for ''&#''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/d00745f5e267eba4ca34286d125de685bc3a8034
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-mantisbt-7efe0175
+  pattern: '$query = "...$VAR...";
+
+    $result = db_query($query);
+
+    '
+  pattern-not: '$query = "... . db_param() ...";
+
+    $result = db_query_bound($query, $VAR);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe SQL query construction with direct variable interpolation,
+    which can lead to SQL injection vulnerabilities. Use parameterized queries with
+    db_param() and db_query_bound() to safely handle user input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/7efe0175f0853e18ebfacedfd2374c4179028b3f
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-mantisbt-7cc4539f
+  pattern: "$t_manage_arr = explode(':', gpc_get_cookie($t_cookie_name));\n$c_hide_inactive\
+    \ = $t_manage_arr[0];\nif (isset($t_manage_arr[1])) {\n    $c_sort = $t_manage_arr[1];\n\
+    } else {\n    $c_sort = 'username';\n}\nif (isset($t_manage_arr[2])) {\n    $c_dir\
+    \ = $t_manage_arr[2];\n} else {\n    $c_dir = 'DESC';\n}\nif (isset($t_manage_arr[3]))\
+    \ {\n    $c_show_disabled = $t_manage_arr[3];\n}\n"
+  pattern-not: "$t_manage_arr = explode(':', gpc_get_cookie($t_cookie_name));\n$f_hide_inactive\
+    \ = (bool)$t_manage_arr[0];\nif (isset($t_manage_arr[1])) {\n    $f_sort = $t_manage_arr[1];\n\
+    } else {\n    $f_sort = 'username';\n}\nif (isset($t_manage_arr[2])) {\n    $f_dir\
+    \ = $t_manage_arr[2];\n} else {\n    $f_dir = 'DESC';\n}\nif (isset($t_manage_arr[3]))\
+    \ {\n    $f_show_disabled = $t_manage_arr[3];\n}\n"
+  languages:
+  - php
+  message: 'The code directly assigns values from a cookie to variables without proper
+    type casting, which can lead to type confusion vulnerabilities. This can be exploited
+    to bypass security checks or cause unexpected behavior. Always cast cookie values
+    to the appropriate type before using them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/7cc4539f
+    category: security
+    cwe:
+    - 'CWE-843: Access of Resource Using Incompatible Type (''Type Confusion'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/843.html
+    technology:
+    - php
+- id: vuln-mantisbt-f21b56fa
+  pattern: 'echo ''<a href="permalink_page.php?url='' . urlencode(filter_get_url($VAR))
+    . ''">'';
+
+    '
+  pattern-not: 'echo ''<a href="permalink_page.php?url='' . $VAR . ''">'';
+
+    '
+  languages:
+  - php
+  message: "This code generates a URL without CSRF protection, making it vulnerable\
+    \ to Cross-Site Request Forgery (CSRF) attacks. \nAn attacker could trick a user\
+    \ into performing unwanted actions by crafting a malicious link. \nTo fix this,\
+    \ ensure CSRF tokens are included in the URL using form_security_param().\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/f21b56fa9060dbae9438b0d0dfb21dff090c1dd2
+    category: security
+    cwe:
+    - 352
+    owasp: 'A2: Broken Authentication'
+    technology:
+    - php
+- id: vuln-mantisbt-e7e2b550
+  pattern: 'preg_match(''@(?:[^:]*)?://@'', $t_url) > 0
+
+    '
+  pattern-not: 'preg_match(''@(?:[^:]*)?:/*@'', $t_url) > 0
+
+    '
+  languages:
+  - php
+  message: 'The regular expression used to validate URLs is vulnerable to bypass attacks
+    due to improper handling of URL schemes. The pattern ''@(?:[^:]*)?://@'' can be
+    exploited by attackers to inject malicious URLs. This can lead to security issues
+    such as open redirects or SSRF. To fix this, use the updated pattern ''@(?:[^:]*)?:/*@''
+    which correctly handles URL schemes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mantisbt/mantisbt/commit/e7e2b5503580e42db9d91e0d599d61d3ff03c27e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'OWASP: A1: Injection'
+    technology:
+    - php

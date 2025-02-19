@@ -1,0 +1,19 @@
+rules:
+- id: vuln-newbee-mall-7f59ead6
+  pattern: "String $URI = $REQUEST.getRequestURI();\nif ($URI.startsWith(\"/admin\"\
+    ) && null == $REQUEST.getSession().getAttribute(\"loginUser\")) {\n  ...\n}\n"
+  pattern-not: "String $REQUEST_SERVLET_PATH = $REQUEST.getServletPath();\nif ($REQUEST_SERVLET_PATH.startsWith(\"\
+    /admin\") && null == $REQUEST.getSession().getAttribute(\"loginUser\")) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: 'Potential security issue: Using getRequestURI() for path checking can
+    lead to incorrect path matching. Use getServletPath() instead to ensure accurate
+    path comparison.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/newbee-ltd/newbee-mall/commit/7f59ead63cc22b95105036952c3f066f7712ae97
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology: java

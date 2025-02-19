@@ -1,0 +1,37 @@
+rules:
+- id: vuln-systeminformation-11103a44
+  pattern: "for ($I = 0; $I <= 2000; $I++) {\n  ...\n}\n"
+  pattern-not: "for (let $I = 0; $I <= 2000; $I++) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: Potential security issue due to use of undeclared variable in loop. Using
+    undeclared variables can lead to unintended behavior or security vulnerabilities.
+    Always declare loop variables with 'let' or 'const' to ensure proper scoping.
+  severity: ERROR
+  metadata:
+    source-url: github.com/sebhildebrandt/systeminformation/commit/11103a447ab9550c25f1fbec7e6d903720b3fea8
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - javascript
+- id: vuln-systeminformation-0be6fcd5
+  pattern: "for (let $I = 0; $I <= 2000; $I++) {\n  ...\n}\n"
+  pattern-not: "for (let $I = 0; $I <= util.mathMin($S.length, 2000); $I++) {\n  ...\n\
+    }\n"
+  languages:
+  - javascript
+  message: Potential out-of-bounds access due to missing bounds check in loop. Use
+    `util.mathMin(s.length, 2000)` to ensure the loop does not exceed the string length.
+  severity: ERROR
+  metadata:
+    source-url: github.com/sebhildebrandt/systeminformation/commit/0be6fcd575c05687d1076d5cd6d75af2ebae5a46
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - javascript

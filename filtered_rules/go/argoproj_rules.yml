@@ -1,0 +1,86 @@
+rules:
+- id: vuln-argo-cd-701ce053
+  pattern: 'jwt.NewValidationHelper(jwt.WithoutClaimsValidation())
+
+    '
+  pattern-not: 'jwt.NewValidationHelper(jwt.WithoutClaimsValidation(), jwt.WithoutAudienceValidation())
+
+    '
+  languages:
+  - go
+  message: 'Detected a JWT validation helper that does not include audience validation.
+    This can lead to security vulnerabilities where tokens intended for one audience
+    are accepted by another. Ensure that both claims and audience validation are enabled
+    in the JWT validation helper.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/701ce05393f93a686b95ccd301afd5d018a63a1b
+    category: security
+    cwe:
+    - CWE-345
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://jwt.io/introduction
+    technology:
+    - go
+- id: vuln-argo-cd-14f681e3
+  pattern: '$CLIENT.GetIndex($NOCACHE)
+
+    '
+  pattern-not: '$CLIENT.GetIndex($NOCACHE, $MAXINDEXSIZE)
+
+    '
+  languages:
+  - go
+  message: 'The Helm registry index file size is not limited, which can lead to resource
+    exhaustion attacks. An attacker could send a large index file, causing excessive
+    memory consumption or crashes. To fix this, always specify a maximum size when
+    calling GetIndex using the maxIndexSize parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/14f681e3ee7c38731943b98f92277e88a3db109d
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - A1:2021-Broken Access Control
+    references:
+    - https://helm.sh/docs/topics/registries/
+    technology:
+    - go
+- id: vuln-argo-cd-17f7f4f4
+  pattern: '$VAR = rand.RandString($LEN)
+
+    '
+  pattern-not: '$VAR, $ERR = rand.String($LEN)
+
+    errors.CheckError($ERR)
+
+    '
+  languages:
+  - go
+  message: 'The use of insecure random number generation (rand.RandString) can lead
+    to predictable values, which is dangerous in security contexts like OAuth2 state
+    nonces. This can enable attacks such as CSRF or session hijacking. Replace with
+    cryptographically secure random generation (rand.String) and ensure error handling
+    is in place.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/argoproj/argo-cd/commit/17f7f4f462bdb233e1b9b36f67099f41052d8cb0
+    category: security
+    cwe:
+    - CWE-330
+    - CWE-331
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://www.rfc-editor.org/rfc/rfc6749#section-10.10
+    technology:
+    - go

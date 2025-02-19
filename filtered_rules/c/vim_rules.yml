@@ -1,0 +1,144 @@
+rules:
+- id: vuln-vim-34f8117d
+  pattern: mb_ptr2char_adv(&$VAR)
+  pattern-not: mb_cptr2char_adv(&$VAR)
+  languages:
+  - c
+  message: 'The use of mb_ptr2char_adv() is unsafe as it may lead to incorrect character
+    handling.
+
+    This function should be replaced with mb_cptr2char_adv() for proper multi-byte
+    character processing.
+
+    Using the incorrect function can cause security issues and incorrect behavior
+    when handling multi-byte characters.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/vim/vim/commit/34f8117dec685ace52cd9e578e2729db278163fc
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/vim/vim/commit/34f8117dec685ace52cd9e578e2729db278163fc
+    technology:
+    - c
+- id: vuln-vim-8ecfa2c5
+  pattern: 'if (buflist_findnr($JMP->fmark.fnum) == NULL)
+
+    ...
+
+    if (buflist_getfile($JMP->fmark.fnum, $JMP->fmark.mark.lnum, 0, FALSE) == FAIL)
+
+    ...
+
+    $CURWIN->w_cursor = $JMP->fmark.mark;
+
+    '
+  pattern-not: 'fmark_T $FMARK = $JMP->fmark;
+
+    ...
+
+    if (buflist_findnr($FMARK.fnum) == NULL)
+
+    ...
+
+    if (buflist_getfile($FMARK.fnum, $FMARK.mark.lnum, 0, FALSE) == FAIL)
+
+    ...
+
+    $CURWIN->w_cursor = $FMARK.mark;
+
+    '
+  languages:
+  - c
+  message: 'Direct use of a pointer''s structure field in multiple function calls
+    can lead to use-after-free or invalid memory access if the pointer becomes invalid
+    between calls. This vulnerability occurs when the structure pointed to by `jmp`
+    could be freed or modified by an autocommand or other asynchronous event. To fix
+    this, make a local copy of the structure fields before using them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/8ecfa2c56b4992c7f067b92488aa9acea5a454ad
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-vim-94f3192b
+  pattern: "if (*$PTR == NUL)\n{\n    $POS->col = 0;\n}\n"
+  pattern-not: "for ($I = 0; $I < $POS->col; ++$I)\n{\n    if ($PTR[$I] == NUL)\n\
+    \    {\n        $POS->col = $I;\n        break;\n    }\n}\n"
+  languages:
+  - c
+  message: "Detected potential buffer boundary violation by directly comparing pointer\
+    \ value with NUL. \nThis can lead to incorrect position calculations when dealing\
+    \ with empty lines or buffer boundaries. \nThe issue was fixed by adding a loop\
+    \ to check each character up to the column position.\nTo fix, implement a character-by-character\
+    \ check like in the fixed version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/94f3192b03ed27474db80b4d3a409e107140738b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A1:2017-Injection
+    technology:
+    - c
+- id: vuln-vim-65b60566
+  pattern: 'len2 += MB_CHAR2LEN($VAR);
+
+    '
+  pattern-not: 'len2 += enc_utf8 ? utf_ptr2len(rex.line + col + len2) : MB_CHAR2LEN($VAR);
+
+    '
+  languages:
+  - c
+  message: 'The code uses MB_CHAR2LEN without checking if the encoding is UTF-8, which
+    can lead to incorrect character length calculations and potential security vulnerabilities.
+    Always check the encoding before using MB_CHAR2LEN and use the appropriate function
+    for UTF-8 encoding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/65b605665997fad54ef39a93199e305af2fe4d7f
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-vim-69082916
+  pattern: '*getnext = TRUE;
+
+    '
+  pattern-not: '*getnext = *p != NL;
+
+    '
+  languages:
+  - c
+  message: 'The assignment `*getnext = TRUE;` is unsafe as it unconditionally sets
+    the value without checking the input. This could lead to unintended behavior or
+    security vulnerabilities. The fix checks if `*p` is not a newline character before
+    setting `*getnext`, ensuring safer operation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vim/vim/commit/69082916c8b5d321545d60b9f5facad0a2dd5a4e
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

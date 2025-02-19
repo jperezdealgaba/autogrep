@@ -1,0 +1,22 @@
+rules:
+- id: vuln-suitecrm-54bc56c3
+  pattern: '$options[''title''] = $req[''dashletTitle''];
+
+    '
+  pattern-not: '$options[''title''] = htmlentities(html_entity_decode($req[''dashletTitle'']));
+
+    '
+  languages:
+  - php
+  message: Unsanitized user input directly assigned to HTML output can lead to XSS
+    vulnerabilities. Use htmlentities and html_entity_decode to sanitize user input.
+  severity: ERROR
+  metadata:
+    source-url: github.com/salesagility/suitecrm/commit/54bc56c3bd9f1db75408db1c1d7d652c3f5f71e9
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php

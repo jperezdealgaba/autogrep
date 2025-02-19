@@ -1,0 +1,27 @@
+rules:
+- id: vuln-tileserver-gl-10431d70
+  pattern: '`key=${$QUERY.key}`
+
+    '
+  pattern-not: '`key=${encodeURIComponent($QUERY.key)}`
+
+    '
+  languages:
+  - javascript
+  message: 'Detected unencoded query parameter usage, which can lead to URL injection
+    or XSS vulnerabilities. Always encode user input using encodeURIComponent() before
+    including it in URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/maptiler/tileserver-gl/commit/10431d70d0f0d7b7950ae2c02aea0850c7566621
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    - 'A3: Cross-Site Scripting (XSS)'
+    technology:
+    - javascript

@@ -1,0 +1,59 @@
+rules:
+- id: vuln-openitcockpit-719410b9
+  pattern: "$host = env('HTTP_HOST');\nif (substr($host, 0, 4) == 'dev.') {\n    $environment\
+    \ = self::DEVELOPMENT;\n} else if (substr($host, 0, 4) == 'dev-') {\n    $environment\
+    \ = self::DEVELOPMENT;\n} else if (substr($host, 0, 8) == 'staging.') {\n    $environment\
+    \ = self::STAGING;\n} else {\n    $environment = self::PRODUCTION;\n}\n"
+  pattern-not: "$environment = self::PRODUCTION;\nif (isset($_SERVER['OITC_DEBUG']))\
+    \ {\n    if ($_SERVER['OITC_DEBUG'] === '1') {\n        $environment = self::DEVELOPMENT;\n\
+    \    }\n}\n"
+  languages:
+  - php
+  message: 'Detected a vulnerability where the environment is determined based on
+    the HTTP_HOST header, which can be manipulated by an attacker. This can lead to
+    unintended behavior or exposure of sensitive information. Instead, use a secure
+    method to determine the environment, such as checking a server variable set by
+    the web server configuration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/it-novum/openITCOCKIT/commit/719410b9ffff7d7b29dba7aad58faceb5eff789f
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/HTTP_Header_Injection
+    technology:
+    - php
+- id: vuln-openitcockpit-73b5b34a
+  pattern: '$this->exec(escapeshellcmd("su " . $USER . " -c ''" . $COMMAND . "''"),
+    [...]);
+
+    '
+  pattern-not: "$this->exec(escapeshellcmd(\"su \" . $USER . \" -c '\" . $COMMAND\
+    \ . \"'\"), [\n    'cwd' => $PATH,\n]);\n"
+  languages:
+  - php
+  message: 'Detected potentially unsafe command execution with insufficient context
+    validation. The command is executed with ''su'' without proper validation of the
+    command or its working directory. This could allow command injection if the command
+    or user input is not properly sanitized. Ensure that the command is validated
+    against a whitelist and that the working directory is explicitly set to a secure
+    location.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/it-novum/openITCOCKPIT/commit/73b5b34afa8bd82ff26c0097558341214c768cfc
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

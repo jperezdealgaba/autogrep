@@ -1,0 +1,94 @@
+rules:
+- id: vuln-bluez-3cccdbab
+  pattern: "if ($REQ->subclass & 0x40) {\n  ...\n}\n"
+  pattern-not: "if ($CLASSIC_BONDED_ONLY || $REQ->subclass & 0x40) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This pattern detects a missing check for classic bonded devices in the
+    Bluetooth input profile, which could allow unauthorized connections. The vulnerability
+    occurs when the code fails to verify if a device is bonded before processing its
+    connection request. This can lead to security risks where unauthenticated devices
+    gain access. The fix requires adding a check for `classic_bonded_only` in conjunction
+    with the existing subclass check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/3cccdbab2324086588df4ccf5f892fb3ce1f1787
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://bluetooth.com
+    technology:
+    - c
+- id: vuln-bluez-0388794d
+  pattern: "if (sizeof(*$CAP) + $CAP->length >= $SIZE) {\n  ...\n}\n"
+  pattern-not: "if (sizeof(*$CAP) + $CAP->length > $SIZE) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This vulnerability occurs due to an incorrect boundary check in a memory
+    comparison operation.
+
+    The original code uses `>=` which can lead to a buffer overflow if the condition
+    is met exactly.
+
+    This is dangerous as it can allow an attacker to read or write beyond the allocated
+    memory, potentially leading to arbitrary code execution.
+
+    To fix this, replace `>=` with `>` to ensure proper boundary checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/0388794dc5fdb73a4ea88bcf148de0a12b4364d4
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-126
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/126.html
+    technology:
+    - c
+- id: vuln-bluez-7a80d209
+  pattern: "static GSList *caps_to_list(uint8_t *data, int size, ...) {\n  ...\n \
+    \ for ($PROCESSED = 0, $CAPS = NULL; $PROCESSED + 2 <= $SIZE;) {\n    ...\n  \
+    \  if ($PROCESSED + 2 + $LENGTH > $SIZE) {\n      ...\n    }\n    ...\n    $PROCESSED\
+    \ += 2 + $LENGTH;\n    $DATA += 2 + $LENGTH;\n    ...\n  }\n  ...\n}\n"
+  pattern-not: "static GSList *caps_to_list(uint8_t *data, size_t size, ...) {\n \
+    \ ...\n  if ($SIZE < sizeof(*$CAP)) return NULL;\n  ...\n  for ($CAPS = NULL;\
+    \ $SIZE >= sizeof(*$CAP);) {\n    ...\n    if (sizeof(*$CAP) + $CAP->length >=\
+    \ $SIZE) {\n      ...\n    }\n    ...\n    $SIZE -= sizeof(*$CAP) + $CAP->length;\n\
+    \    $DATA += sizeof(*$CAP) + $CAP->length;\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function ''caps_to_list'' contains a potential integer overflow vulnerability
+    due to improper bounds checking.
+
+    The original code uses ''int'' for the size parameter and performs arithmetic
+    operations that could lead to overflow.
+
+    This could result in memory corruption or out-of-bounds access.
+
+    To fix this, use ''size_t'' for size parameters and ensure proper bounds checking
+    before arithmetic operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bluez/bluez/commit/7a80d2096f1b7125085e21448112aa02f49f5e9a
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c

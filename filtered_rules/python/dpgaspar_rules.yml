@@ -1,0 +1,25 @@
+rules:
+- id: vuln-flask-appbuilder-4f0b029b
+  pattern: 'search_columns = $MODEL.search_columns
+
+    '
+  pattern-not: 'search_exclude_columns = $MODEL.search_exclude_columns
+
+    '
+  languages:
+  - python
+  message: 'Detected use of ''search_columns'' instead of ''search_exclude_columns''.
+    This can lead to unintended exposure of sensitive data in search results. Use
+    ''search_exclude_columns'' to explicitly exclude sensitive fields from search
+    queries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/dpgaspar/Flask-AppBuilder/commit/4f0b029bf0504a9d81149bdf8f9cbf45e95db17e
+    category: security
+    cwe: CWE-200
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://flask-appbuilder.readthedocs.io/en/latest/security.html
+    technology: python

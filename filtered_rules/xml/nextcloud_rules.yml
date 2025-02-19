@@ -1,0 +1,24 @@
+rules:
+- id: vuln-android-aa471971
+  pattern: "<provider\n    android:exported=\"true\"\n    android:readPermission=\"\
+    $PERMISSION\" />\n"
+  pattern-not: "<provider\n    android:permission=\"$PERMISSION\"\n    android:exported=\"\
+    true\">\n</provider>\n"
+  languages:
+  - xml
+  message: "The provider is exported without proper permission protection, which can\
+    \ allow unauthorized access. \nInstead of using `android:readPermission`, use\
+    \ `android:permission` to enforce access control. \nThis ensures that only authorized\
+    \ apps can interact with the provider.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nextcloud/android/commit/aa47197109970b8449c4e44601eba36e3481b086
+    category: security
+    cwe:
+    - CWE-926
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://developer.android.com/guide/topics/manifest/provider-element
+    technology:
+    - xml

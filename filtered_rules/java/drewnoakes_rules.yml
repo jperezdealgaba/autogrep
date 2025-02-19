@@ -1,0 +1,25 @@
+rules:
+- id: vuln-metadata-extractor-053d23d0
+  pattern: 'String $KEYVALUE = new String($READER.getBytes($KEYSIZE - 8));
+
+    '
+  pattern-not: 'String $KEYVALUE = $READER.getString($KEYSIZE - 8, "UTF-8");
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe string conversion from bytes without specifying encoding.
+    This can lead to incorrect string interpretation and potential security vulnerabilities.
+    Always specify the character encoding when converting bytes to a string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/drewnoakes/metadata-extractor/commit/053d23d0be38f9e52a1423373792cb012883bfb9
+    category: security
+    cwe: CWE-172
+    owasp: A03:2021-Injection
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/java/STR04-J.+Use+the+correct+encoding+when+converting+bytes+to+characters
+    technology:
+    - java

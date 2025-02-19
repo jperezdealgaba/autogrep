@@ -1,0 +1,25 @@
+rules:
+- id: vuln-coreruleset-e0edb5b8
+  pattern: "headers:\n  ...\n  Content-Type: \"$TYPE\\nContent-Type: $TYPE2\"\n"
+  pattern-not: 'encoded_request: "R0VUIC8gSFRUUC8xLjENCkhvc3Q6IGxvY2FsaG9zdA0KVXNlci1BZ2VudDogVEVTVCBDUlMNCkFjY2VwdDogKi8qDQpDb250ZW50LVR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24veG1sDQoNCg=="
+
+    '
+  languages:
+  - yaml
+  message: "Detected a potentially dangerous Content-Type header injection vulnerability.\
+    \ \nThe YAML file contains a Content-Type header with multiple values separated\
+    \ by a newline character, \nwhich can lead to HTTP request smuggling or other\
+    \ protocol attacks. \nUse the `encoded_request` field to properly encode the request\
+    \ instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/coreruleset/coreruleset/commit/e0edb5b840bd4db63c854e2331c1038b02bc995e
+    category: security
+    cwe:
+    - CWE-113
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/07-Testing_for_HTTP_Splitting_Smuggling
+    technology:
+    - yaml

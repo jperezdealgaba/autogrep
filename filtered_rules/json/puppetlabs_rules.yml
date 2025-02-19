@@ -1,0 +1,26 @@
+rules:
+- id: vuln-puppet-agent-2c498432
+  pattern: '{"url": "git://github.com/puppetlabs/puppet.git", "ref": $REF}'
+  pattern-not: '{"url": "git://github.com/puppetlabs/puppet-cve-test.git", "ref":
+    $REF}'
+  languages:
+  - json
+  message: 'The repository URL points to a potentially vulnerable or deprecated source.
+
+    Using this URL could expose the application to security risks or outdated dependencies.
+
+    Update the URL to the secure and maintained repository.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/puppetlabs/puppet-agent/commit/2c49843294a5e3feed0d9868bca90e5b6876ebe3
+    category: security
+    cwe:
+    - CWE-829
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/829.html
+    technology:
+    - json

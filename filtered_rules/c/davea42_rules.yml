@@ -1,0 +1,155 @@
+rules:
+- id: vuln-libdwarf-code-faf99408
+  pattern: 'dwarfstring_append_printf_s($VAR, $FORMAT, (char *) $VAR2->fi_file_name);
+
+    '
+  pattern-not: 'dwarfstring_append_printf_s($VAR, $FORMAT, $VAR2->fi_file_name ? (char
+    *) $VAR2->fi_file_name : "<no file name>");
+
+    '
+  languages:
+  - c
+  message: 'The code does not handle the case where `fi_file_name` is null, which
+    can occur in DWARF5 with unknown format codes or corrupt object files. This can
+    lead to null pointer dereference vulnerabilities. Always check for null pointers
+    before dereferencing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/faf99408e3f9f706fc3809dd400e831f989778d3
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c
+- id: vuln-libdwarf-code-8151575a
+  pattern: 'pubnames_like_ptr = pubnames_like_ptr + strlen((char *) pubnames_like_ptr)
+    + 1;
+
+    '
+  pattern-not: '$NSTRLEN = strlen((char *)pubnames_like_ptr);
+
+    pubnames_like_ptr += $NSTRLEN + 1;
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects unsafe pointer arithmetic in string operations. The
+    original code directly adds the result of `strlen` to the pointer, which can lead
+    to miscalculations and potential memory corruption. The fixed version first stores
+    the length in a variable and then performs the pointer arithmetic, making the
+    operation safer and more predictable.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/8151575a6ace77d005ca5bb5d71c1bfdba3f7069
+    category: security
+    cwe:
+    - CWE-467
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-libdwarf-code-583f8834
+  pattern: "for (Dwarf_Signed $I = 0; $I < $ATCOUNT; ++$I) {\n  ...\n}\n"
+  pattern-not: "Dwarf_Signed $I = 0;\nfor ($I = 0; $I < $ATCOUNT; ++$I) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: "The variable 'i' is declared inside the for loop, which can lead to scope\
+    \ issues and potential bugs. \nDeclare the variable outside the loop to ensure\
+    \ proper scope and avoid potential vulnerabilities.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/583f8834083b5ef834c497f5b47797e16101a9a6
+    category: best-practice
+    cwe:
+    - CWE-483
+    technology:
+    - c
+- id: vuln-libdwarf-code-99e77c38
+  pattern: '#ifdef HAVE_INTTYPES_H
+
+    #include <inttypes.h>
+
+    #endif /* HAVE_INTTYPES_H */
+
+    '
+  pattern-not: '#include <inttypes.h>
+
+    '
+  languages:
+  - c
+  message: 'Detected conditional inclusion of inttypes.h based on HAVE_INTTYPES_H
+    macro.
+
+    This can lead to portability issues and potential undefined behavior if inttypes.h
+    is not included when needed.
+
+    Remove the conditional inclusion and always include inttypes.h directly to ensure
+    consistent behavior.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/99e77c3894877a1dd80b82808d8309eded4e5599
+    category: portability
+    cwe:
+    - CWE-758
+    technology:
+    - c
+- id: vuln-libdwarf-code-268c1f18
+  pattern: 'DECODE_LEB128_UWORD($LINE_PTR, $UTMP2);
+
+    '
+  pattern-not: 'DECODE_LEB128_UWORD_CK($LINE_PTR, $UTMP2, $DBG, $ERROR, $LINE_PTR_END);
+
+    '
+  languages:
+  - c
+  message: 'The code uses DECODE_LEB128_UWORD without bounds checking, which can lead
+    to buffer overflows. This vulnerability can be exploited to read or write out-of-bounds
+    memory, potentially leading to crashes or arbitrary code execution. Always use
+    the checked version DECODE_LEB128_UWORD_CK which includes bounds checking and
+    error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/268c1f18d1d28612af3b72d7c670076b1b88e51c
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: A1:2017-Injection
+    references:
+    - https://en.wikipedia.org/wiki/Buffer_overflow
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-libdwarf-code-0b28b923
+  pattern: 'Dwarf_Sword $SHIFT = 0;
+
+    '
+  pattern-not: 'unsigned $SHIFT = 0;
+
+    '
+  languages:
+  - c
+  message: "Using `Dwarf_Sword` for the shift variable can lead to potential integer\
+    \ overflow issues. \nThis is dangerous because it can cause undefined behavior\
+    \ or security vulnerabilities in the code. \nThe fix is to use `unsigned` instead\
+    \ of `Dwarf_Sword` to ensure proper handling of the shift operation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/davea42/libdwarf-code/commit/0b28b923c3bd9827d1d904feed2abadde4fa5de2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

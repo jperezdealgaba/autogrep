@@ -1,0 +1,46 @@
+rules:
+- id: vuln-markdown-it-f76d3beb
+  pattern: "var $URL = $VAR.trim().toLowerCase();\nif ($URL.indexOf(':') >= 0 && $BAD_PROTOCOLS.indexOf($URL.split(':')[0])\
+    \ >= 0) {\n  ...\n}\n"
+  pattern-not: "var $URL = $VAR.trim().toLowerCase(),\n    $PROTOCOL = $URL.split(':')[0];\n\
+    if ($URL.indexOf(':') >= 0 && $BAD_PROTOCOLS.indexOf($PROTOCOL) >= 0) {\n  if\
+    \ ($PROTOCOL === 'data' && $ALLOWED_DATA_MIMES.indexOf($URL.split(';')[0]) >=\
+    \ 0) {\n    return true;\n  }\n  ...\n}\n"
+  languages:
+  - javascript
+  message: Insecure URL validation detected. The original code fails to properly validate
+    data URLs, potentially allowing malicious content. Update the validation to include
+    specific allowed MIME types for data URLs.
+  severity: ERROR
+  metadata:
+    source-url: github.com/markdown-it/markdown-it/commit/f76d3beb46abd121892a2e2e5c78376354c214e3
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)
+    technology:
+    - javascript
+- id: vuln-markdown-it-89c86201
+  pattern: 'var cdata = /<!\[CDATA\[([^\]]+|\][^\]]|\]\][^>])*\]\]>/;
+
+    '
+  pattern-not: 'var cdata = /<!\[CDATA\[[\s\S]*?\]\]>/;
+
+    '
+  languages:
+  - javascript
+  message: "Insecure CDATA regex pattern that could lead to incorrect parsing or security\
+    \ vulnerabilities. \nThe previous pattern could fail to match certain valid CDATA\
+    \ sections or improperly handle nested CDATA. \nUse the updated pattern that correctly\
+    \ matches CDATA sections with any content.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/markdown-it/markdown-it/commit/89c8620157d6e38f9872811620d25138fc9d1b0d
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - A6:2021-Vulnerable and Outdated Components
+    technology:
+    - javascript

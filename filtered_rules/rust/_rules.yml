@@ -1,0 +1,68 @@
+rules:
+- id: vuln-rust-241b9b45
+  pattern: "let $SRC_TOTAL = $OTHER.len();\nself.reserve($SRC_TOTAL);\nself.head =\
+    \ {\n    let $ORIGINAL_HEAD = self.head;\n    let ($SRC_HIGH, $SRC_LOW) = $OTHER.as_slices();\n\
+    \    let ($DST_HIGH, $DST_LOW) = unsafe { self.unused_as_mut_slices() };\n   \
+    \ let $SRC_CONTIGUOUS = $SRC_LOW.is_empty();\n    let $DST_HIGH_FITS_SRC = $DST_HIGH.len()\
+    \ >= $SRC_TOTAL;\n    match ($SRC_CONTIGUOUS, $DST_HIGH_FITS_SRC) {\n        (true,\
+    \ true) => {\n            unsafe { copy_whole_slice($SRC_HIGH, $DST_HIGH); }\n\
+    \            $ORIGINAL_HEAD + $SRC_TOTAL\n        },\n        (true, false) =>\
+    \ {\n            let ($SRC_1, $SRC_2) = $SRC_HIGH.split_at($DST_HIGH.len());\n\
+    \            unsafe {\n                copy_whole_slice($SRC_1, $DST_HIGH);\n\
+    \                copy_whole_slice($SRC_2, $DST_LOW);\n            }\n        \
+    \    $SRC_TOTAL - $DST_HIGH.len()\n        },\n        (false, true) => {\n  \
+    \          let ($DST_1, $DST_2) = $DST_HIGH.split_at_mut($SRC_HIGH.len());\n \
+    \           unsafe {\n                copy_whole_slice($SRC_HIGH, $DST_1);\n \
+    \               copy_whole_slice($SRC_LOW, $DST_2);\n            }\n         \
+    \   $ORIGINAL_HEAD + $SRC_TOTAL\n        },\n        (false, false) => {\n   \
+    \         ...\n        }\n    }\n};\n$OTHER.tail = $OTHER.head;\n"
+  pattern-not: 'self.extend($OTHER.drain(..));
+
+    '
+  languages:
+  - rust
+  message: 'Detected a complex manual implementation of extending a VecDeque that
+    could lead to incorrect memory handling or data corruption. This implementation
+    manually copies slices and manages head/tail pointers, which is error-prone and
+    can lead to vulnerabilities. The safer approach is to use the `extend` method
+    with `drain`, which handles all edge cases correctly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/rust-lang/rust/commit/241b9b45c0580ee3359b1f8139995b95c644eeac
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - rust
+- id: vuln-rust-f94360fd
+  pattern: "let $TOKENS = std::iter::once($START_TOKEN.clone())\n    .chain((0..$NUM_CALLS).map(|_|\
+    \ {\n        if $DESUGAR_DOC_COMMENTS {\n            $TOKEN\n        }\n    }))\n\
+    \    .take($NUM_CALLS);\n"
+  pattern-not: "let $NUM_CALLS = $SELF.num_calls - 1;\nlet mut $I = 0;\nlet $TOKENS\
+    \ =\n    std::iter::once($START_TOKEN.clone()).chain(std::iter::from_fn(|| {\n\
+    \        if $I >= $NUM_CALLS {\n            return None;\n        }\n        \n\
+    \        let $TOKEN = if $DESUGAR_DOC_COMMENTS {\n            $TOKEN\n       \
+    \ };\n        \n        if !matches!(\n            $TOKEN.0.kind,\n          \
+    \  token::OpenDelim(token::NoDelim) | token::CloseDelim(token::NoDelim)\n    \
+    \    ) {\n            $I += 1;\n        }\n        Some($TOKEN)\n    }));\n"
+  languages:
+  - rust
+  message: 'The token stream implementation may incorrectly handle tokens when no
+    calls are made, potentially leading to unexpected behavior in macro processing.
+    This vulnerability arises from not properly handling the case where `num_calls`
+    is zero and not correctly tracking token consumption. The fix involves explicitly
+    checking for zero calls and properly tracking token consumption using a counter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/rust-lang/rust/commit/f94360fd83b49554b6c26999a0030e9cfe800f32
+    category: correctness
+    cwe:
+    - CWE-664
+    technology:
+    - rust

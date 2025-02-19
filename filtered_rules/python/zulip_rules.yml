@@ -1,0 +1,149 @@
+rules:
+- id: vuln-zulip-47913fb0
+  pattern: '($TYPE, $LABEL, $CHECKER, eval, $NAME)
+
+    '
+  pattern-not: '($TYPE, $LABEL, $CHECKER, ast.literal_eval, $NAME)
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe use of `eval()` which can lead to arbitrary code execution.\
+    \ \nReplace `eval()` with `ast.literal_eval()` to safely evaluate literals only.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/47913fb091794830c54eac2927e26bce92cfced1
+    category: security
+    cwe: CWE-94
+    owasp: A03:2021-Injection
+    references:
+    - https://docs.python.org/3/library/functions.html#eval
+    - https://docs.python.org/3/library/ast.html#ast.literal_eval
+    technology:
+    - python
+- id: vuln-zulip-59edbfa4
+  pattern: "if $REQUEST.headers.get(\"Authorization\") != $TOKEN:\n    ...\n"
+  pattern-not: "if $AUTHORIZATION is None or not constant_time_compare($AUTHORIZATION,\
+    \ $TOKEN):\n    ...\n"
+  languages:
+  - python
+  message: 'Detected insecure comparison of Authorization headers. Using direct comparison
+    (`!=`) can lead to timing attacks. Use `django.utils.crypto.constant_time_compare`
+    for secure comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/59edbfa4113d140d3e20126bc65f4d67b2a8ffe5
+    category: security
+    cwe: CWE-208
+    owasp: A02:2021-Cryptographic Failures
+    references:
+    - https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.crypto.constant_time_compare
+    technology:
+    - python
+- id: vuln-zulip-e3a4aeef
+  pattern: '$TAG = markdown.util.etree.Element("a")
+
+    $TAG.set("href", $URL)
+
+    $TAG.set("title", $URL)
+
+    $TAG.text = $TEXT
+
+    '
+  pattern-not: '$TAG = markdown.util.etree.Element("a")
+
+    $TAG.set("href", $URL)
+
+    $TAG.set("title", $TEXT)
+
+    $TAG.text = $TEXT
+
+    '
+  languages:
+  - python
+  message: Potential XSS vulnerability detected. The 'title' attribute should not
+    contain untrusted URLs. Use safe text instead of the URL in the title attribute.
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/e3a4aeeffa17d6e001586d11f8c714f9c690e1b1
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - python
+- id: vuln-zulip-2d453085
+  pattern: "if $LINK.startswith($PREFIX):\n  ...\n"
+  pattern-not: "if (\n  $LINK.startswith($PREFIX)\n  and urllib.parse.urljoin($PREFIX,\
+    \ $LINK[len($PREFIX):])\n  == $LINK\n):\n"
+  languages:
+  - python
+  message: 'Detected potentially unsafe URL prefix check. The original check only
+    verifies if a link starts with a prefix but does not validate the full URL structure,
+    which could lead to security vulnerabilities like path traversal or open redirects.
+    To fix, ensure the full URL is validated using urllib.parse.urljoin.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/2d4530854673d78d2212ec91523135452dbd75fb
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin
+    technology:
+    - python
+- id: vuln-zulip-5797f013
+  pattern: 'r''''''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*(([''"])(.*?)\12\s*)?\)''''''
+
+    '
+  pattern-not: 'r''''''\(\s*(<(?:[^<>\\]|\\.)*>|(\([^()]*\)|[^()])*?)\s*((''(?:[^''\\]|\\.)*''|"(?:[^"\\]|\\.)*")\s*)?\)''''''
+
+    '
+  languages:
+  - python
+  message: 'Detected a potentially unsafe regular expression pattern that may allow
+    for ReDoS (Regular Expression Denial of Service) attacks. The pattern contains
+    nested quantifiers that can lead to catastrophic backtracking. The fixed version
+    properly escapes special characters and limits the scope of quantifiers to prevent
+    excessive backtracking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/5797f013b3be450c146a4141514bda525f2f1b51
+    category: security
+    cwe: CWE-400
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - python
+- id: vuln-zulip-4a61e36d
+  pattern: "if $URL.startswith($REALM_URI_PREFIX) and urllib.parse.urljoin($REALM_URI_PREFIX,\
+    \ $URL[len($REALM_URI_PREFIX):]) == $URL:\n  ...\n"
+  pattern-not: "if $URL.startswith(($REALM_URI_PREFIX + \"#\", $REALM_URI_PREFIX +\
+    \ \"user_uploads/\")):\n  ...\n"
+  languages:
+  - python
+  message: 'Detected insecure URL validation that could allow bypassing security checks.
+
+    The original code used a weak comparison that could be exploited by crafted URLs.
+
+    The fix ensures URLs are properly validated against specific allowed patterns.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zulip/zulip/commit/4a61e36def4ae7349dc7b39f2a9848505389cf6a
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - python

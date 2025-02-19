@@ -1,0 +1,116 @@
+rules:
+- id: vuln-roundcubemail-5ef8e4ad
+  pattern: '($key == ''href'' && preg_match(''!^([a-z][a-z0-9.+-]+:|//|#).+!i'', $value))
+
+    '
+  pattern-not: "($key == 'href' && !preg_match('!^javascript!i', $value)\n  && preg_match('!^([a-z][a-z0-9.+-]+:|//|#).+!i',\
+    \ $value))\n"
+  languages:
+  - php
+  message: 'Detected a potential XSS vulnerability due to insufficient validation
+    of ''href'' attributes.
+
+    The code allows ''javascript:'' URIs which can lead to script injection. To fix
+    this, ensure
+
+    that ''javascript:'' URIs are explicitly blocked in the validation pattern.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/5ef8e4ad9d3ee8689d2b83750aa65395b7cd59ee
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A3:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-roundcubemail-8b706775
+  pattern: '"/^(N:[^;\R]*)$/m"
+
+    '
+  pattern-not: '"/^(N:[^;\r\n]*)$/m"
+
+    '
+  languages:
+  - php
+  message: 'The regular expression pattern ''/^(N:[^;\R]*)$/m'' is vulnerable because
+    it uses \R which matches any Unicode newline sequence, potentially leading to
+    incorrect parsing of vCard data. This can be exploited to bypass validation or
+    cause parsing errors. The fix replaces \R with \r\n to explicitly match only CRLF
+    line endings, which is the standard for vCard format. Use ''/^(N:[^;\r\n]*)$/m''
+    instead to ensure proper handling of line endings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/8b706775f38447e6af6028d0caa409be261f5693
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-roundcubemail-06c5a203
+  pattern: '$VAR = preg_replace(''/^[^\.]+\./'', '''', $EXPR);
+
+    '
+  pattern-not: '$VAR = preg_replace(''/^[^.]+\.(?![^.]+$)/'', '''', $EXPR);
+
+    '
+  languages:
+  - php
+  message: 'The use of a simple regex pattern ''/^[^\.]+\./'' to remove the first
+    part of a domain name can lead to incorrect results when the domain has only one
+    part (e.g., ''domain.tld''). This can cause security issues if the truncated domain
+    is used in security-sensitive contexts. The fixed version uses ''/^[^.]+\.(?![^.]+$)/''
+    to ensure that domains with only one part remain valid.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/06c5a2033105074109282d2a88d760789f9a8370
+    category: security
+    cwe:
+    - CWE-185
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - php
+- id: vuln-roundcubemail-27142642
+  pattern: '$VAR = escapeshellcmd($VAR);
+
+    '
+  pattern-not: '$VAR = escapeshellarg($VAR);
+
+    '
+  languages:
+  - php
+  message: 'The use of `escapeshellcmd` is insecure for command injection prevention
+    as it does not properly escape arguments. Use `escapeshellarg` instead to ensure
+    that arguments are safely quoted.
+
+    This vulnerability can lead to command injection attacks if the input is not properly
+    sanitized.
+
+    To fix this, replace `escapeshellcmd` with `escapeshellarg`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/roundcube/roundcubemail/commit/271426429bfbb5b63e6dec91b1e4780e8ef1c67e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.escapeshellarg.php
+    technology:
+    - php

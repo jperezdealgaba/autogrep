@@ -1,0 +1,23 @@
+rules:
+- id: vuln-portprocesses-86811216
+  pattern: 'const $RESULT = await $FUNC($PORT);
+
+    '
+  pattern-not: '$RESULT = await $FUNC($PORT);
+
+    '
+  languages:
+  - javascript
+  message: Avoid using `const` for asynchronous function results that may be reassigned.
+    This can lead to unexpected behavior and potential resource leaks. Use `let` instead
+    to allow reassignment of the result variable.
+  severity: WARNING
+  metadata:
+    source-url: github.com/rrainn/PortProcesses/commit/86811216c9b97b01b5722f879f8c88a7aa4214e1
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2017-Insufficient Attack Protection
+    technology:
+    - javascript

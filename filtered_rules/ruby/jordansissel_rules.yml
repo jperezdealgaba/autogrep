@@ -1,0 +1,31 @@
+rules:
+- id: vuln-ruby-arr-pm-480d54b1
+  pattern: '$TAGS[:dirnames].zip($TAGS[:basenames]).map &File.method(:join)
+
+    '
+  pattern-not: '$TAGS[:basenames].zip($TAGS[:dirindexes]).map { |$NAME, $I| File.join($TAGS[:dirnames][$I],
+    $NAME) }
+
+    '
+  languages:
+  - ruby
+  message: 'The vulnerable code directly zips `dirnames` and `basenames` without considering
+    the correct directory index, which can lead to incorrect file path construction.
+    This could result in file access or manipulation in unintended directories, potentially
+    causing security issues such as unauthorized file access or data corruption. To
+    fix this, use the `dirindexes` tag to correctly map basenames to their respective
+    directories.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jordansissel/ruby-arr-pm/commit/480d54b14685a2cb67f558486bc6cbd247d5ed29
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - ruby

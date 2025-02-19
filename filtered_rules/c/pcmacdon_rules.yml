@@ -1,0 +1,73 @@
+rules:
+- id: vuln-jsish-48b86dbe
+  pattern: 'assert($VP != $RESPTR);
+
+    '
+  pattern-not: "if ($VP == $RESPTR)\n  return Jsi_LogError(\"bad eval\");\n"
+  languages:
+  - c
+  message: 'The use of `assert` for validation can lead to undefined behavior if the
+    assertion fails in production builds. This is dangerous because it can cause the
+    program to terminate abruptly without proper error handling. Replace `assert`
+    with proper error handling to ensure graceful failure and better security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/48b86dbeb287dca8e5451cb6d6a60e98156c5c8b
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    references:
+    - https://wiki.sei.cmu.edu/confluence/display/c/ERR33-C.+Detect+and+handle+standard+library+errors
+    technology:
+    - c
+- id: vuln-jsish-8d57b655
+  pattern: "if (!$VAR == $CONST) {\n  ...\n}\n"
+  pattern-not: "if ($VAR == $CONST) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "The condition checks for the negation of a comparison, which is likely\
+    \ a logical error. \nThis can lead to incorrect control flow and potential security\
+    \ vulnerabilities. \nThe correct way is to directly compare the variable with\
+    \ the constant.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/8d57b65503fe955acc6d219a9c31b43361653289
+    category: security
+    cwe:
+    - CWE-480
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/480.html
+    technology:
+    - c
+- id: vuln-jsish-3ce16910
+  pattern: 'if (!$FUNC || $FUNC->type != $TYPE || !$FUNC->fobj->func->pkg) $RETURN;
+
+    '
+  pattern-not: 'if (!$FUNC || $FUNC->type != $TYPE || !$FUNC->fobj || !$FUNC->fobj->func->pkg)
+    $RETURN;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential NULL pointer dereference vulnerability. The code
+    does not check if `fobj` is NULL before accessing `fobj->func->pkg`. This can
+    lead to a crash or undefined behavior if `fobj` is NULL. To fix this, ensure that
+    `fobj` is checked for NULL before dereferencing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pcmacdon/jsish/commit/3ce16910be93b50cc83a3110903847fb6ca8a841
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

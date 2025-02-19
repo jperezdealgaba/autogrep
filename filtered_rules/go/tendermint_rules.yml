@@ -1,0 +1,24 @@
+rules:
+- id: vuln-tendermint-03085c2d
+  pattern: "&http.Transport{\n    Dial: $DIAL,\n}\n"
+  pattern-not: "&http.Transport{\n    DisableCompression: true,\n    Dial: $DIAL,\n\
+    }\n"
+  languages:
+  - go
+  message: "The HTTP transport configuration is missing `DisableCompression: true`,\
+    \ which can lead to GZIP-bomb DoS attacks. \nAn attacker could exploit this by\
+    \ sending a small, highly compressed payload that expands to a large size when\
+    \ decompressed, \nconsuming excessive server resources. To fix this, set `DisableCompression:\
+    \ true` in the http.Transport configuration.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tendermint/tendermint/commit/03085c2da23b179c4a51f59a03cb40aa4e85a613
+    category: security
+    cwe:
+    - CWE-409
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://en.wikipedia.org/wiki/Zip_bomb
+    technology:
+    - go

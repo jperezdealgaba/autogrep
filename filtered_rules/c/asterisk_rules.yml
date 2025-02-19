@@ -1,0 +1,27 @@
+rules:
+- id: vuln-asterisk-da2573a3
+  pattern: "if ($OCTET_CNT > 0) {\n  ...\n  if (($LEN + $OCTET_CNT) > $LIMIT) {\n\
+    \    return -1;\n  }\n  ...\n}\n"
+  pattern-not: "if (($LEN + $OCTET_CNT) > $LIMIT) {\n  return -1;\n}\n...\n"
+  languages:
+  - c
+  message: 'The vulnerable code checks the buffer length condition only if octet_cnt
+    is greater than 0, which can lead to buffer overflow if the condition is not checked
+    when octet_cnt is 0. This is dangerous because it can allow attackers to write
+    beyond the allocated buffer, potentially leading to memory corruption or code
+    execution. The fix is to move the buffer length check outside the octet_cnt condition
+    to ensure it is always validated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/asterisk/asterisk/commit/da2573a3779425654543d6ac4c4dd6871ce16720
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

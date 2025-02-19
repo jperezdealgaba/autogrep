@@ -1,0 +1,347 @@
+rules:
+- id: vuln-wireshark-30651ab1
+  pattern: 'tvb_memcpy($TVB, $BYTES, $OFFSET, ($OPTLEN - 4));
+
+    '
+  pattern-not: 'tvb_memcpy($TVB, $BYTES, $OFFSET, $ADDR_LEN);
+
+    '
+  languages:
+  - c
+  message: 'The calculation of the length parameter in tvb_memcpy is unsafe as it
+    directly uses (optlen - 4) without proper bounds checking. This can lead to buffer
+    overflows if optlen is not validated. Use a pre-calculated and validated length
+    variable instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/30651ab18b42e666f57ea239e58f3ff3a5e9c4ad
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-wireshark-4425716d
+  pattern: "if ($TYPE == T_SRV) {\n  ...\n}\n"
+  pattern-not: "if ($TYPE == T_SRV && $NAME[0]) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing null check for DNS SRV record name before accessing first character.
+
+    This could lead to null pointer dereference if the name is empty.
+
+    Always validate that the name string is not empty before accessing its first character.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/4425716ddba99374749bd033d9bc0f4add2fb973
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-wireshark-d8a0cbc4
+  pattern: "for ($I = 1; $I <= $COUNT; $I++) {\n  ...\n  proto_item_append_text($ITEM,\
+    \ \" [%d]: (%s)\", $I, $VAL);\n  ...\n}\n"
+  pattern-not: "for ($I = 0; $I < $COUNT; $I++) {\n  ...\n  proto_item_append_text($ITEM,\
+    \ \" [%d]: (%s)\", $I+1, $VAL);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The loop starts at index 1 and uses ''i <= item_count'' as the condition,
+    which can lead to off-by-one errors and potential out-of-bounds access. This is
+    dangerous because it can cause memory corruption or crashes. To fix this, start
+    the loop at index 0 and use ''i < item_count'' as the condition, adjusting any
+    index usage inside the loop accordingly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/d8a0cbc4f2979e0b1cadbe79f0b8b4ecb92477be
+    category: security
+    cwe:
+    - 'CWE-193: Off-by-one Error'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/193.html
+    technology:
+    - c
+- id: vuln-wireshark-dc9127dd
+  pattern: 'read_cap_file($CF, $SAVE_FILE, $OUT_FILE_TYPE, $OUT_FILE_NAME_RES, $COUNT,
+    $BYTE_COUNT)
+
+    '
+  pattern-not: 'process_cap_file($CF, $SAVE_FILE, $OUT_FILE_TYPE, $OUT_FILE_NAME_RES,
+    $COUNT, $BYTE_COUNT)
+
+    '
+  languages:
+  - c
+  message: "Detected use of deprecated `read_cap_file` function, which has been replaced\
+    \ by `process_cap_file`. \nThis change was made to improve security and consistency\
+    \ in file processing. \nReplace all instances of `read_cap_file` with `process_cap_file`\
+    \ to ensure proper file handling.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/dc9127ddff6081ab3a7e7480621405119ad38d95
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChCaptureFile.html
+    technology:
+    - c
+- id: vuln-wireshark-5a8020a1
+  pattern: 'static const char *$VAR;
+
+    ...
+
+    $VAR = $EXPR;
+
+    '
+  pattern-not: "static const char *$VAR = NULL;\n...\nif ($VAR) {\n  wmem_free(wmem_file_scope(),\
+    \ (void*)$VAR);\n}\n$VAR = (const char *)wmem_strdup(wmem_file_scope(), $EXPR);\n"
+  languages:
+  - c
+  message: "Detected uninitialized static pointer and unsafe assignment. \nThis can\
+    \ lead to memory leaks or undefined behavior if the pointer is reused without\
+    \ proper initialization or cleanup. \nInitialize the pointer to NULL and ensure\
+    \ proper memory management using wmem_strdup and wmem_free.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/5a8020a1b6bb73fcb8bb7eb7d53177bc8a9fc703
+    category: security
+    cwe:
+    - CWE-908
+    - CWE-665
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-wireshark-55d8c445
+  pattern: 'length = (gint)tvb_ensure_captured_length_remaining(tvb, offset);
+
+    '
+  pattern-not: 'length = tvb_captured_length_remaining(tvb, offset);
+
+    '
+  languages:
+  - c
+  message: 'The use of `(gint)tvb_ensure_captured_length_remaining` is potentially
+    dangerous as it may lead to integer overflow or truncation issues. This can cause
+    incorrect length calculations and lead to security vulnerabilities such as buffer
+    overflows or data corruption. Replace it with `tvb_captured_length_remaining`
+    to avoid casting and ensure proper length handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/55d8c445b47375a813c9ebb2b398951f65145a84
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-681
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/libtvbuff.html
+    technology:
+    - c
+- id: vuln-wireshark-212b1882
+  pattern: 'g_snprintf($S, $ITEM_LABEL_LENGTH, "%d [Mired] (%d [K])", $VALUE, 1000000/$VALUE);
+
+    '
+  pattern-not: 'g_snprintf($S, $ITEM_LABEL_LENGTH, "%u [Mired]", $VALUE);
+
+    g_snprintf($S, $ITEM_LABEL_LENGTH, "%u [Mired] (%u [K])", $VALUE, 1000000/$VALUE);
+
+    '
+  languages:
+  - c
+  message: 'Potential division by zero vulnerability detected. The expression ''1000000/$VALUE''
+    can lead to a division by zero if $VALUE is 0. This can cause undefined behavior
+    or crashes. Add a check to ensure $VALUE is not zero before performing the division.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/212b18825d9b668cda23d334c48867dfa66b2b36
+    category: security
+    cwe:
+    - CWE-369
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-wireshark-8ed057f7
+  pattern: 'copy_address(&$VAR1, &$VAR2);
+
+    '
+  pattern-not: 'copy_address_wmem(wmem_file_scope(), &$VAR1, &$VAR2);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of copy_address() without memory scope. This can lead
+    to memory management issues and potential security vulnerabilities. Always use
+    copy_address_wmem() with an explicit memory scope like wmem_file_scope() to ensure
+    proper memory management.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/8ed057f7faa709dbde34b91f0715a957837f74d9
+    category: security
+    cwe:
+    - 'CWE-789: Memory Allocation with Excessive Size Value'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChDissectMemory.html
+    technology:
+    - c
+- id: vuln-wireshark-95571f17
+  pattern: "if ($SPLIT[1] == NULL) {\n  ...\n}\n"
+  pattern-not: "if ($SPLIT == NULL || $SPLIT[0] == NULL || $SPLIT[1] == NULL) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential NULL pointer dereference vulnerability. The code
+    checks only the second element of the split array for NULL, but does not verify
+    the array itself or the first element. This can lead to a crash or undefined behavior
+    if either the array or the first element is NULL. To fix this, ensure you check
+    the array and all relevant elements for NULL before accessing them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/95571f17d5e2de39735e62e5251583f930c06d51
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-wireshark-f177008b
+  pattern: '$LINE = (guint8 *)tvb_memdup($WMEM_SCOPE, $TVB, $OFFSET, $LEN+1);
+
+    '
+  pattern-not: '$LINE = tvb_get_string_enc($WMEM_SCOPE, $TVB, $OFFSET, $LEN, $ENC);
+
+    '
+  languages:
+  - c
+  message: 'Detected potential memory leak in Wireshark dissector code. The use of
+    `tvb_memdup` with an explicit cast to `guint8 *` can lead to memory leaks if the
+    allocated memory is not properly freed. This vulnerability can cause resource
+    exhaustion and potential denial of service. Replace `tvb_memdup` with `tvb_get_string_enc`
+    to handle string extraction safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/f177008b04a530640de835ca878892e58b826d58
+    category: security
+    cwe:
+    - CWE-401
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-wireshark-a442a1c0
+  pattern: 'wmem_alloc($POOL, $SIZE * $MULTIPLIER)
+
+    '
+  pattern-not: 'wmem_alloc0($POOL, $SIZE * $MULTIPLIER)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of `wmem_alloc` without zero-initialization, which can lead
+    to information disclosure vulnerabilities. The function `wmem_alloc` allocates
+    memory but does not initialize it, potentially exposing sensitive data. Use `wmem_alloc0`
+    instead, which zero-initializes the allocated memory, ensuring no residual data
+    is exposed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/a442a1c0e815fd61416cf408bd74d85a042ccc6a
+    category: security
+    cwe:
+    - 'CWE-909: Missing Initialization of Resource'
+    owasp:
+    - 'A3: Sensitive Data Exposure'
+    technology:
+    - c
+- id: vuln-wireshark-a9fc769d
+  pattern: 'tvb_get_bits_array(NULL, $TVB, $BIT_OFFSET, $NO_OF_BITS, $BYTES_LENGTH)
+
+    '
+  pattern-not: 'tvb_get_bits_array(wmem_packet_scope(), $TVB, $BIT_OFFSET, $NO_OF_BITS,
+    $BYTES_LENGTH)
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of NULL as first argument in tvb_get_bits_array().
+    This can lead to memory management issues since the function expects a valid memory
+    pool pointer. Always use wmem_packet_scope() or another appropriate memory pool
+    to ensure proper memory management and prevent potential crashes or memory leaks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/a9fc769d7bb4b491efb61c699d57c9f35269d871
+    category: security
+    cwe:
+    - 'CWE-476: NULL Pointer Dereference'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.wireshark.org/docs/wsdg_html_chunked/ChDissectMemory.html
+    technology:
+    - c
+- id: vuln-wireshark-66417b17
+  pattern: 'const int elsize = $VARSIZE ? (int)sizeof(struct data_blob) : $TYPE->size;
+
+    guint8 *data = (guint8*)wmem_alloc(wmem_packet_scope(), elsize * $NUM);
+
+    '
+  pattern-not: "const guint elsize = $VARSIZE ? (guint)sizeof(struct data_blob) :\
+    \ (guint)$TYPE->size;\nguint8 *data;\nif ((guint64)elsize * (guint64)$NUM > G_MAXUINT)\
+    \ {\n  THROW(ReportedBoundsError);\n}\ntvb_ensure_bytes_exist($TVB, $OFFSET, elsize\
+    \ * $NUM);\ndata = (guint8*)wmem_alloc(wmem_packet_scope(), elsize * $NUM);\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in memory allocation.
+
+    The code does not check for integer overflow before allocating memory, which can
+    lead to a buffer overflow.
+
+    To fix this, ensure that the multiplication of ''elsize'' and ''num'' does not
+    exceed G_MAXUINT before allocating memory.
+
+    Additionally, verify that the required data exists in the tvbuff before allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireshark/wireshark/commit/66417b17b3570b163a16ca81f71ce5bcb10548d2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

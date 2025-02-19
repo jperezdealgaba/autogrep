@@ -1,0 +1,28 @@
+rules:
+- id: vuln-librsvg-572f95f7
+  pattern: 'let $VAR = $LOADER.read_path($INPUT).unwrap();
+
+    '
+  pattern-not: "let $VAR = match $LOADER.read_path($INPUT) {\n    Ok($HANDLE) => $HANDLE,\n\
+    \    Err($E) => {\n        eprintln!(\"loading error: {}\", $E);\n        process::exit(1);\n\
+    \    }\n};\n"
+  languages:
+  - rust
+  message: 'Using `unwrap()` on `read_path` can lead to unhandled errors, potentially
+    causing the application to panic. This is dangerous as it can be exploited to
+    crash the application. Instead, handle the error gracefully by using a `match`
+    statement or propagating the error with `?`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/GNOME/librsvg/commit/572f95f739529b865e2717664d6fefcef9493135
+    category: security
+    cwe:
+    - CWE-248
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap
+    technology:
+    - rust

@@ -1,0 +1,1662 @@
+rules:
+- id: vuln-camel-b61d5b6b
+  pattern: "$DESTDIR = System.getProperty(\"java.io.tmpdir\");\nif ($DESTDIR != null\
+    \ && !$DESTDIR.endsWith(File.separator)) {\n    $DESTDIR += File.separator;\n\
+    }\n$FILE = new File($DESTDIR, $FILENAME);\nif (!$FILE.getCanonicalPath().startsWith($DESTDIR))\
+    \ {\n    throw new IOException(\"File is not jailed to the destination directory\"\
+    );\n}\nFiles.write($FILE.toPath(), $BOS, StandardOpenOption.CREATE);\n$FILE.deleteOnExit();\n"
+  pattern-not: '$PATH = Files.createTempFile($FILENAME, null, null);
+
+    Files.write($PATH, $BOS, StandardOpenOption.CREATE);
+
+    $PATH.toFile().deleteOnExit();
+
+    '
+  languages:
+  - java
+  message: Potential path traversal vulnerability due to improper file path validation.
+    Use `Files.createTempFile` instead of manually constructing file paths to ensure
+    secure temporary file creation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/camel/commit/b61d5b6be4f98b673dc977ad1bc6f004642644ab
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java
+- id: vuln-tika-ab8a9ed8
+  pattern: "while ($READ < $SECTION_SIZE) {\n  ...\n}\n"
+  pattern-not: "while ($READ < $SECTION_SIZE && $BLOCKS < $MAX_BLOCKS) {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Potential infinite loop vulnerability due to missing loop guard. Add a
+    maximum iteration limit to prevent infinite loops in resource parsing.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/ab8a9ed830ec710a32e4ffdf4989aea3aaea92ef
+    category: security
+    cwe: CWE-835
+    owasp: A03:2021-Injection
+    technology: java
+- id: vuln-hadoop-cae749b0
+  pattern: "$UNTAR_COMMAND.append(\" gzip -dc '\")\n    .append(FileUtil.makeSecureShellPath($INFILE))\n\
+    \    .append(\"' | (\");\n"
+  pattern-not: "$UNTAR_COMMAND.append(\" gzip -dc \")\n    .append($SOURCE)\n    .append(\"\
+    \ | (\");\n"
+  languages:
+  - java
+  message: 'Potential command injection vulnerability due to insecure shell command
+    construction.
+
+    The original code directly appends user-controlled input to a shell command without
+    proper sanitization.
+
+    To fix, use a pre-sanitized source variable and avoid directly appending raw input
+    to shell commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/hadoop/commit/cae749b076f35f0be13a926ee8cfbb7ce4402746
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - java
+- id: vuln-cxf-1be97cb1
+  pattern: '$REQ.getRequestURI() + $SUFFIX
+
+    '
+  pattern-not: "$REQ.getRequestURI();\nint $INDEX = $REQ.getRequestURI().indexOf(\"\
+    ;\");\nif ($INDEX > 0) {\n    $REQ.getRequestURI().substring(0, $INDEX);\n}\n\
+    $REQ.getRequestURI() + $SUFFIX\n"
+  languages:
+  - java
+  message: 'Potential URL manipulation vulnerability due to unhandled matrix parameters
+    in request URIs.
+
+    Matrix parameters (semicolon-separated) in URLs can lead to security issues if
+    not properly handled.
+
+    Always strip matrix parameters from request URIs before further processing to
+    prevent injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/1be97cb13aef121b799b1be4d9793c0e8b925a12
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology: java
+- id: vuln-tomcat-407841c4
+  pattern: 'Double.parseDouble($ENTRY.substring($SEMI + 3))
+
+    '
+  pattern-not: "String $STRQUALITY = $ENTRY.substring($SEMI + 3);\nif ($STRQUALITY.length()\
+    \ <= 5) {\n    $QUALITY = Double.parseDouble($STRQUALITY);\n} else {\n    $QUALITY\
+    \ = 0.0;\n}\n"
+  languages:
+  - java
+  message: Direct parsing of substring without length validation can lead to security
+    vulnerabilities. Always validate the length of the substring before parsing to
+    prevent potential denial of service or other security issues.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/407841c426dc52a4c6b8ccd297df6c484a540056
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - java
+- id: vuln-tomcat-90ec9675
+  pattern: "if (log.isDebugEnabled()) {\n    log.debug(\"Unexpected message: \" +\
+    \ $TYPE);\n}\ncontinue;\n"
+  pattern-not: "if (log.isDebugEnabled()) {\n    log.debug(\"Unexpected message: \"\
+    \ + $TYPE);\n}\nerror = true;\nbreak;\n"
+  languages:
+  - java
+  message: 'Unhandled unexpected message in AJP processor. This can lead to security
+    vulnerabilities
+
+    if unread body packets are not properly swallowed. The fix involves setting an
+    error flag
+
+    and breaking out of the loop instead of continuing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/90ec9675fa080e22df5f9e3e7019a19eb2faec14
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017 - Security Misconfiguration
+    technology:
+    - java
+- id: vuln-thrift-d9734096
+  pattern: "while ($COND) {\n  ...\n  break;\n  ...\n}\n"
+  pattern-not: "while ($COND) {\n  ...\n  continue;\n  ...\n}\n"
+  languages:
+  - java
+  message: Incorrect use of 'break' in a loop that should continue processing. This
+    can lead to premature termination of the loop, potentially causing incomplete
+    SASL authentication. Replace 'break' with 'continue' to ensure proper loop continuation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/thrift/commit/d973409661f820d80d72c0034d06a12348c8705e
+    category: security
+    cwe:
+    - CWE-835
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java
+- id: vuln-commons-compress-7ce1b079
+  pattern: "if ($HEADER_SIZE >= 0 && $TOTAL_READ + $REST_LEN > $HEADER_SIZE) {\n \
+    \ ...\n}\n"
+  pattern-not: "if ($HEADER_SIZE >= 0 && $REST_LEN > $HEADER_SIZE - $TOTAL_READ) {\n\
+    \  ...\n}\n"
+  languages:
+  - java
+  message: "Potential integer overflow vulnerability in buffer size calculation. The\
+    \ original condition \n`totalRead + restLen > headerSize` could lead to integer\
+    \ overflow, allowing buffer overflows \nor other memory corruption issues. The\
+    \ fixed version uses `restLen > headerSize - totalRead` \nto avoid this risk.\
+    \ Always ensure arithmetic operations do not exceed integer bounds.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-compress/commit/7ce1b0796d6cbe1f41b969583bd49f33ae0efef0
+    category: security
+    cwe: CWE-190
+    owasp: 'A2: Cryptographic Failures'
+    technology:
+    - java
+- id: vuln-tomcat-1bbc650c
+  pattern: 'void headersEnd(int $STREAMID) throws ConnectionException;
+
+    '
+  pattern-not: 'void headersEnd(int $STREAMID) throws Http2Exception;
+
+    '
+  languages:
+  - java
+  message: Incorrect exception type used in headersEnd method. Using ConnectionException
+    instead of Http2Exception can lead to improper error handling in HTTP/2 streams.
+    Replace ConnectionException with Http2Exception to ensure proper error handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/1bbc650cbc3f08d85a1ec6d803c47ae53a84f3bb
+    category: security
+    cwe:
+    - CWE-755
+    owasp: A06:2021 - Vulnerable and Outdated Components
+    references:
+    - https://httpwg.org/specs/rfc7540.html#StreamErrorHandler
+    technology:
+    - java
+- id: vuln-tomcat-c8acd2ab
+  pattern: "for (int $I = $EXPR1 + $EXPR2; $I < $EXPR3; $I += $EXPR4) {\n  $STREAM\
+    \ = getStream($I, false);\n  if ($STREAM != null) {\n    $STREAM.closeIfIdle();\n\
+    \  }\n}\n"
+  pattern-not: "for (Entry<Integer,Stream> $ENTRY : $STREAMS.entrySet()) {\n  if ($ENTRY.getKey().intValue()\
+    \ > $MAXSTREAM &&\n      $ENTRY.getKey().intValue() < $NEWMAXSTREAM) {\n    $ENTRY.getValue().closeIfIdle();\n\
+    \  }\n}\n"
+  languages:
+  - java
+  message: Potential integer overflow vulnerability in stream ID calculation. Using
+    a loop with arithmetic operations on stream IDs can lead to overflow issues. Instead,
+    iterate over the stream entries directly to avoid arithmetic operations on stream
+    IDs.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/c8acd2ab7371e39aeca7c306f3b5380f00afe552
+    category: security
+    cwe: CWE-190
+    owasp: A03:2021
+    references:
+    - https://bz.apache.org/bugzilla/show_bug.cgi?id=64467
+    technology: java
+- id: vuln-kylin-f4daf14d
+  pattern: 'new IvParameterSpec("AAAAAAAAAAAAAAAA".getBytes("UTF-8"))
+
+    '
+  pattern-not: 'new IvParameterSpec(KylinConfig.getInstanceFromEnv().getEncryptCipherIvSpec().getBytes("UTF-8"))
+
+    '
+  languages:
+  - java
+  message: Hardcoded IV (Initialization Vector) in cryptographic operations detected.
+    This can lead to predictable encryption and security vulnerabilities. Use a secure,
+    configurable IV instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/kylin/commit/f4daf14dde99b934c92ce2c832509f24342bc845
+    category: security
+    cwe: CWE-329
+    owasp: 'A2: Cryptographic Failures'
+    references: https://owasp.org/www-project-top-ten/2017/A2_2017-Cryptographic_Failures
+    technology: java
+- id: vuln-commons-collections-5ec476b0
+  pattern: "if ($DESERIALIZE_PROPERTY == null || !$DESERIALIZE_PROPERTY.equalsIgnoreCase(\"\
+    true\")) {\n  throw new UnsupportedOperationException(\"Deserialization of InvokerTransformer\
+    \ is disabled, \");\n}\n"
+  pattern-not: "if (!\"true\".equalsIgnoreCase($DESERIALIZE_PROPERTY)) {\n  throw\
+    \ new UnsupportedOperationException(\n    \"Deserialization of InvokerTransformer\
+    \ is disabled for security reasons. \" +\n    \"To re-enable it set system property\
+    \ '\" + $DESERIALIZE + \"' to 'true'\");\n}\n"
+  languages:
+  - java
+  message: "Deserialization of InvokerTransformer is disabled for security reasons.\
+    \ \nThe original code allowed deserialization when the property was null, which\
+    \ could lead to remote code execution vulnerabilities. \nTo fix this, ensure the\
+    \ property is explicitly checked for \"true\" and provide a clear security warning.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-collections/commit/5ec476b0b756852db865b2e442180f091f8209ee
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/502.html
+    - https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization
+    technology:
+    - java
+- id: vuln-cxf-1a4fe22f
+  pattern: "if ($TOKEN.hasAttributeNS($NS, \"Id\")) {\n  return $TOKEN.getAttributeNS($NS,\
+    \ \"Id\");\n} else if ($TOKEN.hasAttributeNS(null, \"ID\")) {\n  ...\n} else if\
+    \ ($TOKEN.hasAttributeNS(null, \"AssertionID\")) {\n  ...\n}\n"
+  pattern-not: "if (\"Assertion\".equals($TOKEN.getLocalName())\n    && $SAML2_NS.equals($TOKEN.getNamespaceURI()))\
+    \ {\n  ...\n} else if (\"Assertion\".equals($TOKEN.getLocalName())\n    && $SAML_NS.equals($TOKEN.getNamespaceURI()))\
+    \ {\n  ...\n} else if ($USERNAME_TOKEN_LN.equals($TOKEN.getLocalName())\n    &&\
+    \ $WSSE_NS.equals($TOKEN.getNamespaceURI())) {\n  ...\n} else if ($BINARY_TOKEN_LN.equals($TOKEN.getLocalName())\n\
+    \    && $WSSE_NS.equals($TOKEN.getNamespaceURI())) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Insecure token ID retrieval detected. Use secure methods to generate unique
+    IDs for different token types (SAML, UsernameToken, BinarySecurityToken).
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/1a4fe22fc297f8be204788bcdfcd498e91201a01
+    category: security
+    cwe:
+    - CWE-330
+    - CWE-310
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java
+- id: vuln-struts-04fcefa4
+  pattern: "if (!$NAME.endsWith(\".class\")) {\n    for (String $PREFIX : $PREFIXES)\
+    \ {\n        InputStream $IS = findInputStream(buildPath($NAME, $PREFIX));\n \
+    \       ...\n    }\n}\n"
+  pattern-not: "for (String $PREFIX : $PREFIXES) {\n    URL $RESOURCE = findResource(buildPath($NAME,\
+    \ $PREFIX));\n    if ($RESOURCE != null) {\n        try {\n            String\
+    \ $PATH = buildPath($NAME, $PREFIX);\n            if ($RESOURCE.getFile().endsWith($PATH))\
+    \ {\n                InputStream $IS = $RESOURCE.openStream();\n            }\n\
+    \        } catch (Exception $EX) {\n            continue;\n        }\n    }\n\
+    }\n"
+  languages:
+  - java
+  message: Potential path traversal vulnerability due to unsafe resource loading.
+    Always validate resource paths and ensure they are within expected directories.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/04fcefa44bae1263c7cad6986a9dafed67f0164f
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    technology: java
+- id: vuln-struts-4720f46a
+  pattern: 'import com.opensymphony.xwork2.util.logging.Logger;
+
+    import com.opensymphony.xwork2.util.logging.LoggerFactory;
+
+    ...
+
+    private static final Logger $LOG = LoggerFactory.getLogger($CLASS.class);
+
+    '
+  pattern-not: 'import org.apache.logging.log4j.LogManager;
+
+    import org.apache.logging.log4j.Logger;
+
+    ...
+
+    private static final Logger $LOG = LogManager.getLogger($CLASS.class);
+
+    '
+  languages:
+  - java
+  message: Usage of deprecated logging framework detected. Switch to Log4j 2 for improved
+    security and functionality.
+  severity: WARNING
+  metadata:
+    source-url: github.com/apache/struts/commit/4720f46a63caaf9db97ba27dc51ac5ad21e66bdc
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - A09:2021-Security Logging and Monitoring Failures
+    technology:
+    - java
+- id: vuln-httpcomponents-client-51cc6756
+  pattern: "final StringTokenizer $ST = new StringTokenizer($SUBJECT_PRINCIPAL, \"\
+    ,+\");\nwhile($ST.hasMoreTokens()) {\n    final String $TOK = $ST.nextToken().trim();\n\
+    \    if ($TOK.length() > 3) {\n        if ($TOK.substring(0, 3).equalsIgnoreCase(\"\
+    CN=\")) {\n            $CN_LIST.add($TOK.substring(3));\n        }\n    }\n}\n"
+  pattern-not: "try {\n    final LdapName $SUBJECT_DN = new LdapName($SUBJECT_PRINCIPAL);\n\
+    \    final List<Rdn> $RDNS = $SUBJECT_DN.getRdns();\n    for (int $I = $RDNS.size()\
+    \ - 1; $I >= 0; $I--) {\n        final Rdn $RDS = $RDNS.get($I);\n        final\
+    \ Attributes $ATTRIBUTES = $RDS.toAttributes();\n        final Attribute $CN =\
+    \ $ATTRIBUTES.get(\"cn\");\n        if ($CN != null) {\n            try {\n  \
+    \              final Object $VALUE = $CN.get();\n                if ($VALUE !=\
+    \ null) {\n                    $CNS.add($VALUE.toString());\n                }\n\
+    \            } catch (NamingException $IGNORE) {\n            }\n        }\n \
+    \   }\n} catch (InvalidNameException $E) {\n    throw new SSLException($SUBJECT_PRINCIPAL\
+    \ + \" is not a valid X500 distinguished name\");\n}\n"
+  languages:
+  - java
+  message: 'Insecure parsing of X.500 distinguished names detected. The old implementation
+    uses StringTokenizer to parse CN (Common Name) fields, which is error-prone and
+    can lead to incorrect parsing of certificate subjects. This can result in improper
+    validation of SSL/TLS certificates, potentially allowing man-in-the-middle attacks.
+    The fix uses LdapName to properly parse the distinguished name according to RFC
+    2253. Replace the vulnerable code with the secure implementation using LdapName
+    and Rdn classes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/httpcomponents-client/commit/51cc67567765d67f878f0dcef61b5ded454d3122
+    category: security
+    cwe:
+    - 'CWE-297: Improper Validation of Certificate with Host Mismatch'
+    owasp:
+    - A2:2017 - Broken Authentication
+    technology:
+    - java
+- id: vuln-tomcat-6982cfed
+  pattern: '$CLAZZ = getParentClassLoader().loadClass($SERVLETCLASS);
+
+    '
+  pattern-not: '$CLAZZ = getParent().getLoader().getClassLoader().loadClass($SERVLETCLASS);
+
+    '
+  languages:
+  - java
+  message: "Direct use of `getParentClassLoader()` can lead to class loading issues\
+    \ and security vulnerabilities. \nUse `getParent().getLoader().getClassLoader()`\
+    \ instead to ensure proper class loading context.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/6982cfed93255c72031cec4d2567b8b8558be9c5
+    category: security
+    cwe: CWE-471
+    owasp: A9:2017 - Using Components with Known Vulnerabilities
+    technology: java
+- id: vuln-zeppelin-bea51d14
+  pattern: 'DocumentBuilderFactory $FACTORY = DocumentBuilderFactory.newInstance();
+
+    ...
+
+    $BUILDER = $FACTORY.newDocumentBuilder();
+
+    $BUILDER.parse($INPUT);
+
+    '
+  pattern-not: 'DocumentBuilderFactory $FACTORY = newDocumentBuilderFactory();
+
+    ...
+
+    $BUILDER = $FACTORY.newDocumentBuilder();
+
+    $BUILDER.parse($INPUT);
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure XML parsing configuration. Directly using DocumentBuilderFactory.newInstance()
+    without secure features enabled can lead to XXE (XML External Entity) vulnerabilities.
+    Use a secure factory method that disables external entities and DTDs, and enables
+    secure processing features.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/zeppelin/commit/bea51d1467d6103bd8fd68d6a27b14f954d98ec6
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology:
+    - java
+- id: vuln-groovy-bcbe5c4c
+  pattern: "final int MAXTRIES = 3;\nint accessDeniedCounter = 0;\nFile tempFile=null;\n\
+    for (int i=0; i<MAXTRIES; i++) {\n    try {\n        tempFile = File.createTempFile($PREFIX,\
+    \ $SUFFIX);\n        tempFile.delete();\n        tempFile.mkdirs();\n        break;\n\
+    \    } catch (IOException ioe) {\n        if (ioe.getMessage().startsWith(\"Access\
+    \ is denied\")) {\n            accessDeniedCounter++;\n            try {\n   \
+    \             Thread.sleep(100);\n            } catch (InterruptedException ignore)\
+    \ {\n            }\n        }\n        if (i == MAXTRIES - 1) {\n            if\
+    \ (accessDeniedCounter == MAXTRIES) {\n                String msg = \"Access is\
+    \ denied.\\nWe tried \" + accessDeniedCounter +\n                        \" times\
+    \ to create a temporary directory and failed each time.\" +\n                \
+    \        \" If you are on Windows, you are possibly victim to\" +\n          \
+    \              \" http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6325169.\"\
+    \ +\n                        \" This is not a bug in Groovy.\";\n            \
+    \    throw new IOException(msg);\n            } else {\n                throw\
+    \ ioe;\n            }\n        }\n    }\n}\nreturn tempFile;\n"
+  pattern-not: 'Path tempPath = Files.createTempDirectory($PREFIX);
+
+    return tempPath.toFile();
+
+    '
+  languages:
+  - java
+  message: Insecure temporary file creation detected. The code uses File.createTempFile
+    followed by delete and mkdirs, which is prone to race conditions and access issues.
+    Use the more secure Files.createTempDirectory API instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/groovy/commit/bcbe5c4c76db83736166530647c024ac1e47ef28
+    category: security
+    cwe:
+    - CWE-377
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6325169
+    technology:
+    - java
+- id: vuln-struts-58947c3f
+  pattern: "public void execute(String $KEY, ActionMapping $MAPPING) {\n    ...\n\
+    \    String $NAME = $KEY.substring($ACTION_PREFIX.length());\n    if ($ALLOW_DYNAMIC_METHOD_CALLS)\
+    \ {\n        int $BANG = $NAME.indexOf('!');\n        if ($BANG != -1) {\n   \
+    \         String $METHOD = $NAME.substring($BANG + 1);\n            $MAPPING.setMethod($METHOD);\n\
+    \            $NAME = $NAME.substring(0, $BANG);\n        }\n    }\n    $MAPPING.setName(cleanupActionName($NAME));\n\
+    \    ...\n}\n"
+  pattern-not: "public void execute(final String $KEY, ActionMapping $MAPPING, HttpServletRequest\
+    \ $REQUEST) {\n    if ($REQUEST != null && $REQUEST.getAttribute($STRUTS2_ACTION_PREFIX_PARSED)\
+    \ == null) {\n        $REQUEST.setAttribute($STRUTS2_ACTION_PREFIX_PARSED, true);\n\
+    \        String $NAME = $KEY.substring($ACTION_PREFIX.length());\n        if ($ALLOW_DYNAMIC_METHOD_CALLS)\
+    \ {\n            int $BANG = $NAME.indexOf('!');\n            if ($BANG != -1)\
+    \ {\n                String $METHOD = $NAME.substring($BANG + 1);\n          \
+    \      $MAPPING.setMethod($METHOD);\n                $NAME = $NAME.substring(0,\
+    \ $BANG);\n            }\n        }\n        String $ACTION_NAME = cleanupActionName($NAME);\n\
+    \        $MAPPING.setName($ACTION_NAME);\n        if (getDefaultExtension() !=\
+    \ null) {\n            $ACTION_NAME = $ACTION_NAME + \".\" + getDefaultExtension();\n\
+    \        }\n        $MAPPING.setResult(new ServletDispatcherResult($ACTION_NAME));\n\
+    \    }\n}\n"
+  languages:
+  - java
+  message: Dynamic method invocation in Struts2 is vulnerable to remote code execution.
+    Ensure `allowDynamicMethodCalls` is set to `false` and validate method names using
+    a whitelist.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/58947c3f85ae641c1a476316a2888e53605948d1
+    category: security
+    cwe: CWE-94
+    owasp: A1:2017-Injection
+    technology: java
+- id: vuln-kylin-e373c64c
+  pattern: '$QUERY + " where " + $COLUMN + " = ''" + $VAR + "''"
+
+    '
+  pattern-not: '$QUERY + " where " + $COLUMN + " = ?"
+
+    '
+  languages:
+  - java
+  message: 'Potential SQL injection vulnerability detected. Concatenating user input
+    directly into SQL queries can lead to SQL injection attacks. Use prepared statements
+    with parameterized queries instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/kylin/commit/e373c64c96a54a7abfe4bccb82e8feb60db04749
+    category: security
+    cwe: CWE-89
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-community/attacks/SQL_Injection
+    technology: java
+- id: vuln-tomcat-800b0314
+  pattern: "if ($C == '\\\"' || $C == '<' || $C == '>') {\n  ...\n}\n"
+  pattern-not: "if ($C == '\\\"' || $C == '<' || $C == '>' || $C == ':') {\n  ...\n\
+    }\n"
+  languages:
+  - java
+  message: Insufficient character validation in path comparison. Missing ':' in the
+    character check can lead to path traversal or other security issues. Ensure all
+    potentially dangerous characters are validated.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/800b03140e640f8892f27021e681645e8e320177
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - java
+- id: vuln-tomcat-506d862e
+  pattern: "if ($FILE.isFile() && ($PATH.endsWith(\"/\") || $PATH.endsWith(\"\\\\\"\
+    ))) {\n  ...\n}\n"
+  pattern-not: "if ($FILE.isFile() && $PATH.endsWith(\"/\")) {\n  return null;\n}\n"
+  languages:
+  - java
+  message: 'Potential security vulnerability: File resource access with trailing slash
+    may lead to inconsistent behavior with Servlet spec rules. Ensure that file resources
+    with trailing slashes are handled correctly to avoid security issues.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/506d862e7edfa991de198e0f2e4c4540830fa531
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references: https://cwe.mitre.org/data/definitions/20.html
+    technology: java
+- id: vuln-tomcat-339b40bc
+  pattern: 'super(null);
+
+    '
+  pattern-not: 'super(SocketBufferHandler.EMPTY);
+
+    '
+  languages:
+  - java
+  message: "Passing null to super() can lead to null pointer exceptions and undefined\
+    \ behavior. \nInstead, use a proper buffer handler like SocketBufferHandler.EMPTY\
+    \ to ensure safe initialization.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/339b40bc07bdba9ded565929b9a3448c5a78f015
+    category: security
+    cwe: CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: java
+- id: vuln-tomcat-6d66e99e
+  pattern: "if (!$FILE.getCanonicalPath().startsWith($BASE.getCanonicalPath())) {\n\
+    \    ...\n}\n"
+  pattern-not: "if (!$FILE.getCanonicalFile().toPath().startsWith($BASE.getCanonicalFile().toPath()))\
+    \ {\n    ...\n}\n"
+  languages:
+  - java
+  message: Potential path traversal vulnerability. Using getCanonicalPath() for path
+    comparison is unsafe. Use getCanonicalFile().toPath() instead to ensure proper
+    path comparison.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/6d66e99ef85da93e4d2c2a536ca51aa3418bfaf4
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    technology:
+    - java
+- id: vuln-tomcat-170e0f79
+  pattern: "Processor $PROC = (Processor) $WRAPPER.getCurrentProcessor();\n...\nif\
+    \ ($PROC.isUpgrade()) {\n    ...\n}\n"
+  pattern-not: "Processor $PROC = (Processor) $WRAPPER.takeCurrentProcessor();\n...\n\
+    if ($PROC != null && $PROC.isUpgrade()) {\n    ...\n}\n"
+  languages:
+  - java
+  message: Potential race condition in processor handling. Use `takeCurrentProcessor()`
+    instead of `getCurrentProcessor()` to ensure thread safety and proper processor
+    ownership.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/170e0f792bd18ff031677890ba2fe50eb7a376c1
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/362.html
+    technology:
+    - java
+- id: vuln-cxf-40503a53
+  pattern: 'WebClient.create($REQUEST_URI).get($TYPE)
+
+    '
+  pattern-not: 'WebClient.create($REQUEST_URI).accept($CONTENT_TYPE).get($TYPE)
+
+    '
+  languages:
+  - java
+  message: 'Detected a potential security vulnerability where a WebClient request
+    does not specify the content type when making a request. This can lead to improper
+    handling of the response and potential security issues. Always specify the expected
+    content type using the `accept` method to ensure proper response handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/40503a53914758759894f704bbf139ae89ace286
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://tools.ietf.org/html/draft-ietf-oauth-jwsreq-30#section-10.4
+    technology:
+    - java
+- id: vuln-hadoop-5e2f4339
+  pattern: 'ObjectInputStream $OIS = new ObjectInputStream($BAIS);
+
+    '
+  pattern-not: 'ValidatingObjectInputStream $OIS = new ValidatingObjectInputStream($BAIS);
+
+    $OIS.accept($CLASSES);
+
+    '
+  languages:
+  - java
+  message: Unsafe deserialization detected. Using ObjectInputStream directly can lead
+    to deserialization vulnerabilities. Replace with ValidatingObjectInputStream and
+    explicitly specify allowed classes using the accept method.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/hadoop/commit/5e2f4339fadc88f20543915fc9b0aaeaf4f9e7bf
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data
+    technology:
+    - java
+- id: vuln-jackrabbit-0c00609a
+  pattern: "public boolean isValidRequest(HttpServletRequest $REQUEST) {\n  ...\n\
+    \  if ($DISABLED || DavMethods.DAV_POST != $METHOD || !$CONTENT_TYPES.contains($REQUEST.getContentType()))\
+    \ {\n    ...\n  }\n  ...\n}\n"
+  pattern-not: "public boolean isValidRequest(HttpServletRequest $REQUEST) {\n  ...\n\
+    \  if ($DISABLED) {\n    return true;\n  } else if (!\"POST\".equals($REQUEST.getMethod()))\
+    \ {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - java
+  message: Insecure CSRF validation detected. The original validation does not properly
+    handle POST requests with multiple Content-Type headers or malformed Referer headers.
+    Use the updated version that explicitly checks for POST method and validates Content-Type
+    headers correctly.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/jackrabbit/commit/0c00609a172b3af3b86a01abbf5ed473214702ba
+    category: security
+    cwe: CWE-352
+    owasp: 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - java
+- id: vuln-struts-23743251
+  pattern: "if (LOG.isWarnEnabled()) {\n  LOG.warn(\"Action/method [#0] does not match\
+    \ allowed action names pattern [#1], cleaning it up!\", $RAW_ACTION_NAME, $ALLOWED_ACTION_NAMES);\n\
+    }\nString $CLEAN_ACTION_NAME = $RAW_ACTION_NAME;\nfor (String $CHUNK : $ALLOWED_ACTION_NAMES.split($RAW_ACTION_NAME))\
+    \ {\n  $CLEAN_ACTION_NAME = $CLEAN_ACTION_NAME.replace($CHUNK, \"\");\n}\nif (LOG.isDebugEnabled())\
+    \ {\n  LOG.debug(\"Cleaned action/method name [#0]\", $CLEAN_ACTION_NAME);\n}\n\
+    return $CLEAN_ACTION_NAME;\n"
+  pattern-not: 'throw new StrutsException("Action [" + $RAW_ACTION_NAME + "] does
+    not match allowed action names pattern [" + $ALLOWED_ACTION_NAMES + "]!");
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure cleanup of action names in Struts. The original code
+    attempts to clean up action names by removing disallowed patterns, which can lead
+    to security vulnerabilities. Instead, it should throw an exception when an action
+    name does not match the allowed pattern. This prevents potential exploitation
+    of unsafe action names.
+
+    To fix this, ensure that invalid action names are rejected immediately by throwing
+    a StrutsException.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/237432512df0e27013f7c7b9ab59fdce44ca34a5
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java
+- id: vuln-tika-62926cae
+  pattern: 'if (read > $VALUE.length) { break; }
+
+    '
+  pattern-not: 'if (read >= $VALUE.length) { break; }
+
+    '
+  languages:
+  - java
+  message: 'Potential array index out of bounds vulnerability detected. The comparison
+    ''>'' should be replaced with ''>='' to prevent array index out of bounds exceptions.
+    This could lead to unexpected behavior or crashes if the array boundary is exceeded.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/62926cae31a02d4f23d21148435804b96c543cc
+    category: security
+    cwe: CWE-125
+    owasp: A1:2017-Injection
+    technology: java
+- id: vuln-streampipes-1d94191c
+  pattern: 'RandomStringUtils.randomAlphanumeric($LENGTH)
+
+    '
+  pattern-not: 'new RandomStringGenerator.Builder().withinRange(33, 125).build().generate($LENGTH)
+
+    '
+  languages:
+  - java
+  message: 'Detected usage of insecure random string generation. The current method
+    uses a limited character set which reduces entropy. Use a more secure random string
+    generator with a broader character range, such as RandomStringGenerator with ASCII
+    characters from decimal 33 to 125.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/streampipes/commit/1d94191c49617dffbcb6f6d8fd73bcd5dd597d52
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - java
+- id: vuln-lucene-solr-a3d456fb
+  pattern: 'Boolean $VAR = Boolean.getBoolean($CONST);
+
+    $VAR2 = (null == $VAR ? false : $VAR);
+
+    '
+  pattern-not: '$VAR2 = Boolean.getBoolean($CONST);
+
+    '
+  languages:
+  - java
+  message: "Inefficient and potentially error-prone null check for Boolean.getBoolean().\
+    \ \nThe method Boolean.getBoolean() already returns false for null or invalid\
+    \ values, \nso the explicit null check is redundant and could lead to confusion\
+    \ or bugs. \nSimplify the code by directly assigning the result of Boolean.getBoolean().\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/a3d456fba2cd1b9892defbcf46a0eb4d4bb4d01f
+    category: code-quality
+    cwe: CWE-398
+    technology: java
+- id: vuln-struts-09147ffa
+  pattern: '$RESULT = $ENCODE ? $RESPONSE.encodeURL($LINK.toString()) : $LINK.toString();
+
+    '
+  pattern-not: "$RESULT = $LINK.toString();\nif ($RESULT.indexOf(\"<script>\") >=\
+    \ 0) {\n    $RESULT = $RESULT.replaceAll(\"<script>\", \"script\");\n}\n$RESULT\
+    \ = $ENCODE ? $RESPONSE.encodeURL($RESULT) : $RESULT;\n"
+  languages:
+  - java
+  message: "Detected potential Cross-Site Scripting (XSS) vulnerability due to missing\
+    \ script tag sanitization. \nThe code directly uses user-controlled input in URL\
+    \ encoding without proper sanitization, which can lead to XSS attacks. \nEnsure\
+    \ all user inputs are properly sanitized to prevent script injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/09147ffad2b3046ed21af0f524c5088e2ac551e6
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - java
+- id: vuln-pulsar-6274fa01
+  pattern: "if (!$ORIGINAL_SIGNATURE.equals($CURRENT_SIGNATURE)) {\n  ...\n}\n"
+  pattern-not: "if (!MessageDigest.isEqual($ORIGINAL_SIGNATURE.getBytes(), $CURRENT_SIGNATURE.getBytes()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Using String.equals() for cryptographic comparisons is vulnerable to timing
+    attacks. Use MessageDigest.isEqual() for secure comparison of cryptographic values.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/pulsar/commit/6274fa01a75d74d559bb7e514c970f1fc07d15bc
+    category: security
+    cwe: CWE-208
+    owasp: A02:2021 - Cryptographic Failures
+    technology: java
+- id: vuln-solr-35fc4bdc
+  pattern: "MetricsMap $VAR = new MetricsMap(\n    map -> System.getenv().forEach(\n\
+    \        ($K, $V) -> {\n          if (!$HIDDEN.contains($K)) {\n            map.putNoEx(String.valueOf($K),\
+    \ $V);\n          }\n        }\n    )\n);\n$METRIC_MANAGER.registerGauge($NULL,\
+    \ $REGISTRY_NAME, $VAR, $TAG, $STRATEGY, \"env\", \"system\");\n"
+  pattern-not: "MetricsMap $VAR = new MetricsMap(\n    map -> System.getenv().forEach(\n\
+    \        ($K, $V) -> {\n          if (!$HIDDEN.contains($K)) {\n            map.putNoEx(String.valueOf($K),\
+    \ sanitize($V));\n          }\n        }\n    )\n);\n$METRIC_MANAGER.registerGauge($NULL,\
+    \ $REGISTRY_NAME, $VAR, $TAG, $STRATEGY, \"env\", \"system\");\n"
+  languages:
+  - java
+  message: "Exposing system environment variables without proper sanitization can\
+    \ lead to information disclosure. \nEnsure sensitive environment variables are\
+    \ either filtered or sanitized before being exposed in metrics.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/solr/commit/35fc4bdc48171d9a64251c54a1e76deb558cf9d8
+    category: security
+    cwe: CWE-200
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: java
+- id: vuln-tomcat-d56293f8
+  pattern: 'String $RET = $STRINGBUILDER.toString();
+
+    $STRINGBUILDER.setLength(0);
+
+    return $RET;
+
+    '
+  pattern-not: 'return $STRINGBUILDER.toString();
+
+    '
+  languages:
+  - java
+  message: "Detected potential resource reuse vulnerability in StringBuilder usage.\
+    \ \nThe code clears the StringBuilder after converting it to a string, which could\
+    \ lead to unintended behavior or data corruption. \nInstead, create a new StringBuilder\
+    \ instance with the appropriate length or avoid clearing it unnecessarily.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/d56293f816d6dc9e2b47107f208fa9e95db58c65
+    category: security
+    cwe: CWE-664
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: java
+- id: vuln-struts-34c80dae
+  pattern: 'import java.util.*;
+
+    '
+  pattern-not: 'import java.util.ArrayList;
+
+    import java.util.Collection;
+
+    import java.util.Collections;
+
+    import java.util.HashSet;
+
+    import java.util.LinkedHashMap;
+
+    import java.util.List;
+
+    import java.util.Map;
+
+    import java.util.Set;
+
+    '
+  languages:
+  - java
+  message: Potential security vulnerability due to wildcard imports. Using wildcard
+    imports can lead to namespace pollution and conflicts. Explicitly import only
+    the necessary classes to maintain clarity and avoid potential security risks.
+  severity: WARNING
+  metadata:
+    source-url: github.com/apache/struts/commit/34c80dae734e70f13c0e46f9c83602fb71318e58
+    category: security
+    cwe:
+    - CWE-486
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - java
+- id: vuln-tomcat-910bc38c
+  pattern: '$ARRAY[$INDEX] = ($VAR == null || $VAR.length() == 0) ? $DEFAULT : $VAR
+
+    '
+  pattern-not: "if ($VAR == null || $VAR.length() == 0) {\n    $ARRAY[$INDEX] = $DEFAULT;\n\
+    } else {\n    $ARRAY[$INDEX] = RequestUtil.filter($VAR);\n}\n"
+  languages:
+  - java
+  message: 'Potential unvalidated input vulnerability. Directly assigning user input
+    to an array without proper sanitization can lead to security issues such as XSS
+    or command injection. Use RequestUtil.filter() to sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/910bc38c4188d9aab6195591c4d1314a06b546d9
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - java
+- id: vuln-tomcat-0d089a15
+  pattern: 'return skipLine();
+
+    '
+  pattern-not: 'return skipLine($BOOL);
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe handling of invalid HTTP headers. When encountering invalid
+    headers,
+
+    the skipLine() method was called without proper handling of the Content-Length
+    header.
+
+    This could lead to security vulnerabilities where malformed Content-Length headers
+
+    are not properly rejected. The fix requires passing a boolean parameter to skipLine()
+
+    to ensure proper handling of Content-Length headers according to RFC 9112.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/0d089a15047faf9cb3c82f80f4d28febd4798920
+    category: security
+    cwe: CWE-444
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc9112#section-6.3
+    technology:
+    - java
+- id: vuln-tomcat-15fcd166
+  pattern: '$SSI_MEDIATOR.getVariableValue($VARIABLE_NAME)
+
+    '
+  pattern-not: '$SSI_MEDIATOR.getVariableValue($VARIABLE_NAME, "entity")
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe usage of SSI (Server Side Includes) variable retrieval.
+    The method `getVariableValue` without the encoding parameter can lead to XSS vulnerabilities.
+    Always specify the encoding parameter to ensure proper handling of special characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/15fcd166ea2c1bb79e8541b8e1a43da9c452ceea
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - java
+- id: vuln-commons-compress-ef5d70b6
+  pattern: 'final byte[] $LINK_ARRAY = new byte[(int) $ZIPLONG.getValue($TMP, $OFFSET)];
+
+    final int $LINK_ARRAY_LENGTH = $LINK_ARRAY.length;
+
+    '
+  pattern-not: "final int $LINK_ARRAY_LENGTH = (int) $ZIPLONG.getValue($TMP, $OFFSET);\n\
+    if ($LINK_ARRAY_LENGTH < 0 || $LINK_ARRAY_LENGTH > $TMP.length - $THRESHOLD) {\n\
+    \  throw new $EXCEPTION($MESSAGE);\n}\nfinal byte[] $LINK_ARRAY = new byte[$LINK_ARRAY_LENGTH];\n"
+  languages:
+  - java
+  message: 'Unsafe array size calculation detected. The size of the array is directly
+    derived from untrusted input without proper validation, which can lead to out-of-bounds
+    memory access or resource exhaustion. Validate the array size against reasonable
+    bounds before allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-compress/commit/ef5d70b625000e38404194aaab311b771c44efda
+    category: security
+    cwe:
+    - CWE-130
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java
+- id: vuln-lucene-solr-6e9ed203
+  pattern: 'SolrConfig.readFromResourceLoader($LOADER, $FILENAME, true, null)
+
+    '
+  pattern-not: 'SolrConfig.readFromResourceLoader($LOADER, $FILENAME, $TRUSTED, null)
+
+    '
+  languages:
+  - java
+  message: "Potential security vulnerability detected: Reading Solr configuration\
+    \ without proper trust verification. \nThis could allow untrusted configurations\
+    \ to be loaded, leading to security risks. \nEnsure the 'trusted' flag is properly\
+    \ validated before loading configurations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/6e9ed203b30958396bdfd41760d426b386646865
+    category: security
+    cwe: CWE-345
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java
+- id: vuln-cxf-1338469
+  pattern: 'Arrays.equals($ACTUAL, $EXPECTED)
+
+    '
+  pattern-not: 'MessageDigest.isEqual($ACTUAL, $EXPECTED)
+
+    '
+  languages:
+  - java
+  message: "Using `Arrays.equals()` for cryptographic comparisons is vulnerable to\
+    \ timing attacks. \nUse `MessageDigest.isEqual()` instead, which provides constant-time\
+    \ comparison to prevent \ntiming-based side-channel attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/cxf/commit/1338469
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - java
+- id: vuln-struts-25e50069
+  pattern: '"''" + $VALUE + "''"
+
+    '
+  pattern-not: 'escape($VALUE)
+
+    '
+  languages:
+  - java
+  message: Potential security vulnerability due to improper escaping of user input.
+    This can lead to code injection attacks. Use the 'escape' method to properly sanitize
+    the input.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/25e50069d60434a30395e3a98357ffba2bed427e
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - java
+- id: vuln-tomcat-b191a0d9
+  pattern: "TokenList.parseTokenList($HEADERS.values(\"transfer-encoding\"), $ENCODING_NAMES);\n\
+    for ($STRING $ENCODING_NAME : $ENCODING_NAMES) {\n    addInputFilter($INPUT_FILTERS,\
+    \ $ENCODING_NAME);\n}\n"
+  pattern-not: "if (TokenList.parseTokenList($HEADERS.values(\"transfer-encoding\"\
+    ), $ENCODING_NAMES)) {\n    for ($STRING $ENCODING_NAME : $ENCODING_NAMES) {\n\
+    \        addInputFilter($INPUT_FILTERS, $ENCODING_NAME);\n    }\n} else {\n  \
+    \  badRequest(\"http11processor.request.invalidTransferEncoding\");\n}\n"
+  languages:
+  - java
+  message: Potential security vulnerability due to missing validation of transfer-encoding
+    headers. Failing to validate these headers can lead to request smuggling or other
+    HTTP protocol violations. Ensure to check the return value of TokenList.parseTokenList
+    and handle invalid transfer encodings appropriately.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/b191a0d9cf06f4e04257c221bfe41d2b108a9cc8
+    category: security
+    cwe: CWE-444
+    owasp: A01:2021-Broken Access Control
+    technology: java
+- id: vuln-hadoop-227d64ab
+  pattern: '$ZKMANAGER.create($PATH)
+
+    '
+  pattern-not: '$ZKMANAGER.create($PATH, $ACL)
+
+    '
+  languages:
+  - java
+  message: 'Missing ACL (Access Control List) when creating Zookeeper paths. This
+    can lead to unauthorized access to sensitive configuration data. Always specify
+    appropriate ACLs when creating Zookeeper nodes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/hadoop/commit/227d64ab59e8aa6477769b2542ad0cd7a6d855cb
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - java
+- id: vuln-struts-6bd694b7
+  pattern: "protected Templates getTemplates($PATH) throws TransformerException, IOException\
+    \ {\n    String $VAR = ServletActionContext.getRequest().getParameter(\"xslt.location\"\
+    );\n    if ($VAR != null)\n        $PATH = $VAR;\n    ...\n}\n"
+  pattern-not: "protected Templates getTemplates(final String path) throws TransformerException,\
+    \ IOException {\n    ...\n}\n"
+  languages:
+  - java
+  message: 'Detected a potential XSLT injection vulnerability. The XSLT location is
+    being taken from user input without proper validation, which could allow an attacker
+    to inject malicious XSLT. Always validate and sanitize user input before using
+    it in sensitive operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/6bd694b7980494c12d49ca1bf39f12aec3e03e2f
+    category: security
+    cwe: CWE-91
+    owasp: 'A1: Injection'
+    technology: java
+- id: vuln-struts-1a668af7
+  pattern: "boolean $MATCHES = !$EXCLUDED_PATTERN.matcher($VALUE).matches();\nif (!$MATCHES)\
+    \ {\n    ...\n}\nreturn $MATCHES;\n"
+  pattern-not: "for (Pattern $EXCLUDED_PATTERN : $EXCLUDED_PATTERNS) {\n    boolean\
+    \ $MATCHES = !$EXCLUDED_PATTERN.matcher($VALUE).matches();\n    if (!$MATCHES)\
+    \ {\n        ...\n        return false;\n    }\n}\nreturn true;\n"
+  languages:
+  - java
+  message: 'Detected a single pattern match vulnerability in cookie validation. The
+    code uses a single regex pattern to validate cookies, which can be bypassed. Use
+    a set of patterns to ensure comprehensive validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/1a668af7f1ffccea4a3b46d8d8c1fe1c7331ff02
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A07:2017
+    technology:
+    - java
+- id: vuln-tomcat-8884dae6
+  pattern: "if ($FIRST && $REQUEST.getContentLengthLong() > 0 || $WAITING_FOR_BODY_MESSAGE)\
+    \ {\n    $RECEIVE(true);\n}\n"
+  pattern-not: "if ($WAITING_FOR_BODY_MESSAGE || $FIRST && $REQUEST.getContentLengthLong()\
+    \ > 0) {\n    $REFILL_READ_BUFFER(true);\n}\n"
+  languages:
+  - java
+  message: Incorrect handling of AJP request body messages can lead to improper stream
+    termination. Use refillReadBuffer instead of receive for proper buffer management.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/8884dae60ace77a87ed9385442ce429e98c3a479
+    category: security
+    cwe: CWE-444
+    owasp: A01:2021 - Broken Access Control
+    technology: java
+- id: vuln-tomcat-841d5b24
+  pattern: 'private boolean enableCmdLineArguments = true;
+
+    '
+  pattern-not: 'private boolean enableCmdLineArguments = false;
+
+    '
+  languages:
+  - java
+  message: CGI command line arguments are enabled, which can lead to command injection
+    vulnerabilities. Set enableCmdLineArguments to false to disable this feature.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/841d5b24c6950e0510688a5597cde9ae1f094a0d
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - java
+- id: vuln-tika-a09d853d
+  pattern: 'new File($DIR, FilenameUtils.normalize($NAME))
+
+    '
+  pattern-not: 'new File($DIR, $UUID + "-" + $NAME)
+
+    '
+  languages:
+  - java
+  message: Potential file path traversal vulnerability. Ensure file names are properly
+    normalized and unique to prevent overwriting or malicious file access. Use UUIDs
+    to generate unique file names when necessary.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/a09d853dbed712f644e274b497cce254f3189d57
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-59
+    owasp:
+    - A1:2017-Injection
+    - A5:2017-Broken Access Control
+    technology:
+    - java
+- id: vuln-tomcat-e2d5a040
+  pattern: '$SOCKET.socket().close();
+
+    '
+  pattern-not: "if ($CONDITION) {\n    $SOCKET.socket().close();\n}\n"
+  languages:
+  - java
+  message: 'Direct socket closure without proper condition checks can lead to resource
+    leaks or unexpected behavior. Always ensure proper conditional checks before closing
+    sockets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/e2d5a040b962a904db5264b3cb3282c6b05f823c
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - java
+- id: vuln-struts-3292152f
+  pattern: "if ($VAR != null && $VAR.size() > 0) {\n  ...\n}\n"
+  pattern-not: "if ($VAR != null && !$VAR.isEmpty()) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Using `size() > 0` to check for empty collections is less efficient and
+    less readable compared to `isEmpty()`. Replace `size() > 0` with `isEmpty()` for
+    better clarity and performance.
+  severity: WARNING
+  metadata:
+    source-url: github.com/apache/struts/commit/3292152f8c0a77ee4827beede82b6580478a2c2a
+    category: best-practices
+    cwe: CWE-398
+    technology: java
+- id: vuln-druid-74cab7a7
+  pattern: "try {\n  ...\n} catch (InvalidKeySpecException | NoSuchAlgorithmException\
+    \ | NoSuchPaddingException | InvalidKeyException | InvalidParameterSpecException\
+    \ | IllegalBlockSizeException | BadPaddingException $EX) {\n  throw new RuntimeException($EX);\n\
+    }\n"
+  pattern-not: "try {\n  ...\n} catch (Exception $EX) {\n  $LOG.noStackTrace().warn($EX,\
+    \ \"Encryption failed\");\n  throw InternalServerError.exception(\"Encryption\
+    \ failed. Check service logs.\");\n}\n"
+  languages:
+  - java
+  message: Improper exception handling in cryptographic operations can lead to information
+    leakage. Instead of throwing generic RuntimeException, use specific error handling
+    and logging.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/druid/commit/74cab7a76c99da457c3a883939cc0b03301b8771
+    category: security
+    cwe:
+    - CWE-209
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    references:
+    - https://cwe.mitre.org/data/definitions/209.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - java
+- id: vuln-tomcat-2344a4c0
+  pattern: decrementActiveRemoteStreamCount()
+  pattern-not: decrementActiveRemoteStreamCount($STREAM)
+  languages:
+  - java
+  message: Potential mis-counting of active streams due to missing stream parameter
+    in decrementActiveRemoteStreamCount(). This can lead to incorrect enforcement
+    of the maximum concurrent streams limit. Always pass the stream object to ensure
+    accurate counting.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/2344a4c0d03e307ba6b8ab6dc8b894cc8bac63f2
+    category: security
+    cwe: CWE-400
+    owasp: 'A1: Injection'
+    technology:
+    - java
+- id: vuln-ant-a8645a15
+  pattern: 'File.createTempFile($PREFIX, $SUFFIX, new File($PARENT))
+
+    '
+  pattern-not: 'Files.createTempFile($PARENT_PATH, $PREFIX, $SUFFIX, $ATTRIBUTES).toFile()
+
+    '
+  languages:
+  - java
+  message: "Insecure temporary file creation detected. The file may be accessible\
+    \ by other users on the system. \nUse `Files.createTempFile` with appropriate\
+    \ POSIX file attributes to ensure the file is only \nreadable and writable by\
+    \ the current user.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ant/commit/a8645a151bc706259fb1789ef587d05482d98612
+    category: security
+    cwe: CWE-377
+    owasp: A06:2021 - Vulnerable and Outdated Components
+    technology: java
+- id: vuln-lucene-solr-5385d0dc
+  pattern: "File $F = new File($PATH);\n...\nif ($F.isFile() && $F.canRead()) {\n\
+    \  ...\n}\n"
+  pattern-not: "File $F = new File($PATH);\n...\nboolean $FOUND = $F.isFile() && $F.canRead();\n\
+    if (!$FOUND) {\n  ...\n}\nif ($FOUND) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential path traversal vulnerability detected. The code checks if a
+    file exists and is readable without verifying if it''s within the allowed instance
+    directory. This could allow attackers to access files outside the intended directory.
+    Add checks to ensure the file is within the instance directory by using URI normalization
+    and relativization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/lucene-solr/commit/5385d0dcddce1238dd1c3947514457cbed8cf014
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java
+- id: vuln-tomcat-279e4451
+  pattern: "static {\n    webDigesters[$INDEX] = DigesterFactory.newDigester($_, $_,\
+    \ webRuleSet);\n    webDigesters[$INDEX].getParser();\n    webFragmentDigesters[$INDEX]\
+    \ = DigesterFactory.newDigester($_, $_, webFragmentRuleSet);\n    webFragmentDigesters[$INDEX].getParser();\n\
+    \    ...\n}\n"
+  pattern-not: "public void createWebXmlDigester(boolean namespaceAware, boolean validation)\
+    \ {\n    if (webDigesters[$INDEX] == null) {\n        webDigesters[$INDEX] = DigesterFactory.newDigester(validation,\
+    \ namespaceAware, webRuleSet);\n        webFragmentDigesters[$INDEX] = DigesterFactory.newDigester(validation,\
+    \ namespaceAware, webFragmentRuleSet);\n    }\n    ...\n}\n"
+  languages:
+  - java
+  message: 'Static initialization of webDigesters and webFragmentDigesters can lead
+    to thread safety issues and improper initialization.
+
+    The digester instances should be created lazily and checked for null before initialization
+    to ensure proper thread safety and resource management.
+
+    Move the initialization logic to a method and check for null before creating new
+    instances.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/279e4451cb996f810fbca2f78b6340412d9daa7b
+    category: security
+    cwe:
+    - CWE-362
+    - CWE-665
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - java
+- id: vuln-tomcat-05c84ff8
+  pattern: 'DigesterFactory.newDigester($VALIDATION, $NAMESPACE_AWARE, $RULESET)
+
+    '
+  pattern-not: 'DigesterFactory.newDigester($VALIDATION, $NAMESPACE_AWARE, $RULESET,
+    $BLOCK_EXTERNAL)
+
+    '
+  languages:
+  - java
+  message: Potential XML External Entity (XXE) vulnerability detected. The DigesterFactory
+    is being initialized without blocking external entities, which could lead to XXE
+    attacks. Use the version of newDigester that includes the blockExternal parameter
+    to prevent this vulnerability.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/05c84ff8304a69a30b251f207a7b93c2c882564d
+    category: security
+    cwe: CWE-611
+    owasp: 'A4: XML External Entities (XXE)'
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology: java
+- id: vuln-tika-a3671161
+  pattern: 'private static final String $REGEX = "(\\d+\\.(\\d+\\.?)*)\\p{Blank}+([A-Z]+(\\s[A-Z]+)*){5,}";
+
+    '
+  pattern-not: 'private static final String $REGEX = "(\\d{1,10}\\.(\\d{1,10}\\.?){0,10})\\p{Blank}+([A-Z]{1,256}(\\s[A-Z]+){0,256}){5,}";
+
+    '
+  languages:
+  - java
+  message: 'Potential regex denial of service (ReDoS) vulnerability detected. The
+    regex pattern is vulnerable to catastrophic backtracking due to unbounded quantifiers.
+    Limit the repetition counts to prevent excessive backtracking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tika/commit/a36711610fa1f6f5ba0f594803415af795e0b265
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - java
+- id: vuln-tomcat-fbd81421
+  pattern: "parameterCount++;\nif ($LIMIT > -1 && parameterCount > $LIMIT) {\n   \
+    \ ...\n}\n"
+  pattern-not: "if ($LIMIT > -1 && parameterCount >= $LIMIT) {\n    parameterCount++;\n\
+    \    ...\n}\n"
+  languages:
+  - java
+  message: 'Potential parameter count limit vulnerability. The parameter count increment
+    should be checked after the limit condition to prevent bypassing the limit check.
+    This could lead to denial of service or resource exhaustion. Move the increment
+    after the limit check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/fbd81421629afe8b8a3922d59020cde81caea861
+    category: security
+    cwe: CWE-400
+    owasp: A1:2017-Injection
+    technology: java
+- id: vuln-commons-compress-80124dd9
+  pattern: 'final byte[] $VAR = new byte[$LEN];
+
+    final int $READ = IOUtils.readFully($INPUT, $VAR);
+
+    '
+  pattern-not: 'final byte[] $VAR = IOUtils.readRange($INPUT, $LEN);
+
+    final int $READ = $VAR.length;
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe byte array reading pattern. The code creates a byte array
+    and uses IOUtils.readFully to read data, which may not handle incomplete reads
+    correctly. Use IOUtils.readRange instead, which ensures proper handling of the
+    read data and throws EOFException if the expected length is not read.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/commons-compress/commit/80124dd9fe4b0a0b2e203ca19aacac8cd0afc96f
+    category: security
+    cwe:
+    - CWE-20
+    owasp: A10:2021 - Server-Side Request Forgery
+    technology:
+    - java
+- id: vuln-solr-c1f916d5
+  pattern: "if (Boolean.getBoolean(\"solr.allow.unsafe.resourceloading\"))\n  return\
+    \ $PATH;\n"
+  pattern-not: "if ($ALLOW_UNSAFE_RESOURCELOADING)\n  return $PATH;\n"
+  languages:
+  - java
+  message: 'Detected unsafe resource loading configuration. The code allows bypassing
+    path safety checks when ''solr.allow.unsafe.resourceloading'' is set to true,
+    which can lead to path traversal vulnerabilities. Use a centralized configuration
+    parameter and ensure proper path validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/solr/commit/c1f916d532e9580f22c09b6ad746d4ea9bcc47a6
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - java
+- id: vuln-ant-6594a2d6
+  pattern: 'byte[] $ARRAY = new byte[$LENGTH];
+
+    ...
+
+    System.arraycopy($SRC, $OFFSET, $ARRAY, 0, $ARRAY.length);
+
+    '
+  pattern-not: "final int $LENGTH_VAR = (int) $LENGTH;\nif ($LENGTH_VAR < 0 || $LENGTH_VAR\
+    \ > $SRC.length - $OFFSET) {\n    throw new $EXCEPTION($MESSAGE);\n}\nbyte[] $ARRAY\
+    \ = new byte[$LENGTH_VAR];\nSystem.arraycopy($SRC, $OFFSET, $ARRAY, 0, $LENGTH_VAR);\n"
+  languages:
+  - java
+  message: Potential buffer overflow vulnerability. Always validate array length before
+    allocation and copying.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ant/commit/6594a2d66f7f060dafcbbf094dd60676db19a842
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - java
+- id: vuln-tomcat-ad2235f5
+  pattern: "getServletContext().setAttribute($ATTR, $DIR);\nif (getServletContext()\
+    \ instanceof $TYPE) {\n    (($TYPE) getServletContext()).setAttributeReadOnly($ATTR);\n\
+    }\n"
+  pattern-not: "if ($CONTEXT == null) {\n    getServletContext();\n}\n$CONTEXT.setAttribute($ATTR,\
+    \ $DIR);\n$CONTEXT.setAttributeReadOnly($ATTR);\n"
+  languages:
+  - java
+  message: Potential null context vulnerability in setting ServletContext attributes.
+    Ensure context is properly initialized before setting attributes.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/ad2235f5b0673606d060a158d778b8613e31ebec
+    category: security
+    cwe: CWE-476
+    owasp: A9:2021-Security Misconfiguration
+    references: https://cwe.mitre.org/data/definitions/476.html
+    technology: java
+- id: vuln-tomcat-2c522795
+  pattern: 'SSLEngine $ENGINE = $SSL_CONTEXT.createSSLEngine();
+
+    '
+  pattern-not: 'SSLEngine $ENGINE = $SSL_CONTEXT.createSSLEngine($HOST, $PORT);
+
+    SSLParameters $PARAMS = $ENGINE.getSSLParameters();
+
+    $PARAMS.setEndpointIdentificationAlgorithm("HTTPS");
+
+    $ENGINE.setSSLParameters($PARAMS);
+
+    '
+  languages:
+  - java
+  message: "Missing host verification in SSL/TLS configuration. This can lead to man-in-the-middle\
+    \ attacks as the server's identity is not properly verified. \nTo fix this, ensure\
+    \ that the SSLEngine is configured with host and port parameters, and enable endpoint\
+    \ identification using the HTTPS algorithm.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/2c522795166c930741a9cecca76797bf48cb1634
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java
+- id: vuln-camel-cc192f87
+  pattern: "if ($BODY instanceof InputStream) {\n    return new StreamSource((InputStream)$BODY);\n\
+    }\n"
+  pattern-not: "if ($BODY instanceof InputStream) {\n    $SANITIZED = sanitizeInputStream((InputStream)$BODY);\n\
+    \    return new StreamSource($SANITIZED);\n}\n"
+  languages:
+  - java
+  message: Potential XXE vulnerability detected. Directly using InputStream in StreamSource
+    can lead to XML External Entity (XXE) attacks. Sanitize the input stream before
+    processing.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/camel/commit/cc192f87b7c4a43c6cff0646486384c9946e2ac9
+    category: security
+    cwe: CWE-611
+    owasp: A4:2017-XML External Entities (XXE)
+    references: https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+    technology: java
+- id: vuln-struts-0c8366cb
+  pattern: "public void execute($KEY, $MAPPING, $REQUEST) {\n  ...\n  $REQUEST.setAttribute($ATTR,\
+    \ $VALUE);\n  ...\n}\n"
+  pattern-not: "public void execute($KEY, $MAPPING) {\n  ...\n  if (allowActionPrefix)\
+    \ {\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - java
+  message: Potential security vulnerability due to improper handling of action prefixes.
+    The request attribute manipulation can lead to incorrect action mapping. Ensure
+    proper validation and handling of action prefixes by using the allowActionPrefix
+    and allowActionCrossNamespaceAccess flags.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/0c8366cb792227d484b9ca13e537037dd0cb57dc
+    category: security
+    cwe: CWE-284
+    owasp: 'A1: Injection'
+    references: https://cwe.mitre.org/data/definitions/284.html
+    technology: java
+- id: vuln-tomcat-f78c0cdf
+  pattern: "import org.apache.catalina.deploy.LoginConfig;\n...\nLoginConfig $CONFIG\
+    \ = $CONTEXT.getLoginConfig();\nif (($CONFIG != null) &&\n    (Constants.FORM_METHOD.equals($CONFIG.getAuthMethod())))\
+    \ {\n    String $REQUESTURI = $REQUEST.getRequestPathMB().toString();\n    String\
+    \ $LOGINPAGE = $CONFIG.getLoginPage();\n    if ($LOGINPAGE.equals($REQUESTURI))\
+    \ {\n        ...\n        return (true);\n    }\n    String $ERRORPAGE = $CONFIG.getErrorPage();\n\
+    \    if ($ERRORPAGE.equals($REQUESTURI)) {\n        ...\n        return (true);\n\
+    \    }\n    if ($REQUESTURI.endsWith(Constants.FORM_ACTION)) {\n        ...\n\
+    \        return (true);\n    }\n}\n"
+  languages:
+  - java
+  message: Potential security vulnerability due to unrestricted access to login and
+    error pages. Ensure proper access control is implemented for these pages.
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/tomcat/commit/f78c0cdfc8a3c2efdfe6df6b69e5e3daafa3f588
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - java

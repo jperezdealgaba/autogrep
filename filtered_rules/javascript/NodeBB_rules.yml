@@ -1,0 +1,123 @@
+rules:
+- id: vuln-nodebb-c8b2fc46
+  pattern: 'const $DATA = await fs.promises.readFile(path.join($PATH, $LANGUAGE, `${$NAMESPACE}.json`),
+    ''utf8'');
+
+    '
+  pattern-not: "const $PATH_TO_FILE = path.join($PATH, $LANGUAGE, `${$NAMESPACE}.json`);\n\
+    if (!$PATH_TO_FILE.startsWith($PATH)) {\n  throw new Error('[[error:invalid-path]]');\n\
+    }\nconst $DATA = await fs.promises.readFile($PATH_TO_FILE, 'utf8');\n"
+  languages:
+  - javascript
+  message: 'Potential path traversal vulnerability detected. The code reads a file
+    without validating that the constructed path is within the intended directory.
+    This could allow an attacker to access arbitrary files on the system. To fix this,
+    validate that the constructed path starts with the expected base directory before
+    reading the file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/c8b2fc46dc698db687379106b3f01c71b80f495f
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - javascript
+- id: vuln-nodebb-a2400f6b
+  pattern: "if ($STRATEGY.checkState) {\n    ...\n}\n"
+  pattern-not: "if ($STRATEGY.checkState !== false) {\n    ...\n}\n"
+  languages:
+  - javascript
+  message: Insecure state checking detected. The condition 'if (strategy.checkState)'
+    can be bypassed if checkState is undefined or null. Use 'if (strategy.checkState
+    !== false)' to ensure proper state validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/a2400f6baff44cb2996487bcd0cc6e2acc74b3d4
+    category: security
+    cwe: CWE-754
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - javascript
+- id: vuln-nodebb-37b48b82
+  pattern: 'const $PARTS = $EVENTNAME.toString().split(''.'');
+
+    '
+  pattern-not: "if (typeof $EVENTNAME !== 'string') {\n  const $ESCAPEDNAME = validator.escape(String($EVENTNAME));\n\
+    \  return $CALLBACK({ message: `[[error:invalid-event, ${$ESCAPEDNAME}]]` });\n\
+    }\nconst $PARTS = $EVENTNAME.split('.');\n"
+  languages:
+  - javascript
+  message: 'Directly converting eventName to string and splitting it without type
+    validation can lead to unexpected behavior or security issues. Always validate
+    the type of eventName and escape it if necessary.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/37b48b82a4bc7680c6e4c42647209010cb239c2c
+    category: security
+    cwe: CWE-20
+    owasp: OWASP-API7
+    references:
+    - https://owasp.org/www-community/vulnerabilities/Improper_Input_Validation
+    technology:
+    - javascript
+- id: vuln-nodebb-81e3c1ba
+  pattern: "'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {\n\
+    \  const r = Math.random() * 16 | 0;\n  const v = c === 'x' ? r : ((r & 0x3) |\
+    \ 0x8);\n  return v.toString(16);\n});\n"
+  pattern-not: 'const temp_url = URL.createObjectURL(new Blob());
+
+    const uuid = temp_url.toString();
+
+    URL.revokeObjectURL(temp_url);
+
+    return uuid.split(/[:\/]/g).pop().toLowerCase();
+
+    '
+  languages:
+  - javascript
+  message: Insecure UUID generation using Math.random(). This can lead to predictable
+    UUIDs. Use crypto.randomBytes() or URL.createObjectURL() for secure UUID generation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/81e3c1ba488d03371a5ce8d0ebb5c5803026e0f9
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://github.com/tracker1/node-uuid4
+    technology:
+    - javascript
+- id: vuln-nodebb-ec58700f
+  pattern: 'api.users.generateExport($SOCKET, { type: $TYPE, ...$DATA })
+
+    '
+  pattern-not: 'api.users.generateExport($SOCKET, { type: $TYPE, uid: $DATA.uid })
+
+    '
+  languages:
+  - javascript
+  message: "Potential security vulnerability due to uncontrolled data spread in API\
+    \ call. \nThe patch restricts the data passed to the API to only the required\
+    \ fields, \npreventing potential injection of unwanted data. Always validate and\
+    \ limit \nthe data passed to sensitive API calls.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/NodeBB/NodeBB/commit/ec58700f6dff8e5b4af1544f6205ec362b593092
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Injection_Flaws
+    technology:
+    - javascript

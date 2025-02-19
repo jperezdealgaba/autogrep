@@ -1,0 +1,22 @@
+rules:
+- id: vuln-swtpm-52630023
+  pattern: "try:\n    $FOBJ = open($FILENAME, 'a')\n    $FOBJ.write($STRING)\n   \
+    \ $FOBJ.close()\nexcept Exception:\n    ...\n"
+  pattern-not: "try:\n    $FILEDESC = os.open($FILENAME, os.O_WRONLY|os.O_APPEND|os.O_CREAT|os.O_NOFOLLOW,\
+    \ $MODE)\n    os.write($FILEDESC, $STRING.encode('utf-8'))\n    os.close($FILEDESC)\n\
+    except Exception as $EX:\n    ...\n"
+  languages:
+  - python
+  message: 'Detected unsafe file opening without checking for symlinks. This can lead
+    to symlink attacks where an attacker can redirect file operations to unintended
+    locations. Use os.open() with O_NOFOLLOW flag to prevent following symlinks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/stefanberger/swtpm/commit/526300236dc8a7664acdc265b6fc5d767289ac39
+    category: security
+    cwe: CWE-59
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - python

@@ -1,0 +1,73 @@
+rules:
+- id: vuln-libebml-4c0d757d
+  pattern: "if ($SIZE + $DATABUFFERPOS > $DATABUFFERTOTALSIZE) {\n  ...\n}\n"
+  pattern-not: "if ($SIZE + $DATABUFFERPOS < $SIZE || $SIZE + $DATABUFFERPOS > $DATABUFFERTOTALSIZE)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: "Detected a potential integer overflow vulnerability in the condition check.\
+    \ \nThe original code does not account for possible integer overflow when adding\
+    \ `Size` and `dataBufferPos`, which could lead to incorrect buffer size checks\
+    \ and potential memory corruption. \nTo fix this, add an overflow check before\
+    \ comparing with `dataBufferTotalSize`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/4c0d757d6de529e8dda6bb6ca08369d5f9bffdb3
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp
+- id: vuln-libebml-ababb64e
+  pattern: "for ($INIT; $I < $STR.length(); $INC) {\n  $LEAD = static_cast<uint8>($STR[$I]);\n\
+    \  if ($LEAD < 0x80)\n    $I++;\n  else if (($LEAD >> 5) == 0x6)\n    $I += 2;\n\
+    \  else if (($LEAD >> 4) == 0xe)\n    $I += 3;\n  else if (($LEAD >> 3) == 0x1e)\n\
+    \    $I += 4;\n  else\n    break;\n}\n"
+  pattern-not: "for ($INIT; $I < $STR.length(); $INC) {\n  $LEAD = static_cast<uint8>($STR[$I]);\n\
+    \  $CHARLENGTH = UTFCharLength($LEAD);\n  if (($CHARLENGTH < 1) || ($CHARLENGTH\
+    \ > 4))\n    break;\n  if (($I + $CHARLENGTH) > $STR.length())\n    break;\n \
+    \ if ($CHARLENGTH == 1)\n    $I++;\n  else if ($CHARLENGTH == 2)\n    $I += 2;\n\
+    \  else if ($CHARLENGTH == 3)\n    $I += 3;\n  else if ($CHARLENGTH == 4)\n  \
+    \  $I += 4;\n}\n"
+  languages:
+  - cpp
+  message: 'Detected unsafe UTF-8 string iteration without proper length validation.
+    This can lead to out-of-bounds memory access and potential security vulnerabilities.
+    Use a helper function like UTFCharLength and validate the character length before
+    incrementing the index.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/ababb64e0c792ad2a314245233db0833ba12036b
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp
+- id: vuln-libebml-05beb69b
+  pattern: "do {\n  ...\n} while (!$FOUND && $MAX_SIZE > $READ_SIZE);\n"
+  pattern-not: "do {\n  ...\n  if ($MAX_SIZE <= $READ_SIZE) {\n    $FOUND = false;\n\
+    \    break;\n  }\n} while (!$FOUND);\n"
+  languages:
+  - cpp
+  message: 'The code contains a vulnerability where the loop condition does not properly
+    handle the case when `MaxDataSize` is less than or equal to `ReadSize`. This can
+    lead to incorrect behavior or infinite loops. The fix ensures that the loop breaks
+    when `MaxDataSize` is less than or equal to `ReadSize`, preventing potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Matroska-Org/libebml/commit/05beb69ba60acce09f73ed491bb76f332849c3a0
+    category: security
+    cwe:
+    - 'CWE-835: Loop with Unreachable Exit Condition (''Infinite Loop'')'
+    technology:
+    - cpp

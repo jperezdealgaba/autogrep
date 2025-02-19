@@ -1,0 +1,76 @@
+rules:
+- id: vuln-linux-3c85cc43
+  pattern: "if (!vma_is_shmem($VMA) && !is_file_hugepages($FILE)) {\n  ...\n}\n"
+  pattern-not: "if ($VMA->vm_file && !is_file_hugepages($VMA->vm_file)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where the code incorrectly checks for
+    file types without verifying the `vm_file` pointer. This can lead to null pointer
+    dereferences or incorrect behavior when handling memory mappings. Always check
+    the `vm_file` pointer before accessing its properties to ensure the memory area
+    is backed by a valid file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/torvalds/linux/commit/3c85cc43c8e7855d202da184baf00c7b8eeacf71
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-linux-9e7f3056
+  pattern: 'xe_exec_queue_put($JOB->q);
+
+    '
+  pattern-not: '$Q = $JOB->q;
+
+    xe_exec_queue_put($Q);
+
+    '
+  languages:
+  - c
+  message: "Directly using `job->q` in `xe_exec_queue_put` can lead to potential use-after-free\
+    \ or double-free vulnerabilities. \nThe correct approach is to store `job->q`\
+    \ in a local variable before passing it to `xe_exec_queue_put` to ensure consistent\
+    \ reference handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/torvalds/linux/commit/9e7f30563677fbeff62d368d5d2a5ac7aaa9746a
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-672
+    technology:
+    - c
+- id: vuln-linux-160fbcf3
+  pattern: '$SKB->len = $LEN;
+
+    '
+  pattern-not: 'skb_put($SKB, $LEN);
+
+    '
+  languages:
+  - c
+  message: 'Direct assignment to skb->len is unsafe and can lead to incorrect packet
+    handling. Use skb_put() instead to properly manage the length of the socket buffer.
+
+    This vulnerability can cause memory corruption or incorrect packet processing,
+    leading to potential security issues or crashes.
+
+    Fix: Replace direct assignment with skb_put(skb, len).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/torvalds/linux/commit/160fbcf3bfb93c3c086427f9f4c8bc70f217e9be
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,49 @@
+rules:
+- id: vuln-libmysofa-0b250b6f
+  pattern: 'assert($VAR == $VAL);
+
+    '
+  pattern-not: "if($VAR != $VAL)\n  return $ERROR;\n"
+  languages:
+  - c
+  message: 'The use of assert() for validation can be dangerous as it is typically
+    disabled in release builds, potentially allowing invalid input to pass unchecked.
+    Replace assert() with proper error handling to ensure validation is always enforced.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hoene/libmysofa/commit/0b250b6fa5f4d8768bf03b00a88866d5f3476f56
+    category: security
+    cwe:
+    - CWE-617
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    technology:
+    - c
+- id: vuln-libmysofa-ecb7b743
+  pattern: '$DATA->data = malloc($SIZE);
+
+    '
+  pattern-not: '$DATA->data = calloc(1, $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'The use of `malloc` without initialization can lead to uninitialized memory
+    usage, which may result in undefined behavior or security vulnerabilities. Replace
+    `malloc` with `calloc` to ensure memory is zero-initialized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hoene/libmysofa/commit/ecb7b743b6f6d47b93a7bc680a60071a0f9524c6
+    category: security
+    cwe:
+    - CWE-908
+    owasp:
+    - A9:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/908.html
+    technology:
+    - c

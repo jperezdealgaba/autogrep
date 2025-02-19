@@ -1,0 +1,52 @@
+rules:
+- id: vuln-plane-11258686
+  pattern: "- name: Setup .npmrc for repository\n  run: |\n    echo -e \"@tiptap-pro:registry=https://registry.tiptap.dev/\\\
+    n//registry.tiptap.dev/:_authToken=${{ secrets.TIPTAP_TOKEN }}\" > .npmrc\n"
+  pattern-not: "- name: Setup .npmrc for repository\n  run: |\n    echo -e \"@tiptap-pro:registry=https://registry.tiptap.dev/\\\
+    n//registry.tiptap.dev/:_authToken=${{ secrets.TIPTAP_TOKEN }}\" > .npmrc\n  \
+    \  mv ./.npmrc ./web\n"
+  languages:
+  - yaml
+  message: 'Detected a GitHub Actions workflow that sets up an .npmrc file with sensitive
+    auth token without moving it to a specific directory. This can expose sensitive
+    credentials in the workspace. Always move the .npmrc file to a restricted directory
+    after creation to minimize exposure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/makeplane/plane/commit/11258686ad114cb12f606ca3d16899efd4fb11dd
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-522
+    owasp:
+    - A01:2021-Broken Access Control
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+    technology:
+    - yaml
+    - github-actions
+- id: vuln-plane-0ceb9974
+  pattern: "env_file:\n  - $FILE\n"
+  pattern-not: "environment:\n  - $VAR=${$VAR:-$DEFAULT}\n"
+  languages:
+  - yaml
+  message: 'Using `env_file` to load environment variables can lead to security risks
+    as it may expose sensitive data. Instead, explicitly define environment variables
+    with default values using the `environment` key to ensure better control and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/makeplane/plane/commit/0ceb9974f6974fbebeab6de814ced57f6817cc83
+    category: security
+    cwe:
+    - 'CWE-200: Exposure of Sensitive Information to an Unauthorized Actor'
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://docs.docker.com/compose/environment-variables/
+    technology:
+    - yaml

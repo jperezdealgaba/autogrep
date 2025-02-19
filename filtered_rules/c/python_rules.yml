@@ -1,0 +1,28 @@
+rules:
+- id: vuln-cpython-fd8614c5
+  pattern: 'Py_ssize_t $NEWLEN = $RECODE_ENCODING ? 4 * $LEN : $LEN;
+
+    '
+  pattern-not: "Py_ssize_t $NEWLEN;\nif ($RECODE_ENCODING && ($LEN > PY_SSIZE_T_MAX\
+    \ / 4)) {\n    PyErr_SetString(PyExc_OverflowError, \"string is too large\");\n\
+    \    return NULL;\n}\n$NEWLEN = $RECODE_ENCODING ? 4 * $LEN : $LEN;\n"
+  languages:
+  - c
+  message: 'This pattern detects potential integer overflow vulnerabilities in C code
+    when calculating new lengths for string operations. The vulnerability occurs when
+    multiplying a length by 4 without checking for overflow, which can lead to buffer
+    overflows or other memory corruption issues. To fix this, always check for integer
+    overflow before performing the multiplication and handle the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/fd8614c5c5466a14a945db5b059c10c0fb8f76d9
+    category: security
+    cwe:
+    - CWE-190
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

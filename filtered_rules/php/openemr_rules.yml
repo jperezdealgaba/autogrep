@@ -1,0 +1,181 @@
+rules:
+- id: vuln-openemr-2e7678d8
+  pattern: '$mimetype = $_FILES[''file''][''type''][$key];
+
+    '
+  pattern-not: "if (empty($mimetype)) {\n    $mimetype = mime_content_type($_FILES['file']['tmp_name'][$key]);\n\
+    }\nif (empty($mimetype)) {\n    $error = xl(\"Unable to discover mimetype, so\
+    \ did not upload \" . $_FILES['file']['tmp_name'][$key]) . \".\\n\";\n    continue;\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code directly assigns the MIME type from the uploaded file''s ''type''
+    field without validation, which can be easily spoofed. This can lead to the execution
+    of malicious files if the MIME type is not properly verified. To fix this, use
+    `mime_content_type` to validate the MIME type from the file''s content and ensure
+    it is not empty before proceeding with the upload.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/2e7678d812df167ea3c0756382408b670e8aa51f
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php
+- id: vuln-openemr-51851dbb
+  pattern: '$sql = "DELETE from categories_to_documents where document_id IN (SELECT
+    id from documents where documents.url like ''%" . $filename . "'')";
+
+    sqlQuery($sql);
+
+    $sql = "DELETE from documents where documents.url like ''%" . $filename . "''";
+
+    sqlQuery($sql);
+
+    '
+  pattern-not: '$sql = "DELETE from categories_to_documents where document_id IN (SELECT
+    id from documents where documents.url like ?)";
+
+    sqlQuery($sql, [''%''.$filename]);
+
+    $sql = "DELETE from documents where documents.url like ?";
+
+    sqlQuery($sql, [''%''.$filename]);
+
+    '
+  languages:
+  - php
+  message: 'Detected a SQL query concatenating user input directly into the query
+    string, which makes it vulnerable to SQL injection. This is dangerous as it allows
+    attackers to manipulate the database. Use prepared statements with parameterized
+    queries to fix this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/51851dbbd01631fafdced231237396af0e657990
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php
+- id: vuln-openemr-6d8234dd
+  pattern: '$options_objects[$value] = $name;
+
+    '
+  pattern-not: '$options_objects[attr($value)] = attr($name);
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped assignment in array, which can lead to XSS vulnerabilities.
+
+    The values assigned to the array are not properly escaped, allowing potential
+    injection of malicious scripts.
+
+    To fix this, use the `attr()` function to escape the values before assignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/6d8234dd0e81c484e094b97ca3cfad5b3cf3930f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-openemr-c5d99452
+  pattern: 'strlen($this->$PROP)
+
+    '
+  pattern-not: 'strlen($this->$PROP ?? '''')
+
+    '
+  languages:
+  - php
+  message: 'Using `strlen` directly on dynamic properties without null coalescing
+    can lead to undefined behavior or errors if the property is null. Always use null
+    coalescing (`?? ''''`) to ensure safe string length checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/c5d99452c173ef21a8e2241e2bbf4b66e2d7fe11
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - php
+- id: vuln-openemr-59458bc1
+  pattern: 'echo json_encode($VAR);
+
+    '
+  pattern-not: 'echo text(json_encode($VAR));
+
+    '
+  languages:
+  - php
+  message: 'Directly outputting JSON encoded data without proper escaping can lead
+    to XSS vulnerabilities.
+
+    This is dangerous because it allows attackers to inject malicious scripts into
+    the output.
+
+    To fix this, use a proper escaping function like `text()` before outputting the
+    JSON encoded data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/59458bc15ab0cb556c521de9d5187167d6f88945
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-openemr-a2adac73
+  pattern: "function javascriptStringRemove($text) {\n    return str_ireplace('javascript',\
+    \ '', $text ?? '');\n}\n"
+  pattern-not: "function javascriptStringRemove(?string $text): string {\n    $returnText\
+    \ = str_ireplace('javascript', '', $text ?? '');\n    if (javascriptStringCheck($returnText))\
+    \ {\n        $returnText = javascriptStringRemove($returnText);\n    }\n    return\
+    \ $returnText;\n}\n"
+  languages:
+  - php
+  message: 'The function `javascriptStringRemove` is vulnerable to incomplete removal
+    of ''javascript'' strings, which can lead to XSS attacks. The function only removes
+    the ''javascript'' string once, allowing malicious input to bypass the check if
+    it contains multiple instances. To fix this, ensure the function recursively removes
+    all instances of ''javascript'' strings and adds a check function to verify the
+    removal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openemr/openemr/commit/a2adac7320dfc631b1da688c3b04f54b8240fc7b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

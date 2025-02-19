@@ -1,0 +1,28 @@
+rules:
+- id: vuln-audiofile-25eb00ce
+  pattern: '$VAR.index = $ENCODED[$INDEX];
+
+    '
+  pattern-not: '$VAR.index = clamp($ENCODED[$INDEX], 0, 88);
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly assigns a value from an encoded buffer to an index without
+    proper bounds checking, which can lead to out-of-bounds access or undefined behavior.
+    This vulnerability can be exploited to cause crashes or potentially execute arbitrary
+    code. Always use a clamp function or similar bounds-checking mechanism to ensure
+    the value falls within the valid range (0 to 88 in this case).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/antlarr/audiofile/commit/25eb00ce913452c2e614548d7df93070bf0d066f
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp

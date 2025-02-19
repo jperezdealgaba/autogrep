@@ -1,0 +1,18 @@
+rules:
+- id: vuln-otrs-50861a2a
+  pattern: "$($IFRAME).load($SOURCE, $OPTIONS, function() {\n    $BODY\n})\n"
+  pattern-not: "$($IFRAME).on('load', function() {\n    $BODY\n})\n"
+  languages:
+  - javascript
+  message: "Potential security issue detected: Using .load() with dynamic content\
+    \ can lead to XSS vulnerabilities. \nThe .load() method can execute arbitrary\
+    \ JavaScript if the source is controlled by an attacker. \nUse .on('load', ...)\
+    \ instead to safely handle iframe loading events.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/OTRS/otrs/commit/50861a2a1183a07daf99cc2e71395e79f022338f
+    category: security
+    cwe: CWE-79
+    owasp: A3:2017-Cross-Site Scripting (XSS)
+    technology:
+    - javascript

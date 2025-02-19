@@ -1,0 +1,22 @@
+rules:
+- id: vuln-revolution-20049805
+  pattern: '$TITLE += '': <span dir="ltr">'' + $RECORD.pagetitle + '' (''+ $RECORD.id
+    + '')</span>'';
+
+    '
+  pattern-not: '$TITLE += '': <span dir="ltr">'' + Ext.util.Format.htmlEncode($RECORD.pagetitle)
+    + '' (''+ $RECORD.id + '')</span>'';
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unencoded user input in HTML. Use Ext.util.Format.htmlEncode
+    to sanitize user-supplied data before rendering it in HTML.
+  severity: ERROR
+  metadata:
+    source-url: github.com/modxcms/revolution/commit/20049805dad576250185e4317c4ded1d21871219
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript

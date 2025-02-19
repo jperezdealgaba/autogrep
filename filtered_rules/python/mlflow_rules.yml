@@ -1,0 +1,48 @@
+rules:
+- id: vuln-mlflow-8174250f
+  pattern: 'return session.request($METHOD, $URL, **$KWARGS)
+
+    '
+  pattern-not: 'return session.request($METHOD, $URL, allow_redirects=$ALLOW_REDIRECTS,
+    **$KWARGS)
+
+    '
+  languages:
+  - python
+  message: "Detected missing allow_redirects parameter in session.request(). \nThis\
+    \ can lead to security risks by allowing HTTP redirects to untrusted locations.\
+    \ \nEnsure allow_redirects is explicitly set based on the MLFLOW_ALLOW_HTTP_REDIRECTS\
+    \ environment variable or a secure default.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mlflow/mlflow/commit/8174250f83352a04c2d42079f414759060458555
+    category: security
+    cwe: CWE-601
+    owasp: A6:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology: python
+- id: vuln-mlflow-432b8ccf
+  pattern: 'jinja2.Environment(loader=jinja2.BaseLoader()).from_string($TEMPLATE)
+
+    '
+  pattern-not: 'SandboxedEnvironment(loader=BaseLoader()).from_string($TEMPLATE)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe use of Jinja2 Environment without sandboxing. This can
+    lead to template injection vulnerabilities, allowing attackers to execute arbitrary
+    code. Use SandboxedEnvironment instead to safely render templates.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mlflow/mlflow/commit/432b8ccf27fd3a76df4ba79bb1bec62118a85625
+    category: security
+    cwe: CWE-94
+    owasp: A1:2017-Injection
+    references:
+    - https://jinja.palletsprojects.com/en/3.1.x/sandbox/
+    technology:
+    - python

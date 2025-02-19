@@ -1,0 +1,297 @@
+rules:
+- id: vuln-krb5-88a1701b
+  pattern: '$REPLY = *$TKT->header_tkt;
+
+    '
+  pattern-not: '$REPLY.server = $TKT->header_tkt->server;
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe copying of the entire header ticket structure, which may
+    include sensitive authorization data. This can lead to security vulnerabilities
+    by exposing unintended data. Instead, copy only the necessary fields explicitly,
+    such as the server field, to avoid inadvertently including sensitive information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/88a1701b423c13991a8064feeb26952d3641d840
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - c
+- id: vuln-krb5-4fa89fc7
+  pattern: "if ($RETURN_TOKEN != $NO_TOKEN_SEND && $RETURN_TOKEN != $CHECK_MIC) {\n\
+    \  ...\n}\n"
+  pattern-not: "if ($RETURN_TOKEN == $INIT_TOKEN_SEND ||\n    $RETURN_TOKEN == $CONT_TOKEN_SEND)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The condition checks for `return_token` values incorrectly, potentially
+    allowing unintended token handling. This could lead to security vulnerabilities
+    in the SPNEGO mechanism by processing tokens that should be rejected. The fix
+    correctly checks for `INIT_TOKEN_SEND` and `CONT_TOKEN_SEND` to ensure proper
+    token handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/4fa89fc784b87b22bb551e9a8dc754cb2392d732
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://web.mit.edu/kerberos/
+    technology:
+    - c
+- id: vuln-krb5-e3b5a5e5
+  pattern: '$FUNC($ARG, 0, $NULL, $NULL, $NULL);
+
+    '
+  pattern-not: '$FUNC($ARG, EINVAL, $NULL, $NULL, $NULL);
+
+    '
+  languages:
+  - c
+  message: 'The code uses a hardcoded error code (0) in a response function, which
+    can mask actual errors. This can lead to incorrect handling of error conditions
+    and potential security issues. Use the appropriate error code (EINVAL) instead
+    of 0 to ensure proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/e3b5a5e5267818c97750b266df50b6a3d4649604
+    category: security
+    cwe:
+    - 'CWE-392: Missing Report of Error Condition'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/392.html
+    technology:
+    - c
+- id: vuln-krb5-83ed75fe
+  pattern: 'gss_buffer_desc $CLIENT_NAME, $SERVICE_NAME;
+
+    '
+  pattern-not: 'gss_buffer_desc $CLIENT_NAME = GSS_C_EMPTY_BUFFER;
+
+    gss_buffer_desc $SERVICE_NAME = GSS_C_EMPTY_BUFFER;
+
+    '
+  languages:
+  - c
+  message: 'Uninitialized `gss_buffer_desc` variables can lead to undefined behavior
+    when used with GSS-API functions. Always initialize `gss_buffer_desc` variables
+    to `GSS_C_EMPTY_BUFFER` to avoid potential security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/83ed75feba32e46f736fcce0d96a0445f29b96c2
+    category: security
+    cwe:
+    - 'CWE-909: Missing Initialization of Resource'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://tools.ietf.org/html/rfc2744
+    technology:
+    - c
+- id: vuln-krb5-a197e923
+  pattern: 'xdr_free($FUNC, $PTR);
+
+    '
+  pattern-not: 'xdr_free(xdr_func, xdr_ptr);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of xdr_free without proper parameter validation. This
+    can lead to memory corruption or undefined behavior if the provided function or
+    pointer is invalid. Ensure that the function and pointer parameters passed to
+    xdr_free are properly validated before use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/a197e92349a4aa2141b5dff12e9dd44c2a2166e3
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-krb5-b863de7f
+  pattern: "if(entry == (kadm5_principal_ent_t) NULL)\n    return EINVAL;\n"
+  pattern-not: "if(entry == NULL)\n    return EINVAL;\n"
+  languages:
+  - c
+  message: 'The code uses a potentially incorrect type cast in the NULL check, which
+    can lead to undefined behavior. The fix removes the unnecessary type cast, ensuring
+    the NULL check is performed correctly. This vulnerability could cause the program
+    to handle NULL pointers incorrectly, leading to potential security issues or crashes.
+    Always use direct NULL checks without unnecessary type casting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/b863de7fbf080b15e347a736fdda0a82d42f4f6b
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-krb5-e1caf6fb
+  pattern: "char **values = NULL;\n...\nif ((values = ldap_get_values($LDAP, $ENTRY,\
+    \ \"krbprincipalname\")) != NULL) {\n    $KRB_IDENTITY_EXISTS = TRUE;\n    ldap_value_free(values);\n\
+    }\n...\nif ($XARGS_DN != NULL && $KRB_IDENTITY_EXISTS == TRUE) {\n    $ST = EINVAL;\n\
+    \    snprintf($ERRBUF, sizeof($ERRBUF), _(\"ldap object is already kerberized\"\
+    ));\n    k5_setmsg($CONTEXT, $ST, \"%s\", $ERRBUF);\n    goto $CLEANUP;\n}\n"
+  pattern-not: "static krb5_error_code\ncheck_dn_exists(krb5_context context,\n  \
+    \              krb5_ldap_server_handle *ldap_server_handle,\n                const\
+    \ char *dn, krb5_boolean nonkrb_only)\n{\n    ...\n    values = ldap_get_values(ld,\
+    \ ent, \"krbprincipalname\");\n    if (values != NULL) {\n        ldap_value_free(values);\n\
+    \        if (nonkrb_only) {\n            st = EINVAL;\n            k5_setmsg(context,\
+    \ st, _(\"ldap object is already kerberized\"));\n            goto cleanup;\n\
+    \        }\n    }\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly validate LDAP DN entries and check for existing
+    Kerberos identities, which could allow unauthorized access or privilege escalation.
+    The vulnerability occurs when adding a Kerberos principal to an LDAP object that
+    already has a Kerberos identity, potentially bypassing security checks. The fix
+    introduces proper validation functions to ensure DN entries are within the correct
+    subtree and checks for existing Kerberos attributes before adding new ones.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/e1caf6fb74981da62039846931ebdffed71309d1
+    category: security
+    cwe:
+    - CWE-287
+    - CWE-285
+    owasp: A04:2021 - Insecure Design
+    references:
+    - https://web.mit.edu/kerberos/
+    technology:
+    - c
+- id: vuln-krb5-d1f70702
+  pattern: "if ($ENT != NULL) {\n  if (($ST = $FUNC($CONTEXT, $LD, $ENT, $POL_NAME,\
+    \ $POLICY)) != 0)\n    goto $CLEANUP;\n}\n"
+  pattern-not: "if ($ENT == NULL) {\n  $ST = $ERROR_CODE;\n  goto $CLEANUP;\n}\n$ST\
+    \ = $FUNC($CONTEXT, $LD, $ENT, $POL_NAME, $POLICY);\n"
+  languages:
+  - c
+  message: 'The code fails to handle the case where `ent` is NULL, which can lead
+    to null pointer dereference or incorrect error handling. This vulnerability can
+    cause undefined behavior or security issues. The fix ensures proper error handling
+    by explicitly checking for NULL and setting an appropriate error code before jumping
+    to the cleanup section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/d1f707024f1d0af6e54a18885322d70fa15ec4d3
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-krb5-8ee70ec6
+  pattern: 'strlcpy($DST, $SRC->data, $SRC->length + 1);
+
+    '
+  pattern-not: "if ($SRC->data != NULL)\n    memcpy($DST, $SRC->data, $SRC->length);\n"
+  languages:
+  - c
+  message: 'Potential null pointer dereference and buffer overflow vulnerability detected.
+
+    The code uses strlcpy with a source pointer that is not checked for NULL,
+
+    which could lead to undefined behavior. Additionally, adding 1 to the length
+
+    could cause a buffer overflow if the source data is exactly the length of the
+
+    destination buffer. Always check for NULL pointers before copying data and
+
+    use memcpy with the correct length to avoid overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/8ee70ec63931d1e38567905387ab9b1d45734d81
+    category: security
+    cwe:
+    - CWE-476
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    - 'A8: Software and Data Integrity Failures'
+    technology:
+    - c
+- id: vuln-krb5-5e6d1796
+  pattern: "if ($CODE == 0 || $CODE == KRB5_PREAUTH_FAILED) {\n    ...\n}\n"
+  pattern-not: "if (!$CODE || $CODE == KRB5_PREAUTH_FAILED || $CODE == KRB5KDC_ERR_KEY_EXP)\
+    \ {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to handle the case where the key is expired (KRB5KDC_ERR_KEY_EXP),
+    which could lead to security vulnerabilities by allowing expired keys to be used.
+    This was fixed by adding a check for KRB5KDC_ERR_KEY_EXP in the condition. Ensure
+    that all relevant error codes are properly handled in authentication checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/5e6d1796106df8ba6bc1973ee0917c170d929086
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://web.mit.edu/kerberos/advisories/
+    technology:
+    - c
+- id: vuln-krb5-57415dda
+  pattern: 'get_tag($DER, $LEN, $TAG_OUT, $CONTENTS, $CLEN, $REMAINDER, $RLEN)
+
+    '
+  pattern-not: 'get_tag($DER, $LEN, $TAG_OUT, $CONTENTS, $CLEN, $REMAINDER, $RLEN,
+    $RECURSION)
+
+    '
+  languages:
+  - c
+  message: 'Missing recursion depth check in ASN.1 decoding function. This vulnerability
+    can lead to stack overflow due to unbounded recursion. Add a recursion depth parameter
+    and check it to prevent stack overflow. Example fix: `if (recursion >= 32) return
+    ASN1_OVERFLOW;`
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/krb5/krb5/commit/57415dda6cf04e73ffc3723be518eddfae599bfd
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c

@@ -1,0 +1,17 @@
+rules:
+- id: vuln-rdoc-a7d6b41d
+  pattern: "$(\"a[name=\" + $VAR + \"]\").each(function() {\n  ...\n})\n"
+  pattern-not: "$(\"a[name]\").each(function() {\n  if ($(this).attr(\"name\") ==\
+    \ $VAR) {\n    ...\n  }\n})\n"
+  languages:
+  - javascript
+  message: Potential DOM XSS vulnerability due to unsafe attribute selection. The
+    selector 'a[name=' + variable + ']' can be manipulated by an attacker. Use attribute
+    comparison inside the loop to ensure safe selection.
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/rdoc/commit/a7d6b41d5bc6f075eba94bbbad363634894586f5
+    category: security
+    cwe: CWE-79
+    owasp: A3:2017-Cross-Site Scripting (XSS)
+    technology: javascript

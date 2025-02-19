@@ -1,0 +1,223 @@
+rules:
+- id: vuln-gnutls-fb2a6bae
+  pattern: "const char *$FILENAME;\n...\n$FILENAME = getenv(\"GNUTLS_KEYLOGFILE\"\
+    );\n...\nif ($FILENAME == NULL)\n  return;\n...\n$FP = fopen($FILENAME, \"w\"\
+    );\n"
+  pattern-not: "const char *_gnutls_keylogfile = NULL;\n...\n_gnutls_keylogfile =\
+    \ getenv(\"GNUTLS_KEYLOGFILE\");\n...\nif (_gnutls_keylogfile == NULL)\n  _gnutls_keylogfile\
+    \ = getenv(\"SSLKEYLOGFILE\");\n...\n$FP = fopen(_gnutls_keylogfile, \"a\");\n"
+  languages:
+  - c
+  message: 'Detected insecure handling of keylog file environment variables. The original
+    code directly uses the environment variable without proper validation and uses
+    ''w'' mode which truncates the file. This can lead to security issues and unintended
+    data loss. The fix introduces a global variable and uses ''a'' mode to append
+    to the file instead of truncating it. Always validate environment variables and
+    use appropriate file modes to prevent security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/fb2a6baef79f4aadfd95e657fe5a18da20a1410e
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-377
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/200.html
+    - https://cwe.mitre.org/data/definitions/377.html
+    technology:
+    - c
+- id: vuln-gnutls-42221486
+  pattern: "if ($CIPHERTEXT.size == 0) {\n  ...\n  return $ERROR_CODE;\n}\n"
+  pattern-not: "if ($CIPHERTEXT.size < $HASH_SIZE) {\n  ...\n  return $ERROR_CODE;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a vulnerability where a ciphertext size check only verifies if
+    the size is zero, rather than comparing it against the expected hash size. This
+    can lead to insufficient validation of the ciphertext, potentially allowing decryption
+    of malformed or truncated data. To fix this, ensure that the ciphertext size is
+    checked against the expected hash size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/422214868061370aeeb0ac9cd0f021a5c350a57d
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/327.html
+    technology:
+    - c
+- id: vuln-gnutls-60ee8a0e
+  pattern: 'gnutls_certificate_set_verify_flags($XCRED, GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT)
+
+    '
+  pattern-not: 'gnutls_certificate_set_verify_flags($XCRED, 0)
+
+    '
+  languages:
+  - c
+  message: 'The use of GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT in gnutls_certificate_set_verify_flags
+    is dangerous as it allows the acceptance of insecure X.509 Version 1 certificates.
+    This can lead to security vulnerabilities due to the lack of modern security features
+    in Version 1 certificates. Replace GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT with GNUTLS_VERIFY_DO_NOT_ALLOW_X509_V1_CA_CRT
+    or set the flags to 0 to enforce stricter certificate validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/60ee8a0eb9975d123002b1cffbefd60a8cd5fae6
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://www.gnutls.org/manual/gnutls.html#gnutls_005fcertificate_005fset_005fverify_005fflags
+    technology:
+    - c
+- id: vuln-gnutls-c8dcbedd
+  pattern: '$FLAGS ^= GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT;
+
+    '
+  pattern-not: '$FLAGS &= ~(GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
+
+    '
+  languages:
+  - c
+  message: 'Insecure bitwise XOR operation used to modify verification flags.
+
+    This operation could potentially enable X.509 v1 CA certificates, which are considered
+    insecure.
+
+    Use bitwise AND with the negation of the flag to properly disable it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/c8dcbedd1fdc312f5b1a70fcfbc1afe235d800cd
+    category: security
+    cwe:
+    - CWE-484
+    owasp:
+    - A2:2017-Cryptographic Failures
+    references:
+    - https://wiki.openssl.org/index.php/Hardening#X.509_certificate_security
+    technology:
+    - c
+- id: vuln-gnutls-e14d85eb
+  pattern: "if (($PAD + $TOTAL) % $LEN > $LEN - 9\n    && $TOTAL % $LEN <= $LEN -\
+    \ 9) {\n  ...\n}\n"
+  pattern-not: "if ($PARAMS->mac && $PARAMS->mac->id == $GNUTLS_MAC_SHA384)\n    $V\
+    \ = 17;\nelse\n    $V = 9;\nif (($PAD + $TOTAL) % $LEN > $LEN - $V\n    && $TOTAL\
+    \ % $LEN <= $LEN - $V) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects a potential timing leakage vulnerability in CBC ciphersuites.
+    The original code uses a fixed value of 9 for padding checks, which can lead to
+    timing side-channel attacks. The fix introduces a variable padding value based
+    on the hash function used, mitigating the timing leakage. To fix this, ensure
+    that padding checks use variable values based on the cryptographic context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/e14d85eb8b1987d86f7b1d101a0e7795675d20d4
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-gnutls-688ea642
+  pattern: "if (len < session_id_len) {\n  ...\n}\n"
+  pattern-not: "if (len < session_id_len || session_id_len > TLS_MAX_SESSION_ID_SIZE)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This code is vulnerable to a session ID length validation issue. The original
+    check only verifies if the length is less than the session ID length, but fails
+    to check if the session ID length exceeds the maximum allowed size. This could
+    lead to buffer overflows or other security issues. To fix this, add a check to
+    ensure the session ID length does not exceed the maximum allowed size (TLS_MAX_SESSION_ID_SIZE).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/688ea6428a432c39203d00acd1af0e7684e5ddfd
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c
+- id: vuln-gnutls-9bb4ca9e
+  pattern: 'socket_bye(&$HD, 1);
+
+    '
+  pattern-not: 'socket_bye(&$HD, 0);
+
+    '
+  languages:
+  - c
+  message: 'The function `socket_bye` is called with a non-zero parameter, which may
+    lead to improper session termination.
+
+    This can cause resource leaks or unexpected behavior in the application.
+
+    Ensure that `socket_bye` is called with a zero parameter to properly terminate
+    the session.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/9bb4ca9ec8ed504429d582ac3de28aaf8d88b1e8
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-gnutls-6be35136
+  pattern: '_gnutls_x509_decode_string(NULL, $DATA, $SIZE, $OUTPUT)
+
+    '
+  pattern-not: '_gnutls_x509_decode_string(ASN1_ETYPE_OCTET_STRING, $DATA, $SIZE,
+    $OUTPUT)
+
+    '
+  languages:
+  - c
+  message: 'Using NULL as the first argument to _gnutls_x509_decode_string can lead
+    to
+
+    security vulnerabilities by not properly specifying the expected ASN.1 type.
+
+    This can result in incorrect parsing of encoded data and potential security
+
+    issues. Always specify the appropriate ASN.1 type (e.g., ASN1_ETYPE_OCTET_STRING)
+
+    to ensure proper decoding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gnutls/gnutls/commit/6be35136333b5d6289f23209cf896e741462909a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp: 'A5: Security Misconfiguration'
+    technology:
+    - c
+    references:
+    - https://www.gnutls.org/manual/html_node/ASN1-decoding.html

@@ -1,0 +1,81 @@
+rules:
+- id: vuln-engine-73db8c77
+  pattern: "for _, $M := range []string{\"password\", \"secret\", \"jointoken\", \"\
+    unlockkey\", \"signingcakey\"} {\n  ...\n}\n"
+  pattern-not: "for _, $M := range $SCRUB {\n  ...\n}\n"
+  languages:
+  - go
+  message: 'Sensitive data fields such as ''password'', ''secret'', ''jointoken'',
+    ''unlockkey'', and ''signingcakey'' are being scrubbed in a hardcoded manner.
+    This approach is risky because it may miss new sensitive fields added in the future.
+    Instead, use a predefined list of sensitive fields (like ''scrub'') to ensure
+    consistent handling of sensitive data across all endpoints. This prevents potential
+    data leaks due to oversight.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/engine/commit/73db8c77bfb2d0cbdf71ce491f3d3e66c9dd5be6
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://docs.docker.com/engine/security/
+    technology:
+    - go
+- id: vuln-docker-f8a0f268
+  pattern: "func maskSecretKeys($INP interface{}, $PATH string) {\n    ...\n}\n"
+  pattern-not: "func maskSecretKeys($INP interface{}) {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'The function `maskSecretKeys` was previously passing both the input and
+    the path as parameters, which could lead to incorrect handling of sensitive data.
+    The path parameter was removed to simplify the function and ensure consistent
+    behavior. Update the function to only accept the input parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/docker/commit/f8a0f26843bc5aff33cf9201b75bd4bdbb48a3ad
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://github.com/docker/docker/commit/f8a0f26843bc5aff33cf9201b75bd4bdbb48a3ad
+    technology:
+    - go
+- id: vuln-docker-a588898f
+  pattern: 'append($ARGS, "origin", $REF)
+
+    '
+  pattern-not: 'append($ARGS, "origin", "--", $REF)
+
+    '
+  languages:
+  - go
+  message: 'Detected a potential security vulnerability where git refspecs are not
+    properly sanitized.
+
+    This can lead to command injection or other malicious behavior if the refspec
+    starts with a hyphen.
+
+    To fix this, ensure that the refspec is prefixed with ''--'' to prevent it from
+    being interpreted as a command-line option.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/docker/docker/commit/a588898f99d697e5ff481ecb3b273f45410f10e6
+    category: security
+    cwe:
+    - CWE-88
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://git-scm.com/docs/git-fetch#Documentation/git-fetch.txt---
+    technology:
+    - go

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-teampass-79731553
+  pattern: 'header("Cache-Control: no-cache, must-revalidate");
+
+    '
+  pattern-not: 'header("Cache-Control: no-cache");
+
+    '
+  languages:
+  - php
+  message: 'The use of ''must-revalidate'' in Cache-Control headers can lead to security
+    vulnerabilities by allowing cached content to be revalidated and potentially served
+    to unauthorized users. This can expose sensitive information. Remove ''must-revalidate''
+    and use ''no-cache'' instead to ensure that cached content is not reused without
+    proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nilsteampassnet/teampass/commit/79731553fa305d45dabb7a227f3074d56d7c94c1
+    category: security
+    cwe:
+    - CWE-524
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

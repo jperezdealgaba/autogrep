@@ -1,0 +1,40 @@
+rules:
+- id: vuln-langchain-bf0b3cc0
+  pattern: "if prevent_outside and not $PATH.startswith($BASE_URL):\n    ...\n"
+  pattern-not: "if prevent_outside:\n    $PARSED_PATH = urlparse($PATH)\n    if $PARSED_BASE_URL.netloc\
+    \ != $PARSED_PATH.netloc:\n        ...\n    if not $PATH.startswith($BASE_URL_TO_USE):\n\
+    \        ...\n"
+  languages:
+  - python
+  message: Detected insecure URL validation. The original code only checks if the
+    path starts with the base URL, which can be bypassed. Use urlparse to properly
+    validate the netloc and path components.
+  severity: ERROR
+  metadata:
+    source-url: github.com/langchain-ai/langchain/commit/bf0b3cc0b5ade1fb95a5b1b6fa260e99064c2e22
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology: python
+- id: vuln-langchain-9ecb7240
+  pattern: "def $FUNC(..., prevent_outside: Optional[bool] = $VAL, ...):\n    ...\n"
+  pattern-not: "def $FUNC(..., prevent_outside: bool = True, ...):\n    ...\n"
+  languages:
+  - python
+  message: 'Detected a potential SSRF vulnerability in a web crawler implementation.
+    The `prevent_outside` parameter is optional and could be set to `None`, allowing
+    the crawler to potentially access external domains. This could lead to server-side
+    request forgery (SSRF) attacks. To mitigate this risk, ensure `prevent_outside`
+    is a required boolean parameter defaulting to `True`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/langchain-ai/langchain/commit/9ecb7240a480720ec9d739b3877a52f76098a2b8
+    category: security
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+    references:
+    - https://python.langchain.com/docs/security
+    technology:
+    - python

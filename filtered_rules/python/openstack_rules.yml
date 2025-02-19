@@ -1,0 +1,233 @@
+rules:
+- id: vuln-kolla-2a4a8fce
+  pattern: "def load_from_env():\n    config_raw = os.environ.get(\"KOLLA_CONFIG\"\
+    )\n    if config_raw is None:\n        return None\n    try:\n        return json.loads(config_raw)\n\
+    \    except ValueError:\n        raise InvalidConfig('Invalid json for Kolla config')\n"
+  pattern-not: "def load_from_env():\n    config_file = '/var/lib/kolla/config_files/config.json'\n"
+  languages:
+  - python
+  message: Detected unsafe configuration loading from environment variables. This
+    can lead to security vulnerabilities if untrusted input is deserialized. Use a
+    secure configuration file instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/kolla/commit/2a4a8fce31c12114e8f472c24dd96864b5bd2bd2
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - python
+- id: vuln-cinder-0f9652d9
+  pattern: '$VAR = $RESPONSE.read()
+
+    '
+  pattern-not: '$VAR = $RESPONSE.text
+
+    '
+  languages:
+  - python
+  message: Using `read()` on HTTP responses is unsafe and can lead to improper handling
+    of response data. Use `text` or `raw` properties from the `requests` library instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/cinder/commit/0f9652d92e175a1f7dc3c2a37ab444b8f189375a
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://docs.python-requests.org/en/latest/user/quickstart/#response-content
+    technology:
+    - python
+- id: vuln-nova-75be5abd
+  pattern: 'utils.execute(''chmod'', ''777'', $TMPDIR, run_as_root=True)
+
+    '
+  pattern-not: 'os.chmod($TMPDIR, 0o701)
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure temporary directory permission change using ''chmod
+    777''. This grants excessive permissions and can lead to security vulnerabilities.
+    Use ''os.chmod'' with more restrictive permissions (e.g., 0o701) instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/75be5abd6b3fa0f7f27fe9c805f832cd41d44a5d
+    category: security
+    cwe: CWE-732
+    owasp: A5:2017-Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/732.html
+    technology:
+    - python
+- id: vuln-nova-b83cae02
+  pattern: 'map(operator.methodcaller(''refresh_connection_info'', *$ARGS, **$KWARGS),
+    $DEVICES)
+
+    '
+  pattern-not: "for $DEVICE in $DEVICES:\n    if hasattr($DEVICE, 'refresh_connection_info'):\n\
+    \        $DEVICE.refresh_connection_info(*$ARGS, **$KWARGS)\n"
+  languages:
+  - python
+  message: 'Detected unsafe use of `map` with `operator.methodcaller` to call `refresh_connection_info`
+    on all devices without checking if they support the method. This can lead to attribute
+    errors or unintended behavior. Use a for-loop with `hasattr` check instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/nova/commit/b83cae02ece4c338e09c3606c6ae69b715bd6f8c
+    category: security
+    cwe: 'CWE-476: NULL Pointer Dereference'
+    owasp: A10:2021-Server-Side Request Forgery
+    technology:
+    - python
+- id: vuln-keystone-bdb88c66
+  pattern: 'self.assertNotEqual($V1, $V2)
+
+    '
+  pattern-not: 'self.assertEqual($V1, $V2)
+
+    '
+  languages:
+  - python
+  message: Incorrect assertion detected. Using assertNotEqual instead of assertEqual
+    can lead to false positives in test cases. Replace with assertEqual to ensure
+    correct validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/bdb88c662ac2035f9b0d8a229a5db5f60f5f16ae
+    category: security
+    cwe: CWE-691
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertEqual
+    technology:
+    - python
+- id: vuln-glance-108f0e04
+  pattern: 'LOG.warn(_(''Get image %(id)s data from %(loc)s failed: %(err)s.'') %
+    {''id'': $ID, ''loc'': $LOC, ''err'': $ERR})
+
+    '
+  pattern-not: 'LOG.warn(_(''Get image %(id)s data failed: %(err)s.'') % {''id'':
+    $ID, ''err'': $ERR})
+
+    '
+  languages:
+  - python
+  message: 'Detected insecure logging of sensitive information. The patch removed
+    the ''loc'' parameter from the log message to prevent exposure of sensitive location
+    data. Avoid logging sensitive information to prevent security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/glance/commit/108f0e04ad2ed3dc287f1b71b987a7e9d66072ba
+    category: security
+    cwe: CWE-532
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/532.html
+    technology:
+    - python
+- id: vuln-swift-12e54391
+  pattern: 'parser = lxml.etree.XMLParser()
+
+    '
+  pattern-not: 'parser = lxml.etree.XMLParser(resolve_entities=False, no_network=True)
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe XML parsing configuration. The XML parser is vulnerable
+    to XML External Entity (XXE) attacks, which can lead to sensitive data disclosure
+    or server-side request forgery (SSRF). To fix this, configure the XML parser with
+    `resolve_entities=False` and `no_network=True`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/swift/commit/12e54391861e7d182d58f89fb88b027e65842640
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://lxml.de/apidoc/lxml.etree.XMLParser-class.html
+    technology:
+    - python
+- id: vuln-keystone-ce6cedb3
+  pattern: 'return $AUTH[''identity''][''methods''] or []
+
+    '
+  pattern-not: "$METHOD_NAMES = []\nfor $METHOD in $AUTH['identity']['methods']:\n\
+    \    if $METHOD not in $METHOD_NAMES:\n        $METHOD_NAMES.append($METHOD)\n\
+    return $METHOD_NAMES\n"
+  languages:
+  - python
+  message: 'Detected unsafe handling of authentication methods that does not filter
+    out duplicates.
+
+    This can lead to inconsistent behavior or security issues when processing authentication
+    requests.
+
+    Fix by sanitizing the methods list to remove duplicates while preserving order.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/ce6cedb30c5c4b4cf4db9380f09443de22414b39
+    category: security
+    cwe: 'CWE-20: Improper Input Validation'
+    owasp: A01:2021-Broken Access Control
+    technology:
+    - python
+- id: vuln-swift-75463398
+  pattern: "if $SIG not in $HMAC_VALS:\n    ...\n"
+  pattern-not: "$IS_VALID = any(streq_const_time($SIG, $HMAC) for $HMAC in $HMAC_VALS)\n\
+    if not $IS_VALID:\n    ...\n"
+  languages:
+  - python
+  message: "Detected a timing attack vulnerability in HMAC signature validation. \n\
+    Using `in` operator for HMAC comparison can leak timing information, \nallowing\
+    \ attackers to infer valid signatures. \nUse constant-time comparison functions\
+    \ like `streq_const_time` instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/swift/commit/754633988931e4095530f6b13389c254096eb485
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://docs.python.org/3/library/hmac.html
+    technology:
+    - python
+- id: vuln-keystone-7402f5ef
+  pattern: 'raise exception.Unauthorized(message=$MESSAGE)
+
+    '
+  pattern-not: 'raise exception.Unauthorized()
+
+    '
+  languages:
+  - python
+  message: Detected Unauthorized exceptions with detailed error messages. This can
+    expose sensitive information to attackers. Use generic error messages instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/openstack/keystone/commit/7402f5ef994599653bdbb3ed5ff1a2b8c3e72b9f
+    category: security
+    cwe: CWE-209
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://cwe.mitre.org/data/definitions/209.html
+    technology:
+    - python

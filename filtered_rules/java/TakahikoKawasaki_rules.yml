@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nv-websocket-client-a1587954
+  pattern: "OkHostnameVerifier $VERIFIER = OkHostnameVerifier.INSTANCE;\nSSLSession\
+    \ $SESSION = ((SSLSocket)$SOCKET).getSession();\nif (!$VERIFIER.verify($HOSTNAME,\
+    \ $SESSION)) {\n    throw new SSLPeerUnverifiedException($MESSAGE);\n}\n"
+  pattern-not: 'verifyHostname((SSLSocket)$SOCKET, $HOSTNAME);
+
+    '
+  languages:
+  - java
+  message: 'Insecure hostname verification detected. Direct usage of OkHostnameVerifier
+    and SSLPeerUnverifiedException can lead to improper hostname validation. Use the
+    `verifyHostname` method instead to ensure proper hostname verification.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TakahikoKawasaki/nv-websocket-client/commit/a158795432699ff06568b66517db2ca9fde282b2
+    category: security
+    cwe:
+    - CWE-297
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java

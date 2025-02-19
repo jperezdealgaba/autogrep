@@ -1,0 +1,809 @@
+rules:
+- id: vuln-php-src-8e76d040
+  pattern: '$CTXT->options &= ~XML_PARSE_DTDLOAD;
+
+    '
+  pattern-not: '$OLD = php_libxml_disable_entity_loader(1);
+
+    php_libxml_disable_entity_loader($OLD);
+
+    '
+  languages:
+  - c
+  message: 'Disabling DTD loading using `XML_PARSE_DTDLOAD` is not sufficient to prevent
+    XXE attacks. Instead, use `php_libxml_disable_entity_loader` to properly disable
+    entity loading. This vulnerability can lead to XML External Entity (XXE) attacks,
+    which may allow an attacker to read arbitrary files or conduct server-side request
+    forgery (SSRF) attacks. To fix this, replace the `~XML_PARSE_DTDLOAD` operation
+    with calls to `php_libxml_disable_entity_loader`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/8e76d0404b7f664ee6719fd98f0483f0ac4669d6
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:XXE
+    technology:
+    - c
+- id: vuln-php-src-1e9b1752
+  pattern: "if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", $VAR1, $VAR2) == FAILURE)\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (zend_parse_parameters(ZEND_NUM_ARGS(), \"p\", $VAR1, $VAR2) ==\
+    \ FAILURE) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of ''s'' in zend_parse_parameters can lead to path-related vulnerabilities
+    by not properly handling null paths.
+
+    This can be exploited to bypass security checks or cause unexpected behavior.
+
+    Replace ''s'' with ''p'' in zend_parse_parameters to ensure proper null path checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/1e9b175204e3286d64dfd6c9f09151c31b5e099a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-php-src-e77659a8
+  pattern: "if ($LEN >= sizeof($STRUCT->$FIELD)) {\n  $LEN = sizeof($STRUCT->$FIELD)\
+    \ - 1;\n}\n"
+  pattern-not: "if ($LEN >= sizeof($STRUCT->$FIELD)) {\n  $LEN = sizeof($STRUCT->$FIELD)\
+    \ - $SZ;\n}\n"
+  languages:
+  - c
+  message: 'The code contains a potential buffer overflow vulnerability due to incorrect
+    string length calculation.
+
+    The original code subtracts 1 from the size of the buffer to account for null
+    termination, but fails to consider the size of the pascal string length (sz).
+
+    This can lead to buffer overflows when the string length is close to the buffer
+    size.
+
+    To fix this, ensure that the size of the pascal string length is subtracted from
+    the buffer size when calculating the maximum length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e77659a8c87272e5061738a31430d2111482c426
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-php-src-74555e7c
+  pattern: free($RBUF);
+  pattern-not: efree($RBUF);
+  languages:
+  - c
+  message: 'The use of ''free()'' instead of ''efree()'' can lead to memory management
+    issues in PHP extensions.
+
+    ''free()'' should not be used directly in PHP extensions as it bypasses PHP''s
+    internal memory management system.
+
+    Replace ''free()'' with ''efree()'' to ensure proper memory handling within PHP''s
+    memory management system.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/74555e7c26b2c61bb8e67b7d6a6f4d2b8eb3a5f3
+    category: security
+    cwe:
+    - CWE-763
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.php.net/manual/en/internals2.memory.management.php
+    technology:
+    - c
+- id: vuln-php-src-6e259665
+  pattern: 'zend_throw_exception_ex($EXCEPTION, $TYPE, $ERRSTR);
+
+    '
+  pattern-not: 'zend_throw_exception_ex($EXCEPTION, $TYPE, "%s", $ERRSTR);
+
+    '
+  languages:
+  - c
+  message: "Detected a potentially dangerous use of `zend_throw_exception_ex` without\
+    \ a format specifier. \nThis can lead to format string vulnerabilities if the\
+    \ error string contains user-controlled data. \nAlways use a format specifier\
+    \ (e.g., \"%s\") to safely pass the error string.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/6e25966544fb1d2f3d7596e060ce9c9269bbdcf8
+    category: security
+    cwe:
+    - CWE-134
+    owasp: A1:2017-Injection
+    technology:
+    - c
+- id: vuln-php-src-c4cca4c2
+  pattern: "if (!strcmp($ATTS[$I], $EL) && $ATTS[++$I] && $ATTS[$I][0]) {\n  ...\n\
+    }\n"
+  pattern-not: "if (!strcmp($ATTS[$I], $EL) && $ATTS[$I+1] && $ATTS[$I+1][0]) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe array index increment within a condition. This pattern
+    can lead to out-of-bounds access or incorrect data processing. The issue arises
+    when the array index `i` is incremented within the condition check, which can
+    cause unexpected behavior. Instead, increment the index after the condition check
+    to ensure safe array access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/c4cca4c20e75359c9a13a1f9a36cb7b4e9601d29
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-php-src-8d2539fa
+  pattern: 'object_init_ex(&$OBJ, $PCE);
+
+    zend_hash_merge(Z_OBJPROP($OBJ), Z_ARRVAL($ENT->data), zval_add_ref, 0);
+
+    ...
+
+    zval_ptr_dtor(&$ENT->data);
+
+    ZVAL_COPY_VALUE(&$ENT->data, &$OBJ);
+
+    '
+  pattern-not: "if (object_init_ex(&$OBJ, $PCE) != SUCCESS || EG(exception)) {\n \
+    \ zval_ptr_dtor(&$ENT->data);\n  ZVAL_UNDEF(&$ENT->data);\n  php_error_docref(NULL,\
+    \ E_WARNING, \"Class %s can not be instantiated\", Z_STRVAL($ENT->data));\n} else\
+    \ {\n  zend_hash_merge(Z_OBJPROP($OBJ), Z_ARRVAL($ENT->data), zval_add_ref, 0);\n\
+    \  ...\n  zval_ptr_dtor(&$ENT->data);\n  ZVAL_COPY_VALUE(&$ENT->data, &$OBJ);\n\
+    }\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs when object initialization is not checked for
+    success before proceeding with object manipulation. This can lead to undefined
+    behavior if the object fails to initialize. The fix ensures that object initialization
+    is properly checked and handles the error case by cleaning up resources and issuing
+    a warning.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/8d2539fa0faf3f63e1d1e7635347c5b9e777d47b
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-php-src-9d388b95
+  pattern: 'memchr($POS + 1, ''.'', $LEN - ($POS - $FILENAME) + 1)
+
+    '
+  pattern-not: 'memchr($POS + 1, ''.'', $LEN - ($POS - $FILENAME) - 1)
+
+    '
+  languages:
+  - c
+  message: "Detected potential off-by-one error in memchr length calculation. \nUsing\
+    \ '+1' instead of '-1' in the length calculation can lead to reading beyond buffer\
+    \ boundaries. \nThis vulnerability could result in memory corruption or information\
+    \ disclosure. \nFix by using '-1' instead of '+1' in the length calculation.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/9d388b95c54ea053ce6f194defe1ff6673195747
+    category: security
+    cwe:
+    - 193
+    - 125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/193.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-php-src-3c8c200d
+  pattern: 'safe_emalloc(1, 3 * $LENGTH + 3 * (((3 * $LENGTH)/PHP_QPRINT_MAXL) + 1),
+    0)
+
+    '
+  pattern-not: 'safe_emalloc(3, $LENGTH + (((3 * $LENGTH)/(PHP_QPRINT_MAXL-9)) + 1),
+    1)
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in memory allocation.
+    The original calculation for memory allocation in `safe_emalloc` is unsafe because
+    it multiplies the length by 3 multiple times without proper bounds checking, which
+    could lead to integer overflow. This could result in insufficient memory allocation
+    and potential buffer overflow vulnerabilities. To fix this, ensure that the memory
+    allocation calculation is safe and does not risk integer overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/3c8c200d0acd233cedb8fd58251f9cbf9aebca4a
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-php-src-780ff63c
+  pattern: 'fprintf(stderr, $MSG);
+
+    '
+  pattern-not: '/* fprintf(stderr, $MSG); */
+
+    '
+  languages:
+  - c
+  message: 'Detected direct usage of fprintf(stderr, ...) for error logging in production
+    code.
+
+    This practice can expose sensitive information and create security vulnerabilities.
+
+    Instead, use proper logging mechanisms or comment out debug statements.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/php/php-src/commit/780ff63c377dc79de2c04d6b341913ab0102135b
+    category: security
+    cwe:
+    - 'CWE-200: Information Exposure'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c
+- id: vuln-php-src-3804c0d0
+  pattern: "if (zend_hash_find(&EG(symbol_table), $VAR, sizeof($VAR), (void **) &$DATA)\
+    \ != FAILURE) {\n  ...\n}\n"
+  pattern-not: "if (zend_hash_find(&EG(symbol_table), $VAR, sizeof($VAR), (void **)\
+    \ &$DATA) != FAILURE && Z_TYPE_PP($DATA) == IS_STRING) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Missing type check after zend_hash_find() can lead to potential type confusion
+    vulnerabilities.
+
+    Always verify the type of the retrieved data before using it to ensure it matches
+    the expected type (IS_STRING in this case).
+
+    This vulnerability could be exploited to cause unexpected behavior or crashes.
+
+    Fix by adding a type check: `&& Z_TYPE_PP(data) == IS_STRING`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/3804c0d00fa6e629173fb1c8c61f8f88d5fe39b9
+    category: security
+    cwe:
+    - 'CWE-843: Access of Resource Using Incompatible Type (''Type Confusion'')'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-php-src-0f8cf3b8
+  pattern: 'memchr($VAR->ptr, ''&'', $VAR->end - $VAR->ptr)
+
+    '
+  pattern-not: 'memchr($VAR->ptr + $VAR->already_scanned, ''&'', $VAR->end - ($VAR->ptr
+    + $VAR->already_scanned))
+
+    '
+  languages:
+  - c
+  message: 'The code uses memchr() to search for ''&'' characters in a string but
+    doesn''t account for previously scanned portions of the buffer. This can lead
+    to incorrect parsing of URL query parameters and potential security vulnerabilities.
+    The fix adds an ''already_scanned'' field to track processed portions of the buffer.
+    Always track and skip already processed portions of buffers when parsing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/0f8cf3b8497dc45c010c44ed9e96518e11e19fc3
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-php-src-e1ba58f0
+  pattern: 'strchr($S, ''#'')
+
+    '
+  pattern-not: 'memchr($S, ''#'', ($UE - $S))
+
+    '
+  languages:
+  - c
+  message: 'Using strchr() without length limitation can lead to buffer over-read
+    vulnerabilities.
+
+    This is dangerous because it can read beyond the intended memory boundaries, potentially
+    exposing sensitive information or causing crashes.
+
+    Replace strchr() with memchr() and specify the length of the string to search
+    within.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e1ba58f068f4bfc8ced75bb017cd31d8beddf3c2
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-php-src-c283c3ab
+  pattern: 'xmlSubstituteEntitiesDefault(1);
+
+    ...
+
+    xmlSubstituteEntitiesDefault($PREV);
+
+    xmlLoadExtDtdDefaultValue = $PREV2;
+
+    '
+  pattern-not: 'PHP_LIBXML_SANITIZE_GLOBALS($X);
+
+    ...
+
+    PHP_LIBXML_RESTORE_GLOBALS($X);
+
+    '
+  languages:
+  - c
+  message: "Found unsafe manipulation of libxml global state without proper sanitization.\n\
+    Directly modifying libxml globals like xmlSubstituteEntitiesDefault and \nxmlLoadExtDtdDefaultValue\
+    \ without proper cleanup can lead to security\nvulnerabilities and state pollution\
+    \ between requests. \nUse PHP_LIBXML_SANITIZE_GLOBALS and PHP_LIBXML_RESTORE_GLOBALS\
+    \ macros instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/c283c3ab0ba45d21b2b8745c1f9c7cbfe771c975
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.php.net/manual/en/class.libxmlerror.php
+    technology:
+    - c
+- id: vuln-php-src-188c196d
+  pattern: '$CTXT->options -= $XML_PARSE_DTDLOAD
+
+    '
+  pattern-not: '$CTXT->options &= ~$XML_PARSE_DTDLOAD
+
+    '
+  languages:
+  - c
+  message: "Using the subtraction operator (-) to unset bit flags is incorrect and\
+    \ can lead to undefined behavior. \nInstead, use the bitwise AND NOT operator\
+    \ (&~) to properly clear the flag. \nThis vulnerability can cause unexpected behavior\
+    \ in XML parsing, potentially leading to security issues.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/188c196d4da60bdde9190d2fc532650d17f7af2d
+    category: security
+    cwe:
+    - CWE-682
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-php-src-fcd4b533
+  pattern: '$OLD = php_libxml_disable_entity_loader(1);
+
+    ...
+
+    php_libxml_disable_entity_loader($OLD);
+
+    '
+  pattern-not: '$OLD = php_libxml_disable_entity_loader(1 TSRMLS_CC);
+
+    ...
+
+    php_libxml_disable_entity_loader($OLD TSRMLS_CC);
+
+    '
+  languages:
+  - c
+  message: 'Missing TSRMLS_CC parameter in php_libxml_disable_entity_loader calls.
+
+    This can lead to thread safety issues in the XML entity loader, potentially causing
+    crashes or security vulnerabilities.
+
+    Always include the TSRMLS_CC macro when calling php_libxml_disable_entity_loader
+    in threaded environments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/fcd4b5335a6df4e0676ee32e2267ca71d70fe623
+    category: security
+    cwe:
+    - 'CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization'
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - c
+- id: vuln-php-src-089f7c0b
+  pattern: '$FUNC($IM, $OUT, ...);
+
+    $RV = gdDPExtractData($OUT, $SIZE);
+
+    '
+  pattern-not: "if (!$FUNC($IM, $OUT, ...)) {\n  $RV = gdDPExtractData($OUT, $SIZE);\n\
+    } else {\n  $RV = NULL;\n}\n"
+  languages:
+  - c
+  message: 'Found unsafe handling of image processing function return value. The code
+    directly calls
+
+    gdDPExtractData without checking if the image processing function succeeded. This
+    could lead
+
+    to processing invalid image data or null pointers. Always check the return value
+    of image
+
+    processing functions before extracting data. Use the pattern ''if (!func(...))
+    { ... }'' to
+
+    properly handle errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/089f7c0bc28d399b0420aa6ef058e4c1c120b2ae
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - c
+- id: vuln-php-src-95433e8e
+  pattern: 'register int $X, $Y;
+
+    '
+  pattern-not: 'register size_t $X, $Y;
+
+    '
+  languages:
+  - c
+  message: 'Using ''int'' for loop counters or array indices can lead to integer overflow
+    vulnerabilities when dealing with large data sizes. This can cause out-of-bounds
+    memory access or incorrect behavior. Use ''size_t'' instead of ''int'' for variables
+    that represent sizes, indices, or loop counters to prevent integer overflow and
+    ensure correct handling of large data sizes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/95433e8e339dbb6b5d5541473c1661db6ba2c451
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-php-src-35ceea92
+  pattern: '$VAR->socket_mode = 0666
+
+    '
+  pattern-not: '$VAR->socket_mode = 0660
+
+    '
+  languages:
+  - c
+  message: 'Detected insecure socket mode setting (0666). This allows any user to
+    read/write to the socket, which can lead to unauthorized access or data manipulation.
+    Change the socket mode to 0660 to restrict access to the owner and group only.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/35ceea928b12373a3b1e3eecdc32ed323223a40d
+    category: security
+    cwe:
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://cwe.mitre.org/data/definitions/276.html
+    technology:
+    - c
+- id: vuln-php-src-e0f5d62b
+  pattern: 'strncpy($DEST, $SRC, strlen($SRC));
+
+    '
+  pattern-not: "if (strlcpy($DEST, $SRC, sizeof($DEST)) >= sizeof($DEST)) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected unsafe use of `strncpy` which can lead to buffer overflows or
+    truncation without proper error handling. The function `strncpy` does not guarantee
+    null-termination and can result in security vulnerabilities. Use `strlcpy` instead,
+    which ensures null-termination and provides a way to detect truncation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/e0f5d62bd6690169998474b62f92a8c5ddf0e699
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://man7.org/linux/man-pages/man3/strncpy.3.html
+    - https://man7.org/linux/man-pages/man3/strlcpy.3.html
+    technology:
+    - c
+- id: vuln-php-src-0426b916
+  pattern: 'zval_ptr_dtor(&var_hash->data[$I]);
+
+    '
+  pattern-not: "if (HAS_WAKEUP_FLAG($ZV)) {\n  $ZV = WITHOUT_WAKEUP_FLAG($ZV);\n \
+    \ ...\n  zval_ptr_dtor(&$ZV);\n} else {\n  zval_ptr_dtor(&$ZV);\n}\n"
+  languages:
+  - c
+  message: 'Direct zval destruction without checking for wakeup flags can lead to
+
+    memory corruption and use-after-free vulnerabilities. The patch adds
+
+    proper wakeup flag handling before destruction. Always check for wakeup
+
+    flags and handle them appropriately before destroying zvals.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/0426b916df396a23e5c34514e4f2f0627efdcdf0
+    category: security
+    cwe:
+    - CWE-416
+    - CWE-825
+    owasp:
+    - 'A8: Insecure Deserialization'
+    technology:
+    - c
+    references:
+    - https://www.php.net/manual/en/language.oop5.magic.php#object.wakeup
+    - https://www.php.net/manual/en/function.unserialize.php
+- id: vuln-php-src-df4bf28f
+  pattern: 'zval_dtor($VAR);
+
+    FREE_ZVAL($VAR);
+
+    '
+  pattern-not: 'var_push_dtor_no_addref($VARHASH, &$VAR);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of `zval_dtor` and `FREE_ZVAL` which can lead to memory
+    corruption or use-after-free vulnerabilities. The patch replaces these with `var_push_dtor_no_addref`
+    to safely manage variable destruction. Always use safe variable destruction methods
+    to prevent security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/df4bf28f9f104ca3ef78ed94b497859f15b004e5
+    category: security
+    cwe:
+    - CWE-416
+    owasp: A9:2021-Security Misconfiguration
+    technology:
+    - c
+- id: vuln-php-src-9737e9ee
+  pattern: 'int $VAR = $PTLEN + $ENV_PATH_INFO ? strlen($ENV_PATH_INFO) : 0;
+
+    '
+  pattern-not: 'int $VAR = $PTLEN + ($ENV_PATH_INFO ? strlen($ENV_PATH_INFO) : 0);
+
+    '
+  languages:
+  - c
+  message: 'The ternary operator has incorrect operator precedence in the expression,
+    which can lead to incorrect calculations. The addition operation should be grouped
+    with the ternary operator result using parentheses to ensure proper evaluation
+    order. This could potentially cause security issues in path handling logic.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/9737e9ee3bd82db9dd49449c00c0d3542ee47f41
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-php-src-996faf96
+  pattern: "int $VAR = \n  ($EXPR1 != ' ' && $EXPR1 != '\\t')\n  && (\n    $EXPR2\
+    \ == '\\n'\n    || ($EXPR2 == '\\r' && $EXPR1 != '\\n'));\nif ($VAR) {\n  ...\n\
+    }\n"
+  pattern-not: "if ($EXPR == '\\n' || $EXPR == '\\r') {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected deprecated HTTP header folding logic based on RFC 2616. \nThis\
+    \ is dangerous as it can lead to HTTP request smuggling or header injection attacks.\n\
+    The fix is to remove support for header folding entirely as per RFC 7230 section\
+    \ 3.2.4.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/996faf964bba1aec06b153b370a7f20d3dd2bb8b
+    category: security
+    cwe:
+    - 'CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers (''HTTP
+      Response Splitting'')'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.2.4
+    technology:
+    - c
+- id: vuln-php-src-dda81f05
+  pattern: 'len = spprintf(&fullpath, 0, "%s/%s", dest, entry->filename);
+
+    ...
+
+    slash = zend_memrchr(entry->filename, ''/'', entry->filename_len);
+
+    ...
+
+    fullpath[dest_len + (slash - entry->filename) + 1] = ''\0'';
+
+    ...
+
+    fullpath[dest_len + (slash - entry->filename) + 1] = ''/'';
+
+    '
+  pattern-not: 'len = spprintf(&fullpath, 0, "%s/%s", dest, filename);
+
+    ...
+
+    slash = zend_memrchr(filename, ''/'', filename_len);
+
+    ...
+
+    fullpath[dest_len + (slash - filename) + 1] = ''\0'';
+
+    ...
+
+    fullpath[dest_len + (slash - filename) + 1] = ''/'';
+
+    '
+  languages:
+  - c
+  message: 'The code directly uses entry->filename without proper path sanitization,
+    which could lead to path traversal vulnerabilities. The patch adds proper path
+    sanitization by using a virtual_file_ex function to strip ''..'' from the path
+    and restrict it to be under the destination directory. Always sanitize file paths
+    before using them in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/dda81f0505217a95db065e6bf9cc2d81eb902417
+    category: security
+    cwe:
+    - 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - c
+- id: vuln-php-src-c818d0d0
+  pattern: "char $BUF[18];\n...\nif(strlen($TEXT) < 17) {\n  return -1;\n}\n...\n\
+    *$VALUE = mktime($TM);\n"
+  pattern-not: "char $BUF[30];\n...\nif ($P2 - $BUF >= sizeof($BUF)) {\n  return -1;\n\
+    }\n...\n*$VALUE = mkgmtime($TM);\n"
+  languages:
+  - c
+  message: 'The code uses a fixed-size buffer and `strlen` check which can lead to
+    buffer overflows or crashes when handling invalid datetime values. This vulnerability
+    was fixed by increasing the buffer size and using proper bounds checking. Always
+    ensure proper buffer size and bounds checking when handling datetime values to
+    prevent crashes and potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/c818d0d01341907fee82bdb81cab07b7d93bb9db
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-131
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c
+- id: vuln-php-src-56754a7f
+  pattern: "if ($DATALEN < 0 || ($P) + $DATALEN >= $MAX) {\n  ...\n}\n"
+  pattern-not: "if ($DATALEN < 0 || ($MAX - ($P)) <= $DATALEN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability in a boundary check.
+    The original condition `(*p) + datalen >= max` can lead to integer overflow, bypassing
+    the intended boundary check. This can result in out-of-bounds memory access. The
+    fix changes the condition to `(max - (*p)) <= datalen` to avoid the overflow.
+    Always ensure boundary checks are performed in a way that prevents integer overflow.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/56754a7f9eba0e4f559b6ca081d9f2a447b3f159
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-php-src-4b15f5d4
+  pattern: "static bool is_executed_by_cmd(const char *prog_name) {\n    ...\n   \
+    \ if (_stricmp(\"cmd.exe\", prog_name) == 0 || _stricmp(\"cmd\", prog_name) ==\
+    \ 0\n            || stricmp_end(\"\\\\cmd.exe\", prog_name) == 0 || stricmp_end(\"\
+    \\\\cmd\", prog_name) == 0) {\n        return true;\n    }\n    ...\n}\n"
+  pattern-not: "static bool is_executed_by_cmd(const char *prog_name, size_t prog_name_length)\
+    \ {\n    ...\n    if (_wcsicmp(file_part, L\"cmd.exe\") == 0 || _wcsicmp(file_part,\
+    \ L\"cmd\") == 0) {\n        uses_cmd = true;\n    }\n    ...\n}\n"
+  languages:
+  - c
+  message: "The function `is_executed_by_cmd` is vulnerable due to improper handling\
+    \ of path and file name comparisons. \nThe original version uses `_stricmp` and\
+    \ `stricmp_end` which can lead to incorrect path resolution and potential security\
+    \ issues. \nThe fixed version uses wide character comparisons and proper path\
+    \ resolution functions to ensure accurate and secure execution path detection.\n\
+    To fix this, use wide character string comparisons and proper path resolution\
+    \ functions as shown in the patched version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/php/php-src/commit/4b15f5d4ec750b31ec8911f5eb0915a45f96feca
+    category: security
+    cwe:
+    - 'CWE-73: External Control of File Name or Path'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/73.html
+    technology:
+    - c

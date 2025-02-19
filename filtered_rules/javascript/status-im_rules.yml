@@ -1,0 +1,26 @@
+rules:
+- id: vuln-react-native-desktop-7477eefc
+  pattern: "child_process.exec($BUILD_COMMAND, {cwd: $CWD}, (error, stdout, stderr)\
+    \ => {\n  if (error)\n    $REJECT(error);\n  else {\n    console.log(stdout);\n\
+    \    $RESOLVE();\n  }\n});\n"
+  pattern-not: "child_process.spawn($BUILD_COMMAND, $BUILD_ARGUMENTS, {cwd: $CWD});\n\
+    ...\nchild.on('close', function (code) {\n  if (code != 0) {\n    $REJECT();\n\
+    \  } else {\n    $RESOLVE();\n  }\n});\n"
+  languages:
+  - javascript
+  message: "Detected use of child_process.exec() which can lead to command injection\
+    \ vulnerabilities. \nThe command string is constructed by concatenating user-controlled\
+    \ input, making it vulnerable to injection attacks. \nUse child_process.spawn()\
+    \ with an array of arguments instead to safely handle command execution.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/status-im/react-native-desktop/commit/7477eefc1736017ddb9bd2de259e2f0301332847
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
+    technology:
+    - javascript

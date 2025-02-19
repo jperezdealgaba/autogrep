@@ -1,0 +1,21 @@
+rules:
+- id: vuln-hestiacp-640f822d
+  pattern: '$(...).html($DATA)
+
+    '
+  pattern-not: '$(...).text($DATA)
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability detected due to unsafe use of .html() method.\
+    \ \nUsing .html() with untrusted data can lead to cross-site scripting (XSS) attacks.\
+    \ \nUse .text() instead to safely insert plain text content.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/hestiacp/hestiacp/commit/640f822d306ffb3eddf8ce2f46de75d7344283c1
+    category: security
+    cwe: CWE-79
+    owasp: 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - javascript

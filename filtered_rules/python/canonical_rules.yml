@@ -1,0 +1,41 @@
+rules:
+- id: vuln-cloud-init-42788bf2
+  pattern: "def rand_user_password(pwlen=9):\n    ...\n"
+  pattern-not: "def rand_user_password(pwlen=20):\n    ...\n"
+  languages:
+  - python
+  message: Detected insecure default password length in rand_user_password function.
+    A default length of 9 is too short and may lead to weak passwords. Increase the
+    default length to at least 20 for better security.
+  severity: ERROR
+  metadata:
+    source-url: github.com/canonical/cloud-init/commit/42788bf24a1a0a5421a2d00a7f59b59e38ba1a14
+    category: security
+    cwe:
+    - CWE-521
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - python
+- id: vuln-cloud-init-4d467b14
+  pattern: 'validate_cloudconfig_schema(config=$CONFIG, strict=$STRICT)
+
+    '
+  pattern-not: 'validate_cloudconfig_schema(config=$CONFIG, strict=$STRICT, log_details=$DETAILS)
+
+    '
+  languages:
+  - python
+  message: "Detected a call to validate_cloudconfig_schema without the log_details\
+    \ parameter. \nThis can lead to sensitive data being logged in validation error\
+    \ messages. \nAlways set log_details=False when handling sensitive user data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/canonical/cloud-init/commit/4d467b14363d800b2185b89790d57871f11ea88c
+    category: security
+    cwe: CWE-532
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cloudinit.readthedocs.io/en/latest/topics/datasources.html
+    technology:
+    - python

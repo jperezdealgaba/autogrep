@@ -1,0 +1,27 @@
+rules:
+- id: vuln-mumble-e59ee87a
+  pattern: 'QDesktopServices::openUrl(QUrl($VAR));
+
+    '
+  pattern-not: "const QStringList $ALLOWED_SCHEMES = { ... };\nconst auto $URL = QUrl($VAR);\n\
+    if ($ALLOWED_SCHEMES.contains($URL.scheme())) {\n  QDesktopServices::openUrl($URL);\n\
+    } else {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Detected unvalidated URL scheme usage in QDesktopServices::openUrl. This
+    can lead to security vulnerabilities by allowing arbitrary URL schemes to be opened,
+    potentially enabling unsafe protocols or actions. To fix this, validate the URL
+    scheme against a whitelist of allowed schemes (e.g., http, https) before opening
+    the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mumble-voip/mumble/commit/e59ee87abe249f345908c7d568f6879d16bfd648
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A5: Security Misconfiguration'
+    technology:
+    - cpp

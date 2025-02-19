@@ -1,0 +1,76 @@
+rules:
+- id: vuln-libzmq-77f14aad
+  pattern: "if (memcmp ($GREETING + 12, $MECHANISM, 20) == 0) {\n  ...\n}\n"
+  pattern-not: "if ($OPTIONS.mechanism == $MECHANISM_TYPE\n&&  memcmp ($GREETING +\
+    \ 12, $MECHANISM, 20) == 0) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'The code performs a memcmp check on a mechanism string without first verifying
+    that the mechanism type matches the expected value. This can lead to security
+    vulnerabilities where the mechanism type is not properly validated. Always verify
+    the mechanism type before comparing the mechanism string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/77f14aad95cdf0d2a244ae9b4a025e5ba0adf01a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://rfc.zeromq.org/spec/23/
+    technology:
+    - cpp
+- id: vuln-libzmq-c95f7d09
+  pattern: "if (!is_subscribe_or_cancel) {\n    ...\n}\n"
+  pattern-not: "if (!is_subscribe_or_cancel && options.type != ZMQ_PUB) {\n    ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'The vulnerability arises from a missing check on the `options.type` in
+    the conditional statement. This could lead to processing user messages incorrectly
+    when the type is `ZMQ_PUB`, which should never process user messages. This can
+    cause unexpected behavior or security issues in the application. To fix this,
+    ensure the condition includes a check for `options.type != ZMQ_PUB`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/c95f7d09338f946fc2b912d7938e77af258b4a0c
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://github.com/zeromq/libzmq/commit/c95f7d09338f946fc2b912d7938e77af258b4a0c
+    technology:
+    - cpp
+- id: vuln-libzmq-0900a489
+  pattern: 'memcpy($DST, &$SRC, 8)
+
+    '
+  pattern-not: 'put_uint64($DST, $SRC)
+
+    '
+  languages:
+  - cpp
+  message: 'Detected unsafe use of `memcpy` for copying 64-bit values. This can lead
+    to incorrect handling of nonce values, potentially causing security vulnerabilities.
+    Replace `memcpy` with `put_uint64` to ensure proper handling of 64-bit values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zeromq/libzmq/commit/0900a489213d74feb86fc0b343308fe7884a2a3c
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - cpp

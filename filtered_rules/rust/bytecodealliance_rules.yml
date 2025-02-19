@@ -1,0 +1,27 @@
+rules:
+- id: vuln-wasmtime-7f57d0bb
+  pattern: 'let $VAR = TableSegmentElements::Functions(Box::new([]));
+
+    '
+  pattern-not: 'let $VAR = TableSegmentElements::Expressions(Box::new([]));
+
+    '
+  languages:
+  - rust
+  message: 'Using `TableSegmentElements::Functions` with an empty box can lead to
+    incorrect type inference in Wasmtime. This is dangerous because it may cause runtime
+    errors or undefined behavior when the table type is not properly inferred. The
+    fix is to use `TableSegmentElements::Expressions` instead, which allows for proper
+    type inference in the next step.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bytecodealliance/wasmtime/commit/7f57d0bb0948fa56cc950278d0db230ed10e8664
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - rust

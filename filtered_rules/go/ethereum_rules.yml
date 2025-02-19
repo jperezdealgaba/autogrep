@@ -1,0 +1,78 @@
+rules:
+- id: vuln-go-ethereum-d990df90
+  pattern: "if $LIMIT > uint32($SIZE/$HASHBYTES) {\n    $LIMIT = uint32($SIZE / $HASHBYTES)\n\
+    }\n"
+  pattern-not: "if $LIMIT > $SIZE/$HASHBYTES {\n    $LIMIT = $SIZE / $HASHBYTES\n\
+    }\n"
+  languages:
+  - go
+  message: "Potential integer overflow vulnerability due to unnecessary uint32 casting.\
+    \ \nThe original code casts the result of division to uint32, which can lead to\
+    \ \nincorrect comparisons and limit calculations if the result exceeds uint32's\
+    \ range. \nThis can cause incorrect dataset generation and potential consensus\
+    \ issues in Ethereum. \nRemove the uint32 casting to ensure proper arithmetic\
+    \ operations.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/d990df909d7839640143344e79356754384dcdd0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/ethereum/go-ethereum/commit/d990df909d7839640143344e79356754384dcdd0
+    technology:
+    - go
+- id: vuln-go-ethereum-e343ddf9
+  pattern: '$_, $ERR := $DB.AncientRange($TABLE, $START, $COUNT, 0)
+
+    '
+  pattern-not: '$_, $ERR := $DB.AncientRange($TABLE, $START, $COUNT, 2*1024*1024)
+
+    '
+  languages:
+  - go
+  message: 'Detected a potentially dangerous call to AncientRange without a size limit.
+    This can lead to unbounded memory allocation, causing denial of service or resource
+    exhaustion. Always cap the size of the data being read by specifying a maximum
+    byte limit.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/e343ddf9eb39a68c12effd1575275c4888c1cbc9
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/400.html
+    technology:
+    - go
+- id: vuln-go-ethereum-ff97b4cc
+  pattern: "import (\n  ...\n  _ \"go.uber.org/automaxprocs\"\n  ...\n)\n"
+  pattern-not: "import (\n  ...\n  \"go.uber.org/automaxprocs/maxprocs\"\n  ...\n\
+    )\n...\nmaxprocs.Set()\n"
+  languages:
+  - go
+  message: 'The use of `_ "go.uber.org/automaxprocs"` without calling `maxprocs.Set()`
+    can lead to incorrect GOMAXPROCS settings in containerized environments. This
+    can cause suboptimal performance or resource utilization issues. To fix this,
+    import `"go.uber.org/automaxprocs/maxprocs"` and explicitly call `maxprocs.Set()`
+    to ensure GOMAXPROCS is correctly configured based on the container''s CPU quota.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/ethereum/go-ethereum/commit/ff97b4cc6ae01af50de9c7051983901d66ce0654
+    category: performance
+    cwe:
+    - CWE-400
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://pkg.go.dev/go.uber.org/automaxprocs
+    technology:
+    - go

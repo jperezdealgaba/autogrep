@@ -1,0 +1,108 @@
+rules:
+- id: vuln-libvncserver-f8912fee
+  pattern: CloseUndoneFileTransfer($CL, $RTCP)
+  pattern-not: CloseUndoneFileDownload($CL, $RTCP)
+  languages:
+  - c
+  message: 'The function CloseUndoneFileTransfer is deprecated and has been replaced
+    by CloseUndoneFileUpload and CloseUndoneFileDownload. Using the deprecated function
+    can lead to incomplete file transfers and potential security vulnerabilities.
+    Replace CloseUndoneFileTransfer with the appropriate function based on the context
+    (upload or download).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/f8912fee5a58fb3975eda2589f6d4686f0c1ae68
+    category: security
+    cwe:
+    - CWE-477
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/LibVNC/libvncserver/commit/f8912fee5a58fb3975eda2589f6d4686f0c1ae68
+    technology:
+    - c
+- id: vuln-libvncserver-495ffa3f
+  pattern: "if($CL != NULL) {\n    rfbCloseClient($CL);\n    CloseUndoneFileDownload($CL,\
+    \ $RTCP);\n}\n"
+  pattern-not: "if($CL != NULL) {\n    rfbCloseClient($CL);\n    CloseUndoneFileDownload($CL,\
+    \ $RTCP);\n}\nelse {\n    // Additional handling or logging\n}\n"
+  languages:
+  - c
+  message: 'The code fails to handle the case where `cl` is NULL, which can lead to
+    a NULL pointer dereference. This vulnerability can cause the application to crash
+    or be exploited for denial of service. Ensure that all pointer checks are properly
+    handled and consider adding additional error handling or logging for NULL cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/495ffa3f3a213ab058eee1d7da48fa5ef71914d8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-libvncserver-b5919c3b
+  pattern: 'ssize_t $RET;
+
+    '
+  pattern-not: 'int $RET = 0;
+
+    '
+  languages:
+  - c
+  message: 'The use of `ssize_t` for return values in this context can lead to potential
+    issues with type compatibility and incorrect error handling. The patch replaces
+    `ssize_t` with `int` and initializes the variable to 0, which ensures proper type
+    usage and initialization. This change prevents potential undefined behavior and
+    improves code reliability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/b5919c3be1bb7de91f12eb390e7502e3b06034d7
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-libvncserver-33441d90
+  pattern: 'uint8_t $VAR = $CRED->x509Credential.x509CrlVerifyMode;
+
+    '
+  pattern-not: 'uint8_t $VAR;
+
+    $VAR = $CRED->x509Credential.x509CrlVerifyMode;
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves the direct assignment of a value from a credential
+    structure in a single statement, which can lead to unsafe memory access or undefined
+    behavior. This should be split into a declaration followed by an assignment to
+    ensure safe initialization. Always separate declaration and assignment to avoid
+    potential issues with memory access or uninitialized variables.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LibVNC/libvncserver/commit/33441d90a506d5f3ae9388f2752901227e430553
+    category: security
+    cwe:
+    - CWE-457
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    technology:
+    - c

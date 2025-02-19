@@ -1,0 +1,89 @@
+rules:
+- id: vuln-freetype-45a3c76b
+  pattern: '$STREAM->pos + $COUNT > $STREAM->size
+
+    '
+  pattern-not: '$STREAM->size - $STREAM->pos < $COUNT
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects integer overflow vulnerabilities caused by unsafe
+    addition in bounds checking.
+
+    The original code adds `stream->pos` and `count` directly, which can overflow,
+    leading to incorrect bounds checking.
+
+    The fixed version subtracts `stream->pos` from `stream->size`, which is safer
+    and prevents integer overflow.
+
+    To fix this, replace the addition-based check with a subtraction-based check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/45a3c76b547511fa9d97aca34b150a0663257375
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - c
+- id: vuln-freetype-0545ec1c
+  pattern: '$CHARSET->sids[$IDX] = FT_GET_USHORT();
+
+    '
+  pattern-not: "{\n  FT_UShort $SID = FT_GET_USHORT();\n  if ( $SID < 65000 )\n  \
+    \  $CHARSET->sids[$IDX] = $SID;\n  else\n  {\n    $CHARSET->sids[$IDX] = 0;\n\
+    \  }\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where a SID (String ID) value is assigned
+    without validation.
+
+    This can lead to invalid SID values being used, which may cause undefined behavior
+    or crashes.
+
+    The fix involves validating the SID value against the CFF specification (must
+    be less than 65000)
+
+    and setting it to zero if invalid. Always validate SID values as per the CFF specification.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/0545ec1ca36b27cb928128870a83e5f668980bc5
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    references:
+    - https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf
+    technology:
+    - c
+- id: vuln-freetype-8b281f83
+  pattern: '(void)$FUNC($PARSER, $NUM, $TEMP, $NUM2);
+
+    '
+  pattern-not: "$RESULT = $FUNC($PARSER, $NUM, $TEMP, $NUM2);\nif ($RESULT < $NUM)\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function call result is ignored without checking if it meets the required
+    conditions. This can lead to invalid file format processing and potential security
+    vulnerabilities. Always check the return value of functions that parse or process
+    data to ensure they meet expected conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/freetype/freetype/commit/8b281f83e8516535756f92dbf90940ac44bd45e1
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

@@ -1,0 +1,759 @@
+rules:
+- id: vuln-phpmyadmin-5ebc4daf
+  pattern: 'curl_setopt($CH, CURLOPT_SSL_VERIFYHOST, 0);
+
+    curl_setopt($CH, CURLOPT_SSL_VERIFYPEER, 0);
+
+    '
+  pattern-not: 'curl_setopt($CH, CURLOPT_SSL_VERIFYHOST, 2);
+
+    curl_setopt($CH, CURLOPT_SSL_VERIFYPEER, 1);
+
+    '
+  languages:
+  - php
+  message: 'Disabling SSL certificate verification (CURLOPT_SSL_VERIFYHOST and CURLOPT_SSL_VERIFYPEER)
+    can expose the application to Man-in-the-Middle (MITM) attacks. Always verify
+    SSL certificates to ensure secure communication. Set CURLOPT_SSL_VERIFYHOST to
+    2 and CURLOPT_SSL_VERIFYPEER to 1 to enable proper SSL verification.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/5ebc4daf131dd3bd646326267f3e765d0249bbb4
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://curl.se/libcurl/c/CURLOPT_SSL_VERIFYHOST.html
+    - https://curl.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html
+    technology:
+    - php
+- id: vuln-phpmyadmin-69bfbf11
+  pattern: '$filename = isset($_REQUEST[''file_path'']) ? $_REQUEST[''file_path'']
+    : NULL;
+
+    $c_type = isset($_REQUEST[''c_type'']) ? $_REQUEST[''c_type''] : NULL;
+
+    ...
+
+    $hdrs = get_headers($filename, 1);
+
+    ...
+
+    $fHnd = fopen($filename, "rb");
+
+    '
+  pattern-not: '$reference = $_REQUEST[''reference''];
+
+    $c_type = preg_replace(''/[^A-Za-z0-9/_-]/'', ''_'', $_REQUEST[''c_type'']);
+
+    $filename = ''http://'' . $bs_server . ''/'' . $reference;
+
+    ...
+
+    $hdrs = get_headers($filename, 1);
+
+    ...
+
+    $fHnd = fopen($filename, "rb");
+
+    '
+  languages:
+  - php
+  message: 'Detected unvalidated file path and MIME type from user input, which can
+    lead to security vulnerabilities such as Server-Side Request Forgery (SSRF) or
+    arbitrary file access. The code directly uses user-controlled input (`$_REQUEST[''file_path'']`
+    and `$_REQUEST[''c_type'']`) without proper validation or sanitization, making
+    it susceptible to malicious input. Always validate and sanitize user input, and
+    use whitelisting for acceptable MIME types and file paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/69bfbf11c7e9487dfa96293aaa797ff14bb513f0
+    category: security
+    cwe:
+    - CWE-918
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    - 'A10: SSRF'
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    - https://cwe.mitre.org/data/definitions/918.html
+    technology:
+    - php
+- id: vuln-phpmyadmin-5f3b086e
+  pattern: $GLOBALS['import_blacklist']
+  pattern-not: $GLOBALS['_import_blacklist']
+  languages:
+  - php
+  message: 'Detected use of the deprecated and potentially insecure `$GLOBALS[''import_blacklist'']`
+    variable.
+
+    This variable was renamed to `$GLOBALS[''_import_blacklist'']` to prevent security
+    issues related to variable importation.
+
+    Always use the updated variable name to ensure proper security checks are applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/5f3b086ed22b8ca49472d27a014df3908b0388ac
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/phpmyadmin/phpmyadmin/commit/5f3b086ed22b8ca49472d27a014df3908b0388ac
+    technology:
+    - php
+- id: vuln-phpmyadmin-1dca3865
+  pattern: "if (!empty($_SERVER['REQUEST_URI']) && !empty($_SERVER['HTTP_HOST']))\
+    \ {\n    $link = htmlspecialchars(\n        'https://' .  $_SERVER['HTTP_HOST']\
+    \ . $_SERVER['REQUEST_URI']\n    );\n    $text .= ' ';\n    $text .= PMA_sanitize(\n\
+    \        sprintf(\n            __(\n                'If your server is also configured\
+    \ to accept HTTPS requests '\n                . 'follow [a@%s]this link[/a] to\
+    \ use a secure connection.'\n            ),\n            $link\n        )\n  \
+    \  );\n}\n"
+  pattern-not: "$text .= ' <a href=\"#\" onclick=\"window.location.href = \\'https:\\\
+    ' + window.location.href.substring(window.location.protocol.length);\">';\n$text\
+    \ .= str_replace(\n    array('[a@%s]', '[/a]'),\n    array('', ''),\n    __(\n\
+    \        'If your server is also configured to accept HTTPS requests '\n     \
+    \   . 'follow [a@%s]this link[/a] to use a secure connection.'\n    )\n);\n$text\
+    \ .= '</a>';\n"
+  languages:
+  - php
+  message: 'The code constructs a URL using user-controlled input from $_SERVER[''HTTP_HOST'']
+    and $_SERVER[''REQUEST_URI''] without proper validation, which can lead to Open
+    Redirect vulnerabilities. Attackers can manipulate the Host header to redirect
+    users to malicious sites. Instead, use client-side JavaScript to construct the
+    secure URL or validate the host against a whitelist.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/1dca386505f396f0c2035112a403cc80768a141f
+    category: security
+    cwe:
+    - 'CWE-601: URL Redirection to Untrusted Site (''Open Redirect'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/11-Client-side_Testing/04-Testing_for_Client-side_URL_Redirect
+    technology:
+    - php
+- id: vuln-phpmyadmin-b061096a
+  pattern: 'urldecode($VAR)
+
+    '
+  pattern-not: 'htmlspecialchars($VAR)
+
+    '
+  languages:
+  - php
+  message: "The use of `urldecode` on untrusted input can lead to SQL injection or\
+    \ XSS vulnerabilities. \nThe patch replaces `urldecode` with `htmlspecialchars`\
+    \ to properly escape the input and prevent these vulnerabilities. \nAlways sanitize\
+    \ and validate user inputs before using them in SQL queries or HTML output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b061096abd992801fbbd805ef6ff74e627528780
+    category: security
+    cwe:
+    - CWE-89
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-phpmyadmin-96e0aa35
+  pattern: '$RESULT = ''Wrong data or no validation for '' . $VARIABLE;
+
+    '
+  pattern-not: '$RESULT = sprintf(__(''Wrong data or no validation for %s''), implode('','',
+    $VARIABLE));
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure string concatenation in error message construction.
+    This pattern can lead to information disclosure or injection vulnerabilities.
+    Use `sprintf` with proper string formatting and translation functions to safely
+    construct error messages.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/96e0aa35653ec0c66084a7e9343465e16c1f769b
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - php
+- id: vuln-phpmyadmin-cd229d71
+  pattern: '$VAR == ''''
+
+    '
+  pattern-not: 'empty($VAR)
+
+    '
+  languages:
+  - php
+  message: 'Using loose equality checks (`== ''''`) for empty string validation can
+    lead to security issues when handling user input. This can cause unexpected behavior
+    if the input is not strictly an empty string. Use `empty()` or strict type checking
+    (`=== ''''`) to ensure proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/cd229d718e8cb4bc8ba32446beaa82d27727b6f0
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-phpmyadmin-dedd542c
+  pattern: '$newtablename = preg_replace("/^" . $from_prefix . "/", $to_prefix, $current);
+
+    '
+  pattern-not: "if (substr($current, 0, strlen($from_prefix)) == $from_prefix) {\n\
+    \    $newtablename = $to_prefix . substr($current, strlen($from_prefix));\n} else\
+    \ {\n    $newtablename = $current;\n}\n"
+  languages:
+  - php
+  message: 'The use of `preg_replace` with user-controlled input can lead to security
+    vulnerabilities such as ReDoS (Regular Expression Denial of Service) or unintended
+    string manipulations. This pattern should be replaced with a safer string manipulation
+    method like `substr` and a direct comparison to ensure security and performance.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/dedd542cdaf1606ca9aa3f6f8f8adb078d8ad549
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure.html
+    technology:
+    - php
+- id: vuln-phpmyadmin-c04f85f2
+  pattern: "if (($route === '/' || $route === '') && isset($_GET['db']) && mb_strlen($_GET['db'])\
+    \ !== 0) {\n    $route = '/database/structure';\n    if (isset($_GET['table'])\
+    \ && mb_strlen($_GET['table']) !== 0) {\n        $route = '/sql';\n    }\n}\n"
+  pattern-not: "if (! is_string($route) || $route === '') {\n    $route = '/';\n}\n\
+    $db = isset($_GET['db']) && is_string($_GET['db']) ? $_GET['db'] : '';\nif ($route\
+    \ === '/' && $db !== '') {\n    $table = isset($_GET['table']) && is_string($_GET['table'])\
+    \ ? $_GET['table'] : '';\n    $route = $table === '' ? '/database/structure' :\
+    \ '/sql';\n}\n"
+  languages:
+  - php
+  message: 'The code does not properly validate the type of `$_GET[''db'']` and `$_GET[''table'']`
+    before using them, which can lead to type juggling vulnerabilities. This can be
+    exploited if non-string values are passed, potentially causing unexpected behavior
+    or security issues. Always validate that GET parameters are strings before using
+    them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/c04f85f2bb96c442086d9ad057953567cc794486
+    category: security
+    cwe:
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-phpmyadmin-0314e679
+  pattern: "if (isset($_SESSION['last_valid_captcha']) && $_SESSION['last_valid_captcha'])\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!isset($_SESSION['last_valid_captcha']) || !$_SESSION['last_valid_captcha'])\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code directly checks the session variable `$_SESSION[''last_valid_captcha'']`
+    without proper validation, which can lead to bypassing CAPTCHA verification. This
+    is dangerous because it allows attackers to potentially bypass security mechanisms.
+    Ensure proper validation and consider using secure session management practices.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/0314e67900f01410bc8c81c58a40dc0515e3c91d
+    category: security
+    cwe:
+    - CWE-287
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - php
+- id: vuln-phpmyadmin-ee92eb9b
+  pattern: '$VAR = filter_input(INPUT_GET, $ARG);
+
+    '
+  pattern-not: '$VAR = isset($_GET[$ARG]) ? $_GET[$ARG] : null;
+
+    '
+  languages:
+  - php
+  message: "Insecure use of `filter_input` for GET parameters can lead to undefined\
+    \ behavior and security vulnerabilities. \nDirectly accessing `$_GET` with proper\
+    \ null checks is safer and more reliable. \nReplace `filter_input(INPUT_GET, ...)`\
+    \ with `isset($_GET[...]) ? $_GET[...] : null` to ensure proper handling of missing\
+    \ parameters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/ee92eb9bab8e2d546756c1d4aec81ec7c8e44b83
+    category: security
+    cwe:
+    - CWE-473
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://www.php.net/manual/en/function.filter-input.php
+    - https://www.php.net/manual/en/reserved.variables.get.php
+    technology:
+    - php
+- id: vuln-phpmyadmin-72f109a9
+  pattern: '$_REQUEST[''sql_query'']
+
+    '
+  pattern-not: '$_POST[''sql_query'']
+
+    '
+  languages:
+  - php
+  message: 'The use of $_REQUEST[''sql_query''] is insecure because $_REQUEST combines
+    data from $_GET, $_POST, and $_COOKIE, which can lead to unexpected or malicious
+    input. This can result in SQL injection or other security vulnerabilities. Always
+    use $_POST[''sql_query''] to ensure the data comes from a POST request, which
+    is typically more secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/72f109a99c82b14c07dcb19946ba9b76efc32a1b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/Injection_Flaws
+    - https://www.php.net/manual/en/reserved.variables.request.php
+    technology:
+    - php
+- id: vuln-phpmyadmin-2f495082
+  pattern: '$RETVAL .= ''<meta name="referrer" content="none" />'';
+
+    '
+  pattern-not: '$RETVAL .= ''<meta name="referrer" content="no-referrer" />'';
+
+    '
+  languages:
+  - php
+  message: 'Using ''none'' as the referrer policy is deprecated and may not provide
+    the intended security benefits. The correct value should be ''no-referrer'' to
+    ensure that no referrer information is sent with requests, protecting user privacy
+    and preventing information leakage. Replace ''none'' with ''no-referrer'' in the
+    meta tag.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/2f4950828ec241e8cbdcf13090c2582a6fa620cb
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+    technology:
+    - php
+- id: vuln-phpmyadmin-b6ca92cc
+  pattern: "if (isset($_REQUEST['pma_password'])) {\n  ...\n}\n"
+  pattern-not: "if (isset($_REQUEST['pma_password']) && strlen($_REQUEST['pma_password'])\
+    \ > 256) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code checks for the existence of ''pma_password'' in the request but
+    does not validate its length. This can lead to security vulnerabilities such as
+    denial of service (DoS) attacks through excessively large inputs or potential
+    buffer overflows. Always validate the length of user inputs to prevent such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/b6ca92cc75c8a16001425be7881e73430bcc35b8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - php
+- id: vuln-phpmyadmin-941c7950
+  pattern: 'define(''CACHE_DIR'', ROOT_PATH . ''cache'' . DIRECTORY_SEPARATOR);
+
+    '
+  pattern-not: 'define(''CACHE_DIR'', ROOT_PATH . ''app'' . DIRECTORY_SEPARATOR .
+    ''cache'' . DIRECTORY_SEPARATOR);
+
+    '
+  languages:
+  - php
+  message: 'The cache directory is being defined without the ''app'' subdirectory,
+    which could lead to improper file system access or security issues. Ensure the
+    cache directory is properly scoped within the ''app'' directory to maintain security
+    and organization.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/941c79508503e984c5249b45bd2abfe36cf79b49
+    category: security
+    cwe: 'CWE-552: Files or Directories Accessible to External Parties'
+    owasp: 'A5: Security Misconfiguration'
+    technology:
+    - php
+- id: vuln-phpmyadmin-f20970d3
+  pattern: '$_SESSION['' PMA_token ''] = md5(uniqid(rand(), true))
+
+    '
+  pattern-not: '$_SESSION['' PMA_token ''] = bin2hex(phpseclib\Crypt\Random::string(16))
+
+    '
+  languages:
+  - php
+  message: 'Detected use of insecure random number generation for session tokens.
+    Using `md5(uniqid(rand(), true))` is cryptographically weak and can lead to predictable
+    session tokens, making the application vulnerable to session hijacking. Replace
+    with a cryptographically secure random number generator like `phpseclib\Crypt\Random::string()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/f20970d32c3dfdf82aef7b6c244da1f769043813
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php
+- id: vuln-phpmyadmin-331c560f
+  pattern: '$cfg = array();
+
+    include $CONFIG_FILE_PATH;
+
+    $GLOBALS[''ConfigFile'']->setConfigData($cfg);
+
+    '
+  pattern-not: "$GLOBALS['ConfigFile']->setConfigData(\n    loadConfig($CONFIG_FILE_PATH)\n\
+    );\n"
+  languages:
+  - php
+  message: 'Directly including a configuration file without proper validation or encapsulation
+    can lead to arbitrary code execution. The vulnerability occurs because the configuration
+    file is included directly into the global scope, which can be exploited if the
+    file path is controllable by an attacker. Use a function to load the configuration
+    file to avoid polluting the global scope and add proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/331c560fbfa0e7d2dce674b5e88e983c5f2a451d
+    category: security
+    cwe:
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/73.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php
+- id: vuln-phpmyadmin-aa2076ee
+  pattern: "if (!isset($coming_from_common)) {\n    exit;\n}\n"
+  pattern-not: "if (! defined('PHPMYADMIN')) {\n    exit;\n}\n"
+  languages:
+  - php
+  message: 'The code uses an insecure check for the variable `$coming_from_common`,
+    which can be manipulated due to register_globals being enabled. This could allow
+    unauthorized access to the script. Replace this check with a proper constant check
+    like `if (! defined(''PHPMYADMIN'')) { exit; }` to ensure secure access control.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/aa2076eedc7e3664b09681d6fe9dd019eca98647
+    category: security
+    cwe:
+    - CWE-471
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-phpmyadmin-1cc7466d
+  pattern: 'preg_quote($VAR)
+
+    '
+  pattern-not: 'preg_quote($VAR, $DELIMITER)
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure use of `preg_quote()` without specifying the delimiter.
+    When the delimiter is not explicitly provided, certain characters in the input
+    string may not be properly escaped, leading to potential regex injection vulnerabilities.
+    Always specify the delimiter as the second argument to `preg_quote()` to ensure
+    proper escaping.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/1cc7466db3a05e95fe57a6702f41773e6829d54b
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.preg-quote.php
+    technology:
+    - php
+- id: vuln-phpmyadmin-3ae58f0c
+  pattern: '$export_type = isset($export_type) ? $export_type : ''pdf'';
+
+    '
+  pattern-not: "if (!isset($export_type) || !preg_match('/^[a-zA-Z]+$/', $export_type))\
+    \ {\n    $export_type = 'pdf';\n}\n"
+  languages:
+  - php
+  message: 'The code assigns a value to `$export_type` without validating its content,
+    which could lead to security vulnerabilities such as injection attacks. Validate
+    the input using a regular expression to ensure it only contains letters a-z.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/3ae58f0cd6b89ad4767920f9b214c38d3f6d4393
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-phpmyadmin-ec0e88e3
+  pattern: '$VAR1 = ($_SESSION[''$VAR2''] != $_REQUEST[''$VAR3'']);
+
+    '
+  pattern-not: '$VAR1 = ! hash_equals($_SESSION[''$VAR2''], $_REQUEST[''$VAR3'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure token comparison using ''!='' operator. This can lead
+    to timing attacks due to variable comparison time. Use ''hash_equals()'' for secure
+    string comparison to prevent timing side-channel attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/ec0e88e37ef30a66eada1c072953f4ec385a3e49
+    category: security
+    cwe:
+    - CWE-208
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://www.php.net/manual/en/function.hash-equals.php
+    technology:
+    - php
+- id: vuln-phpmyadmin-44eb12f1
+  pattern: '$VAR = $PARAMS[''$KEY''] ?? '''';
+
+    '
+  pattern-not: '$VAR = isset($PARAMS[''$KEY'']) && is_string($PARAMS[''$KEY'']) ?
+    $PARAMS[''$KEY''] : '''';
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe usage of null coalescing operator (??) without proper
+    type validation.
+
+    This can lead to type confusion vulnerabilities if the input is not explicitly
+    checked.
+
+    Always validate input types using functions like is_string(), is_numeric(), etc.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/44eb12f15a562718bbe54c9a16af91ceea335d59
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-843
+    owasp:
+    - 'A1: Injection'
+    - 'A5: Security Misconfiguration'
+    technology:
+    - php
+- id: vuln-phpmyadmin-cb7748ac
+  pattern: '$this->key_size = $VAR;
+
+    '
+  pattern-not: '$this->key_length = $VAR;
+
+    '
+  languages:
+  - php
+  message: 'The use of `$this->key_size` is deprecated and can lead to incorrect key
+    length calculations in cryptographic operations. This vulnerability can weaken
+    the security of encryption. Use `$this->key_length` instead to ensure proper key
+    length handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/cb7748ac9cffcd1cd0f3081499cd4aafa9d1065e
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/phpmyadmin/phpmyadmin/commit/cb7748ac9cffcd1cd0f3081499cd4aafa9d1065e
+    technology:
+    - php
+- id: vuln-phpmyadmin-4767f24e
+  pattern: "foreach ($_GET['scripts'] as $script) {\n  ...\n}\n"
+  pattern-not: "foreach (array_slice($_GET['scripts'], 0, 10) as $script) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Direct iteration over $_GET[''scripts''] without limiting the number of
+    elements can lead to resource exhaustion or denial of service attacks. An attacker
+    could send a large number of script requests, causing the server to process an
+    excessive amount of data. To fix this, use array_slice to limit the number of
+    processed elements, as shown in the fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/4767f24ea4c1e3822ce71a636c341e8ad8d07aa6
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html
+    technology:
+    - php
+- id: vuln-phpmyadmin-f8d65ec5
+  pattern: 'usort($DATABASES, create_function(''$a, $b'', $SORT_FUNCTION));
+
+    '
+  pattern-not: 'usort($DATABASES, ''PMA_usort_comparison_callback'');
+
+    '
+  languages:
+  - php
+  message: "Detected the use of `create_function` with `usort`, which is vulnerable\
+    \ to code injection. \nThe `create_function` function dynamically evaluates code,\
+    \ making it susceptible to injection attacks. \nReplace it with a named callback\
+    \ function to avoid this security risk.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/f8d65ec564ada5c839be8f3f07f483cd82ce6a11
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php
+- id: vuln-phpmyadmin-38fa1191
+  pattern: '$pma_absolute_uri .= $url[''host''];
+
+    '
+  pattern-not: '$pma_absolute_uri .= urlencode($url[''host'']);
+
+    '
+  languages:
+  - php
+  message: 'The host value in the URL is not being properly encoded, which can lead
+    to URL injection vulnerabilities. This is dangerous because it can be exploited
+    to manipulate the URL and potentially redirect users to malicious sites. To fix
+    this, always use `urlencode()` when appending user-controlled or dynamic data
+    to URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/38fa1191049ac0c626a6684eea52068dfbbb5078
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-phpmyadmin-d3ccf798
+  pattern: 'printf(__(...), $GLOBALS[''db''], $GLOBALS[''table''])
+
+    '
+  pattern-not: 'printf(__(...), htmlspecialchars($GLOBALS[''db'']), htmlspecialchars($GLOBALS[''table'']))
+
+    '
+  languages:
+  - php
+  message: 'Unescaped output of $GLOBALS[''db''] and $GLOBALS[''table''] in printf
+    function can lead to XSS vulnerabilities. Always use htmlspecialchars() to escape
+    user-controlled data before outputting it to HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/d3ccf798fdbd4f8a89d4088130637d8dee918492
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

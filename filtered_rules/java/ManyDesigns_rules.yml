@@ -1,0 +1,30 @@
+rules:
+- id: vuln-portofino-94653cb3
+  pattern: 'File $TEMP_DIR = File.createTempFile($PREFIX, $SUFFIX);
+
+    $TEMP_DIR.delete();
+
+    $TEMP_DIR.mkdir();
+
+    '
+  pattern-not: 'File $TEMP_DIR = Files.createTempDirectory($PREFIX + $SUFFIX).toFile();
+
+    '
+  languages:
+  - java
+  message: 'Insecure temporary directory creation detected. Using `File.createTempFile()`
+    followed by `delete()` and `mkdir()` can lead to race conditions and security
+    vulnerabilities. Use `Files.createTempDirectory()` instead, which is atomic and
+    secure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ManyDesigns/Portofino/commit/94653cb357806c9cf24d8d294e6afea33f8f0775
+    category: security
+    cwe: CWE-377
+    owasp: A9:2017-Insecure Components
+    references:
+    - https://rules.sonarsource.com/java/RSPEC-5445
+    technology:
+    - java

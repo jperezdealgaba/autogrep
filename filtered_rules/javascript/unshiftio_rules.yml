@@ -1,0 +1,82 @@
+rules:
+- id: vuln-url-parse-0e3fb542
+  pattern: '/^[ \f\n\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/
+
+    '
+  pattern-not: '/^[\x00-\x20\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/
+
+    '
+  languages:
+  - javascript
+  message: 'Incomplete whitespace regex pattern may miss control characters, leading
+    to potential security issues. The regex should include control characters (\x00-\x20)
+    to ensure all potentially harmful characters are stripped.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/unshiftio/url-parse/commit/0e3fb542d60ddbf6933f22eb9b1e06e25eaa5b63
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - javascript
+- id: vuln-url-parse-d5c64791
+  pattern: 'result += $URL.host + $URL.pathname;
+
+    '
+  pattern-not: 'if ($HOST[$HOST.length - 1] === '':'') $HOST += '':'';
+
+    result += $HOST + $URL.pathname;
+
+    '
+  languages:
+  - javascript
+  message: 'Detected a URL parsing vulnerability where a trailing colon in the host
+    is not properly handled. This can lead to invalid URLs being transformed into
+    valid ones, potentially causing security issues. To fix this, ensure that trailing
+    colons are preserved when constructing the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/unshiftio/url-parse/commit/d5c64791ef496ca5459ae7f2176a31ea53b127e5
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://github.com/unshiftio/url-parse/commit/d5c64791ef496ca5459ae7f2176a31ea53b127e5
+    technology:
+    - javascript
+- id: vuln-url-parse-9be7ee88
+  pattern: '$VAR = $AUTH.split('':'');
+
+    $URL.username = $VAR[0];
+
+    $URL.password = $VAR[1] || '''';
+
+    '
+  pattern-not: "$INDEX = $AUTH.indexOf(':');\nif (~$INDEX) {\n  $URL.username = $AUTH.slice(0,\
+    \ $INDEX);\n  $URL.username = encodeURIComponent(decodeURIComponent($URL.username));\n\
+    \  $URL.password = $AUTH.slice($INDEX + 1);\n  $URL.password = encodeURIComponent(decodeURIComponent($URL.password));\n\
+    } else {\n  $URL.username = encodeURIComponent(decodeURIComponent($AUTH));\n}\n"
+  languages:
+  - javascript
+  message: Potential URL parsing vulnerability due to insecure handling of authentication
+    credentials. Using `split(':')` directly can lead to incorrect parsing of special
+    characters. Use `indexOf` and `slice` with proper encoding to handle credentials
+    securely.
+  severity: ERROR
+  metadata:
+    source-url: github.com/unshiftio/url-parse/commit/9be7ee88afd2bb04e4d5a1a8da9a389ac13f8c40
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - javascript

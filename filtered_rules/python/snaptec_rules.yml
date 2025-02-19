@@ -1,0 +1,22 @@
+rules:
+- id: vuln-openwb-247e4b3a
+  pattern: '$FD = open($FILE, $MODE)
+
+    ...
+
+    $FD.close()
+
+    '
+  pattern-not: "with open($FILE, $MODE) as $FD:\n  ...\n"
+  languages:
+  - python
+  message: Detected unsafe file handling using open() without a context manager. This
+    can lead to resource leaks or file corruption if an exception occurs. Use 'with
+    open() as' instead to ensure proper file handling.
+  severity: ERROR
+  metadata:
+    source-url: github.com/snaptec/openWB/commit/247e4b3a9c33279975838c02eae71e194d9f3301
+    category: security
+    cwe: CWE-403
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology: python

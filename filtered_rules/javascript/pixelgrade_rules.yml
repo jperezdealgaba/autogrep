@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nova-blocks-655b5b80
+  pattern: '<div {...$BLOCK_PROPS} dangerouslySetInnerHTML={{ __html: $MARKUP }} />
+
+    '
+  pattern-not: "<div {...$BLOCK_PROPS}>\n  { $MARKUP && <div dangerouslySetInnerHTML={{\
+    \ __html: $MARKUP }} /> }\n</div>\n"
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability due to direct use of dangerouslySetInnerHTML\
+    \ without proper sanitization. \nThe vulnerable code directly injects HTML content\
+    \ into the DOM, which can lead to XSS attacks if the content is user-controlled.\
+    \ \nThe fix wraps the dangerous content in a conditional check to ensure it only\
+    \ renders when present.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pixelgrade/nova-blocks/commit/655b5b804306c3ca3a59707cc2f12098e193b4ca
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
+    technology:
+    - javascript

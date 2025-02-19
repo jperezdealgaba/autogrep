@@ -1,0 +1,53 @@
+rules:
+- id: vuln-neomutt-36a29280
+  pattern: 'mutt_error("%s", $S + 3);
+
+    '
+  pattern-not: 'mutt_error("%s", $S + 2);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect offset in the `mutt_error` function,
+    which could lead to incorrect error message handling or potential information
+    disclosure. The offset `+3` should be `+2` to correctly reference the intended
+    string. This issue could be dangerous as it might expose sensitive information
+    or cause incorrect error messages to be displayed. To fix this, ensure the correct
+    offset is used when referencing the string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neomutt/neomutt/commit/36a29280448097f34ce9c94606195f2ac643fed1
+    category: security
+    cwe:
+    - CWE-193
+    owasp: A6:2021 - Vulnerable and Outdated Components
+    technology:
+    - c
+- id: vuln-neomutt-6f163e07
+  pattern: 'mutt_b64_decode($OUT, $IN)
+
+    '
+  pattern-not: 'mutt_b64_decode($OUT, $IN, $OLEN)
+
+    '
+  languages:
+  - c
+  message: 'The function `mutt_b64_decode` is being called without specifying the
+    output buffer size, which can lead to buffer overflows. This is dangerous because
+    it can result in memory corruption, potentially allowing an attacker to execute
+    arbitrary code or crash the application. Always pass the size of the output buffer
+    as the third argument to `mutt_b64_decode` to prevent buffer overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neomutt/neomutt/commit/6f163e07ae68654d7ac5268cbb7565f6df79ad85
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - c

@@ -1,0 +1,89 @@
+rules:
+- id: vuln-phpmyadmin-4d21b5c0
+  pattern: columnNames.push($(this).text())
+  pattern-not: columnNames.push(escapeHtml($(this).text()))
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to missing HTML escaping when pushing text
+    to columnNames. Use escapeHtml() to sanitize the input.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/4d21b5c077db50c2a54b7f569d20f463cc2651f5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript
+- id: vuln-phpmyadmin-24d0eb55
+  pattern: "try {\n    if (top != self) {\n        top.location.href = self.location.href;\n\
+    \    }\n} catch($E) {\n    alert(\"Redirecting... (error: \" + $E);\n    top.location.href\
+    \ = self.location.href;\n}\n"
+  pattern-not: "if(self == top) {\n    document.documentElement.style.display = 'block';\n\
+    } else {\n    top.location = self.location;\n}\n"
+  languages:
+  - javascript
+  message: 'Insecure cross-framing protection detected. The vulnerable code attempts
+    to redirect to the same URL when framed, but uses a try-catch block that can expose
+    error details. This can lead to information disclosure or other security issues.
+    Use a simple if-else check to handle framing protection securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/24d0eb55203b029f250c77d63f2900ffbe099e8b
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - javascript
+- id: vuln-phpmyadmin-11496890
+  pattern: "function handleResponse($JSON) {\n    $RESPONSE = JSON.parse($JSON);\n\
+    \    ...\n}\n"
+  pattern-not: "function handleResponse($RESPONSE) {\n    dataType: 'json',\n    ...\n\
+    }\n"
+  languages:
+  - javascript
+  message: Potential security vulnerability due to unsafe JSON parsing of untrusted
+    input. Directly parse the response object instead of using JSON.parse on raw input
+    to prevent JSON injection attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/11496890d7e21786cbfd9fd17ab968f498116b3f
+    category: security
+    cwe: CWE-502
+    owasp: A8:2017-Insecure Deserialization
+    technology:
+    - javascript
+- id: vuln-phpmyadmin-8dedcc1a
+  pattern: '$VAR.value += $CHARS.charAt(Math.floor(Math.random() * $CHARS.length))
+
+    '
+  pattern-not: '$VAR.value += $CHARS.charAt(Math.abs($RANDOM) % $CHARS.length)
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure use of Math.random() for cryptographic purposes detected. Math.random()
+    is not cryptographically secure and can lead to predictable values. Use window.crypto.getRandomValues()
+    or similar secure random number generators instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpmyadmin/phpmyadmin/commit/8dedcc1a175eb07debd4fe116407c43694c60b22
+    category: security
+    cwe: CWE-330
+    owasp: A2:2017-Cryptographic Failures
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
+    technology:
+    - javascript

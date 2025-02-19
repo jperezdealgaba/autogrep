@@ -1,0 +1,152 @@
+rules:
+- id: vuln-mupdf-fa193640
+  pattern: "if ($ENTRY->ofs <= 0 || $ENTRY->ofs >= $XREF_LEN || pdf_get_xref_entry($CTX,\
+    \ $DOC, $ENTRY->ofs)->type != 'n')\n  fz_throw($CTX, $ERROR, \"invalid reference\
+    \ to an objstm that does not exist: %d (%d 0 R)\", (int)$ENTRY->ofs, $I);\n"
+  pattern-not: "{\n  fz_off_t $OFS = $ENTRY->ofs;\n  if ($OFS <= 0 || $OFS >= $XREF_LEN\
+    \ || pdf_get_xref_entry($CTX, $DOC, $OFS)->type != 'n')\n    fz_throw($CTX, $ERROR,\
+    \ \"invalid reference to an objstm that does not exist: %d (%d 0 R)\", (int)$OFS,\
+    \ $I);\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential use-after-free vulnerability where an XREF entry
+    is accessed after a possible invalidation. The issue occurs because `pdf_get_xref_entry`
+    may solidify the XREF, invalidating the `entry` pointer. This can lead to undefined
+    behavior or crashes. To fix, store the offset in a local variable before making
+    the call to `pdf_get_xref_entry`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/fa1936405b6a84e5c9bb440912c23d532772f958
+    category: security
+    cwe:
+    - CWE-416
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c
+- id: vuln-mupdf-97096297
+  pattern: '$FUNC($CTX, pdf_dict_get($CTX, $OBJ, PDF_NAME($NAME)))
+
+    '
+  pattern-not: "$STR = pdf_dict_get($CTX, $OBJ, PDF_NAME($NAME));\nif ($STR)\n  $FUNC($CTX,\
+    \ $STR)\n"
+  languages:
+  - c
+  message: 'Detected unsafe usage of pdf_dict_get without proper null checking. This
+    can lead to null pointer dereference vulnerabilities. The fix involves assigning
+    the result to a variable and checking if it is non-null before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/97096297d409ec6f206298444ba00719607e8ba8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-mupdf-5e411a99
+  pattern: "if ($NUM < 0)\n  fz_throw($CTX, $ERROR, $MSG, $NUM);\n"
+  pattern-not: "if ($NUM < 0 || $NUM > $MAX)\n  fz_throw($CTX, $ERROR, $MSG, $NUM);\n"
+  languages:
+  - c
+  message: 'This rule detects insufficient validation of object numbers in PDF parsing
+    code. The original code only checks if the number is negative but fails to check
+    if it exceeds the maximum allowed value (PDF_MAX_OBJECT_NUMBER). This could lead
+    to out-of-bounds access or other undefined behavior. The fix is to add an upper
+    bound check using PDF_MAX_OBJECT_NUMBER.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/5e411a99604ff6be5db9e273ee84737204113299
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/129.html
+    technology:
+    - c
+- id: vuln-mupdf-e089b2e2
+  pattern: 'fprintf(stderr, "Unmatched: %s\n", $VAR);
+
+    '
+  pattern-not: 'fprintf(stderr, "Ignoring line without script statement.\n");
+
+    '
+  languages:
+  - c
+  message: "The use of 'Unmatched: %s' in error messages can expose sensitive information\
+    \ or lead to information disclosure. \nThis is dangerous because it may reveal\
+    \ internal state or unexpected input data to potential attackers. \nReplace it\
+    \ with a more generic error message that does not include potentially sensitive\
+    \ data.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/e089b2e2c1d38c5696c7dfd741e21f8f3ef22b14
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - c
+- id: vuln-mupdf-60dabde1
+  pattern: 'float $SAMPLES[32];
+
+    '
+  pattern-not: 'float $SAMPLES[FZ_MAX_COLORS];
+
+    '
+  languages:
+  - c
+  message: 'The use of a fixed-size array for color samples can lead to buffer overflows
+    if the number of color components exceeds the array size. This vulnerability can
+    be exploited to execute arbitrary code or cause a denial of service. Replace the
+    fixed-size array with a dynamically sized array or use the FZ_MAX_COLORS constant
+    to ensure the array can handle the maximum number of color components.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/60dabde18d7fe12b19da8b509bdfee9cc886aafc
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-mupdf-af1e390a
+  pattern: "if (pix->stride - 1 > INT_MAX / $N)\n  fz_throw($CTX, $ERROR, \"overly\
+    \ wide image\");\n"
+  pattern-not: "if (pix->stride > INT_MAX / pix->h)\n  fz_throw($CTX, $ERROR, \"Overly\
+    \ large image\");\n"
+  languages:
+  - c
+  message: "Integer overflow vulnerability detected in stride calculation. \nThe original\
+    \ check `pix->stride - 1 > INT_MAX / $N` is insufficient to prevent overflow,\
+    \ \nwhich could lead to memory corruption or crashes. \nFix by checking `pix->stride\
+    \ > INT_MAX / pix->h` to ensure the stride calculation \ndoes not exceed integer\
+    \ limits.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ArtifexSoftware/mupdf/commit/af1e390a2c7abceb32676ec684cd1dbb92907ce8
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c

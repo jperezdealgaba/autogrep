@@ -1,0 +1,27 @@
+rules:
+- id: vuln-link-preview-js-a3b2b52c
+  pattern: "if ($ADDRESS === \"localhost\" || $ADDRESS === \"127.0.0.1\") {\n  ...\n\
+    }\n"
+  pattern-not: "if (CONSTANTS.REGEX_LOOPBACK.test($ADDRESS)) {\n  ...\n}\n"
+  languages:
+  - typescript
+  message: 'Detected a direct comparison with loopback addresses ("localhost" or "127.0.0.1")
+    without using a comprehensive regex check. This can miss other loopback addresses
+    and private IP ranges, potentially allowing bypass of security restrictions. Use
+    a regex pattern that covers all loopback and private IP ranges, as shown in the
+    fixed version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ospfranco/link-preview-js/commit/a3b2b52c565b0f941a1711032172150e7d5709f0
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://en.wikipedia.org/wiki/Localhost
+    - https://en.wikipedia.org/wiki/Private_network
+    technology:
+    - typescript

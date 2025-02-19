@@ -1,0 +1,56 @@
+rules:
+- id: vuln-getid3-0163ba96
+  pattern: 'echo ''Files with Encoder Options <b>''.$_REQUEST[''$VAR''].''</b>:<br>'';
+
+    '
+  pattern-not: 'echo ''Files with Encoder Options <b>''.htmlentities($_REQUEST[''$VAR'']).''</b>:<br>'';
+
+    '
+  languages:
+  - php
+  message: "Detected potential XSS vulnerability due to unescaped output of $_REQUEST\
+    \ data. \nThis is dangerous because it allows attackers to inject malicious scripts\
+    \ into the webpage, \nwhich can lead to session hijacking, defacement, or other\
+    \ attacks. \nAlways use htmlentities() or similar functions to sanitize user input\
+    \ before outputting it to HTML.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/JamesHeinrich/getID3/commit/0163ba96f7fc64765e499847c2373b1f994797c5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php
+- id: vuln-getid3-afbdaa04
+  pattern: "if (function_exists('simplexml_load_string')) {\n  if (function_exists('get_object_vars'))\
+    \ {\n    if (function_exists('libxml_disable_entity_loader')) {\n      libxml_disable_entity_loader(true);\n\
+    \    }\n    $XMLobject = simplexml_load_string($XMLstring);\n    return self::SimpleXMLelement2array($XMLobject);\n\
+    \  }\n}\n"
+  pattern-not: "if (function_exists('simplexml_load_string') && function_exists('libxml_disable_entity_loader'))\
+    \ {\n  $loader = libxml_disable_entity_loader(true);\n  $XMLobject = simplexml_load_string($XMLstring,\
+    \ 'SimpleXMLElement', LIBXML_NOENT);\n  $return = self::SimpleXMLelement2array($XMLobject);\n\
+    \  libxml_disable_entity_loader($loader);\n  return $return;\n}\n"
+  languages:
+  - php
+  message: 'Detected vulnerable XML parsing without proper entity loader handling.
+    This can lead to XML External Entity (XXE) attacks, where an attacker can read
+    arbitrary files or perform server-side request forgery. To fix, ensure `libxml_disable_entity_loader`
+    is used correctly and `simplexml_load_string` is called with `LIBXML_NOENT` to
+    prevent entity expansion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/JamesHeinrich/getID3/commit/afbdaa044a9a0a9dff2f800bd670e231b3ec99b2
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:XXE
+    references:
+    - https://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
+    - https://core.trac.wordpress.org/changeset/29378
+    technology:
+    - php

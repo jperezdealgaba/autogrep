@@ -1,0 +1,26 @@
+rules:
+- id: vuln-solidus-4d17cacf
+  pattern: 'skip_before_action :verify_authenticity_token, only: [$ACTION]
+
+    '
+  pattern-not: 'skip_before_action :verify_authenticity_token, only: []
+
+    '
+  languages:
+  - ruby
+  message: "Skipping `verify_authenticity_token` for specific actions can expose the\
+    \ application to CSRF attacks. \nThis allows attackers to forge requests on behalf\
+    \ of authenticated users, potentially leading to unauthorized actions. \nRemove\
+    \ the `only` option or explicitly verify the authenticity token for these actions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/solidusio/solidus/commit/4d17cacf066d9492fc04eb3a0b16084b47376d81
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://guides.rubyonrails.org/security.html#cross-site-request-forgery-csrf
+    technology:
+    - ruby

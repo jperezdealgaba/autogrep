@@ -1,0 +1,148 @@
+rules:
+- id: vuln-exim-dd90c199
+  pattern: 'clearenv();
+
+    '
+  pattern-not: 'if (environ) *environ = NULL;
+
+    '
+  languages:
+  - c
+  message: 'The use of `clearenv()` can lead to undefined behavior on certain operating
+    systems (e.g., crashes on OS X, doesn''t work on FreeBSD 7.0, or Haiku OS). Instead,
+    the environment should be cleared by setting `*environ = NULL` after checking
+    if `environ` is not NULL. This ensures compatibility across different platforms.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/dd90c19962a63fe966e17c75b4a36639302d1e67
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://github.com/dovecot/core/blob/master/src/lib/env-util.c#L55
+    technology:
+    - c
+- id: vuln-exim-1670ef10
+  pattern: '(void)setgid($GID);
+
+    (void)setuid($UID);
+
+    '
+  pattern-not: '$RV = setgid($GID);
+
+    if ($RV) {...}
+
+    $RV = setuid($UID);
+
+    if ($RV) {...}
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of setgid/setuid without error checking. Failing to
+    check the return value of setgid/setuid can lead to privilege escalation vulnerabilities,
+    as the process may continue running with unintended privileges. Always check the
+    return value of setgid/setuid and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/1670ef10063d7708eb736a482d1ad25b9c59521d
+    category: security
+    cwe:
+    - 'CWE-273: Improper Check for Dropped Privileges'
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://man7.org/linux/man-pages/man2/setgid.2.html
+    - https://man7.org/linux/man-pages/man2/setuid.2.html
+    technology:
+    - c
+- id: vuln-exim-3c90bbcd
+  pattern: 'parse_fix_phrase($PHRASE, $LEN, $BUFFER, $BUFFER_SIZE)
+
+    '
+  pattern-not: 'parse_fix_phrase($PHRASE, $LEN)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of deprecated parse_fix_phrase with buffer parameters. This
+    pattern is vulnerable to buffer overflows due to fixed-size buffers. The function
+    has been updated to handle memory allocation internally, removing the risk of
+    buffer overflows. To fix, remove the buffer and buffer_size parameters and use
+    the updated version of parse_fix_phrase.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/3c90bbcdc7cf73298156f7bcd5f5e750e7814e72
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp:
+    - A2:2017-Broken Authentication
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-exim-12fb3842
+  pattern: 'return string_copyn_taint($X, $Y, $Z);
+
+    '
+  pattern-not: 'uschar *$RECORD = string_copyn_taint($X, $Y, $Z);
+
+    return $RECORD;
+
+    '
+  languages:
+  - c
+  message: 'Directly returning the result of `string_copyn_taint` can lead to memory
+    management issues and potential taint propagation vulnerabilities. Instead, store
+    the result in a variable and return that variable to ensure proper handling of
+    the tainted data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/12fb3842f81bcbd4a4519d5728f2d7e0e3ca1445
+    category: security
+    cwe:
+    - 'CWE-665: Improper Initialization'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/665.html
+    technology:
+    - c
+- id: vuln-exim-337e3505
+  pattern: 'log_write(0, LOG_MAIN, (char *)$LOGMSG);
+
+    '
+  pattern-not: 'log_write(0, LOG_MAIN, "DKIM: %s", $LOGMSG);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential log injection vulnerability. The log message is directly
+    passed as a string without proper formatting, which could allow an attacker to
+    inject malicious content into the log. This can lead to log manipulation or other
+    security issues. To fix this, use a format string to explicitly specify the log
+    message format, such as "DKIM: %s".
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Exim/exim/commit/337e3505b0e6cd4309db6bf6062b33fa56e06cf8
+    category: security
+    cwe:
+    - CWE-117
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/117.html
+    technology:
+    - c

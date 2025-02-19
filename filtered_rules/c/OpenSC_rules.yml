@@ -1,0 +1,106 @@
+rules:
+- id: vuln-opensc-c3f23b83
+  pattern: '$VAR = $EXPR - 1;
+
+    '
+  pattern-not: '$VAR = $EXPR > 0 ? $EXPR - 1 : 0;
+
+    '
+  languages:
+  - c
+  message: 'Detected potential integer underflow vulnerability. Subtracting 1 from
+    a variable without checking if it is greater than 0 can lead to underflow, which
+    may cause unexpected behavior or security issues. Always ensure the variable is
+    greater than 0 before performing the subtraction. The fix involves using a ternary
+    operator to check the value before subtracting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/c3f23b836e5a1766c36617fe1da30d22f7b63de2
+    category: security
+    cwe:
+    - CWE-191
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-opensc-6903aebf
+  pattern: 'int $REC;
+
+    int $OFFS = 0;
+
+    int $REC_LEN = $FILE->record_length;
+
+    '
+  pattern-not: 'size_t $REC;
+
+    size_t $OFFS = 0;
+
+    size_t $REC_LEN = $FILE->record_length;
+
+    '
+  languages:
+  - c
+  message: "The use of `int` for record-related variables can lead to integer overflow\
+    \ vulnerabilities. \nThis is dangerous because it can cause buffer overflows or\
+    \ incorrect memory access when handling large records. \nThe fix is to use `size_t`\
+    \ for these variables to ensure proper handling of large sizes.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/6903aebfddc466d966c7b865fae34572bf3ed23e
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-opensc-40c50a3a
+  pattern: "unsigned char *$BLOB;\n...\nif ($COND) {\n  ...\n}\n"
+  pattern-not: "unsigned char *$BLOB = NULL;\n...\nif ($COND) {\n  free($BLOB);\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected potential memory leak in error handling paths. The code fails
+    to free allocated memory before returning in error conditions, which could lead
+    to memory leaks. Ensure that all allocated memory is properly freed in error handling
+    paths.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/40c50a3a
+    category: security
+    cwe:
+    - 'CWE-401: Missing Release of Memory after Effective Lifetime'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-opensc-7114fb71
+  pattern: '$VAR.value.value = NULL;
+
+    '
+  pattern-not: 'memset(&$VAR, 0, sizeof($VAR));
+
+    '
+  languages:
+  - c
+  message: 'Setting a pointer to NULL without clearing the entire structure can lead
+    to information disclosure vulnerabilities. The patch replaces the assignment with
+    a memset to ensure all fields are properly initialized. This prevents potential
+    exposure of sensitive data in uninitialized memory. Always use memset to clear
+    structures completely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenSC/OpenSC/commit/7114fb71b54ddfe06ce5dfdab013f4c38f129d14
+    category: security
+    cwe:
+    - CWE-909
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c

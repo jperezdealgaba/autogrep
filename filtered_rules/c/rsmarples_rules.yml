@@ -1,0 +1,38 @@
+rules:
+- id: vuln-dhcpcd-1475a702
+  pattern: "if ($TYPE & $ADDRIPV4) {\n  $SZ = sizeof(uint32_t);\n} else if ($TYPE\
+    \ & $UINT16) {\n  $SZ = sizeof(uint16_t);\n} else if ($TYPE & ($UINT8 | $BITFLAG))\
+    \ {\n  $SZ = sizeof(uint8_t);\n} else if ($TYPE & $ADDRIPV6) {\n  $SZ = $ADDR6SZ;\n\
+    } else {\n  return (ssize_t)$DL;\n}\nreturn $DL < $SZ ? -1 : (ssize_t)$SZ;\n"
+  pattern-not: "if ($TYPE & $ADDRIPV6)\n  $SZ = $ADDR6SZ;\nelse if ($TYPE & ($UINT32\
+    \ | $ADDRIPV4))\n  $SZ = sizeof(uint32_t);\nelse if ($TYPE & $UINT16)\n  $SZ =\
+    \ sizeof(uint16_t);\nelse if ($TYPE & ($UINT8 | $BITFLAG))\n  $SZ = sizeof(uint8_t);\n\
+    else if ($TYPE & $FLAG)\n  return 0;\nelse {\n  if ((size_t)$OPT->len > $DL) {\n\
+    \    errno = ENODATA;\n  }\n}\nif ($DL < $SZ) {\n  errno = ENODATA;\n  return\
+    \ -1;\n}\nif ($TYPE & $ARRAY)\n  return (ssize_t)($DL - ($DL % $SZ));\nreturn\
+    \ (ssize_t)$SZ;\n"
+  languages:
+  - c
+  message: 'The code does not properly validate the length of DHCP options, which
+    can lead to buffer overflows or incorrect parsing of network packets. The vulnerability
+    occurs because the code assumes certain sizes for various DHCP option types without
+    proper validation. This can be exploited by an attacker to craft malicious DHCP
+    packets that could lead to memory corruption or denial of service. The fix includes
+    proper length validation and setting errno to ENODATA when invalid lengths are
+    detected.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rsmarples/dhcpcd/commit/1475a702df74b120db847991bc011e3441a045b8
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

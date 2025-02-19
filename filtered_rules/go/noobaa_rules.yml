@@ -1,0 +1,27 @@
+rules:
+- id: vuln-noobaa-operator-f1708ec0
+  pattern: 'logrus.Infof("RPC Handle: %+v", $REQ)
+
+    '
+  pattern-not: 'logrus.Infof("RPC Handle: {Op: %s, API: %s, Method: %s, Error: %s,
+    Params: %+v}", $REQ.Op, $REQ.API, $REQ.Method, $REQ.Error, $REQ.Params)
+
+    '
+  languages:
+  - go
+  message: "The code uses a generic format specifier (%+v) to log an RPC request,\
+    \ which can expose sensitive information. \nThis is dangerous because it may log\
+    \ sensitive data unintentionally. \nThe fix is to explicitly specify which fields\
+    \ to log, ensuring sensitive information is not exposed.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/noobaa/noobaa-operator/commit/f1708ec0c7e889b1e164ccc9e1e9400c686c0dfa
+    category: security
+    cwe:
+    - 'CWE-532: Information Exposure Through Log Files'
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - go

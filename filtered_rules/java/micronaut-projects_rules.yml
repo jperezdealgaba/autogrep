@@ -1,0 +1,26 @@
+rules:
+- id: vuln-micronaut-core-9d1eff5c
+  pattern: 'new DefaultHttpHeaders(false)
+
+    '
+  pattern-not: 'new DefaultHttpHeaders()
+
+    '
+  languages:
+  - java
+  message: 'Using DefaultHttpHeaders with the ''false'' parameter can lead to security
+    vulnerabilities by allowing duplicate headers. This can be exploited in HTTP header
+    injection attacks. Always use the default constructor without parameters to ensure
+    proper header validation and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/micronaut-projects/micronaut-core/commit/9d1eff5c8df1d6cda1fe00ef046729b2a6abe7f1
+    category: security
+    cwe: CWE-113
+    owasp: 'A1: Injection'
+    references:
+    - https://netty.io/4.1/api/io/netty/handler/codec/http/DefaultHttpHeaders.html
+    technology:
+    - java

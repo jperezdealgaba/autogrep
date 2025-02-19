@@ -1,0 +1,23 @@
+rules:
+- id: vuln-elasticsearch-01d54d22
+  pattern: "{\n  ...,\n  \"node_id\": {\n    ...\n  },\n  \"parent_task\": {\n   \
+    \ \"type\": \"number\",\n    ...\n  },\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"nodes\": {\n    ...\n  },\n  \"parent_task_id\": {\n\
+    \    \"type\": \"string\",\n    ...\n  },\n  ...\n}\n"
+  languages:
+  - json
+  message: "Detected use of deprecated or incorrect field names in Elasticsearch API\
+    \ specification. \nThe fields 'node_id' and 'parent_task' with type 'number' have\
+    \ been replaced with 'nodes' and 'parent_task_id' with type 'string'.\nThis could\
+    \ lead to incorrect API behavior or compatibility issues.\nUpdate the fields to\
+    \ use the new names and correct types as specified in the patch.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/elastic/elasticsearch/commit/01d54d222b387ac620d93c479e0f5f94b77717b2
+    category: compatibility
+    cwe:
+    - CWE-477
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - json

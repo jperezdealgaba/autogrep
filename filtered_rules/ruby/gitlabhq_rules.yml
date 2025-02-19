@@ -1,0 +1,57 @@
+rules:
+- id: vuln-gitlabhq-55196497
+  pattern: "if $ITEMS.respond_to?($PARAMS[:state])\n  $ITEMS.public_send($PARAMS[:state])\n\
+    end\n"
+  pattern-not: "case $PARAMS[:state].to_s\nwhen 'closed'\n  $ITEMS.closed\nwhen 'merged'\n\
+    \  $ITEMS.respond_to?(:merged) ? $ITEMS.merged : $ITEMS.closed\nwhen 'opened'\n\
+    \  $ITEMS.opened\nend\n"
+  languages:
+  - ruby
+  message: 'The code directly uses user-controlled input to call methods via `public_send`,
+    which can lead to unintended method execution and potential security vulnerabilities.
+    This pattern is dangerous because it allows attackers to call arbitrary methods
+    on the object. Instead, use a case statement to explicitly handle valid states
+    and provide a safe default behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gitlabhq/gitlabhq/commit/55196497301eea429913f9c4b1b37c42c2e358ce
+    category: security
+    cwe:
+    - CWE-470
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - ruby
+- id: vuln-gitlabhq-cdf396f4
+  pattern: 'render json: $VAR.to_json(include: { milestone: {}, assignee: { methods:
+    :avatar_url }, labels: { methods: :text_color } }, methods: [:task_status, :task_status_short])
+
+    '
+  pattern-not: 'render json: $VAR.to_json(include: { milestone: {}, assignee: { only:
+    [:name, :username], methods: [:avatar_url] }, labels: { methods: :text_color }
+    }, methods: [:task_status, :task_status_short])
+
+    '
+  languages:
+  - ruby
+  message: 'The assignee object in the JSON response is exposing all attributes, which
+    can lead to information disclosure. Limit the exposed attributes using the `only`
+    option to specify only necessary fields like `name` and `username`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gitlabhq/gitlabhq/commit/cdf396f456472ef8decd9598daa8dc0097cd30c5
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://guides.rubyonrails.org/security.html#unsafe-query-generation
+    technology:
+    - ruby

@@ -1,0 +1,130 @@
+rules:
+- id: vuln-aiohttp-493f0679
+  pattern: '$VAR = re.compile(rb"[\x00-\x1F\x7F()<>@,;:\[\]={} \t\"\\]")
+
+    '
+  pattern-not: '$VAR = re.compile(rb"[\x00-\x1F\x7F-\xFF()<>@,;:\[\]={} \t\"\\]")
+
+    '
+  languages:
+  - python
+  message: Incomplete character range in regex pattern can lead to header injection
+    attacks. Ensure all potentially dangerous characters are included in the pattern.
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/493f06797654c383242f0e8007f6e06b818a1fbc
+    category: security
+    cwe: CWE-113
+    owasp: A6:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A6_2021-Vulnerable_and_Outdated_Components
+    technology: python
+- id: vuln-aiohttp-cebe526b
+  pattern: 'form = aiohttp.FormData()
+
+    form.add_field($FIELD, $VALUE, content_transfer_encoding=$ENCODING)
+
+    '
+  pattern-not: 'form = aiohttp.FormData()
+
+    form.add_field($FIELD, $VALUE, filename=$FILENAME)
+
+    '
+  languages:
+  - python
+  message: Using content_transfer_encoding with FormData is deprecated and insecure.
+    Use the filename parameter or pass a BytesIO object instead.
+  severity: WARNING
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/cebe526b9c34dc3a3da9140409db63014bc4cf19
+    category: security
+    cwe: CWE-319
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc7578#section-4.7
+    technology: python
+- id: vuln-aiohttp-f21c6f2c
+  pattern: '$PAYLOAD = $WRITER.append($DATA)
+
+    ...
+
+    assert $CONTENT_DISPOSITION in $PAYLOAD.headers
+
+    '
+  pattern-not: '$PAYLOAD = $WRITER.append($DATA)
+
+    $PAYLOAD.set_content_disposition("form-data", name=$NAME)
+
+    assert $CONTENT_DISPOSITION in $PAYLOAD.headers
+
+    '
+  languages:
+  - python
+  message: "Detected missing Content-Disposition header in multipart payload. \nThis\
+    \ can lead to incorrect handling of form data by clients or servers. \nEnsure\
+    \ to set Content-Disposition with a proper name attribute for each part.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/f21c6f2ca512a026ce7f0f6c6311f62d6a638866
+    category: security
+    cwe: 'CWE-345: Insufficient Verification of Data Authenticity'
+    owasp: A03:2021 - Injection
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+    technology:
+    - python
+- id: vuln-aiohttp-1c335944
+  pattern: '$DIRECTORY.joinpath($FILENAME).resolve()
+
+    '
+  pattern-not: '$DIRECTORY.joinpath($FILENAME)
+
+    normalized_path = Path(os.path.normpath($UNRESOLVED_PATH))
+
+    normalized_path.relative_to($DIRECTORY)
+
+    filepath = normalized_path.resolve()
+
+    '
+  languages:
+  - python
+  message: 'Detected potential directory traversal vulnerability due to unsafe path
+    resolution.
+
+    Directly resolving paths without proper normalization can allow attackers to access
+    files outside the intended directory.
+
+    Ensure paths are normalized and checked against the base directory before resolution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/1c335944d6a8b1298baf179b7c0b3069f10c514b
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: python
+- id: vuln-aiohttp-f016f068
+  pattern: "if $TE and \"chunked\" in $TE.lower():\n    $CHUNKED = True\n"
+  pattern-not: "if $TE is not None:\n    $TE_LOWER = $TE.lower()\n    if \"chunked\"\
+    \ in $TE_LOWER:\n        $CHUNKED = True\n    if $HDRS.CONTENT_LENGTH in $HEADERS:\n\
+    \        raise $BAD_HTTP_MESSAGE(\"Content-Length can't be present with Transfer-Encoding\"\
+    )\n"
+  languages:
+  - python
+  message: "Detected unsafe handling of Transfer-Encoding and Content-Length headers.\
+    \ \nWhen both headers are present, it can lead to HTTP request smuggling attacks.\
+    \ \nEnsure that Content-Length is not present when Transfer-Encoding is set to\
+    \ 'chunked'.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/aio-libs/aiohttp/commit/f016f0680e4ace6742b03a70cb0382ce86abe371
+    category: security
+    cwe: CWE-444
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://tools.ietf.org/html/rfc7230#section-3.3.3
+    technology:
+    - python

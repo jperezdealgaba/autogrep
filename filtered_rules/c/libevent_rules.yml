@@ -1,0 +1,31 @@
+rules:
+- id: vuln-libevent-ec65c420
+  pattern: 'const char $VAR = $BASE[$LEN - 1] == ''.'' ? 0 : 1;
+
+    '
+  pattern-not: 'char $VAR;
+
+    if (!$LEN) return NULL;
+
+    $VAR = $BASE[$LEN - 1] == ''.'' ? 0 : 1;
+
+    '
+  languages:
+  - c
+  message: 'Detected a potential out-of-bounds access vulnerability. The code directly
+    accesses `$BASE[$LEN - 1]` without checking if `$LEN` is zero, which could lead
+    to undefined behavior. Always check the length of the string before accessing
+    its elements.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libevent/libevent/commit/ec65c42052d95d2c23d1d837136d1cf1d9ecef9e
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c

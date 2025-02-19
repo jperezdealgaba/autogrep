@@ -1,0 +1,26 @@
+rules:
+- id: vuln-ntopng-2e0620be
+  pattern: 'redis->set($CSRF, (char*)"1", $DURATION);
+
+    '
+  pattern-not: 'redis->set($CSRF, (char*)$USER, $DURATION);
+
+    '
+  languages:
+  - cpp
+  message: 'The code sets a CSRF token with a static value "1", which makes it vulnerable
+    to CSRF attacks. This is dangerous because it allows attackers to forge requests
+    without proper validation. To fix this, the CSRF token should be associated with
+    a user-specific value, such as a user cookie, to ensure proper validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ntop/ntopng/commit/2e0620be3410f5e22c9aa47e261bc5a12be692c6
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - cpp

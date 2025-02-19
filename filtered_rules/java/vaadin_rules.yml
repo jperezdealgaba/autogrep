@@ -1,0 +1,85 @@
+rules:
+- id: vuln-flow-components-0eb84df7
+  pattern: "private static final String EMAIL_PATTERN = \"^[a-zA-Z0-9.!#$%&\u2019\
+    *+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$\";\n"
+  pattern-not: "private static final String EMAIL_PATTERN = \"^\" + \"([a-zA-Z0-9_\\\
+    \\.\\\\-+])+\" // local\n        + \"@\" + \"[a-zA-Z0-9-.]+\" // domain\n    \
+    \    + \"\\\\.\" + \"[a-zA-Z0-9-]{2,}\" // tld\n        + \"$\";\n"
+  languages:
+  - java
+  message: Insecure email validation pattern detected. The pattern may allow invalid
+    or malicious email addresses. Use a more robust pattern that properly validates
+    local, domain, and TLD parts.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow-components/commit/0eb84df737b66ed8502ac4ab6431b38b3d2290c3
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017 - Injection
+    references: https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology: java
+- id: vuln-flow-c9db8f6c
+  pattern: "if (!$CSRF_TOKEN_IN_SESSION.equals($REQUEST.getHeader(\"X-CSRF-Token\"\
+    ))) {\n    ...\n}\n"
+  pattern-not: "if ($CSRF_TOKEN_IN_REQUEST == null || !MessageDigest.isEqual(\n  \
+    \      $CSRF_TOKEN_IN_SESSION.getBytes(StandardCharsets.UTF_8),\n        $CSRF_TOKEN_IN_REQUEST.getBytes(StandardCharsets.UTF_8)))\
+    \ {\n    ...\n}\n"
+  languages:
+  - java
+  message: 'Insecure CSRF token comparison detected. Direct string comparison of CSRF
+    tokens is vulnerable to timing attacks. Use `MessageDigest.isEqual` for secure
+    comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/c9db8f6cd0f4bbd5c78bb0ef6176f4f4dfcaa624
+    category: security
+    cwe: CWE-208
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - java
+- id: vuln-flow-4b71a65b
+  pattern: 'final long $START = Long.parseLong($RANGE_MATCHER.group(1));
+
+    final long $END = Long.parseLong($RANGE_MATCHER.group(2));
+
+    '
+  pattern-not: "String $START_GROUP = $RANGE_MATCHER.group(1);\nString $END_GROUP\
+    \ = $RANGE_MATCHER.group(2);\nif ($START_GROUP.isEmpty() && $END_GROUP.isEmpty())\
+    \ {\n    ...\n}\nlong $START = $START_GROUP.isEmpty() ? 0L : Long.parseLong($START_GROUP);\n\
+    long $END = $END_GROUP.isEmpty() ? Long.MAX_VALUE : Long.parseLong($END_GROUP);\n"
+  languages:
+  - java
+  message: Insecure handling of byte range headers detected. Directly parsing byte
+    ranges without validation can lead to security vulnerabilities. Always validate
+    and handle empty ranges appropriately.
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/4b71a65b113a143f6c333c1c026cd8b7f214e284
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    technology: java
+- id: vuln-flow-ad15179e
+  pattern: "if ($VAR1 == null || !$VAR1.equals($VAR2)) {\n  ...\n}\n"
+  pattern-not: "if ($VAR1 == null || !MessageDigest.isEqual(\n        $VAR1.getBytes(StandardCharsets.UTF_8),\n\
+    \        $VAR2.getBytes(StandardCharsets.UTF_8))) {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential timing attack vulnerability detected. Using String.equals()
+    for sensitive data comparison can expose the application to timing attacks. Use
+    MessageDigest.isEqual() for time-constant comparison to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/vaadin/flow/commit/ad15179ea795fb7cda3503ec3529659e89de6dec
+    category: security
+    cwe: CWE-208
+    owasp: A02:2021 - Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Timing_attack
+    - https://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html#isEqual-byte:A-byte:A-
+    technology:
+    - java

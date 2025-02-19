@@ -1,0 +1,86 @@
+rules:
+- id: vuln-zziplib-0c0c9256
+  pattern: 'perror($ARG);
+
+    '
+  pattern-not: 'fprintf(stderr, "%s: %s\n", $ARG, zzip_strerror($ERROR));
+
+    '
+  languages:
+  - c
+  message: 'Using `perror` to report errors can lead to insufficient error information
+    being logged, especially in the context of ZIP file handling. This can make debugging
+    and security analysis more difficult. The fix replaces `perror` with `fprintf(stderr,
+    ...)` which provides more detailed error information. Always ensure that error
+    messages include sufficient context for debugging and security analysis.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/0c0c9256b0903f664bca25dd8d924211f81e01d3
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - 'A9: Security Logging and Monitoring Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/209.html
+    technology:
+    - c
+- id: vuln-zziplib-d2e5d5c5
+  pattern: "if ($COND) {\n    ...\n    if ($VAR != NULL)\n        free($VAR);\n  \
+    \  return $ERROR_CODE;\n}\n"
+  pattern-not: 'return ($COND) ? $ERROR_CODE : 0;
+
+    '
+  languages:
+  - c
+  message: 'The code contains a redundant and unsafe pattern where memory is freed
+    and an error is returned within nested conditionals. This can lead to double-free
+    vulnerabilities or memory leaks if not handled correctly. The fixed version simplifies
+    the logic by using a ternary operator, which is safer and more efficient. Replace
+    the nested conditionals with a direct return statement using a ternary operator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/d2e5d5c53212e54a97ad64b793a4389193fec687
+    category: security
+    cwe:
+    - CWE-415
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/415.html
+    - https://cwe.mitre.org/data/definitions/401.html
+    technology:
+    - c
+- id: vuln-zziplib-2a84ae73
+  pattern: '$TAIL - $END >= __sizeof($STRUCT) - 2
+
+    '
+  pattern-not: '$TAIL - $END >= __sizeof($STRUCT)
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves an incorrect boundary check when verifying
+    zip file trailers. The original code subtracts 2 from the size of the trailer
+    structure, which could lead to buffer over-reads or incorrect validation of zip
+    files. This could be exploited to process malformed zip files, potentially leading
+    to crashes or security issues. The fix removes the incorrect subtraction, ensuring
+    proper boundary checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gdraheim/zziplib/commit/2a84ae73e93b0c1f4f12f2c58104f8327d10e41b
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-126
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

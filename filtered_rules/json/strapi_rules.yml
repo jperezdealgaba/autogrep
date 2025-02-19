@@ -1,0 +1,69 @@
+rules:
+- id: vuln-strapi-86f882bc
+  pattern: "{\n  ...,\n  \"version\": \"3.6.9\",\n  ...,\n  \"dependencies\": {\n\
+    \    ...,\n    \"strapi\": \"3.6.9\",\n    \"strapi-admin\": \"3.6.9\",\n    \"\
+    strapi-connector-bookshelf\": \"3.6.9\",\n    \"strapi-connector-mongoose\": \"\
+    3.6.9\",\n    \"strapi-middleware-views\": \"3.6.9\",\n    \"strapi-plugin-content-manager\"\
+    : \"3.6.9\",\n    \"strapi-plugin-content-type-builder\": \"3.6.9\",\n    \"strapi-plugin-documentation\"\
+    : \"3.6.9\",\n    \"strapi-plugin-email\": \"3.6.9\",\n    \"strapi-plugin-graphql\"\
+    : \"3.6.9\",\n    \"strapi-plugin-i18n\": \"3.6.9\",\n    \"strapi-plugin-upload\"\
+    : \"3.6.9\",\n    \"strapi-plugin-users-permissions\": \"3.6.9\",\n    \"strapi-provider-email-mailgun\"\
+    : \"3.6.9\",\n    \"strapi-provider-upload-aws-s3\": \"3.6.9\",\n    \"strapi-provider-upload-cloudinary\"\
+    : \"3.6.9\",\n    \"strapi-utils\": \"3.6.9\"\n  },\n  ...\n}\n"
+  pattern-not: "{\n  ...,\n  \"version\": \"3.6.10\",\n  ...,\n  \"dependencies\"\
+    : {\n    ...,\n    \"strapi\": \"3.6.10\",\n    \"strapi-admin\": \"3.6.10\",\n\
+    \    \"strapi-connector-bookshelf\": \"3.6.10\",\n    \"strapi-connector-mongoose\"\
+    : \"3.6.10\",\n    \"strapi-middleware-views\": \"3.6.10\",\n    \"strapi-plugin-content-manager\"\
+    : \"3.6.10\",\n    \"strapi-plugin-content-type-builder\": \"3.6.10\",\n    \"\
+    strapi-plugin-documentation\": \"3.6.10\",\n    \"strapi-plugin-email\": \"3.6.10\"\
+    ,\n    \"strapi-plugin-graphql\": \"3.6.10\",\n    \"strapi-plugin-i18n\": \"\
+    3.6.10\",\n    \"strapi-plugin-upload\": \"3.6.10\",\n    \"strapi-plugin-users-permissions\"\
+    : \"3.6.10\",\n    \"strapi-provider-email-mailgun\": \"3.6.10\",\n    \"strapi-provider-upload-aws-s3\"\
+    : \"3.6.10\",\n    \"strapi-provider-upload-cloudinary\": \"3.6.10\",\n    \"\
+    strapi-utils\": \"3.6.10\"\n  },\n  ...\n}\n"
+  languages:
+  - json
+  message: 'Detected outdated Strapi package versions (3.6.9) in package.json. This
+    version contains known vulnerabilities that were fixed in version 3.6.10. Using
+    outdated versions can expose your application to security risks. Update all Strapi-related
+    packages to version 3.6.10 or higher.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/86f882bc154e16321fbc83d0086e0d956bb5e82a
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/strapi/strapi/releases/tag/v3.6.10
+    technology:
+    - json
+- id: vuln-strapi-0b4a8109
+  pattern: '"immer": "^7.0.8"'
+  pattern-not: '"immer": "^7.0.14"'
+  languages:
+  - json
+  message: 'Using immer version ^7.0.8 is vulnerable and should be updated to ^7.0.14
+    or higher.
+
+    Older versions may contain security vulnerabilities that could lead to code execution
+    or other security issues.
+
+    Update the dependency to the latest secure version to mitigate these risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strapi/strapi/commit/0b4a8109e2c1862950de2c1a383727334d789f66
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A9:2021 - Security Logging and Monitoring Failures
+    references:
+    - https://github.com/immerjs/immer/releases
+    technology:
+    - json

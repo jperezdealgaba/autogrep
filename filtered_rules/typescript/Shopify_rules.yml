@@ -1,0 +1,24 @@
+rules:
+- id: vuln-quilt-3284be1e
+  pattern: "const {shop} = $QUERY;\n...\nif (shop == null) {\n  $CTX.throw(400, $ERROR);\n\
+    \  return;\n}\n"
+  pattern-not: "const {shop} = $QUERY;\nconst shopRegex = new RegExp($REGEX);\n...\n\
+    if (shop == null || !shopRegex.test(shop)) {\n  $CTX.throw(400, $ERROR);\n  return;\n\
+    }\n"
+  languages:
+  - typescript
+  message: "Missing validation of the 'shop' query parameter. Without proper validation,\
+    \ \nan attacker could provide a malicious shop domain, potentially leading to\
+    \ \nsecurity vulnerabilities such as phishing or unauthorized access. Always \n\
+    validate the shop parameter using a regex pattern to ensure it matches the \n\
+    expected format.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Shopify/quilt/commit/3284be1e6cfe9165a2b23339d7f1bf8367ee9df7
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - typescript

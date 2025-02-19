@@ -1,0 +1,99 @@
+rules:
+- id: vuln-openapi-generator-edbb021a
+  pattern: "String $DESTPATH = null;\nif ($OPTS.getOptions() != null) {\n  $DESTPATH\
+    \ = $OPTS.getOptions().get(\"outputFolder\");\n}\nif ($DESTPATH == null) {\n \
+    \ $DESTPATH = $LANGUAGE + \"-\" + $TYPE.getTypeName();\n}\n"
+  pattern-not: 'String $DESTPATH = $LANGUAGE + "-" + $TYPE.getTypeName();
+
+    '
+  languages:
+  - java
+  message: 'Potential path traversal vulnerability detected. The code uses untrusted
+    input from ''outputFolder'' without proper validation, which could allow attackers
+    to access unauthorized directories. Always use a fixed, safe destination path
+    instead of user-controlled input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/edbb021aadae47dcfe690313ce5119faf77f800d
+    category: security
+    cwe: CWE-22
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - java
+- id: vuln-openapi-generator-1b6cabb9
+  pattern: 'File.createTempFile($PREFIX, $SUFFIX)
+
+    '
+  pattern-not: 'Files.createTempFile($PREFIX, $SUFFIX).toFile()
+
+    '
+  languages:
+  - java
+  message: Using File.createTempFile is potentially unsafe. Use Files.createTempFile
+    instead, which provides better security guarantees.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/1b6cabb97d133a54a81d1512ce159d0e3489bb8e
+    category: security
+    cwe: CWE-377
+    owasp: A9:2017-Insecure Deserialization
+    references:
+    - https://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#createTempFile(java.lang.String,%20java.lang.String,%20java.nio.file.attribute.FileAttribute...)
+    technology:
+    - java
+- id: vuln-openapi-generator-d6306d8f
+  pattern: 'boolean $ISFORM = MediaType.MULTIPART_FORM_DATA.isCompatibleWith($CONTENTTYPE)
+    || MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith($CONTENTTYPE);
+
+    return $ISFORM ? BodyInserters.fromMultipartData($FORMPARAMS) : ($OBJ != null
+    ? BodyInserters.fromObject($OBJ) : null);
+
+    '
+  pattern-not: "if(MediaType.APPLICATION_FORM_URLENCODED.equals($CONTENTTYPE)) {\n\
+    \    MultiValueMap<String, String> $MAP = new LinkedMultiValueMap();\n    $FORMPARAMS\n\
+    \            .toSingleValueMap()\n            .entrySet()\n            .forEach($ES\
+    \ -> $MAP.add($ES.getKey(), (String) $ES.getValue()));\n    return BodyInserters.fromFormData($MAP);\n\
+    } else if(MediaType.MULTIPART_FORM_DATA.equals($CONTENTTYPE)) {\n    return BodyInserters.fromMultipartData($FORMPARAMS);\n\
+    } else {\n    return $OBJ != null ? BodyInserters.fromObject($OBJ) : null;\n}\n"
+  languages:
+  - java
+  message: "Detected a vulnerability where form data handling does not properly distinguish\
+    \ between different media types. \nThis can lead to incorrect processing of form\
+    \ data, potentially causing security issues or data corruption. \nThe fix involves\
+    \ explicitly handling each media type separately and converting form parameters\
+    \ appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/d6306d8fee504ed57802d0a745c7945d86ffb37b
+    category: security
+    cwe: CWE-20
+    owasp: A07:2021 - Identification and Authentication Failures
+    technology:
+    - java
+- id: vuln-openapi-generator-5a5ee163
+  pattern: 'String[] $LINES = $TEXT.split("\n");
+
+    '
+  pattern-not: 'String[] $LINES = $TEXT.split("\n", -1);
+
+    '
+  languages:
+  - java
+  message: 'Potential issue with String.split() without a limit parameter. When splitting
+    a string by newline characters without a limit, trailing empty strings are discarded.
+    This can lead to unexpected behavior, especially when preserving line breaks is
+    important. To fix this, use split("\n", -1) to preserve all trailing empty strings.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/OpenAPITools/openapi-generator/commit/5a5ee163dc0a9a046f0e986d212629d019528583
+    category: correctness
+    cwe: CWE-697
+    technology:
+    - java

@@ -1,0 +1,72 @@
+rules:
+- id: vuln-jackson-databind-54aa38d8
+  pattern: "if ($CLASS.isEnum()) {\n  ...\n}\n"
+  pattern-not: "if (ClassUtil.isEnumType($CLASS)) {\n  ...\n}\n"
+  languages:
+  - java
+  message: Incorrect enum type check detected. Use `ClassUtil.isEnumType()` instead
+    of `isEnum()` to properly handle enum subclasses.
+  severity: ERROR
+  metadata:
+    source-url: github.com/FasterXML/jackson-databind/commit/54aa38d87dcffa5ccc23e64922e9536c82c1b9c8
+    category: security
+    cwe: CWE-484
+    owasp: A10:2021 - Security Misconfiguration
+    references:
+    - https://github.com/FasterXML/jackson-databind/issues/2480
+    technology:
+    - java
+- id: vuln-jackson-databind-74aba404
+  pattern: 's.add("com.mchange.v2.c3p0.JndiRefForwardingDataSource");
+
+    s.add("com.mchange.v2.c3p0.WrapperConnectionPoolDataSource");
+
+    '
+  pattern-not: '// s.add("com.mchange.v2.c3p0.JndiRefForwardingDataSource"); // deprecated
+    by [databind#1931]
+
+    // s.add("com.mchange.v2.c3p0.WrapperConnectionPoolDataSource"); // - "" -
+
+    '
+  languages:
+  - java
+  message: Potential JNDI injection vulnerability through c3p0 data sources. These
+    classes have been deprecated due to security concerns. Remove or comment out these
+    class registrations.
+  severity: ERROR
+  metadata:
+    source-url: github.com/FasterXML/jackson-databind/commit/74aba4042fce35ee0b91bd2847e788c10040d78b
+    category: security
+    cwe: CWE-74
+    owasp: 'A1: Injection'
+    references:
+    - https://github.com/FasterXML/jackson-databind/issues/1931
+    - https://cwe.mitre.org/data/definitions/74.html
+    technology: java
+- id: vuln-jackson-databind-97879838
+  pattern: 'SubTypeValidator.instance().validateSubType($CTXT, $TYPE)
+
+    '
+  pattern-not: 'SubTypeValidator.instance().validateSubType($CTXT, $TYPE, $BEANDESC)
+
+    '
+  languages:
+  - java
+  message: 'Insecure deserialization vulnerability detected. The validateSubType method
+    is called without the beanDesc parameter, which could allow unsafe deserialization
+    of untrusted types. Always include the beanDesc parameter to ensure proper type
+    validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/FasterXML/jackson-databind/commit/978798382ceb72229e5036aa1442943933d6d171
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    references:
+    - https://github.com/FasterXML/jackson-databind/commit/978798382ceb72229e5036aa1442943933d6d171
+    technology:
+    - java

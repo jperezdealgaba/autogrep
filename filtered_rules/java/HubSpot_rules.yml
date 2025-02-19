@@ -1,0 +1,18 @@
+rules:
+- id: vuln-jinjava-5dfa5b87
+  pattern: "if ($O instanceof Class || $O instanceof ClassLoader || $O instanceof\
+    \ Thread) {\n  ...\n}\n"
+  pattern-not: "if (\n  $O instanceof Class ||\n  $O instanceof ClassLoader ||\n \
+    \ $O instanceof Thread ||\n  $O instanceof Method\n) {\n  ...\n}\n"
+  languages:
+  - java
+  message: "Potential security vulnerability: Missing check for `Method` instances\
+    \ in EL resolver. \nThis could allow unauthorized access to sensitive methods.\
+    \ \nAdd `o instanceof Method` to the condition to prevent this vulnerability.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/HubSpot/jinjava/commit/5dfa5b87318744a4d020b66d5f7747acc36b213b
+    category: security
+    cwe: CWE-470
+    owasp: A01:2021-Broken Access Control
+    technology: java

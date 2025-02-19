@@ -1,0 +1,25 @@
+rules:
+- id: vuln-nats-server-1e08b67f
+  pattern: "if $REVOCATIONS != nil {\n  if $T, $OK := $REVOCATIONS[$SUBJECT]; $OK\
+    \ && $T <= time.Now().Unix() {\n    return false\n  }\n}\n"
+  pattern-not: "if isRevoked($REVOCATIONS, $SUBJECT, $ISSUED_AT) {\n  return false\n\
+    }\n"
+  languages:
+  - go
+  message: "The code directly checks revocation status using `time.Now().Unix()` which\
+    \ can lead to time synchronization issues and incorrect revocation checks. \n\
+    This can allow revoked tokens to be accepted if the server's clock is not synchronized.\
+    \ \nInstead, use the `isRevoked` function which compares against the token's `issuedAt`\
+    \ timestamp to ensure consistent and accurate revocation checks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/nats-io/nats-server/commit/1e08b67f08e18cd844dce833a265aaa72500a12f
+    category: security
+    cwe:
+    - CWE-335
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://nats.io/documentation/server/configuration/security/
+    technology:
+    - go

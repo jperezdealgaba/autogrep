@@ -1,0 +1,26 @@
+rules:
+- id: vuln-wire-server-1753b790
+  pattern: 'restrict_whitelisted_origin: true
+
+    '
+  pattern-not: "allowlisted_origins:\n  - $VARNAME\n"
+  languages:
+  - yaml
+  message: 'The use of ''restrict_whitelisted_origin: true'' without defining ''allowlisted_origins''
+    can lead to insecure CORS configurations. This allows any origin to make requests,
+    potentially exposing sensitive data. To fix this, replace ''restrict_whitelisted_origin''
+    with ''allowlisted_origins'' and specify the allowed origins explicitly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wireapp/wire-server/commit/1753b790e5cfb2d35e857648c88bcad3ac329f01
+    category: security
+    cwe:
+    - CWE-942
+    owasp:
+    - A5:2017-Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control
+    technology:
+    - yaml

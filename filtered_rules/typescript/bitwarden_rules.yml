@@ -1,0 +1,57 @@
+rules:
+- id: vuln-clients-bf7d416c
+  pattern: 'const $OPTIONS = { allFrames: true, ... }
+
+    '
+  pattern-not: 'const $OPTIONS = { frameId: $FRAMEID, ... }
+
+    '
+  languages:
+  - typescript
+  message: 'Using `allFrames: true` in script execution options can lead to unintended
+    script execution in all frames, potentially causing security issues. Instead,
+    use `frameId` to target specific frames.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bitwarden/clients/commit/bf7d416c68d970ce837469516a52aad1641d9c92
+    category: security
+    cwe:
+    - CWE-1021
+    owasp:
+    - A04:2021 - Insecure Design
+    references:
+    - https://developer.chrome.com/docs/extensions/reference/scripting/
+    technology:
+    - typescript
+- id: vuln-clients-dba56a0b
+  pattern: '(window.location as any).reload(true)
+
+    '
+  pattern-not: 'ipcRenderer.send("reload-process")
+
+    '
+  languages:
+  - typescript
+  message: 'Using `window.location.reload(true)` for a hard reload is dangerous in
+    Electron applications as it doesn''t properly clear memory or handle process cleanup.
+    This can lead to memory leaks and inconsistent application state. Instead, use
+    Electron''s IPC mechanism to trigger a controlled process reload that properly
+    cleans up resources and ensures memory is garbage collected.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/bitwarden/clients/commit/dba56a0b948d4a6370f233790d242072593a6431
+    category: security
+    cwe:
+    - CWE-400
+    - CWE-401
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.electronjs.org/docs/latest/api/web-contents#contentsforcefullycrashrenderer
+    technology:
+    - typescript
+    - electron

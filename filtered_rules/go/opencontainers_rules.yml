@@ -1,0 +1,140 @@
+rules:
+- id: vuln-runc-0abab45c
+  pattern: "$DEST, $ERR := securejoin.SecureJoin($ROOTFS, $DESTINATION)\nif $ERR !=\
+    \ nil {\n    return $ERR\n}\n...\nif $FI.Mode()&os.ModeDir == 0 {\n    ...\n}\n"
+  pattern-not: "$DEST := filepath.Clean($DESTINATION)\nif !strings.HasPrefix($DEST,\
+    \ $ROOTFS) {\n    $DEST = filepath.Join($ROOTFS, $DEST)\n}\n...\nif !$FI.IsDir()\
+    \ {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'Detected insecure handling of mount paths that could allow symlink attacks.
+    The code uses securejoin.SecureJoin but does not properly validate the destination
+    path before mounting, potentially allowing attackers to mount through symlinks.
+    This can lead to privilege escalation or unauthorized access to files. To fix,
+    ensure the destination path is cleaned and validated using filepath.Clean and
+    strings.HasPrefix before mounting.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/0abab45c9b97c113ff2cdc16f3a7388444c3fbec
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://github.com/opencontainers/runc/commit/0abab45c9b97c113ff2cdc16f3a7388444c3fbec
+    technology:
+    - go
+- id: vuln-runc-cad42f6e
+  pattern: "$FD_LIST, $ERR := ioutil.ReadDir(\"/proc/self/fd\")\n...\nfor _, $FI :=\
+    \ range $FD_LIST {\n  $FD, $ERR := strconv.Atoi($FI.Name())\n  ...\n}\n"
+  pattern-not: "$FD_DIR, $ERR := os.Open(\"/proc/self/fd\")\n...\nif err := EnsureProcHandle($FD_DIR);\
+    \ err != nil {\n  return err\n}\n...\n$FD_LIST, $ERR := $FD_DIR.Readdirnames(-1)\n\
+    ...\nfor _, $FD_STR := range $FD_LIST {\n  $FD, $ERR := strconv.Atoi($FD_STR)\n\
+    \  ...\n}\n"
+  languages:
+  - go
+  message: 'The code directly reads from /proc/self/fd without verifying that the
+    file handle is on procfs, which could lead to security vulnerabilities if the
+    file system is not properly checked. This can be exploited if an attacker can
+    manipulate the file system. To fix this, use os.Open to get a file handle and
+    verify it''s on procfs using EnsureProcHandle before reading the directory contents.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/cad42f6e0932db0ce08c3a3d9e89e6063ec283e4
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/59.html
+    technology:
+    - go
+- id: vuln-runc-9c444070
+  pattern: "func prepareBindMount($M *configs.Mount, $ROOTFS string) error {\n  $STAT,\
+    \ $ERR := os.Stat($M.Source)\n  ...\n}\n"
+  pattern-not: "func prepareBindMount($M *configs.Mount, $ROOTFS string, $MOUNTFD\
+    \ *int) error {\n  $SOURCE := $M.Source\n  if $MOUNTFD != nil {\n    $SOURCE =\
+    \ \"/proc/self/fd/\" + strconv.Itoa(*$MOUNTFD)\n  }\n  $STAT, $ERR := os.Stat($SOURCE)\n\
+    \  ...\n}\n"
+  languages:
+  - go
+  message: 'The code directly uses the mount source path without proper handling in
+    user namespaces,
+
+    which can lead to security vulnerabilities when dealing with bind mounts. The
+    fix introduces
+
+    handling via file descriptors (O_PATH) to safely manage mount sources across namespaces.
+
+    Ensure that mount sources are properly handled using file descriptors when working
+    with
+
+    user namespaces to prevent potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/9c444070ec7bb83995dbc0185da68284da71c554
+    category: security
+    cwe:
+    - CWE-284
+    owasp: A01:2021 - Broken Access Control
+    technology:
+    - go
+- id: vuln-runc-d04de3a9
+  pattern: '$CAPABILITIES.Inheritable = append($CAPABILITIES.Inheritable, $CAP)
+
+    '
+  pattern-not: '$CAPABILITIES.Inheritable = []
+
+    '
+  languages:
+  - go
+  message: 'Dangerous capability inheritance detected. Appending capabilities to the
+    Inheritable set can lead to privilege escalation vulnerabilities. Capabilities
+    should not be inherited by default as they can be used by child processes to gain
+    elevated privileges. Remove the capability inheritance or explicitly set the Inheritable
+    field to an empty slice.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/d04de3a9b72d7a2455c1885fc75eb36d02cd17b5
+    category: security
+    cwe:
+    - CWE-250
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - go
+- id: vuln-runc-2b221a6a
+  pattern: "if err := setRecAttr($M, $ROOTFS); err != nil {\n  return err\n}\nreturn\
+    \ nil\n"
+  pattern-not: 'return setRecAttr($M, $ROOTFS)
+
+    '
+  languages:
+  - go
+  message: 'The error return value from `setRecAttr` is being ignored, which can lead
+    to silent failures in setting recursive attributes on the root filesystem. This
+    can result in incorrect container configurations and potential security vulnerabilities.
+    To fix this, ensure that the return value of `setRecAttr` is properly handled
+    and returned.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencontainers/runc/commit/2b221a6ab7c96dff9dfe7c46766d60a12490cc98
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A06:2021 - Vulnerable and Outdated Components
+    technology:
+    - go

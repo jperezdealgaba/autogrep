@@ -1,0 +1,34 @@
+rules:
+- id: vuln-mindoc-c15da23b
+  pattern: "if !f.FileInfo().IsDir() {\n    if folder := $DEST + filepath.Dir($NAME);\
+    \ !strings.Contains($FOLDER, \"__MACOSX\") {\n        os.MkdirAll($FOLDER, 0777)\n\
+    \        if $FCREATE, $ERR := os.Create($DEST + strings.TrimPrefix($NAME, \"./\"\
+    )); $ERR == nil {\n            ...\n        }\n    }\n}\n"
+  pattern-not: "if !f.FileInfo().IsDir() {\n    $PATH := filepath.Join($DEST, $NAME)\n\
+    \    if $DIR := filepath.Dir($PATH); !strings.Contains($DIR, \"__MACOSX\") {\n\
+    \        if !strings.HasPrefix($PATH, filepath.Clean($DEST)+string(os.PathSeparator))\
+    \ {\n            return fmt.Errorf(\"illegal file path: %s\", $PATH)\n       \
+    \ }\n        os.MkdirAll($DIR, 0777)\n        if $FCREATE, $ERR := os.Create($PATH);\
+    \ $ERR == nil {\n            ...\n        }\n    }\n}\n"
+  languages:
+  - go
+  message: 'This rule detects a Zip Slip vulnerability where file paths are concatenated
+    without proper validation, allowing attackers to write files outside the intended
+    destination directory. This can lead to arbitrary file overwrite and potential
+    remote code execution. To fix this, ensure that the destination path is validated
+    using `filepath.Join` and `strings.HasPrefix` to prevent directory traversal.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mindoc-org/mindoc/commit/c15da23bf2e6ca87274ff8d313152b0bd132cc1a
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/golang/go/issues/25849
+    - https://github.com/mholt/archiver/blob/e4ef56d48eb029648b0e895bb0b6a393ef0829c3/archiver.go#L110-L119
+    technology:
+    - go

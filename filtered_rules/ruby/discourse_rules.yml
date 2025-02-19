@@ -1,0 +1,111 @@
+rules:
+- id: vuln-discourse-27bad28c
+  pattern: '$QUERY.distinct(false).pluck(:id)
+
+    '
+  pattern-not: '$QUERY.pluck(:id)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `distinct(false)` in SQL queries can lead to performance issues
+    and incorrect results by disabling the DISTINCT clause. This can cause duplicate
+    records to be returned, which may lead to data inconsistencies or unexpected behavior.
+    Remove the `distinct(false)` call to ensure proper query behavior.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/discourse/discourse/commit/27bad28c530c89acab35a56b945b6a3924280f4b
+    category: performance
+    cwe:
+    - CWE-1047
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://guides.rubyonrails.org/active_record_querying.html#distinct
+    technology:
+    - ruby
+    - rails
+- id: vuln-discourse-52b003d9
+  pattern: 'accepts_nested_attributes_for $VAR, allow_destroy: true
+
+    '
+  pattern-not: 'accepts_nested_attributes_for $VAR, allow_destroy: true, limit: $LIMIT
+
+    '
+  languages:
+  - ruby
+  message: 'Detected `accepts_nested_attributes_for` without a `limit` parameter.
+    This can lead to a denial of service (DoS) attack by allowing an attacker to submit
+    an excessive number of nested records, potentially overwhelming the server. Always
+    set a reasonable limit on the number of nested records that can be created.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/52b003d915761f1581ae2d105f3cbe76df7bf1ff
+    category: security
+    cwe:
+    - CWE-770
+    owasp:
+    - A05:2021 - Security Misconfiguration
+    references:
+    - https://guides.rubyonrails.org/active_record_nested_attributes.html
+    technology:
+    - ruby
+- id: vuln-discourse-10afe5fc
+  pattern: '$NORMALIZER.send($METHOD)
+
+    '
+  pattern-not: '$NORMALIZER.public_send($METHOD)
+
+    '
+  languages:
+  - ruby
+  message: 'The use of `send` method can lead to security vulnerabilities as it allows
+    calling private methods or bypassing access controls. Use `public_send` instead
+    to ensure only public methods are called, which is safer and prevents unintended
+    method access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/10afe5fcf1ebf2e49cb80716d5e62e184c53519b
+    category: security
+    cwe:
+    - CWE-749
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://ruby-doc.org/core-3.0.0/Object.html#method-i-send
+    - https://ruby-doc.org/core-3.0.0/Object.html#method-i-public_send
+    technology:
+    - ruby
+- id: vuln-discourse-918dd4d6
+  pattern: '$VAR.gsub(/\s+\z/, "")
+
+    '
+  pattern-not: '$VAR.rstrip
+
+    '
+  languages:
+  - ruby
+  message: 'Using `gsub(/\s+\z/, "")` to strip trailing whitespace is less efficient
+    and potentially error-prone compared to `rstrip`. The `rstrip` method is specifically
+    designed for this purpose and is more performant. Replace `gsub(/\s+\z/, "")`
+    with `rstrip` to improve code clarity and performance.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/discourse/discourse/commit/918dd4d63596ac5ea1ae5f9a55d1533e2400db5c
+    category: performance
+    cwe:
+    - CWE-1075
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://ruby-doc.org/core-2.7.0/String.html#method-i-rstrip
+    technology:
+    - ruby

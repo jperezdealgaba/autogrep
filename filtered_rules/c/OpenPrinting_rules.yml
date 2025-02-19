@@ -1,0 +1,61 @@
+rules:
+- id: vuln-cups-ff1f8a62
+  pattern: 'unlink($ADDR->un.sun_path);
+
+    ...
+
+    bind($FD, (struct sockaddr *)$ADDR, (socklen_t)$LENGTH);
+
+    '
+  pattern-not: "if ((status = unlink($ADDR->un.sun_path)) < 0)\n{\n  if (errno ==\
+    \ ENOENT)\n    status = 0;\n}\nif (!status)\n{\n  if ((status = bind($FD, (struct\
+    \ sockaddr *)$ADDR, (socklen_t)$LENGTH)) < 0)\n  {\n    DEBUG_printf(...);\n \
+    \ }\n}\n"
+  languages:
+  - c
+  message: 'The code directly calls `unlink` without checking its return value, which
+    can lead to race conditions or undefined behavior if the unlink fails. This can
+    be exploited to bypass security checks or cause crashes. Always check the return
+    value of `unlink` and handle errors appropriately, especially when dealing with
+    file system operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenPrinting/cups/commit/ff1f8a623e090dee8a8aadf12a6a4b25efac143d
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - 'OWASP Top 10 2021: A04 - Insecure Design'
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c
+- id: vuln-cups-filters-8f274035
+  pattern: '$RETVAL = system($CMDLINE) >> 8;
+
+    '
+  pattern-not: "$PID = fork();\nif ($PID == 0) {\n  $RETVAL = execv($BACKEND_PATH,\
+    \ $BACKEND_ARGV);\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected use of `system()` with command line construction, which can lead
+    to command injection vulnerabilities. The patch replaces `system()` with `fork()`
+    and `execv()` to safely execute the backend without shell interpretation. Use
+    the safer approach to prevent command injection.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenPrinting/cups-filters/commit/8f274035756c04efeb77eb654e9d4c4447287d65
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - c

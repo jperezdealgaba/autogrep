@@ -1,0 +1,53 @@
+rules:
+- id: vuln-drupal-3bf6761f
+  pattern: '$file = reset($files);
+
+    '
+  pattern-not: '$file = array_shift($files);
+
+    '
+  languages:
+  - php
+  message: 'The use of `reset()` on an array can lead to unintended behavior, especially
+    when the array is modified elsewhere in the code. This can cause security issues,
+    such as incorrect file handling or access control bypasses. Use `array_shift()`
+    to ensure the first element is removed and returned, preventing potential inconsistencies.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/drupal/drupal/commit/3bf6761ff7537dc68e22ea73f155134f3cfd41a8
+    category: security
+    cwe:
+    - CWE-1188
+    owasp:
+    - 'A9: Security Misconfiguration'
+    references:
+    - https://www.drupal.org/project/drupal
+    technology:
+    - php
+- id: vuln-drupal-26bb167e
+  pattern: 'User::load($VAR)->uuid()
+
+    '
+  pattern-not: '$this->entityTypeManager()->getStorage(''user'')->load($VAR)->uuid()
+
+    '
+  languages:
+  - php
+  message: 'Directly using `User::load()` to load user entities can bypass access
+    checks and lead to security vulnerabilities. Use the entity type manager to load
+    entities instead, as it respects access control mechanisms. Replace `User::load($VAR)->uuid()`
+    with `$this->entityTypeManager()->getStorage(''user'')->load($VAR)->uuid()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/drupal/drupal/commit/26bb167e1094d5780e5194d0608670eb55723af8
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php

@@ -1,0 +1,27 @@
+rules:
+- id: vuln-scratchoauth2-a91879bd
+  pattern: 'if (strtolower($matches[1][$i]) != $username) ...
+
+    '
+  pattern-not: 'if (strtolower($matches[1][$i]) !== $username) ...
+
+    '
+  languages:
+  - php
+  message: 'Using loose comparison operator (!=) instead of strict comparison (!==)
+    can lead to unexpected type juggling and security vulnerabilities. Always use
+    strict comparison when comparing strings, especially for authentication checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ScratchVerifier/ScratchOAuth2/commit/a91879bd58fa83b09283c0708a1864cdf067c64a
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://www.php.net/manual/en/language.operators.comparison.php
+    technology:
+    - php

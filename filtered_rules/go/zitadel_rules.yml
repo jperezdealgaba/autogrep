@@ -1,0 +1,54 @@
+rules:
+- id: vuln-zitadel-d656b3f3
+  pattern: 'return nil, status.Error(codes.PermissionDenied, $ERR.Error())
+
+    '
+  pattern-not: 'return nil, status.Error(codes.NotFound, $ERR.Error())
+
+    '
+  languages:
+  - go
+  message: 'Using PermissionDenied error code for NotFound cases can leak sensitive
+    information
+
+    and provide incorrect error handling. Use NotFound error code instead to properly
+
+    handle missing resources and prevent information disclosure.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/d656b3f3c97d4ba46b97ef5a7ab45aa3989b98e0
+    category: security
+    cwe:
+    - CWE-209
+    - CWE-200
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - go
+- id: vuln-zitadel-07ec2efa
+  pattern: "import (\n  \"text/template\"\n  ...\n)\n"
+  pattern-not: "import (\n  \"html/template\"\n  ...\n)\n"
+  languages:
+  - go
+  message: 'Using ''text/template'' instead of ''html/template'' can lead to XSS vulnerabilities.
+
+    ''text/template'' does not escape HTML content, making it dangerous when rendering
+    user input.
+
+    Always use ''html/template'' to automatically escape HTML and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/07ec2efa9dc62f7a6c3a58c112b2879d24bc3e3c
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A07:2021 - Identification and Authentication Failures
+    references:
+    - https://pkg.go.dev/html/template
+    - https://pkg.go.dev/text/template
+    technology:
+    - go

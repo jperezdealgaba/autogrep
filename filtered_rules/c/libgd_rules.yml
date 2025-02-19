@@ -1,0 +1,131 @@
+rules:
+- id: vuln-libgd-e65415d9
+  pattern: 'gdImageDestroy($IM);
+
+    return NULL;
+
+    '
+  pattern-not: 'goto fail;
+
+    '
+  languages:
+  - c
+  message: 'Directly destroying an image and returning NULL without proper cleanup
+    can lead to resource leaks and undefined behavior. This pattern was fixed by using
+    a ''goto fail'' statement to ensure consistent cleanup paths. To fix this, ensure
+    all error paths use a consistent cleanup mechanism like ''goto fail'' to properly
+    release resources.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/e65415d91c57ba8d5d90ec9e22a95ae2416c62f9
+    category: security
+    cwe:
+    - CWE-404
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c
+- id: vuln-libgd-01c61f8a
+  pattern: "if (!(($VAR + ($EXPR * $SIZE)) < $LIMIT)) {\n  ...\n  return -1;\n}\n\
+    for ($I = 0; $I < $EXPR; $I++) {\n  for ($J = 0; $J < $SIZE; $J++, $CARET++) {\n\
+    \    $BITMAP[$CARET] = $BUFFER[$VAR + $J];\n  }\n}\n"
+  pattern-not: "if (($CARET + ($EXPR * $SIZE)) >= $LIMIT) {\n  ...\n  return -1;\n\
+    }\nmemcpy($BITMAP + $CARET, $BUFFER + $VAR, $EXPR * $SIZE);\n$CARET += ($EXPR\
+    \ * $SIZE);\n$VAR += ($EXPR * $SIZE);\n"
+  languages:
+  - c
+  message: 'The code performs unsafe buffer access by directly copying data without
+    proper bounds checking.
+
+    This can lead to buffer overflows and memory corruption. The fix uses `memcpy`
+    with proper bounds checking
+
+    to ensure safe memory operations. Always validate buffer sizes before copying
+    data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/01c61f8ab110a77ae64b5ca67c244c728c506f03
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-libgd-53110871
+  pattern: "if($VAR == 0) {\n  ...\n}\n"
+  pattern-not: "if($VAR <= 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected a potential integer comparison vulnerability where only equality\
+    \ to zero is checked. \nThis can lead to incorrect behavior when dealing with\
+    \ negative values. \nThe fix is to use '<= 0' to properly handle all non-positive\
+    \ values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/53110871935244816bbb9d131da0bccff734bfe9
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-libgd-4b1e18a0
+  pattern: '$FUNC($IM, $OUT, $COMPRESSION);
+
+    $RV = gdDPExtractData($OUT, $SIZE);
+
+    '
+  pattern-not: "if (!_gdImageBmpCtx($IM, $OUT, $COMPRESSION))\n  $RV = gdDPExtractData($OUT,\
+    \ $SIZE);\nelse\n  $RV = NULL;\n"
+  languages:
+  - c
+  message: 'The code directly calls a function and proceeds to extract data without
+    checking the return value, which could lead to undefined behavior if the function
+    fails. This vulnerability can cause crashes or security issues if the function
+    fails silently. Always check the return value of functions before proceeding with
+    dependent operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/4b1e18a00ce7c4b7e6919c3b3109a034393b805a
+    category: security
+    cwe:
+    - CWE-252
+    owasp: 'A6: Security Misconfiguration'
+    references: https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c
+- id: vuln-libgd-318ebd33
+  pattern: "if ($VAR == 257) {\n  ...\n}\n"
+  pattern-not: "if ($VAR >= 256 || $VAR < 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a specific value (257) as a transparent index without
+    validating if it''s within the palette bounds. This can lead to out-of-bounds
+    access or incorrect image rendering. Ensure the transparent index is within the
+    valid range (0 to 255) by checking if it''s greater than or equal to 256 or less
+    than 0.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libgd/libgd/commit/318ebd33c8beaf51ec62e4e69d9b1ca892c61ecb
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

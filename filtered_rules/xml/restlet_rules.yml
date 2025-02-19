@@ -1,0 +1,28 @@
+rules:
+- id: vuln-restlet-framework-java-87d43263
+  pattern: '<version>2.7.2</version>
+
+    '
+  pattern-not: '<version>2.7.3</version>
+
+    '
+  languages:
+  - xml
+  message: 'The XML file contains a vulnerable version of the org.simpleframework.xml
+    library (version 2.7.2). This version may contain security vulnerabilities that
+    have been fixed in version 2.7.3. Updating to the latest version is recommended
+    to mitigate potential security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/restlet/restlet-framework-java/commit/87d432633aac573b056fb188eb450a2833db1ad6
+    category: security
+    cwe:
+    - CWE-937
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/restlet/restlet-framework-java/commit/87d432633aac573b056fb188eb450a2833db1ad6
+    technology:
+    - xml

@@ -1,0 +1,38 @@
+rules:
+- id: vuln-drawio-c287bef9
+  pattern: 'if ($EXPORT_URL == null || $EXPORT_URL.isEmpty())
+
+    '
+  pattern-not: "if ($EXPORT_URL == null || $EXPORT_URL.isEmpty() || \n    (!$EXPORT_URL.startsWith(\"\
+    http://\") && !$EXPORT_URL.startsWith(\"https://\")))\n"
+  languages:
+  - java
+  message: 'Missing validation for URL scheme in export URL. This can lead to security
+    vulnerabilities such as SSRF (Server-Side Request Forgery) if the URL is not properly
+    validated. Ensure the URL starts with ''http://'' or ''https://'' to prevent malicious
+    requests.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jgraph/drawio/commit/c287bef9101d024b1fd59d55ecd530f25000f9d8
+    category: security
+    cwe: CWE-918
+    owasp: A10:2021 - Server-Side Request Forgery
+    technology: java
+- id: vuln-drawio-59887e45
+  pattern: "public final static String encodeToString(byte[] sArr, boolean lineSep)\
+    \ {\n    ...\n    return new String(encodeToChar(sArr, lineSep));\n}\n"
+  pattern-not: "public final static String encodeToString(byte[] sArr, boolean lineSep)\
+    \ {\n    return Base64.getEncoder().encodeToString(sArr);\n}\n"
+  languages:
+  - java
+  message: Custom Base64 encoding implementation detected. Use the standard Base64
+    encoder from `java.util.Base64` to ensure security and compliance with RFC standards.
+  severity: ERROR
+  metadata:
+    source-url: github.com/jgraph/drawio/commit/59887e45b36f06c8dd4919a32bacd994d9f084da
+    category: security
+    cwe: CWE-326
+    owasp: A3:2017-Sensitive Data Exposure
+    technology: java

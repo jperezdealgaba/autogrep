@@ -1,0 +1,347 @@
+rules:
+- id: vuln-gpac-ae831621
+  pattern: '$NAME[$EXPR-1] = 0;
+
+    '
+  pattern-not: '$NAME[$EXPR ? $EXPR-1 : 0] = 0;
+
+    '
+  languages:
+  - c
+  message: 'Potential null pointer dereference vulnerability found. The code directly
+    accesses array index $EXPR-1 without checking if $EXPR is zero, which could lead
+    to out-of-bounds memory access. Always check if the size is zero before accessing
+    the array index. Fix by using a ternary operator to handle the zero case.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/ae831621a08a64e3325ce532f8b78811a1581716
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-gpac-d33ecf81
+  pattern: 'if ($NBITS > 32) return $ERROR;
+
+    '
+  pattern-not: 'if (!$NBITS || $NBITS > 32) return $ERROR;
+
+    '
+  languages:
+  - c
+  message: 'The code fails to check if NbBits is zero before validating its upper
+    bound, which could lead to undefined behavior or security vulnerabilities. This
+    issue was fixed by adding a check for zero. Always validate both lower and upper
+    bounds of input values to ensure they are within expected ranges.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/d33ecf8142d9103eff9d6fd72fbab4e499e3e9b8
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - c
+- id: vuln-gpac-14ec709a
+  pattern: "if (version == 1 && read->jpeg_hdr_size) {\n  ...\n}\n"
+  pattern-not: "if (version == 1 && read->jpeg_hdr_size >= 2) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential integer overflow vulnerability. The condition `read->jpeg_hdr_size`
+    without a lower bound check can lead to buffer overflows or undefined behavior.
+    Always ensure proper bounds checking when dealing with sizes or lengths, especially
+    in security-sensitive contexts. Fix by adding a minimum size check, e.g., `read->jpeg_hdr_size
+    >= 2`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/14ec709a1ffae23ad777c37320290caa0a754341
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-gpac-6c1e7ddf
+  pattern: 'assert(($VAR == 8) || ($VAR == 16));
+
+    '
+  pattern-not: "if (($VAR != 8) && ($VAR != 16)) {\n  ...\n  return NULL;\n}\n"
+  languages:
+  - c
+  message: 'The use of `assert` for input validation is dangerous because it can be
+    disabled at compile time, potentially leading to undefined behavior. Instead,
+    explicitly check the condition and handle the error case appropriately, such as
+    by logging a warning and returning an error value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/6c1e7ddfae2ad4daeda7f7e544da34cb765d36c9
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - c
+- id: vuln-gpac-77510778
+  pattern: 'gf_malloc(sizeof(char) * ($PROP_SIZE + 2))
+
+    '
+  pattern-not: 'gf_malloc(sizeof(char) * ($PROP_SIZE + 3))
+
+    '
+  languages:
+  - c
+  message: 'Insufficient memory allocation for UTF16 string dump. The original code
+    allocates only 2 extra bytes, which may lead to misalignment issues when handling
+    UTF16 strings. This can cause memory corruption or undefined behavior. Allocate
+    3 extra bytes to ensure proper alignment and null-termination.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/77510778516803b7f7402d7423c6d6bef50254c3
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-gpac-3661da28
+  pattern: "if ($SAMPLE_INDEX > $TRF_SDTP->sampleCount) {\n  ...\n}\n"
+  pattern-not: "if ($SAMPLE_INDEX >= $TRF_SDTP->sampleCount) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "This rule detects an off-by-one error in the comparison of sample_index\
+    \ with traf->sdtp->sampleCount. \nThe original code used a '>' comparison, which\
+    \ could lead to accessing an out-of-bounds index. \nThis vulnerability can cause\
+    \ undefined behavior or crashes. \nThe fix changes the comparison to '>=' to properly\
+    \ handle the boundary condition.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/3661da280b3eba75490e75ff20ad440c66e24de9
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c
+- id: vuln-gpac-362fc486
+  pattern: "if ($PTR->num_views) {\n  ...\n}\n"
+  pattern-not: "if ($PTR->views) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for the existence of views using ''num_views'' instead
+    of ''views''.
+
+    This could lead to null pointer dereference or incorrect logic since ''num_views''
+
+    might be non-zero even when ''views'' is null. Always check the pointer itself
+
+    rather than just its size/count field.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/362fc486b5c0eea04f26793d5623f6a9272bd85a
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A8:2017-Insecure Deserialization
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-gpac-ad19e0c4
+  pattern: 'if ($EXPR->pixels) gf_free($EXPR->pixels);
+
+    '
+  pattern-not: "if ($EXPR->pixels) {\n  gf_free($EXPR->pixels);\n  $EXPR->pixels =\
+    \ NULL;\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing NULL assignment after freeing memory. This can lead
+    to use-after-free vulnerabilities if the pointer is accessed after being freed.
+    Ensure that the pointer is set to NULL after freeing to prevent such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/ad19e0c4504a89ca273442b1b1483ae7adfb9491
+    category: security
+    cwe:
+    - CWE-416
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/416.html
+    technology:
+    - c
+- id: vuln-gpac-0fc71487
+  pattern: 'char $VAR[500];
+
+    ...
+
+    $VAR[...] = ...;
+
+    '
+  pattern-not: "char $VAR[1025];\n...\n$VAR[1024] = 0;\nif (len>1024) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential buffer overflow vulnerability due to insufficient
+    buffer size.
+
+    The original code uses a fixed-size buffer of 500 bytes, which may not be sufficient
+    for all inputs, leading to buffer overflow.
+
+    This can be exploited to execute arbitrary code or cause a denial of service.
+
+    To fix this, increase the buffer size to 1025 bytes and add a length check to
+    ensure the input does not exceed the buffer size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/0fc714872ba4536a1190f93aa278b6e08f8c60df
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-gpac-613dbc57
+  pattern: "if ($VAR.decodingOffset <= INT32_MIN) {\n  ...\n}\n"
+  pattern-not: "if ($VAR.decodingOffset <= INT_MIN) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The comparison uses INT32_MIN, which is incorrect for the context. This
+    can lead to incorrect boundary checks and potential vulnerabilities. Use INT_MIN
+    instead to ensure proper boundary checking across different platforms.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/613dbc5702b09063b101cfc3d6ad74b45ad87521
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c
+- id: vuln-gpac-6c51ddec
+  pattern: "if ($NOW - $CTX->last_rcv_time < $CTX->timeout * 1000) {\n  ...\n}\n"
+  pattern-not: "if ($NOW - $CTX->last_rcv_time < $CTX->timeout) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability involves incorrect timeout calculation due to improper
+    unit conversion. The original code multiplies the timeout by 1000, which can lead
+    to incorrect behavior in timeout handling. This could result in premature or delayed
+    timeout detection, affecting the reliability of network operations. The fix removes
+    the multiplication by 1000, ensuring proper timeout calculation. Always verify
+    the units of time-related variables and ensure consistency in calculations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/6c51ddec7a1d8b9881e633188c88f73aae36a3ee
+    category: security
+    cwe:
+    - CWE-682
+    owasp: 'A9: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-gpac-c4a5109d
+  pattern: "if (saiz && saio) {\n  ...\n}\n"
+  pattern-not: "if (saiz && saio && senc) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for the presence of `saiz` and `saio` but fails to check
+    for `senc`, which could lead to undefined behavior or security vulnerabilities.
+    Always ensure all necessary conditions are checked before proceeding with operations
+    that depend on these variables. Add a check for `senc` to prevent potential issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/c4a5109dad73abe25ad12d8d529a728ae98d78ca
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c
+- id: vuln-gpac-eb71812f
+  pattern: 'fprintf(stderr, "\t%s\n", (char *) $UDTA);
+
+    '
+  pattern-not: "fprintf(stderr, \"\\t\");\nfor ($IDX=0; $IDX<$UDTA_SIZE; $IDX++) {\n\
+    \  if (!$UDTA[$IDX]) break;\n  fprintf(stderr, \"%c\", $UDTA[$IDX]);\n}\nfprintf(stderr,\
+    \ \"\\n\");\n"
+  pattern-inside: "if (gf_utf8_is_legal($UDTA, $UDTA_SIZE)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly prints user-controlled data using %s format specifier
+    without proper bounds checking,
+
+    which could lead to information disclosure or crashes if the data contains null
+    bytes or is malformed.
+
+    The fix adds proper bounds checking and character-by-character printing with null
+    byte handling.
+
+    Always validate and sanitize user-controlled data before printing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/eb71812fcc10e9c5348a5d1c61bd25b6fa06eaed
+    category: security
+    cwe: 'CWE-125: Out-of-bounds Read'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c
+- id: vuln-gpac-62dbd5ca
+  pattern: 'if (!$STSZ->sampleCount) ...
+
+    '
+  pattern-not: 'if (!$STSZ || !$STSZ->sampleCount) ...
+
+    '
+  languages:
+  - c
+  message: 'Null pointer dereference vulnerability detected. The code accesses `sampleCount`
+    without first checking if `stsz` is null. This can lead to a crash or undefined
+    behavior if `stsz` is null. Always check for null pointers before accessing their
+    members.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpac/gpac/commit/62dbd5caad6b89b33535dfa19ef65419f0378303
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - c

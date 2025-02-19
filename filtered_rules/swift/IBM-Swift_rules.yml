@@ -1,0 +1,25 @@
+rules:
+- id: vuln-kitura-91f7fb05
+  pattern: '.package(url: "https://github.com/IBM-Swift/Kitura-TemplateEngine.git",
+    from: "1.7.4")
+
+    '
+  pattern-not: '.package(url: "https://github.com/IBM-Swift/Kitura-TemplateEngine.git",
+    from: "2.0.0")
+
+    '
+  languages:
+  - swift
+  message: "The package version for Kitura-TemplateEngine is outdated and may contain\
+    \ security vulnerabilities. \nUpgrade to version 2.0.0 or later to ensure the\
+    \ latest security patches are applied.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/IBM-Swift/Kitura/commit/91f7fb05e575a06e7a792c64820d1697bafd46de
+    category: security
+    cwe: 'CWE-937: Using Components with Known Vulnerabilities'
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/IBM-Swift/Kitura-TemplateEngine
+    technology:
+    - swift

@@ -1,0 +1,228 @@
+rules:
+- id: vuln-opencv-4ca89db2
+  pattern: "if ($SIGNATURE.size() >= $M_SIGNATURE.size() &&\n    (!memcmp($SIGNATURE.c_str(),\
+    \ $M_SIGNATURE.c_str(), $M_SIGNATURE.size()) ||\n     !memcmp($SIGNATURE.c_str(),\
+    \ $M_SIGNATURE_ALT.c_str(), $M_SIGNATURE_ALT.size())))\n    return true;\n"
+  pattern-not: "if ($SIGNATURE.size() >= $M_SIGNATURE.size() &&\n    0 == memcmp($SIGNATURE.c_str(),\
+    \ $M_SIGNATURE.c_str(), $M_SIGNATURE.size()))\n    return true;\nif ($SIGNATURE.size()\
+    \ >= $M_SIGNATURE_ALT.size() &&\n    0 == memcmp($SIGNATURE.c_str(), $M_SIGNATURE_ALT.c_str(),\
+    \ $M_SIGNATURE_ALT.size()))\n    return true;\n"
+  languages:
+  - cpp
+  message: 'The code uses a logical OR (`||`) to combine multiple `memcmp` calls,
+    which can lead to incorrect validation of signatures. This can result in accepting
+    invalid or malicious data. The issue is fixed by separating the `memcmp` checks
+    into distinct `if` statements, ensuring each condition is evaluated independently.
+    To fix, separate the `memcmp` checks into individual `if` statements and ensure
+    proper validation of each signature.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/opencv/opencv/commit/4ca89db22dea962690f31c1781bce5937ee91837
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/697.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - cpp
+- id: vuln-passenger-fd3717a3
+  pattern: 'syscalls::open($PATH.c_str(), $FLAGS)
+
+    '
+  pattern-not: 'syscalls::openat($DIRFD, $FILENAME, $FLAGS | O_NOFOLLOW)
+
+    '
+  languages:
+  - cpp
+  message: "Detected unsafe file opening using syscalls::open without O_NOFOLLOW flag.\
+    \ \nThis can lead to symlink attacks where an attacker can manipulate the \nfilesystem\
+    \ to point to unintended files. Use syscalls::openat with \nO_NOFOLLOW flag to\
+    \ safely open files relative to a directory file descriptor.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/phusion/passenger/commit/fd3717a3cd357aa0e80e1e81d4dc94a1eaf928f1
+    category: security
+    cwe:
+    - CWE-59
+    - CWE-362
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://man7.org/linux/man-pages/man2/open.2.html
+    - https://man7.org/linux/man-pages/man2/openat.2.html
+    technology:
+    - cpp
+- id: vuln-opencv-3ece62cb
+  pattern: '$VAR_16 = v_load($VAR_PTR);
+
+    $VAR_SHIFTED_16 = v_extract<1>($VAR_16, $VAR_16);
+
+    v_expand($VAR_16, $VAR_8, $TMP);
+
+    v_expand($VAR_SHIFTED_16, $VAR_SHIFTED_8, $TMP);
+
+    '
+  pattern-not: '$VAR_8 = v_load_expand($VAR_PTR);
+
+    $VAR_SHIFTED_8 = v_load_expand($VAR_PTR + 1);
+
+    '
+  languages:
+  - cpp
+  message: 'The code uses a less efficient and potentially unsafe pattern for loading
+    and expanding data using `v_load` and `v_extract`. This can lead to performance
+    issues and potential memory access errors. Instead, use `v_load_expand` directly,
+    which is both safer and more efficient. This change was made in the OpenCV commit
+    3ece62cb9c62c66d3fcc314eb5327aa4c5bcb701 to improve performance and safety.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: https://github.com/opencv/opencv/commit/3ece62cb9c62c66d3fcc314eb5327aa4c5bcb701
+    category: performance
+    cwe:
+    - CWE-120
+    technology:
+    - cpp
+- id: vuln-exiv2-ab58026c
+  pattern: "int $VAR = sscanf($BUF, \"$FORMAT\", ...);\nif ($VAR != 3) {\n  ...\n\
+    }\n"
+  pattern-not: "int $VAR = sscanf($BUF, \"$FORMAT\", ...);\nif ($VAR != 3 || $DATE.year\
+    \ < 0 || $DATE.month < 1 || $DATE.month > 12 || $DATE.day < 1 || $DATE.day > 31)\
+    \ {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Incomplete date validation can lead to invalid date processing. The original
+    code only checks the number of parsed values but does not validate the actual
+    date values. This can result in invalid dates being processed, potentially causing
+    unexpected behavior or security issues. Always validate the individual components
+    of a date (year, month, day) to ensure they fall within valid ranges.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Exiv2/exiv2/commit/ab58026cff0e5edebc026261e9dc4b7db05b802d
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - cpp
+- id: vuln-clickhouse-fc6a25fa
+  pattern: 'return 1 + $TAIL_SIZE1 + $TAIL_SIZE2;
+
+    '
+  pattern-not: 'return $EXPECTED_SIZE;
+
+    '
+  languages:
+  - cpp
+  message: 'The return statement directly adds constants and variables without considering
+    the expected size, which can lead to incorrect buffer size calculations. This
+    is dangerous as it may cause buffer overflows or underflows, leading to memory
+    corruption or crashes. The fix involves returning the expected size directly,
+    ensuring proper buffer allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/ClickHouse/ClickHouse/commit/fc6a25fad562ccfcec76e83aa040b3d3ba2b9039
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - cpp
+- id: vuln-exiv2-b3d077dc
+  pattern: 'if ($SIZE < 2 || $O > $SIZE-2) throw Error($ERR);
+
+    '
+  pattern-not: 'if ($O+2 > $SIZE) throw Error($ERR);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potential buffer overflow vulnerability due to incorrect bounds
+    checking.
+
+    The original code checks if the offset is greater than size-2, which can lead
+    to accessing memory beyond the intended bounds.
+
+    This can result in memory corruption or crashes. The fix ensures proper bounds
+    checking by verifying that the offset plus the required size does not exceed the
+    total size.
+
+    Always ensure that bounds checks are correctly implemented to prevent buffer overflows.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/Exiv2/exiv2/commit/b3d077dcaefb6747fff8204490f33eba5a144edb
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp
+- id: vuln-ledger-7c0ae5b0
+  pattern: 'VERIFY(std::strlen($STR) < $LIMIT);
+
+    '
+  pattern-not: "if (std::strlen($STR) > $LIMIT) {\n    throw_(...);\n}\n"
+  languages:
+  - cpp
+  message: 'The use of VERIFY to check string length without proper error handling
+    can lead to undefined behavior if the condition fails. This is dangerous because
+    it may cause the program to continue execution in an invalid state, potentially
+    leading to crashes or security vulnerabilities. Replace VERIFY with a proper conditional
+    check that throws an exception or handles the error appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/ledger/ledger/commit/7c0ae5b02571e21f97d45f5d091cb78af9885713
+    category: security
+    cwe:
+    - 'CWE-617: Reachable Assertion'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    technology:
+    - cpp
+- id: vuln-tensorflow-aa0b852a
+  pattern: "if ((new_shape.size() == shape.size() + 1) && new_shape.back() == 1) {\n\
+    \  if (std::equal(shape.begin(), shape.end(), new_shape.begin()) &&\n      quant_dim\
+    \ == -1) {\n    quant_dim = shape.size() + quant_dim;\n  } else {\n    ...\n \
+    \ }\n}\n"
+  pattern-not: "if ((new_shape.size() == shape.size() + 1) && new_shape.front() ==\
+    \ 1) {\n  if (!(std::equal(shape.begin(), shape.end(), new_shape.begin() + 1)\
+    \ &&\n        quant_dim == new_shape.size() - 1)) {\n    ...\n  }\n}\n"
+  languages:
+  - cpp
+  message: "Detected incorrect handling of shape and quantization dimension in reshape\
+    \ operations. \nThe original code incorrectly shifts the quantization dimension\
+    \ when the new shape has an extra dimension at the end, \nwhich can lead to incorrect\
+    \ quantization and potential security vulnerabilities. \nThe fix ensures that\
+    \ the quantization dimension is correctly handled when the new shape has an extra\
+    \ dimension at the beginning.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/tensorflow/tensorflow/commit/aa0b852a4588cea4d36b74feb05d93055540b450
+    category: security
+    cwe:
+    - CWE-682
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp

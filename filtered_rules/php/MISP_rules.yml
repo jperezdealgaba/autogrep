@@ -1,0 +1,54 @@
+rules:
+- id: vuln-misp-7d5890b2
+  pattern: "if ($field != 'confirm_password') {\n  ...\n}\n"
+  pattern-not: "if ($field != 'confirm_password' && $field != 'enable_password') {\n\
+    \  ...\n}\n"
+  languages:
+  - php
+  message: "The code is missing a check for the 'enable_password' field, which could\
+    \ lead to unauthorized access or privilege escalation. \nThis is dangerous because\
+    \ it may allow attackers to bypass security controls by manipulating the 'enable_password'\
+    \ field. \nTo fix this, ensure that both 'confirm_password' and 'enable_password'\
+    \ fields are checked in the condition.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/7d5890b2fc63285f010d5845913894dd71cf232c
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - OWASP-A1
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php
+- id: vuln-misp-6a2986be
+  pattern: "$imgMime = mime_content_type($logo['tmp_name']);\n...\nif (!empty($logo['tmp_name'])\
+    \ && is_uploaded_file($logo['tmp_name'])) {\n    return move_uploaded_file($logo['tmp_name'],\
+    \ $DEST);\n}\n"
+  pattern-not: "$matches = null;\n$tmp_name = $logo['tmp_name'];\nif (preg_match_all('/[\\\
+    w\\/\\-\\.]*/', $tmp_name, $matches) && file_exists($logo['tmp_name'])) {\n  \
+    \  $tmp_name = $matches[0][0];\n    $imgMime = mime_content_type($tmp_name);\n\
+    } else {\n    throw new NotFoundException(__('Invalid file.'));\n}\nif (!empty($tmp_name)\
+    \ && is_uploaded_file($tmp_name)) {\n    return move_uploaded_file($tmp_name,\
+    \ $DEST);\n}\n"
+  languages:
+  - php
+  message: 'The code directly uses the uploaded file''s temporary name without proper
+    validation, which can lead to path traversal or file inclusion vulnerabilities.
+    An attacker could manipulate the file path to access or overwrite sensitive files.
+    To fix this, validate the file path using a regular expression and ensure the
+    file exists before processing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/6a2986be6aad6b37858b4869e238f517b295c111
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

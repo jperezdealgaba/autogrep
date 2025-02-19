@@ -1,0 +1,29 @@
+rules:
+- id: vuln-lychee-f4416bf0
+  pattern: "{\n  \"version\": \"7.18.6\",\n  \"resolved\": \"https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.18.6.tgz\"\
+    ,\n  \"integrity\": \"sha512-TDCmlK5eOvH+eH7cdAFlNXeVJqWIQ7gW9tY1GJIpUtFb6CmjVyq2VM3u71bOyR8CRihcCgMUYoDNyLXao3+70Q==\"\
+    ,\n  ...\n}\n"
+  pattern-not: "{\n  \"version\": \"7.22.13\",\n  \"resolved\": \"https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.22.13.tgz\"\
+    ,\n  \"integrity\": \"sha512-XktuhWlJ5g+3TJXc5upd9Ks1HutSArik6jf2eAjYFyIOf4ej3RN+184cZbzDvbPnuTJIUhPKKJE3cIsYTiAT3w==\"\
+    ,\n  ...\n}\n"
+  languages:
+  - json
+  message: 'Outdated version of @babel/code-frame detected. Using versions prior to
+    7.22.13 can expose the application to security vulnerabilities. Update to the
+    latest version to ensure all security patches are applied. The resolved URL and
+    integrity hash should also be updated to match the new version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/LycheeOrg/Lychee/commit/f4416bf054784fda55fecd3fdf1546c2d0562393
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://babeljs.io/docs/en/security
+    technology:
+    - json
+    - npm

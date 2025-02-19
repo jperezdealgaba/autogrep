@@ -1,0 +1,20 @@
+rules:
+- id: vuln-metersphere-5c5fd510
+  pattern: 'filterChainDefinitionMap.put("/resource/**", "anon")
+
+    '
+  pattern-not: 'filterChainDefinitionMap.put("/resource/md/get/", "anon")
+
+    '
+  languages:
+  - java
+  message: Potential security vulnerability due to overly permissive resource access.
+    The pattern '/resource/**' allows access to all resources under the /resource
+    path, which could expose sensitive files. Restrict access to specific paths instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/metersphere/metersphere/commit/5c5fd5102bceb05eb233c1d3c249edcfc665b8c2
+    category: security
+    cwe: CWE-552
+    owasp: A01:2021 - Broken Access Control
+    technology: java

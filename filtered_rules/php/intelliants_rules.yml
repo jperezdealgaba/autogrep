@@ -1,0 +1,26 @@
+rules:
+- id: vuln-subrion-f6263336
+  pattern: 'unserialize($_COOKIE[''$VAR''])
+
+    '
+  pattern-not: 'json_decode($_COOKIE[''$VAR''], true)
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe use of `unserialize` with cookie data. This can lead to
+    arbitrary object injection vulnerabilities if an attacker can control the cookie
+    value. Use `json_decode` with the `true` parameter for safe deserialization of
+    cookie data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/intelliants/subrion/commit/f626333611dbd74da916fcb9b12ea151072f02de
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A08:2021-Software and Data Integrity Failures
+    technology:
+    - php

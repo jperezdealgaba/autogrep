@@ -1,0 +1,17 @@
+rules:
+- id: vuln-react-adal-74158dba
+  pattern: "if ($A[$B] === $C.$D.$E) {\n  ...\n}\n"
+  pattern-not: "if ($A[$B] && $A[$B] === $C.$D.$E) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: Potential null/undefined reference vulnerability. Always check array elements
+    before comparison to avoid runtime errors.
+  severity: ERROR
+  metadata:
+    source-url: github.com/salvoravida/react-adal/commit/74158dba1647b12fe96fa401e306a6287fe9e2a9
+    category: security
+    cwe: CWE-476
+    owasp: A1
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology: javascript

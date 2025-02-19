@@ -1,0 +1,24 @@
+rules:
+- id: vuln-karma-ff7edbb2
+  pattern: "if (!/^https?:\\/\\//.test($RETURN_URL)) {\n  ...\n}\n"
+  pattern-not: "var isReturnUrlAllowed = false\nfor (var $I = 0; $I < this.config.allowedReturnUrlPatterns.length;\
+    \ $I++) {\n  var allowedReturnUrlPattern = new RegExp(this.config.allowedReturnUrlPatterns[$I])\n\
+    \  if (allowedReturnUrlPattern.test($RETURN_URL)) {\n    isReturnUrlAllowed =\
+    \ true\n    break\n  }\n}\nif (!isReturnUrlAllowed) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'Insecure URL validation detected. The code only checks if the URL starts
+    with ''http'' or ''https'', which is insufficient to prevent malicious redirects.
+    Use a whitelist of allowed URL patterns instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/karma-runner/karma/commit/ff7edbb2ffbcdd69761bece86b7dc1ef0740508d
+    category: security
+    cwe: CWE-601
+    owasp: A1:2017-Injection
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
+    technology:
+    - javascript

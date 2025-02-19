@@ -1,0 +1,560 @@
+rules:
+- id: vuln-wordpress-develop-6ef777e9
+  pattern: '$location = trim($LOCATION, " \t\n\r\0\x08\x0B");
+
+    '
+  pattern-not: '$location = wp_sanitize_redirect(trim($LOCATION, " \t\n\r\0\x08\x0B"));
+
+    '
+  languages:
+  - php
+  message: 'Detected a potentially unsafe redirect URL sanitization. Using only `trim()`
+    without proper sanitization can lead to open redirect vulnerabilities. An attacker
+    could craft a malicious URL that redirects users to an untrusted site. To fix
+    this, use `wp_sanitize_redirect()` to properly sanitize the URL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/6ef777e9a022bee2a80fa671118e7e2657e52693
+    category: security
+    cwe:
+    - CWE-601
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/601.html
+    technology:
+    - php
+- id: vuln-wordpress-c9e60dab
+  pattern: '$title = $basename;
+
+    '
+  pattern-not: '$title = sanitize_title($basename);
+
+    '
+  languages:
+  - php
+  message: 'The variable `$title` is assigned directly from `$basename` without sanitization,
+    which can lead to security vulnerabilities such as XSS (Cross-Site Scripting).
+    Always sanitize user input before using it in output to prevent malicious code
+    injection. Use `sanitize_title()` to properly sanitize the input.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/c9e60dab176635d4bfaaf431c0ea891e4726d6e0
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-wordpress-ce7fb293
+  pattern: "if (empty($VAR)) {\n  $VAR = $THIS->get_stylesheet();\n}\n"
+  pattern-not: "if (empty($VAR)) {\n  $VAR = esc_html($THIS->get_stylesheet());\n\
+    }\n"
+  languages:
+  - php
+  message: "Detected unescaped output from get_stylesheet() which could lead to XSS\
+    \ vulnerabilities. \nAlways sanitize or escape dynamic data before outputting\
+    \ it to prevent injection attacks.\nUse esc_html() or other appropriate escaping\
+    \ functions to secure the output.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/ce7fb2934dd111e6353784852de8aea2a938b359
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-wordpress-daf35898
+  pattern: '$prepared_args[''has_published_posts''] = true
+
+    '
+  pattern-not: '$prepared_args[''has_published_posts''] = get_post_types(array(''show_in_rest''
+    => true), ''names'')
+
+    '
+  languages:
+  - php
+  message: 'Hardcoding ''has_published_posts'' to true in REST API user queries can
+    lead to information disclosure by allowing unauthorized access to user data. This
+    should be restricted to post types that are explicitly allowed in the REST API
+    using get_post_types() with ''show_in_rest'' set to true.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/daf358983cc1ce0c77bf6d2de2ebbb43df2add60
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php
+- id: vuln-wordpress-4482f920
+  pattern: the_excerpt()
+  pattern-not: echo esc_html(get_the_excerpt())
+  languages:
+  - php
+  message: 'Directly outputting `the_excerpt()` without proper escaping can lead to
+    XSS vulnerabilities.
+
+    Always use `esc_html()` or similar escaping functions when outputting dynamic
+    content.
+
+    The fix involves using `echo esc_html(get_the_excerpt())` to ensure safe output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/4482f9207027de8f36630737ae085110896ea849
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://developer.wordpress.org/reference/functions/the_excerpt/
+    technology:
+    - php
+- id: vuln-wordpress-246a70bd
+  pattern: "if ($real_mime && ($real_mime !== $type) && (0 === strpos($real_mime,\
+    \ 'application'))) {\n  $allowed = get_allowed_mime_types();\n  if (!in_array($real_mime,\
+    \ $allowed)) {\n    ...\n  }\n}\n"
+  pattern-not: "if (in_array($real_mime, $nonspecific_types, true)) {\n  if (!in_array(substr($type,\
+    \ 0, strcspn($type, '/')), array('application', 'video', 'audio'))) {\n    $type\
+    \ = $ext = false;\n  }\n} elseif (0 === strpos($real_mime, 'video/') || 0 ===\
+    \ strpos($real_mime, 'audio/')) {\n  if (substr($real_mime, 0, strcspn($real_mime,\
+    \ '/')) !== substr($type, 0, strcspn($type, '/'))) {\n    $type = $ext = false;\n\
+    \  }\n} else {\n  if ($type !== $real_mime) {\n    $type = $ext = false;\n  }\n\
+    }\n"
+  languages:
+  - php
+  message: 'Detected a vulnerability where application mime types are not properly
+    vetted, potentially allowing unsafe file uploads. The code previously only checked
+    if the mime type was allowed without additional validation for specific application
+    types. This could lead to the upload of malicious files. The fix introduces additional
+    vetting for non-specific binary types and ensures that the major type matches
+    for video and audio files. Update the code to include these additional checks
+    to prevent unsafe file uploads.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/246a70bdbfac3bd45ff71c7941deef1bb206b19a
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/WordPress/WordPress/commit/246a70bdbfac3bd45ff71c7941deef1bb206b19a
+    technology:
+    - php
+- id: vuln-wordpress-fb3c6ea0
+  pattern: '$uris = array(''xmlns'', ''profile'', ''href'', ''src'', ''cite'', ''classid'',
+    ''codebase'', ''data'', ''usemap'', ''longdesc'', ''action'');
+
+    '
+  pattern-not: '$uris = wp_kses_uri_attributes();
+
+    '
+  languages:
+  - php
+  message: 'Hardcoding URI attributes in an array can lead to incomplete validation
+    of URL attributes, potentially allowing malicious URLs to bypass security checks.
+    This vulnerability can be exploited to inject harmful links or scripts. Use the
+    `wp_kses_uri_attributes()` function instead, which provides a comprehensive and
+    filterable list of URI attributes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/fb3c6ea0618fcb9a51d4f2c1940e9efcd4a2d460
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes
+    technology:
+    - php
+- id: vuln-wordpress-db8f915e
+  pattern: "if (!$content_length) {\n  $content_length = 65535;\n}\n"
+  pattern-not: "if (false === $content_length) {\n  $content_length = array(\n   \
+    \ 'type'   => 'byte',\n    'length' => 65535,\n  );\n} elseif (!is_array($content_length))\
+    \ {\n  $length = (int)$content_length > 0 ? (int)$content_length : 65535;\n  $content_length\
+    \ = array(\n    'type'   => 'byte',\n    'length' => $length\n  );\n}\n"
+  languages:
+  - php
+  message: 'Detected unsafe handling of content length in database operations. The
+    original code directly assigns a numeric value to $content_length without proper
+    type checking, which can lead to incorrect length calculations and potential security
+    issues. The fixed version properly handles content length by using an array structure
+    with type and length information.
+
+    This vulnerability can lead to incorrect database operations and potential security
+    issues when handling large content.
+
+    To fix this, ensure content length is properly validated and stored using an array
+    structure with ''type'' and ''length'' fields.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/db8f915ee6c236ee2f39e76781bf42367e3f1490
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://github.com/WordPress/WordPress/commit/db8f915ee6c236ee2f39e76781bf42367e3f1490
+    technology:
+    - php
+- id: vuln-wordpress-3d10fef2
+  pattern: 'echo sprintf( __( ''You are customizing %s'' ), ''<strong class="panel-title
+    site-title">'' . get_bloginfo( ''name'' ) . ''</strong>'' );
+
+    '
+  pattern-not: 'echo sprintf( __( ''You are customizing %s'' ), ''<strong class="panel-title
+    site-title">'' . get_bloginfo( ''name'', ''display'' ) . ''</strong>'' );
+
+    '
+  languages:
+  - php
+  message: 'The function get_bloginfo(''name'') is used without specifying the ''display''
+    context, which can lead to potential XSS vulnerabilities. Always use the ''display''
+    context when outputting blog information to ensure that any potentially unsafe
+    data is properly escaped.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/3d10fef22d788f29aed745b0f5ff6f6baea69af3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-wordpress-67d03a98
+  pattern: "if (empty($unfiltered)) {\n  unset($t['htm|html']);\n}\n"
+  pattern-not: "if (empty($unfiltered)) {\n  unset($t['htm|html'], $t['js']);\n}\n"
+  languages:
+  - php
+  message: 'This vulnerability occurs when unsafe HTML and JavaScript content is not
+    properly filtered, potentially leading to XSS attacks. The patch adds ''js'' to
+    the list of unset keys to ensure that JavaScript content is also filtered when
+    $unfiltered is empty. To fix this, make sure to unset both ''htm|html'' and ''js''
+    keys in the $t array when $unfiltered is empty.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/67d03a98c2cae5f41843c897f206adde299b0509
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-wordpress-eaf1cfdc
+  pattern: '$newuser_key = substr(md5($VAR), 0, $LENGTH);
+
+    '
+  pattern-not: '$newuser_key = wp_generate_password($LENGTH, false);
+
+    '
+  languages:
+  - php
+  message: 'Detected use of insecure password generation using `md5` with `substr`.
+    This method creates short, predictable keys that are vulnerable to brute-force
+    attacks. Use `wp_generate_password` instead to generate secure, random keys of
+    sufficient length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/eaf1cfdc1fe0bdffabd8d879c591b864d833326c
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - php
+- id: vuln-wordpress-develop-2ca15d1e
+  pattern: "if ( ! $wpdb->get_results( \"DESCRIBE $table;\" ) ) {\n  ...\n}\n"
+  pattern-not: "$described_table = $wpdb->get_results( \"DESCRIBE $table;\" );\nif\
+    \ ( is_array( $described_table ) && count( $described_table ) === 0 ) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: 'Directly using the result of `get_results` in a conditional check can
+    lead to incorrect logic due to potential false negatives. Instead, store the result
+    in a variable and explicitly check if it is an empty array. This ensures proper
+    handling of the database query results and prevents potential security issues
+    related to incorrect table existence checks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/2ca15d1e5ce70493c5c0c096ca0c76503d6da07c
+    category: security
+    cwe:
+    - CWE-480
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php
+- id: vuln-wordpress-54720a14
+  pattern: '$this->filename = $_GET[$VAR];
+
+    '
+  pattern-not: '$this->filename = sanitize_file_name($_GET[$VAR]);
+
+    '
+  languages:
+  - php
+  message: 'Directly assigning user input from $_GET to a filename without sanitization
+    can lead to path traversal or file inclusion vulnerabilities. This allows attackers
+    to manipulate the file path and potentially access or overwrite sensitive files.
+    Always sanitize user input using `sanitize_file_name()` or similar functions to
+    ensure the filename is safe.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/54720a14d85bc1197ded7cb09bd3ea790caa0b6e
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-78
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php
+- id: vuln-wordpress-develop-c09ccfbc
+  pattern: '$alias = $sibling[''alias''];
+
+    '
+  pattern-not: '$alias = preg_replace(''/\W/'', ''_'', $sibling[''alias'']);
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of `$sibling[''alias'']` to `$alias` without sanitization
+    can lead to SQL injection or other security vulnerabilities. The alias should
+    be sanitized to remove any non-word characters using `preg_replace(''/\W/'', ''_'',
+    $sibling[''alias''])`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/c09ccfbc547d75b392dbccc1ef0b4442ccd3c957
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php
+- id: vuln-wordpress-a2904cc3
+  pattern: 'if ( ! current_user_can( ''read_post'', $VAR->ID ) )
+
+    '
+  pattern-not: 'if ( ! current_user_can( ''edit_post'', $VAR->ID ) )
+
+    '
+  languages:
+  - php
+  message: 'Detected use of ''read_post'' capability check instead of ''edit_post''.
+    This can lead to unauthorized access to post editing functionality. Always use
+    ''edit_post'' capability check to ensure proper authorization for post modifications.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/a2904cc3092c391ac7027bc87f7806953d1a25a1
+    category: security
+    cwe: 'CWE-285: Improper Authorization'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://developer.wordpress.org/reference/functions/current_user_can/
+    technology:
+    - php
+- id: vuln-wordpress-develop-4354d1fc
+  pattern: "if ($user_email !== $old_user_data->user_email) {\n  ...\n}\n"
+  pattern-not: "if ($user_email !== $old_user_data->user_email || $user_pass !== $old_user_data->user_pass)\
+    \ {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'This rule detects a vulnerability where changing a user''s email does
+    not invalidate their password reset key. This can allow an attacker to maintain
+    access to an account even after the email has been changed. To fix this, ensure
+    that both email and password changes invalidate the password reset key by adding
+    a check for `$user_pass !== $old_user_data->user_pass` in the condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/4354d1fc5cd55a18bc24555b11db201d5eb87e0c
+    category: security
+    cwe:
+    - CWE-640
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php
+- id: vuln-wordpress-22d95abc
+  pattern: '$VAR == $EXPR
+
+    '
+  pattern-not: '$VAR === $EXPR
+
+    '
+  languages:
+  - php
+  message: 'Detected use of loose comparison (==) instead of strict comparison (===)
+    in PHP code. Loose comparison can lead to unexpected type coercion and security
+    vulnerabilities, especially when comparing user input or sensitive values. Always
+    use strict comparison (===) to ensure both value and type match.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/22d95abc55824e83904dc0fef290464b6bec7708
+    category: security
+    cwe: 'CWE-697: Incorrect Comparison'
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://www.php.net/manual/en/language.operators.comparison.php
+    technology:
+    - php
+- id: vuln-wordpress-70b21279
+  pattern: 'if (isset($VAR) && is_array($VAR))
+
+    '
+  pattern-not: 'if (is_array($VAR) && count($ARGS) == 1)
+
+    '
+  languages:
+  - php
+  message: 'The code checks if a variable is set and is an array, but does not verify
+    if it is the only argument. This can lead to unexpected behavior when multiple
+    arguments are passed. Ensure that the array is the only argument by adding a count
+    check.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/70b21279098fc973eae803693c0705a548128e48
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/WordPress/WordPress/commit/70b21279098fc973eae803693c0705a548128e48
+    technology:
+    - php
+- id: vuln-wordpress-develop-1d1d5be7
+  pattern: "if (!empty($request['sticky']) && !current_user_can($post_type->cap->edit_others_posts))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if (!empty($request['sticky']) && !current_user_can($post_type->cap->edit_others_posts)\
+    \ && !current_user_can($post_type->cap->publish_posts)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code is missing a check for the ''publish_posts'' capability when
+    handling sticky posts. This could allow users without the necessary permissions
+    to modify sticky posts, leading to unauthorized changes. To fix this, ensure the
+    ''publish_posts'' capability is checked alongside ''edit_others_posts''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/1d1d5be7aa94608c04516cac4238e8c22b93c1d9
+    category: security
+    cwe: 'CWE-285: Improper Authorization'
+    owasp: A01:2021 - Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A01_2021-Broken_Access_Control/
+    technology:
+    - php
+- id: vuln-wordpress-develop-0977c0d6
+  pattern: 'wp_editor($POST->post_content, $EDITOR_ID, $EDITOR_ARGS);
+
+    '
+  pattern-not: 'wp_editor(format_to_edit($POST->post_content), $EDITOR_ID, $EDITOR_ARGS);
+
+    '
+  languages:
+  - php
+  message: 'The wp_editor function is being called without properly sanitizing the
+    post content, which could lead to potential XSS vulnerabilities. Always sanitize
+    user input before passing it to wp_editor using format_to_edit or another appropriate
+    sanitization function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/wordpress-develop/commit/0977c0d6b241479ecedfe19e96be69f727c3f81f
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://developer.wordpress.org/reference/functions/wp_editor/
+    - https://developer.wordpress.org/reference/functions/format_to_edit/
+    technology:
+    - php
+- id: vuln-wordpress-80436385
+  pattern: '$same_host = ( strtolower( $parsed_home[''host''] ) === strtolower( $parsed_url[''host'']
+    ) || ''localhost'' === strtolower( $parsed_url[''host''] ) );
+
+    '
+  pattern-not: '$same_host = strtolower( $parsed_home[''host''] ) === strtolower(
+    $parsed_url[''host''] );
+
+    '
+  languages:
+  - php
+  message: 'Security vulnerability detected: The code allows ''localhost'' as a valid
+    host without proper validation, which can lead to security issues such as SSRF
+    (Server-Side Request Forgery). Always validate hostnames strictly and avoid special
+    cases like ''localhost'' unless explicitly required and properly secured. Fix
+    by removing the ''localhost'' check and ensuring strict hostname comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/WordPress/WordPress/commit/804363859602d4050d9a38a21f5a65d9aec18216
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php

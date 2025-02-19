@@ -1,0 +1,58 @@
+rules:
+- id: vuln-libgcrypt-6199cd96
+  pattern: 'memcpy($DST, $SRC, $LEN);
+
+    ...
+
+    memcpy($DST + $OFFSET, $SRC + $OFFSET, $LEN2);
+
+    '
+  pattern-not: "memcpy($DST, $SRC, $LEN);\n...\nif ($SRC + $BLOCKLEN < $PEND)\n  memcpy($DST,\
+    \ $SRC, $BLOCKLEN);\n"
+  languages:
+  - c
+  message: 'Detected a potentially unsafe memory copy operation that may lead to buffer
+    overflow or memory corruption. The original code copies memory without proper
+    boundary checks, which can result in overwriting adjacent memory regions. Ensure
+    proper boundary checks are performed before memory operations to prevent such
+    vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpg/libgcrypt/commit/6199cd963d1fba86e0b7b9e2de4b6c00b945193a
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-libgcrypt-707c3c5c
+  pattern: 'gen_k($P, 1)
+
+    '
+  pattern-not: 'gen_k($P)
+
+    '
+  languages:
+  - c
+  message: 'Detected use of insecure ''small_k'' parameter in gen_k function. This
+    can lead to weak encryption keys, especially when used for signing. The ''small_k''
+    parameter was removed to ensure that keys are generated with sufficient strength.
+    Always use the version of gen_k without the ''small_k'' parameter to maintain
+    cryptographic security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/gpg/libgcrypt/commit/707c3c5c511ee70ad0e39ec613471f665305fbea
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    technology:
+    - c

@@ -1,0 +1,28 @@
+rules:
+- id: vuln-zitadel-c353f82f
+  pattern: '<span class="cnsl-type" [innerHtml]="$VAR"></span>
+
+    '
+  pattern-not: '<span class="cnsl-type">{{ $VAR }}</span>
+
+    '
+  languages:
+  - html
+  message: 'Detected unsafe use of [innerHtml] binding in Angular templates. This
+    can lead to XSS vulnerabilities if the bound content contains malicious HTML.
+    Use interpolation ({{ }}) instead to safely render content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/zitadel/zitadel/commit/c353f82f89c6982c0888c6763363296cf4263cb2
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://angular.io/guide/security#xss
+    technology:
+    - html
+    - angular

@@ -1,0 +1,84 @@
+rules:
+- id: vuln-phpipam-16e7a94f
+  pattern: '$field[''ftype''] = $field[''fieldType'']."(".$field[''fieldSize''].")"
+
+    '
+  pattern-not: '$field[''ftype''] = $field[''fieldType'']."( :enumset )"
+
+    '
+  languages:
+  - php
+  message: 'Detected direct string concatenation of field type and size which could
+    lead to SQL injection vulnerabilities.
+
+    This is dangerous because it allows for unparameterized SQL queries, making the
+    application vulnerable to SQL injection attacks.
+
+    To fix this, use parameterized queries with placeholders like '':enumset'' and
+    bind the parameters separately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/16e7a94fb69412e569ccf6f2fe0a1f847309c922
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-phpipam-ee5ef63f
+  pattern: "if(isset($_COOKIE['phpipamredirect'])) {\n  ...\n  print \"<input type='hidden'\
+    \ name='phpipamredirect' id='phpipamredirect' value='\".@$_COOKIE['phpipamredirect'].\"\
+    '>\";\n  ...\n}\n"
+  pattern-not: "if(!empty($_COOKIE['phpipamredirect'])) {\n  ...\n  print \"<input\
+    \ type='hidden' name='phpipamredirect' id='phpipamredirect' value='\".escape_input($_COOKIE['phpipamredirect']).\"\
+    '>\";\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where cookie values are used
+    without proper validation or escaping. This can lead to Cross-Site Scripting (XSS)
+    attacks if the cookie value is controlled by an attacker. Use `!empty()` instead
+    of `isset()` to ensure the cookie is not empty, and always escape user inputs
+    with `escape_input()` before using them in output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/ee5ef63fb5774f12ed580a8b3e6e05d3e61dfcdc
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php
+- id: vuln-phpipam-fd37bd8f
+  pattern: 'include("$FILE");
+
+    '
+  pattern-not: 'require("$FILE");
+
+    '
+  languages:
+  - php
+  message: "Using include() instead of require() for critical files can lead to security\
+    \ vulnerabilities \nif the file is missing, as execution will continue silently.\
+    \ This can allow attackers to \nbypass security checks or cause unexpected behavior.\
+    \ Always use require() for critical \nfile inclusions to ensure execution stops\
+    \ if the file is not found.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/phpipam/phpipam/commit/fd37bd8fb2b9c306079db505e0e3fe79a096c31c
+    category: security
+    cwe:
+    - CWE-471
+    owasp: A6:2017-Security Misconfiguration
+    technology:
+    - php

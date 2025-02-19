@@ -1,0 +1,48 @@
+rules:
+- id: vuln-libsixel-b418f351
+  pattern: "if ($P < $END && *$P == '\\n') {\n  ...\n}\n"
+  pattern-not: "if ($P < $END && *$P < ' ') {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks only for newline characters, potentially missing other
+    invalid control characters. This can lead to incorrect parsing of input data,
+    which may result in security vulnerabilities such as buffer overflows or data
+    corruption. The fix should check for all invalid control characters (ASCII values
+    less than '' '').
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/saitoha/libsixel/commit/b418f351f348d8273282f3fec6425b6b4e1d91da
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - c
+- id: vuln-libsixel-7808a06b
+  pattern: 'gif_lzw $VAR[4096];
+
+    '
+  pattern-not: 'gif_lzw $VAR[1 << gif_lzw_max_code_size];
+
+    '
+  languages:
+  - c
+  message: "Detected a potentially unsafe fixed-size array declaration for LZW codes.\
+    \ \nThe original code uses a hardcoded size of 4096, which could lead to buffer\
+    \ overflows if the input exceeds this size. \nEnsure the array size is dynamically\
+    \ calculated based on the maximum code size constant.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/saitoha/libsixel/commit/7808a06b88c11dbc502318cdd51fa374f8cd47ee
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

@@ -1,0 +1,134 @@
+rules:
+- id: vuln-fuel-cms-dff5edd9
+  pattern: "$this->upload->mimes['php'] = array(\n  'application/x-httpd-php', \n\
+    \  'application/php', \n  'application/x-php', \n  'text/php', \n  'text/html',\
+    \ \n  'text/x-php', \n  'application/x-httpd-php-source', \n  'text/plain'\n);\n"
+  pattern-not: "$this->upload->mimes['php'] = array(\n  'application/x-httpd-php',\
+    \ \n  'application/php', \n  'application/x-php', \n  'text/php', \n  'text/x-php',\
+    \ \n  'application/x-httpd-php-source'\n);\n"
+  languages:
+  - php
+  message: 'The mime type configuration for PHP files includes ''text/plain'', which
+    can allow malicious PHP files to be uploaded and executed. This is dangerous because
+    it bypasses security checks that rely on mime types. Remove ''text/plain'' from
+    the allowed mime types for PHP files to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/dff5edd9d7a910872ddd307b43e4a9a2dd401ab7
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php
+- id: vuln-fuel-cms-6c72834a
+  pattern: '$filter_callback = create_function(''$a'', ''return preg_match(\''#^''.$filter.''$#\'',
+    $a);'');
+
+    '
+  pattern-not: '$filter_callback = create_function(''$a'', ''return preg_match(\''#^''.addslashes($filter).''$#\'',
+    $a);'');
+
+    '
+  languages:
+  - php
+  message: "The use of `create_function` with unescaped user input in `preg_match`\
+    \ can lead to code injection vulnerabilities. \nThis is dangerous because it allows\
+    \ attackers to manipulate the regular expression pattern, potentially executing\
+    \ arbitrary code. \nTo fix this, always escape user input using `addslashes` or\
+    \ other appropriate sanitization functions before including it in the pattern.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/6c72834a0d8d3bc34604b9ae0dbb6eef32c0070e
+    category: security
+    cwe:
+    - CWE-94
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-fuel-cms-c8d9381d
+  pattern: '$this->db->order_by(str_replace('' '', '''', $COL), str_replace('' '',
+    '''', $ORDER), $FALSE)
+
+    '
+  pattern-not: '$this->db->order_by($this->db->escape($COL), $this->db->escape($ORDER),
+    $FALSE)
+
+    '
+  languages:
+  - php
+  message: "Detected unsafe usage of `order_by` with `str_replace` which can lead\
+    \ to SQL injection. \nThe `str_replace` function does not properly sanitize input,\
+    \ allowing attackers to inject malicious SQL code. \nUse `$this->db->escape` to\
+    \ properly sanitize the input and prevent SQL injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/c8d9381d39b1c0f5488cf059ea9aa659ee227da4
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php
+- id: vuln-fuel-cms-4996da1e
+  pattern: '$save[''message''] = $msg;
+
+    '
+  pattern-not: '$save[''message''] = xss_clean($msg);
+
+    '
+  languages:
+  - php
+  message: 'Detected potential XSS vulnerability due to unvalidated user input being
+    assigned to a message field. This can allow attackers to inject malicious scripts
+    into the application, leading to security breaches. To fix this, ensure that user
+    input is sanitized using a function like `xss_clean()` before being assigned to
+    the message field.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/4996da1edc55b4f2964fa062156fbc2e5fab0802
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-fuel-cms-71aeea9f
+  pattern: 'preg_replace(''#(<[^>]*)onerror=|onload=(.+>)#Uis'', ''$1$2'', $STR)
+
+    '
+  pattern-not: 'preg_replace(''#(<[^>]*)onerror=|onload=|ontoggle=(.+>)#Uis'', ''$1$2'',
+    $STR)
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to XSS attacks due to insufficient sanitization
+    of HTML attributes. The `preg_replace` function does not remove the `ontoggle`
+    attribute, which can be exploited to execute malicious JavaScript. This can lead
+    to Cross-Site Scripting (XSS) vulnerabilities. To fix this, ensure that all event
+    handler attributes, including `ontoggle`, are removed from HTML strings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/71aeea9f4d78c9892201a92c636790fefcf0c3f9
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

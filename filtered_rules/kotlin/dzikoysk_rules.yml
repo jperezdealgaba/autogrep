@@ -1,0 +1,35 @@
+rules:
+- id: vuln-reposilite-84817373
+  pattern: "jarFile.entries().asSequence().forEach { file ->\n  if (file.isDirectory)\
+    \ {\n    return@forEach\n  }\n  val path = Paths.get($UNSAFE_PATH + \"/\" + file.name)\n\
+    \  path.parent?.also { parent -> Files.createDirectories(parent) }\n  jarFile.getInputStream(file).copyToAndClose(path.outputStream())\n\
+    }.asSuccess<Unit, ErrorResponse>()\n"
+  pattern-not: "jarFile\n  .entries()\n  .asSequence()\n  .forEach { file ->\n   \
+    \ if (file.isDirectory) {\n      return@forEach\n    }\n    val processedArchiveFileLocation\
+    \ = file.name.toLocation()\n    processedArchiveFileLocation\n      .toPath()\n\
+    \      .map { javadocUnpackPath.resolve(it) }\n      .peek {\n        it.parent?.also\
+    \ { parent -> Files.createDirectories(parent) }\n        jarFile.getInputStream(file).copyToAndClose(it.outputStream())\n\
+    \      }\n      .onError {\n        failureFacade.throwException(\n          \"\
+    Malicious resource path detected: $processedArchiveFileLocation in $jarPath\"\
+    ,\n          IllegalArgumentException(\"Malicious resource path detected: $it\"\
+    )\n        )\n      }\n  }.asSuccess<Unit, ErrorResponse>()\n"
+  languages:
+  - kotlin
+  message: "Detected unsafe handling of archive file paths which can lead to path\
+    \ traversal vulnerabilities. \nThe code directly uses the file name from the archive\
+    \ to construct a file path, allowing attackers to inject malicious paths. \nTo\
+    \ fix this, validate and sanitize the file path using a method like `toLocation()`\
+    \ to ensure it is safe before processing.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/dzikoysk/reposilite/commit/848173738e4375482c70365db5cebae29f125eaa
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - kotlin

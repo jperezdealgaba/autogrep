@@ -1,0 +1,26 @@
+rules:
+- id: vuln-eonweb-eba48a26
+  pattern: '$sessid = substr(strtolower(md5(microtime().rand(1000, 9999))), 0, 25)
+
+    '
+  pattern-not: '$sessid = session_id()
+
+    '
+  languages:
+  - php
+  message: "Using a custom session ID generation mechanism based on md5 and microtime\
+    \ is insecure. \nThis can lead to predictable session IDs, making the application\
+    \ vulnerable to session hijacking attacks. \nUse PHP's built-in session_id() function\
+    \ instead, which generates secure session IDs.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/EyesOfNetworkCommunity/eonweb/commit/eba48a26cfa2af4b7964c5be818bdabd9433ea36
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

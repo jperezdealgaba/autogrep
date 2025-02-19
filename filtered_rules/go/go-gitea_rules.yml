@@ -1,0 +1,131 @@
+rules:
+- id: vuln-gitea-242f7f1a
+  pattern: 'var $VAR = make([]$TYPE, 0, len($ARG))
+
+    '
+  pattern-not: '$VAR := make([]$TYPE, 0, len($ARG))
+
+    '
+  languages:
+  - go
+  message: 'Detected use of `var` keyword for slice initialization. Using `:=` for
+    slice initialization is preferred for consistency and readability. Replace `var
+    $VAR = make([]$TYPE, 0, len($ARG))` with `$VAR := make([]$TYPE, 0, len($ARG))`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/242f7f1a528af0b85ad0dd6fa88ed2d889b92385
+    category: style
+    technology:
+    - go
+- id: vuln-gitea-7d2700c8
+  pattern: 'ctx.Error($STATUS)
+
+    '
+  pattern-not: 'ctx.Error($STATUS, $ERROR_CODE, $MESSAGE)
+
+    '
+  languages:
+  - go
+  message: 'Detected an API error response without a proper error code and message.
+    This can lead to unclear error handling and potential security issues. Always
+    include a specific error code and message when returning errors in API responses
+    to ensure proper error handling and security.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/7d2700c8be5da8f2073a576dae209ae07ac6ed22
+    category: security
+    cwe:
+    - 'CWE-209: Information Exposure Through an Error Message'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - go
+- id: vuln-gitea-0c3f9503
+  pattern: 'filepath.Dir($VAR)
+
+    '
+  pattern-not: 'path.Dir($VAR)
+
+    '
+  languages:
+  - go
+  message: 'Detected use of `filepath.Dir` instead of `path.Dir`. The `filepath.Dir`
+    function is platform-dependent and may cause inconsistencies in path handling
+    across different operating systems. Use `path.Dir` for consistent path manipulation,
+    especially in web contexts where paths are typically URL-based and should be handled
+    uniformly regardless of the underlying OS.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/0c3f95034a91a448ae0d96d88a0d8b0f53a9b4a7
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://pkg.go.dev/path
+    - https://pkg.go.dev/path/filepath
+    technology:
+    - go
+- id: vuln-gitea-ea20adaa
+  pattern: 'builder.Expr("id IN (SELECT repo_id FROM `access` WHERE access.user_id
+    = ?)", $OPTS.OwnerID)
+
+    '
+  pattern-not: 'builder.Expr("repository.id IN (SELECT repo_id FROM `access` WHERE
+    access.user_id = ?)", $OPTS.OwnerID)
+
+    '
+  languages:
+  - go
+  message: 'The SQL query uses ''id'' directly without specifying the table name,
+    which can lead to ambiguous column references. This can cause incorrect results
+    or errors if multiple tables have an ''id'' column. Always specify the table name
+    when referencing columns in SQL queries.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/ea20adaa84cbff762fcaa7f2d5fa6b7bf56706ec
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - go
+- id: vuln-gitea-e00e8d8a
+  pattern: '$VAR = sec.Key("DISABLE_GIT_HOOKS").MustBool(false)
+
+    '
+  pattern-not: '$VAR = sec.Key("DISABLE_GIT_HOOKS").MustBool(true)
+
+    '
+  languages:
+  - go
+  message: 'The configuration setting `DISABLE_GIT_HOOKS` is set to `false`, which
+    can allow untrusted git hooks to execute. This is dangerous because it can lead
+    to arbitrary code execution. To fix this, set `DISABLE_GIT_HOOKS` to `true` to
+    prevent the execution of potentially malicious git hooks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/go-gitea/gitea/commit/e00e8d8ad391ded1316d9dade4d2542199141be6
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - go

@@ -1,0 +1,32 @@
+rules:
+- id: vuln-qiita-markdown-5a5ffe53
+  pattern: '$PORT = URI.parse($URL).port
+
+    Addressable::URI.parse($URL).host if [443, 80].include? $PORT
+
+    '
+  pattern-not: '$SCHEME = URI.parse($URL).scheme
+
+    Addressable::URI.parse($URL).host if ["http", "https"].include? $SCHEME
+
+    '
+  languages:
+  - ruby
+  message: 'Detected a security vulnerability where the host is allowed based on the
+    port number instead of the scheme. This can lead to bypassing security checks
+    by using non-standard ports. Always validate the URL scheme to ensure it is either
+    "http" or "https" to prevent potential security risks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/increments/qiita-markdown/commit/5a5ffe53647ed4293f48632daf961d9cef095a45
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - ruby

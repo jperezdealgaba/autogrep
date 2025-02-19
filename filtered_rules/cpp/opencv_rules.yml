@@ -1,0 +1,26 @@
+rules:
+- id: vuln-opencv-7bbe1a53
+  pattern: 'memcpy($DST, $SRC, CV_ELEM_SIZE1($TYPE)*$WIDTH);
+
+    '
+  pattern-not: 'memcpy($DST, $SRC, $IMG.elemSize1()*$WIDTH);
+
+    '
+  languages:
+  - cpp
+  message: 'Detected a potentially unsafe use of `memcpy` with `CV_ELEM_SIZE1`. This
+    can lead to incorrect buffer sizes being calculated, potentially causing buffer
+    overflows or underflows. Use `elemSize1()` instead to ensure the correct element
+    size is used.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opencv/opencv/commit/7bbe1a53cfc097b82b1589f7915a2120de39274c
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-120
+    owasp: 'A1: Injection'
+    technology:
+    - cpp

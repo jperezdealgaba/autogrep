@@ -1,0 +1,43 @@
+rules:
+- id: vuln-wekan-ba336de7
+  pattern: 'const $CHAIN_LINES = $SETTINGS_GET(''LDAP_CA_CERT'').split(''\n'');
+
+    '
+  pattern-not: 'const $CHAIN_LINES = $SETTINGS_GET(''LDAP_CA_CERT'').replace(/\\n/g,''\n'').split(''\n'');
+
+    '
+  languages:
+  - javascript
+  message: Improper handling of certificate chain lines in LDAP_CA_CERT. The certificate
+    chain may contain escaped newlines (\n) which need to be properly converted to
+    actual newlines before splitting. This could lead to improper certificate validation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/wekan/wekan/commit/ba336de74baf42bfa4be5375c42775d08739e793
+    category: security
+    cwe: CWE-295
+    owasp: A02:2021-Cryptographic Failures
+    technology:
+    - javascript
+- id: vuln-wekan-31f89121
+  pattern: 'reject_unauthorized : $SETTINGS || false
+
+    '
+  pattern-not: 'reject_unauthorized : $SETTINGS || true
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure LDAP configuration detected. The ''reject_unauthorized'' option
+    was set to false, which could allow unauthorized LDAP connections. This should
+    be set to true to enforce proper certificate validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wekan/wekan/commit/31f89121fecca5a761b05cc3a26d4f237e90b484
+    category: security
+    cwe: CWE-295
+    owasp: A2:2017-Broken Authentication
+    technology:
+    - javascript

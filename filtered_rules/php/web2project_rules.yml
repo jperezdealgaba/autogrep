@@ -1,0 +1,30 @@
+rules:
+- id: vuln-web2project-eead99b3
+  pattern: 'preg_replace("/<>''\"\[\]{}:;/", "", $_result)
+
+    '
+  pattern-not: 'preg_replace("/<>\`''\"\[\]{}():;/", "", $_result)
+
+    '
+  languages:
+  - php
+  message: 'The regular expression used in `preg_replace` does not properly sanitize
+    input by excluding backticks (`) and parentheses. This can lead to potential code
+    injection vulnerabilities. The fix includes adding backticks and parentheses to
+    the list of characters to be removed. Ensure all dangerous characters are properly
+    sanitized to prevent injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/web2project/web2project/commit/eead99b36f62a8222d9f3a913f1a2268200687ef
+    category: security
+    cwe:
+    - CWE-116
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php

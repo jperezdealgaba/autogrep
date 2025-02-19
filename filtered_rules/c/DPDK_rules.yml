@@ -1,0 +1,22 @@
+rules:
+- id: vuln-dpdk-e7debf60
+  pattern: "if ($DEV->inflight_info->fd > 0) {\n  ...\n}\n"
+  pattern-not: "if ($DEV->inflight_info->fd >= 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code incorrectly checks if a file descriptor is greater than 0 instead
+    of greater than or equal to 0. This can lead to resource leaks if the file descriptor
+    is not properly closed when it is 0. The correct check should be `if (dev->inflight_info->fd
+    >= 0)` to ensure all valid file descriptors are handled correctly. This vulnerability
+    can cause resource exhaustion and potential security issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DPDK/dpdk/commit/e7debf602633feb26227cdc8cc7fdd1b1b40946a
+    category: security
+    cwe:
+    - CWE-772
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

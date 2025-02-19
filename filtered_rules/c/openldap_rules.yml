@@ -1,0 +1,47 @@
+rules:
+- id: vuln-openldap-21981053
+  pattern: "if ($VAR != NULL) {\n  vrFilter_free($OP, $VAR);\n}\n"
+  pattern-not: "if ($VAR != NULL) {\n  vrFilter_free($OP, $VAR);\n  $VAR = NULL;\n\
+    }\n"
+  languages:
+  - c
+  message: 'Detected a missing NULL assignment after freeing a pointer. This can lead
+    to use-after-free vulnerabilities if the pointer is accessed after being freed.
+    To fix this, always set the pointer to NULL after freeing it to prevent accidental
+    reuse.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openldap/openldap/commit/21981053a1195ae1555e23df4d9ac68d34ede9dd
+    category: security
+    cwe:
+    - CWE-416
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-openldap-91dccd25
+  pattern: "if ( $VAR[0] != '{' && $VAR[$LEN-1] != '}' ) {\n  ...\n}\n"
+  pattern-not: "if ( $VAR[0] != '{' || $VAR[$LEN-1] != '}' ) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The condition checks for the presence of curly braces at the beginning
+    and end of a string using the logical AND operator (&&) instead of the logical
+    OR operator (||). This can lead to incorrect validation, potentially allowing
+    malformed input to bypass checks. Use the logical OR operator (||) to ensure that
+    either condition being true results in the check failing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openldap/openldap/commit/91dccd25c347733b365adc74cb07d074512ed5ad
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A03:2021 - Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/697.html
+    technology:
+    - c

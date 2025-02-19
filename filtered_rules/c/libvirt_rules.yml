@@ -1,0 +1,295 @@
+rules:
+- id: vuln-libvirt-b7ff9e69
+  pattern: 'return &$PROG->procs[$PROCEDURE];
+
+    '
+  pattern-not: "$PROC = &$PROG->procs[$PROCEDURE];\nif (!$PROC->func)\n    return\
+    \ NULL;\nreturn $PROC;\n"
+  languages:
+  - c
+  message: 'Directly returning a pointer from an array without checking its validity
+    can lead to NULL pointer dereference vulnerabilities. This could cause crashes
+    or undefined behavior if the function pointer is NULL. Always check the validity
+    of the returned pointer before using it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/b7ff9e696063189a715802d081d55a398663c15a
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-libvirt-87b9437f
+  pattern: '$RET = $BACKEND->uploadVol($CONN, $POOL, $VOL, $STREAM, $OFFSET, $LENGTH,
+    $FLAGS);
+
+    '
+  pattern-not: "if (($RET = $BACKEND->uploadVol($CONN, $POOL, $VOL, $STREAM, $OFFSET,\
+    \ $LENGTH, $FLAGS)) < 0)\n    goto $CLEANUP;\n"
+  languages:
+  - c
+  message: 'The function `uploadVol` is called without checking its return value,
+    which can lead to unhandled errors. This is dangerous because it may cause the
+    program to continue execution with an undefined state, potentially leading to
+    security vulnerabilities or crashes. To fix this, always check the return value
+    of `uploadVol` and handle errors appropriately, for example by using a `goto`
+    to a cleanup section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/87b9437f8951f9d24f9a85c6bbfff0e54df8c984
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c
+- id: vuln-libvirt-7c2d65dd
+  pattern: 'fchmod($FD, $PERMS->mode)
+
+    '
+  pattern-not: 'fchmod($FD, ($PERMS->mode == (mode_t) -1 ? $DEFAULT_MODE : $PERMS->mode))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe use of file permissions without default fallback. This
+    can lead to insecure file permissions if the mode is not properly set. Always
+    use a safe default mode when the specified mode is invalid (e.g., (mode_t) -1).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/7c2d65dde2595c07d56aad1e043f7b1836592d89
+    category: security
+    cwe:
+    - 'CWE-276: Incorrect Default Permissions'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - c
+- id: vuln-libvirt-28f8dfdc
+  pattern: 'qemuDomainDefFormatXML($DRIVER, $DEF, $FLAGS, false)
+
+    '
+  pattern-not: 'qemuDomainDefFormatXML($DRIVER, $DEF, $FLAGS)
+
+    '
+  languages:
+  - c
+  message: 'The function `qemuDomainDefFormatXML` is being called without the `VIR_DOMAIN_XML_MIGRATABLE`
+    flag, which can lead to XML output that is not suitable for migrations. This can
+    cause issues during VM migrations, potentially leading to data loss or service
+    interruption. Ensure that the `VIR_DOMAIN_XML_MIGRATABLE` flag is included when
+    calling this function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/28f8dfdcccd4c0f69063ef741545b37d8a7f7935
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c
+- id: vuln-libvirt-15073504
+  pattern: 'g_strdup_printf("%s:c%d", $SENS, $CATMIN + $C1)
+
+    '
+  pattern-not: 'continue
+
+    '
+  languages:
+  - c
+  message: 'The code generates an MCS (Multi-Category Security) label without considering
+    the subset relationship between categories. This can lead to improper access control
+    as a process can access a file if the set of MCS categories for the file is equal
+    to or a subset of the set of MCS categories for the process. The fix is to discard
+    cases where the categories are equal, as they are subsets of other category pairs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/15073504dbb624d3f6c911e85557019d3620fdb2
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://selinuxproject.org/page/MCS
+    technology:
+    - c
+- id: vuln-libvirt-a5b064bf
+  pattern: 'virDomainDiskSourceFormatNetworkCookies($CHILD_BUF, $SRC)
+
+    '
+  pattern-not: 'virDomainDiskSourceFormatNetworkCookies($CHILD_BUF, $SRC, $FLAGS)
+
+    '
+  languages:
+  - c
+  message: 'The function `virDomainDiskSourceFormatNetworkCookies` is being called
+    without the `flags` parameter, which can lead to insecure handling of network
+    cookies. This vulnerability could allow attackers to exploit insecure cookie handling
+    in network storage configurations. Always include the `flags` parameter and check
+    for `VIR_DOMAIN_DEF_FORMAT_SECURE` to ensure secure handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/a5b064bf4b17a9884d7d361733737fb614ad8979
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - A05:2021 - Security Misconfiguration
+    technology:
+    - c
+- id: vuln-libvirt-d53d4650
+  pattern: 'virBufferAsprintf($BUF, "password-secret=%s,", $ARG);
+
+    '
+  pattern-not: 'virBufferAsprintf($BUF, "file.password-secret=%s,", $ARG);
+
+    '
+  languages:
+  - c
+  message: 'The use of the legacy ''password-secret'' format in virBufferAsprintf
+    is vulnerable to security issues. The modern ''file.password-secret'' format should
+    be used instead to ensure proper security handling. This vulnerability could lead
+    to improper handling of sensitive credentials. Update the code to use the ''file.password-secret''
+    format to mitigate this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/d53d465083edeb64cc7b78249c030734c0d91c6b
+    category: security
+    cwe:
+    - 'CWE-312: Cleartext Storage of Sensitive Information'
+    owasp:
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://libvirt.org/
+    technology:
+    - c
+- id: vuln-libvirt-524de6cc
+  pattern: 'virDomainDiskSourceFormat($BUF, $SRC, "source", 0, false, 0, true, NULL)
+
+    '
+  pattern-not: 'virDomainDiskSourceFormat($BUF, $SRC, "source", 0, false, $FLAGS,
+    true, NULL)
+
+    '
+  languages:
+  - c
+  message: 'The function `virDomainDiskSourceFormat` is called with a hardcoded value
+    of `0` for the `xmlformatflags` parameter, which can lead to insecure XML formatting.
+    This vulnerability could allow for XML injection or other security issues. Use
+    a secure flag like `VIR_DOMAIN_DEF_FORMAT_SECURE` instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/524de6cc35d3b222f0e940bb0fd027f5482572c5
+    category: security
+    cwe:
+    - CWE-91
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://libvirt.org/formatdomain.html
+    technology:
+    - c
+- id: vuln-libvirt-dfff16a7
+  pattern: 'STREQ($PATH, $TARGET.path)
+
+    '
+  pattern-not: 'STREQ_NULLABLE($PATH, $TARGET.path)
+
+    '
+  languages:
+  - c
+  message: 'Use of STREQ instead of STREQ_NULLABLE can lead to null pointer dereference
+    vulnerabilities.
+
+    This is dangerous because it can cause crashes or undefined behavior when null
+    pointers are passed.
+
+    To fix this, replace STREQ with STREQ_NULLABLE to safely handle null pointers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/dfff16a7c261f8d28e3abe60a47165f845fa952f
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-libvirt-f44bfb7f
+  pattern: "virErrorPtr $VERR;\nif ($CONN)\n    $VERR = virConnGetLastError($CONN);\n\
+    else\n    $VERR = virGetLastError();\n"
+  pattern-not: 'virErrorPtr $VERR = virGetLastError();
+
+    '
+  languages:
+  - c
+  message: 'The code incorrectly handles error retrieval by conditionally calling
+    `virConnGetLastError` or `virGetLastError`. This can lead to inconsistent error
+    handling and potential null pointer dereferences. Always directly use `virGetLastError()`
+    for consistent error retrieval.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/f44bfb7fb978c9313ce050a1c4149bf04aa0a670
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - c
+- id: vuln-libvirt-e7f400a1
+  pattern: 'struct _virDomainMemoryStat *stats;
+
+    '
+  pattern-not: 'struct _virDomainMemoryStat *stats = NULL;
+
+    '
+  languages:
+  - c
+  message: 'Uninitialized pointer in struct declaration can lead to undefined behavior.
+
+    This is dangerous because using an uninitialized pointer can cause crashes or
+    security vulnerabilities.
+
+    Always initialize pointers to NULL or a valid memory address to avoid undefined
+    behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/libvirt/libvirt/commit/e7f400a110e2e3673b96518170bfea0855dd82c0
+    category: security
+    cwe:
+    - CWE-457
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/457.html
+    technology:
+    - c

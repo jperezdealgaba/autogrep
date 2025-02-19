@@ -1,0 +1,49 @@
+rules:
+- id: vuln-openpgpjs-6b43e02a
+  pattern: '$HEADER.match(/Hash: (.+)/)
+
+    '
+  pattern-not: '$HEADER.match(/^Hash: (.+)$/)
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure regex pattern for matching "Hash" header in cleartext messages.
+    This can lead to header spoofing attacks where arbitrary text can be inserted
+    around the hash header. Use a regex that anchors the pattern to the start and
+    end of the line to prevent this.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openpgpjs/openpgpjs/commit/6b43e02a254853f5ff508ebd1b07541f78b7c566
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://github.com/openpgpjs/openpgpjs/commit/6b43e02a254853f5ff508ebd1b07541f78b7c566
+    technology:
+    - javascript
+- id: vuln-openpgpjs-0be91133
+  pattern: 's2k_iteration_count_byte: 96
+
+    '
+  pattern-not: 's2k_iteration_count_byte: 224
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure S2K iteration count byte detected. The value 96 for s2k_iteration_count_byte
+    is too low and can weaken cryptographic security. Use a higher value like 224
+    to ensure stronger key derivation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openpgpjs/openpgpjs/commit/0be91133665e81d2007cdfa02cd3cf1d839ee4f1
+    category: security
+    cwe: CWE-326
+    owasp: A02:2021-Cryptographic Failures
+    references: https://www.openpgp.org/
+    technology:
+    - javascript

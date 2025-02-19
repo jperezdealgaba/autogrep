@@ -1,0 +1,82 @@
+rules:
+- id: vuln-piwigo-9004fdfc
+  pattern: 'if (empty($sections[$i]) or $sections[$i]==''..'')
+
+    '
+  pattern-not: "if (empty($sections[$i]))\n  continue;\n}\nif ($sections[$i] == '..'\
+    \ or !preg_match('/^[a-zA-Z_\\.-]+$/', $sections[$i]))\n{\n  die('invalid section\
+    \ token ['.htmlentities($sections[$i]).']');\n"
+  languages:
+  - php
+  message: "The code is vulnerable to path traversal attacks due to insufficient validation\
+    \ of section tokens. \nThe original check only verifies if the section is empty\
+    \ or equals '..', which is insufficient to prevent malicious input. \nTo fix this,\
+    \ validate the section token using a regular expression to ensure it only contains\
+    \ allowed characters.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/9004fdfc0b4a11cb32e9e15a5f67e4ec827e82dc
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-piwigo-796f726e
+  pattern: '$user_agent = $_SERVER[''HTTP_USER_AGENT''];
+
+    '
+  pattern-not: '$user_agent = strip_tags($_SERVER[''HTTP_USER_AGENT'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected direct assignment of HTTP_USER_AGENT without sanitization. This
+    can lead to XSS vulnerabilities if the user agent string contains malicious HTML
+    or JavaScript. Always sanitize user input using functions like strip_tags() before
+    using it in your application.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/796f726ed1409b22e0e50a1aa20f1731641d3e35
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-piwigo-2ce1e595
+  pattern: 'if ($_REQUEST[''columns''][$col]["searchable"] == "true")
+
+    '
+  pattern-not: 'if ($_REQUEST[''columns''][$col]["searchable"] == "true" and preg_match(''/^(asc|desc)$/i'',
+    $_REQUEST["order"][0]["dir"]))
+
+    '
+  languages:
+  - php
+  message: 'Detected a missing input validation on $_REQUEST["order"][0]["dir"] parameter.
+    This vulnerability could allow an attacker to inject malicious values in the order
+    direction parameter, potentially leading to SQL injection or other security issues.
+    Always validate user inputs using strict regular expressions or whitelists. In
+    this case, add a check using preg_match to validate the order direction is either
+    ''asc'' or ''desc''.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Piwigo/Piwigo/commit/2ce1e5952238eba0fe5c5d6537ebdc76cb970b52
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php

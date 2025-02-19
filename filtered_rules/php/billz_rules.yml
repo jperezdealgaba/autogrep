@@ -1,0 +1,26 @@
+rules:
+- id: vuln-raspap-webgui-1fabc481
+  pattern: '$VAR = $_POST[''...''];
+
+    '
+  pattern-not: '$VAR = escapeshellcmd($_POST[''...'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected use of unescaped user input in shell command context. This can
+    lead to command injection vulnerabilities, allowing attackers to execute arbitrary
+    commands on the server. Always sanitize user input using escapeshellcmd() when
+    passing it to shell commands.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/billz/raspap-webgui/commit/1fabc481690e008279113e18d0642c5279e3b56e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php

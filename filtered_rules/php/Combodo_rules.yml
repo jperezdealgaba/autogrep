@@ -1,0 +1,85 @@
+rules:
+- id: vuln-itop-bdebea62
+  pattern: '$_SESSION[''auth_user''] = $sAuthUser;
+
+    '
+  pattern-not: '$_SESSION[''auth_user''] = $sAuthUser;
+
+    $_SESSION[''auth_user''] = sanitize($sAuthUser);
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of user input to $_SESSION[''auth_user''] without validation
+    or sanitization can lead to session hijacking or privilege escalation. This vulnerability
+    allows an attacker to manipulate session data and potentially gain unauthorized
+    access. Always validate and sanitize user input before storing it in session variables.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/bdebea62b642622ed71410b26c81e8537e6e58fa
+    category: security
+    cwe:
+    - CWE-284
+    - CWE-472
+    owasp:
+    - A2:2021-Cryptographic Failures
+    - A7:2021-Identification and Authentication Failures
+    references:
+    - https://owasp.org/www-project-top-ten/
+    - https://cwe.mitre.org/data/definitions/284.html
+    technology:
+    - php
+- id: vuln-itop-35a8b501
+  pattern: '$VAR = substr(md5($APPROOT.uniqid()), $START, $LENGTH);
+
+    '
+  pattern-not: '$VAR = bin2hex(random_bytes($LENGTH));
+
+    '
+  languages:
+  - php
+  message: 'Detected insecure token generation using md5 and uniqid. This approach
+    is cryptographically weak and predictable, making it vulnerable to brute force
+    attacks. Use cryptographically secure random number generators like `random_bytes`
+    instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/35a8b501c9e4e767ec4b36c2586f34d4ab66d229
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A2:2017-Cryptographic Failures
+    technology:
+    - php
+- id: vuln-itop-86f649af
+  pattern: '$sClearText = base64_decode($sExpression);
+
+    '
+  pattern-not: '$sClearText = base64_decode($sExpression, true);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe use of base64_decode without strict parameter. This can
+    lead to decoding errors or unexpected behavior when processing malformed input.
+    Always use base64_decode with the strict parameter set to true to ensure proper
+    decoding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Combodo/iTop/commit/86f649affc12b5078efc86d9439d67d98f4cb2f6
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.php.net/manual/en/function.base64-decode.php
+    technology:
+    - php

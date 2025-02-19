@@ -1,0 +1,25 @@
+rules:
+- id: vuln-joplin-fd90a490
+  pattern: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'', ''embed''];
+
+    '
+  pattern-not: 'const disallowedTags = [''script'', ''iframe'', ''frameset'', ''frame'',
+    ''object'', ''base'', ''embed'', ''link'', ''meta''];
+
+    '
+  languages:
+  - javascript
+  message: 'Insecure HTML tag filtering detected. The list of disallowed tags is incomplete
+    and missing ''link'' and ''meta'' tags, which can be used to escape the parser
+    and inject JavaScript. Add ''link'' and ''meta'' to the list of disallowed tags.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/laurent22/joplin/commit/fd90a490c0e5cacd17bfe0ffc422be1d2a9b1c13
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references: https://github.com/laurent22/joplin/issues/3021
+    technology: javascript

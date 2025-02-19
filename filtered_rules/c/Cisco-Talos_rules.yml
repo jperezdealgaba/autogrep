@@ -1,0 +1,110 @@
+rules:
+- id: vuln-clamav-fc3794a5
+  pattern: "if ($EXE_SECTION.raw >= $FSIZE) {\n  ...\n  free($SECTION_HDR);\n  free($EXE_SECTIONS);\n\
+    \  ...\n  return $CLEAN_RETURN;\n}\n"
+  pattern-not: "if (!CLI_ISCONTAINED(0, $FSIZE, $EXE_SECTION.uraw, $EXE_SECTION.ursz)\
+    \ || $EXE_SECTION.raw >= $FSIZE) {\n  ...\n  if ($NSECTIONS == 1) {\n    free($SECTION_HDR);\n\
+    \    free($EXE_SECTIONS);\n    ...\n    return $CLEAN_RETURN;\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potentially broken PE file section validation vulnerability.
+    The code checks if a section''s raw offset is beyond the file size but does not
+    properly handle the case when the section size is also invalid. This could allow
+    malformed PE files to bypass security checks. The fix includes a more comprehensive
+    validation using CLI_ISCONTAINED and handles section rescanning.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/fc3794a54d2affe5770c1f876484a871c783e91e
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-clamav-9a6bb57f
+  pattern: 'if (!$CT && !$PN) $CONTINUE;
+
+    '
+  pattern-not: 'if (!$CT || !$PN) $CONTINUE;
+
+    '
+  languages:
+  - c
+  message: 'The use of ''&&'' instead of ''||'' in the condition can lead to incorrect
+    logic flow, potentially bypassing important checks. This could allow malicious
+    content to be processed incorrectly. Replace ''&&'' with ''||'' to ensure the
+    correct logic is applied.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/9a6bb57f89721db637f4ddb5b233c1c4e23d223a
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/697.html
+    technology:
+    - c
+- id: vuln-clamav-d96a6b8b
+  pattern: "static int $FUNC(xmlTextReaderPtr $READER, long * $VALUE) {\n  ...\n \
+    \ *$VALUE = atol((const char *)$NUMSTR);\n  if (*$VALUE < 0) {\n    ...\n  }\n\
+    \  ...\n}\n"
+  pattern-not: "static int $FUNC(xmlTextReaderPtr $READER, size_t * $VALUE) {\n  ssize_t\
+    \ $NUMVAL;\n  ...\n  $NUMVAL = atol((const char *)$NUMSTR);\n  if ($NUMVAL < 0)\
+    \ {\n    *$VALUE = $NUMVAL;\n    ...\n  }\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The function uses a `long` type to store the result of `atol`, which can
+    lead to integer overflow or incorrect handling of negative values. This can cause
+    unexpected behavior or security vulnerabilities. Use `ssize_t` to store the result
+    of `atol` and check for negative values before assigning to the output parameter.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/d96a6b8bcc7439fa7e3876207aa0a8e79c8451b6
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c
+- id: vuln-clamav-96ff19a1
+  pattern: 'int $BACKBYTES, $OLDBACK, $BACKSIZE, $ADDSIZE;
+
+    '
+  pattern-not: 'int $BACKBYTES, $OLDBACK, $ADDSIZE;
+
+    unsigned int $BACKSIZE;
+
+    '
+  languages:
+  - c
+  message: 'The variable ''backsize'' is declared as a signed integer, which can lead
+    to integer overflow vulnerabilities when handling large values. This is dangerous
+    because it can cause incorrect memory allocations or buffer overflows. To fix
+    this, declare ''backsize'' as an unsigned integer to safely handle larger values.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cisco-Talos/clamav/commit/96ff19a19eba64bdf47f2f12ecdbc5ee331c09e2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c

@@ -1,0 +1,44 @@
+rules:
+- id: vuln-cryptography-b924696b
+  pattern: "while ($ALGORITHM.digest_size // 8) * len($OUTPUT) < $LENGTH:\n  ...\n"
+  pattern-not: "while $ALGORITHM.digest_size * (len($OUTPUT) - 1) < $LENGTH:\n  ...\n"
+  languages:
+  - python
+  message: "Detected a potential integer division vulnerability in HKDF implementation.\
+    \ \nThe original calculation uses integer division which may lead to incorrect\
+    \ \noutput length calculations. This could result in insufficient key material\
+    \ \nbeing generated. Use the fixed version that correctly calculates the required\
+    \ \noutput length without integer division.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/pyca/cryptography/commit/b924696b2e8731f39696584d12cceeb3aeb2d874
+    category: security
+    cwe: CWE-682
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#hkdf
+    technology:
+    - python
+- id: vuln-sqlparse-c457abd5
+  pattern: 'sqlparse.parse(r"$STRING")
+
+    '
+  pattern-not: 'sqlparse.parse("$STRING")
+
+    '
+  languages:
+  - python
+  message: "Detected unsafe string parsing in SQL queries using raw strings (r-prefix).\
+    \ \nThis can lead to incorrect handling of escape sequences, potentially causing\
+    \ \nsecurity vulnerabilities or unexpected behavior. Use regular strings instead\
+    \ \nof raw strings for proper escape sequence handling.\n"
+  severity: ERROR
+  metadata:
+    source-url: https://github.com/andialbrecht/sqlparse/commit/c457abd5f097dd13fb21543381e7cfafe7d31cfb
+    category: security
+    cwe: CWE-116
+    owasp: A03:2021-Injection
+    references:
+    - https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals
+    technology:
+    - python

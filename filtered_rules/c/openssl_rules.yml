@@ -1,0 +1,581 @@
+rules:
+- id: vuln-openssl-b96bebac
+  pattern: "if (!BN_copy(&$KQ, &$K))\n    goto err;\nBN_set_flags(&$KQ, BN_FLG_CONSTTIME);\n\
+    ...\nif (!BN_add(&$KQ, &$KQ, $DSAREF->q))\n    goto err;\nif (BN_num_bits(&$KQ)\
+    \ <= BN_num_bits($DSAREF->q)) {\n    if (!BN_add(&$KQ, &$KQ, $DSAREF->q))\n  \
+    \      goto err;\n}\n"
+  pattern-not: "if (!BN_add(&$L, &$K, $DSAREF->q)\n    || !BN_add(&$M, &$L, $DSAREF->q)\n\
+    \    || !BN_copy(&$KQ, BN_num_bits(&$L) > $QBITS ? &$L : &$M))\n    goto err;\n\
+    BN_set_flags(&$KQ, BN_FLG_CONSTTIME);\n"
+  languages:
+  - c
+  message: 'Detected a potential timing side-channel vulnerability in DSA modular
+    exponentiation.
+
+    The original code performs a conditional addition based on the bit length of the
+    result,
+
+    which can leak timing information about the private key. The fix ensures constant-time
+
+    operations by performing both additions unconditionally and selecting the appropriate
+    result.
+
+    To fix, perform both additions unconditionally and choose the result with the
+    correct bit length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/b96bebacfe814deb99fb64a3ed2296d95c573600
+    category: security
+    cwe:
+    - CWE-385
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    references:
+    - https://www.openssl.org/news/secadv/20230207.txt
+    technology:
+    - c
+- id: vuln-openssl-91ddeba0
+  pattern: "if ($DH->q) {\n  ...\n}\n"
+  pattern-not: "if ($DH->q != NULL) {\n  if (BN_ucmp($DH->p, $DH->q) > 0)\n    $Q_GOOD\
+    \ = 1;\n  else\n    *$RET |= $DH_CHECK_INVALID_Q_VALUE;\n}\nif ($Q_GOOD) {\n \
+    \ ...\n}\n"
+  languages:
+  - c
+  message: 'The code fails to properly validate the DH parameter ''q'' against ''p'',
+    which can lead to security vulnerabilities in the Diffie-Hellman key exchange.
+    Specifically, it doesn''t check if ''p'' is greater than ''q'' before using them,
+    which is a critical validation step. This could allow an attacker to exploit invalid
+    parameter values. To fix this, ensure that ''q'' is not NULL and that ''p'' is
+    greater than ''q'' before proceeding with the key exchange.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/91ddeba0f2269b017dc06c46c993a788974b1aa5
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://www.openssl.org/news/secadv/20220315.txt
+    technology:
+    - c
+- id: vuln-openssl-4b390b6c
+  pattern: "if ($L && !BUF_MEM_grow_clean($S->init_buf, (int)$L)) {\n    SSLerr(SSL_F_TLS_GET_MESSAGE_HEADER,\
+    \ ERR_R_BUF_LIB);\n    ...\n}\n"
+  pattern-not: "if ($L && !BUF_MEM_grow_clean($S->init_buf, (int)$L + SSL3_HM_HEADER_LENGTH))\
+    \ {\n    SSLerr(SSL_F_TLS_GET_MESSAGE_HEADER, ERR_R_BUF_LIB);\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The vulnerability occurs due to insufficient buffer growth when handling
+    TLS/DTLS messages. The original code fails to account for the SSL3 header length,
+    which can lead to buffer overflows or memory corruption. This could be exploited
+    by an attacker to cause a denial of service or execute arbitrary code. The fix
+    ensures the buffer is grown to accommodate both the message and the SSL3 header
+    length.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/4b390b6c3f8df925dc92a3dd6b022baa9a2f4650
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-787
+    owasp: 'A2: Cryptographic Failures'
+    references:
+    - https://www.openssl.org/
+    technology:
+    - c
+- id: vuln-openssl-4b22cce3
+  pattern: 'if ($FUNC($CTX, $NULL, $SIGALG, $PKEY)) ...
+
+    '
+  pattern-not: 'if ($FUNC($CTX, $NULL, $SIGALG, $PKEY) > 0) { }
+
+    '
+  languages:
+  - c
+  message: 'The function call in the if statement does not properly check the return
+    value,
+
+    which can lead to incorrect handling of error conditions. This can result in
+
+    security vulnerabilities such as invalid cryptographic operations. Always check
+
+    the return value explicitly against the expected condition (e.g., > 0) to ensure
+
+    proper error handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/4b22cce3812052fe64fc3f6d58d8cc884e3cb834
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - A06:2021 - Vulnerable and Outdated Components
+    technology:
+    - c
+- id: vuln-openssl-06d1dc3f
+  pattern: "if ((gen->type == GEN_OTHERNAME) && (check_type == GEN_EMAIL)) {\n   \
+    \ if (OBJ_obj2nid(gen->d.otherName->type_id) == NID_id_on_SmtpUTF8Mailbox) {\n\
+    \        san_present = 1;\n        if (gen->d.otherName->value->type == V_ASN1_UTF8STRING)\
+    \ {\n            $CSTR = gen->d.otherName->value->value.utf8string;\n        \
+    \    if ((rv = do_check_string($CSTR, 0, equal, flags, chk, chklen, peername))\
+    \ != 0)\n                break;\n        }\n    }\n}\n"
+  pattern-not: "switch (gen->type) {\ncase GEN_OTHERNAME:\n    switch (OBJ_obj2nid(gen->d.otherName->type_id))\
+    \ {\n    case NID_id_on_SmtpUTF8Mailbox:\n        if (check_type != GEN_EMAIL\n\
+    \            || gen->d.otherName->value->type != V_ASN1_UTF8STRING)\n        \
+    \    continue;\n        $CSTR = gen->d.otherName->value->value.utf8string;\n \
+    \       break;\n    }\n    break;\n}\n"
+  languages:
+  - c
+  message: 'Insecure handling of SmtpUTF8Mailbox in X.509 certificate validation.
+
+    The original code did not properly validate the email address format and type,
+
+    potentially allowing malformed or invalid email addresses to be accepted.
+
+    The fix adds proper type checking and validation according to RFC 8398.
+
+    Always validate email addresses strictly according to the appropriate RFCs
+
+    and ensure type checking is performed before processing the value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/06d1dc3fa96a2ba5a3e22735a033012aadc9f0d6
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A02: Cryptographic Failures'
+    references:
+    - https://datatracker.ietf.org/doc/html/rfc8398
+    technology:
+    - c
+- id: vuln-openssl-7c038a6b
+  pattern: 'BIO_printf($OUT, "  Challenge String: %s\n", $CHAL->data);
+
+    '
+  pattern-not: 'BIO_printf($OUT, "  Challenge String: %.*s\n", $CHAL->length, $CHAL->data);
+
+    '
+  languages:
+  - c
+  message: 'The code uses an insecure format string in BIO_printf that does not specify
+    the length of the input string. This can lead to buffer overflows or incorrect
+    output if the string is not null-terminated. Use the %.*s format specifier with
+    the length parameter to ensure safe string printing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/7c038a6bcd98d4bbfd2c2892a87a1138d2f7c5f3
+    category: security
+    cwe:
+    - 'CWE-134: Use of Externally-Controlled Format String'
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://cwe.mitre.org/data/definitions/134.html
+    technology:
+    - c
+- id: vuln-openssl-2ac4c6f7
+  pattern: 'asn1_item_embed_d2i($VAR1, $VAR2, $VAR3, $VAR4, $VAR5, $VAR6, $VAR7, $VAR8)
+
+    '
+  pattern-not: 'asn1_item_embed_d2i($VAR1, $VAR2, $VAR3, $VAR4, $VAR5, $VAR6, $VAR7,
+    $VAR8, $VAR9)
+
+    '
+  languages:
+  - c
+  message: 'Detected potentially vulnerable ASN.1 parsing code that lacks recursion
+    depth checking.
+
+    This could allow an attacker to craft malicious input that causes excessive recursion,
+
+    leading to stack exhaustion and denial of service. The code should be updated
+    to include
+
+    a depth parameter and check against ASN1_MAX_CONSTRUCTED_NEST (30).
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/2ac4c6f7b2b2af20c0e2b0ba05367e454cd11b33
+    category: security
+    cwe:
+    - 'CWE-674: Uncontrolled Recursion'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+    references:
+    - https://www.openssl.org/news/secadv/20180327.txt
+- id: vuln-openssl-e1b568dd
+  pattern: "if ($COND) {\n    ssl_fill_hello_random($S, $FLAGS, $P, sizeof($S->s3->client_random));\n\
+    }\n"
+  pattern-not: "if ($COND && ssl_fill_hello_random($S, $FLAGS, $P, sizeof($S->s3->client_random))\
+    \ <= 0) {\n    goto err;\n}\n"
+  languages:
+  - c
+  message: 'The code does not check the return value of `ssl_fill_hello_random`, which
+    could lead to uninitialized or predictable random values. This is dangerous because
+    predictable random values can compromise the security of the SSL/TLS handshake.
+    Always check the return value of cryptographic functions and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/e1b568dd2462f7cacf98f3d117936c34e2849a6b
+    category: security
+    cwe:
+    - 'CWE-330: Use of Insufficiently Random Values'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c
+- id: vuln-openssl-4924b37e
+  pattern: "if ($UBITS <= BN_BITS2 && $UDP[0] == 1)\n    break;\n"
+  pattern-not: "if ($UBITS <= BN_BITS2) {\n    if ($UDP[0] == 0)\n        goto err;\n\
+    \    if ($UDP[0] == 1)\n        break;\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing check for reducible polynomials in GF2m arithmetic.
+
+    The original code only checked if the polynomial was equal to 1, missing
+
+    the case where it could be 0 (reducible polynomial). This could lead to
+
+    incorrect cryptographic computations. The fix adds a check for 0 values
+
+    and handles them appropriately with an error condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/4924b37ee01f71ae19c94a8934b80eeb2f677932
+    category: security
+    cwe:
+    - 'CWE-682: Incorrect Calculation'
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://github.com/openssl/openssl/commit/4924b37ee01f71ae19c94a8934b80eeb2f677932
+    technology:
+    - crypto
+- id: vuln-openssl-901f1ef7
+  pattern: 'good &= constant_time_ge($VAR, 8);
+
+    '
+  pattern-not: 'good &= constant_time_lt($VAR, 8);
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a vulnerability where the code incorrectly checks for
+    8 consecutive 0x03 bytes before a nul delimiter. The correct behavior should reject
+    the input if it is preceded by 8 consecutive 0x03 bytes. This issue was corrected
+    in OpenSSL commit 901f1ef7dacb6b3bde63233a1f623e1fa2f0f058. The incorrect check
+    can lead to security vulnerabilities in RSA SSL padding validation. To fix this,
+    ensure that the code uses `constant_time_lt` instead of `constant_time_ge` for
+    this check.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/901f1ef7dacb6b3bde63233a1f623e1fa2f0f058
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    references:
+    - https://tools.ietf.org/html/rfc5246
+    technology:
+    - c
+- id: vuln-openssl-1f365708
+  pattern: '!TEST_str_eq($STR1, (char *)$STR2->data)
+
+    '
+  pattern-not: '!TEST_mem_eq($STR1, strlen($STR1), (char *)$STR2->data, $STR2->length)
+
+    '
+  languages:
+  - c
+  message: 'Insecure string comparison detected. The use of `TEST_str_eq` can lead
+    to vulnerabilities when comparing strings with embedded null characters or when
+    the length of the strings is not properly considered. This can result in incorrect
+    comparisons and potential security issues. Replace `TEST_str_eq` with `TEST_mem_eq`
+    to ensure proper length-based comparison.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/1f365708a3318a5f1a395f90c38b584a58d37fb9
+    category: security
+    cwe:
+    - 'CWE-697: Incorrect Comparison'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-openssl-00e2f5ee
+  pattern: "if ($INL == 0) {\n    *$OUTL = 0;\n    return $RETVAL;\n}\n"
+  pattern-not: "if ($OUT != NULL) {\n    if ($INL == 0) {\n        if ($OUTL != NULL)\n\
+    \            *$OUTL = 0;\n        return $RETVAL;\n    }\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing NULL check for output buffer in AES-SIV implementation.
+
+    This vulnerability could lead to null pointer dereference when handling empty
+    encryption/decryption calls.
+
+    The fix adds proper NULL checks for the output buffer before processing.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/00e2f5eea29994d19293ec4e8c8775ba73678598
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-openssl-43e6a58d
+  pattern: 'q_bits = BN_num_bits($DSAPARAM->q);
+
+    '
+  pattern-not: 'q_bits = BN_num_bits($DSAPARAM->q) + sizeof($DSAPARAM->q->d[0]) *
+    16;
+
+    '
+  languages:
+  - c
+  message: 'The code calculates the number of bits in the DSA parameter `q` without
+    considering additional padding bits. This can lead to incorrect cryptographic
+    operations and potential security vulnerabilities. The fix adds proper padding
+    by including the size of the internal representation of `q`. To fix this, ensure
+    the calculation includes the additional bits as shown in the patched version.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/43e6a58d4991a451daf4891ff05a48735df871ac
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c
+- id: vuln-openssl-a830f551
+  pattern: 'ossl_bn_miller_rabin_is_prime($VAR, 0, $CTX, $NULL, 1, $STATUS)
+
+    '
+  pattern-not: 'ossl_bn_miller_rabin_is_prime($VAR, 5, $CTX, $NULL, 1, $STATUS)
+
+    '
+  languages:
+  - c
+  message: 'The Miller-Rabin primality test is being performed with insufficient rounds
+    (0 rounds), which reduces the reliability of the primality check. This can lead
+    to accepting composite numbers as prime, potentially compromising cryptographic
+    security. The fix is to increase the number of rounds to 5, as recommended by
+    FIPS 186-5 Section B.3 Table B.1.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/a830f551557d3d66a84bbb18a5b889c640c36294
+    category: security
+    cwe:
+    - CWE-327
+    owasp: A3:2017-Sensitive Data Exposure
+    references:
+    - https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
+    technology:
+    - c
+- id: vuln-openssl-59f5e75f
+  pattern: 'sm2_plaintext_size($KEY, $DIGEST, $MSGLEN, $PTSIZE)
+
+    '
+  pattern-not: 'sm2_plaintext_size($CT, $CT_SIZE, $PTSIZE)
+
+    '
+  languages:
+  - c
+  message: 'Detected vulnerable usage of sm2_plaintext_size with EC_KEY and EVP_MD
+    parameters.
+
+    The old version didn''t properly validate ciphertext structure and could lead
+    to
+
+    incorrect plaintext size calculation. Use the fixed version that takes ciphertext
+
+    buffer and size as parameters instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/59f5e75f3bced8fc0e130d72a3f582cf7b480b46
+    category: security
+    cwe:
+    - CWE-327
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - c
+- id: vuln-openssl-0042fb5f
+  pattern: "if (($VAR == NULL) || ($VAR->data == NULL)) {\n    $BUF[0]='\\0';\n  \
+    \  return(0);\n}\n"
+  pattern-not: "if ($BUF && $BUF_LEN > 0)\n    $BUF[0] = '\\0';\nif (($VAR == NULL)\
+    \ || ($VAR->data == NULL))\n    return(0);\n"
+  languages:
+  - c
+  message: 'The code does not ensure that the buffer is NUL-terminated in all cases,
+    which could lead to undefined behavior or security vulnerabilities. Ensure that
+    the buffer is always NUL-terminated, especially when handling NULL or invalid
+    data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/0042fb5fd1c9d257d713b15a1f45da05cf5c1c87
+    category: security
+    cwe:
+    - CWE-170
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-openssl-006cd708
+  pattern: "if ($S->session == NULL) {\n  ...\n}\n"
+  pattern-not: "if ($S->session == NULL || $S->session->master_key_length == 0) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a vulnerability where the session master key length is not checked
+    when the session is NULL. This can lead to security issues such as using an uninitialized
+    or invalid master key. To fix this, ensure that the master key length is checked
+    when the session is NULL.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/006cd7083f76ed5cb0d9a914857e9231ef1bc317
+    category: security
+    cwe:
+    - 'CWE-327: Use of a Broken or Risky Cryptographic Algorithm'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://www.openssl.org/news/secadv/20230628.txt
+    technology:
+    - c
+- id: vuln-openssl-95f8c1e1
+  pattern: 'ossl_cmp_sk_ASN1_UTF8STRING_push_str($VAR, $TEXT)
+
+    '
+  pattern-not: 'ossl_cmp_sk_ASN1_UTF8STRING_push_str($VAR, $TEXT, $LEN)
+
+    '
+  languages:
+  - c
+  message: 'Detected a call to `ossl_cmp_sk_ASN1_UTF8STRING_push_str` without specifying
+    the length parameter. This can lead to potential buffer overflows or incorrect
+    string handling. Always include the length parameter to ensure safe string operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/95f8c1e142df835d03b5b62521383a462fc5470d
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.openssl.org/
+    technology:
+    - c
+- id: vuln-openssl-75875496
+  pattern: "if ($S->verify_mode != $SSL_VERIFY_NONE && $I <= 0) {\n    ...\n}\n"
+  pattern-not: "if ($S->verify_mode != $SSL_VERIFY_NONE && $I == 0) {\n    ...\n}\n"
+  languages:
+  - c
+  message: 'The certificate verification logic is incorrect as it treats any non-positive
+    value as a verification failure, including error conditions that should be handled
+    differently. This can lead to incorrect verification results. The fix is to explicitly
+    check for i == 0 rather than i <= 0.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/758754966791c537ea95241438454aa86f91f256
+    category: security
+    cwe:
+    - 'CWE-295: Improper Certificate Validation'
+    owasp:
+    - 'A2: Cryptographic Failures'
+    technology:
+    - c
+- id: vuln-openssl-59302b60
+  pattern: "if (PKCS7_is_detached($P7) || ($IN_BIO != NULL)) {\n  ...\n}\n"
+  pattern-not: "if ($IN_BIO != NULL) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potentially insecure use of PKCS7_is_detached combined with
+    a NULL check on in_bio. This can lead to incorrect handling of detached content,
+    potentially causing security vulnerabilities. The fix involves removing the PKCS7_is_detached
+    check and relying solely on the in_bio check to ensure proper content handling.
+    Always verify the presence of content in a secure manner.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/59302b600e8d5b77ef144e447bb046fd7ab72686
+    category: security
+    cwe:
+    - CWE-284
+    owasp:
+    - 'A6: Security Misconfiguration'
+    references:
+    - https://www.openssl.org/news/secadv/20230328.txt
+    technology:
+    - c
+- id: vuln-openssl-cd30f03a
+  pattern: "static int cms_copy_content(BIO *out, BIO *in, unsigned int flags)\n{\n\
+    \  unsigned char buf[4096];\n  int r = 0, i;\n  BIO *tmpout = NULL;\n  ...\n \
+    \ tmpout = out;\n  ...\n}\n"
+  pattern-not: "static int cms_copy_content(BIO *out, BIO *in, unsigned int flags)\n\
+    {\n  unsigned char buf[4096];\n  int r = 0, i;\n  BIO *tmpout;\n  tmpout = cms_get_text_bio(out,\
+    \ flags);\n  ...\n}\n"
+  languages:
+  - c
+  message: "The vulnerability involves improper handling of BIO objects in OpenSSL's\
+    \ CMS implementation. \nThe original code directly assigns the output BIO to a\
+    \ temporary BIO pointer without proper checks, \nwhich could lead to resource\
+    \ leaks or incorrect behavior. The fix introduces a helper function \n`cms_get_text_bio`\
+    \ to properly manage BIO objects. This issue could potentially be exploited to\
+    \ \ncause memory leaks or other undefined behavior. Always use proper resource\
+    \ management functions \nwhen handling BIO objects in OpenSSL.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openssl/openssl/commit/cd30f03ac5bf2962f44bd02ae8d88245dff2f12c
+    category: security
+    cwe:
+    - 'CWE-401: Missing Release of Resource after Effective Lifetime'
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c

@@ -1,0 +1,50 @@
+rules:
+- id: vuln-mediawiki-d4a552e6
+  pattern: '$RETURNURL = $(''$SELECTOR'').attr(''href'');
+
+    ...
+
+    location.href = $RETURNURL;
+
+    '
+  pattern-not: '$URL = $THIS.href;
+
+    ...
+
+    location.href = $URL;
+
+    '
+  languages:
+  - javascript
+  message: 'Potential security issue: Using jQuery to extract href attributes directly
+    from DOM elements can lead to XSS or other injection vulnerabilities. Prefer accessing
+    the href property directly from the event object.'
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/d4a552e65bdfd7309a9b8537e9dbe69c5e2991eb
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    technology:
+    - javascript
+- id: vuln-mediawiki-d0b7fb49
+  pattern: 'return mw.format.apply(null, [ $TEXT ].concat($PARAMS));
+
+    '
+  pattern-not: "$TEXT = mw.format.apply(null, [ $TEXT ].concat($PARAMS));\nif ($FORMAT\
+    \ === 'parse') {\n  $TEXT = mw.html.escape($TEXT);\n}\nreturn $TEXT;\n"
+  languages:
+  - javascript
+  message: 'Unescaped HTML output in mw.format.apply can lead to XSS vulnerabilities
+    when the format is ''parse''.
+
+    Always escape HTML content when the format is ''parse'' to prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wikimedia/mediawiki/commit/d0b7fb495c9d5446607672ad6a93a5491efe7337
+    category: security
+    cwe: CWE-79
+    owasp: 'A7: Cross-Site Scripting (XSS)'
+    technology: javascript

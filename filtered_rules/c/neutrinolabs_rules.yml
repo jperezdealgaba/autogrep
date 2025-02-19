@@ -1,0 +1,67 @@
+rules:
+- id: vuln-xrdp-6cb54a1c
+  pattern: 'char *$NAME;
+
+    ...
+
+    $NAME = g_new(char, $NAME_BYTES + 1);
+
+    ...
+
+    g_free($NAME);
+
+    '
+  pattern-not: 'char $NAME[1024 + 1];
+
+    ...
+
+    if (($NAME_BYTES < 1) || ($NAME_BYTES > (int)(sizeof($NAME) - 1)))
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe dynamic memory allocation for a buffer without proper
+    bounds checking.
+
+    This can lead to potential buffer overflows if the input size is not properly
+    validated.
+
+    Instead, use a fixed-size buffer with proper bounds checking to ensure memory
+    safety.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/6cb54a1c26b53617e1c79a0abc96d03c4add1eb8
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-xrdp-a111a0fd
+  pattern: 'auth_start_session($AUTH_INFO, $DISPLAY_NUM);
+
+    '
+  pattern-not: "if (auth_start_session($AUTH_INFO, $DISPLAY_NUM) != 0)\n{\n    return\
+    \ $ERROR_CODE;\n}\n"
+  languages:
+  - c
+  message: "Detected a potentially unsafe call to `auth_start_session` without error\
+    \ handling. \nThis can lead to unlogged failures in session creation, making it\
+    \ difficult to diagnose issues.\nThe fix involves checking the return value of\
+    \ `auth_start_session` and handling errors appropriately.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/neutrinolabs/xrdp/commit/a111a0fdfe2421ef600e40708b5f0168594cfb23
+    category: security
+    cwe:
+    - CWE-703
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c

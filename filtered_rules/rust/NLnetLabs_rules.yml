@@ -1,0 +1,26 @@
+rules:
+- id: vuln-routinator-efd73ab5
+  pattern: '$BUILDER.timeout($CONFIG.$TIMEOUT)
+
+    '
+  pattern-not: '$BUILDER.timeout($TIMEOUT)
+
+    '
+  languages:
+  - rust
+  message: "Detected potential misuse of timeout configuration in HTTP requests. \n\
+    The timeout should be set per request rather than globally to ensure proper handling\
+    \ of individual request timeouts. \nThis can lead to unexpected behavior or resource\
+    \ exhaustion if a global timeout is applied incorrectly.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/NLnetLabs/routinator/commit/efd73ab577e90601e104a8102c4bd80f99ab2cc7
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A6: Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - rust

@@ -1,0 +1,22 @@
+rules:
+- id: vuln-mono-8e890a3b
+  pattern: "while ((full_name = mono_dl_build_path(\".\", $FILE_NAME, &$ITER))) {\n\
+    \  ...\n}\n"
+  pattern-not: "while ((full_name = mono_dl_build_path($DIR, $FILE_NAME, &$ITER)))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: "Detected unsafe use of hardcoded directory path in `mono_dl_build_path`.\
+    \ \nThis can lead to arbitrary library loading from the current directory, \n\
+    potentially allowing DLL hijacking attacks. \nInstead, use a dynamic directory\
+    \ path or NULL to prevent this vulnerability.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/mono/mono/commit/8e890a3bf80a4620e417814dc14886b1bbd17625
+    category: security
+    cwe:
+    - CWE-426
+    owasp:
+    - A08:2021-Software and Data Integrity Failures
+    technology:
+    - c

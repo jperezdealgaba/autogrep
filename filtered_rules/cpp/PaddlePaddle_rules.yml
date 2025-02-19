@@ -1,0 +1,15 @@
+rules:
+- id: vuln-paddle-19da5c0c
+  pattern: "if (PySequence_Check($OBJ)) {\n  ...\n}\n"
+  pattern-not: "if (PySequence_Check($OBJ) && !PyObject_TypeCheck($OBJ, $TYPE)) {\n\
+    \  ...\n}\n"
+  languages:
+  - cpp
+  message: Missing PyObject_TypeCheck when using PySequence_Check, which may lead
+    to handling tensor types incorrectly.
+  severity: ERROR
+  metadata:
+    source-url: github.com/PaddlePaddle/Paddle/commit/19da5c0c4d8c5e4dfef2a92e24141c3f51884dcc
+    category: security
+    technology:
+    - cpp

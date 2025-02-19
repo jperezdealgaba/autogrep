@@ -1,0 +1,26 @@
+rules:
+- id: vuln-httpie-df36d625
+  pattern: "def start(self, response):\n  ...\n  if self._output_file:\n    ...\n\
+    \  else:\n    filename = None\n    if 'Content-Disposition' in response.headers:\n\
+    \      filename = filename_from_content_disposition(\n        response.headers['Content-Disposition'])\n\
+    \    if not filename:\n      filename = filename_from_url(\n        url=response.url,\n\
+    \        content_type=response.headers.get('Content-Type'),\n      )\n    self._output_file\
+    \ = open(get_unique_filename(filename), mode='a+b')\n"
+  pattern-not: "def start(self, final_response):\n  ...\n  if not self._output_file:\n\
+    \    self._output_file = self._get_output_file_from_response(\n      final_response)\n\
+    \  else:\n    ...\n"
+  languages:
+  - python
+  message: 'Detected potential filename resolution issue in file downloads. The original
+    code uses the final URL instead of the initial URL for filename resolution, which
+    can lead to incorrect filenames when handling redirects. This was fixed by using
+    the initial URL from the response history when available.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/jakubroztocil/httpie/commit/df36d6255df5793129b02ac82f1010171bd8a0a8
+    category: security
+    cwe: CWE-20
+    owasp: A6:2017-Security Misconfiguration
+    technology: python

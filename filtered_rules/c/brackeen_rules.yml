@@ -1,0 +1,59 @@
+rules:
+- id: vuln-ok-file-formats-7a9fe754
+  pattern: 'malloc(8 * $VAR)
+
+    '
+  pattern-not: 'malloc($BYTES_PER_STRING)
+
+    '
+  languages:
+  - c
+  message: 'Potential integer overflow vulnerability in memory allocation. The expression
+    ''8 * mo->num_strings'' can overflow if ''mo->num_strings'' is large, leading
+    to insufficient memory allocation. This can result in buffer overflows or memory
+    corruption. To fix this, ensure that the result of the multiplication does not
+    exceed the maximum value of ''size_t'' by using a separate variable to check for
+    overflow before allocation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/brackeen/ok-file-formats/commit/7a9fe7542c69a0f432060cdf3e86d66bf98b55d2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-ok-file-formats-ce43dd0a
+  pattern: 'size_t $SIZE = $NUM_BLOCKS * 64 * sizeof(*$BLOCKS) + $EXTRA_SPACE;
+
+    '
+  pattern-not: 'size_t $SIZE = ($NUM_BLOCKS * 64 + $EXTRA_SPACE) * sizeof(*$BLOCKS);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability is caused by incorrect order of operations in memory
+    allocation calculation.
+
+    This can lead to insufficient memory allocation, potentially causing buffer overflows
+    or crashes.
+
+    The fix is to ensure the extra space is added before multiplying by the size of
+    the block.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/brackeen/ok-file-formats/commit/ce43dd0a862485928dc30f282e69094b21d925fc
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

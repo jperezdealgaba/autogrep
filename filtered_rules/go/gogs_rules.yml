@@ -1,0 +1,28 @@
+rules:
+- id: vuln-gogs-ff93d9db
+  pattern: 'strings.TrimLeft($PATH, "./")
+
+    '
+  pattern-not: 'strings.TrimLeft($PATH, "/")
+
+    strings.Replace($PATH, "../", "", -1)
+
+    '
+  languages:
+  - go
+  message: "Detected insecure path sanitization that may lead to directory traversal\
+    \ attacks. \nThe vulnerable code uses `strings.TrimLeft` with \"./\" which is\
+    \ insufficient to prevent path traversal. \nUse `strings.TrimLeft` with \"/\"\
+    \ and `strings.Replace` to remove \"../\" sequences to properly sanitize paths.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/gogs/gogs/commit/ff93d9dbda5cebe90d86e4b7dfb2c6b8642970ce
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - go

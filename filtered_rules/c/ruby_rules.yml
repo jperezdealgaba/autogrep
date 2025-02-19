@@ -1,0 +1,131 @@
+rules:
+- id: vuln-ruby-339e11a7
+  pattern: 'StringValuePtr($VAR)
+
+    '
+  pattern-not: 'SafeStringValueCStr($VAR)
+
+    '
+  languages:
+  - c
+  message: "Detected unsafe use of `StringValuePtr` which can lead to security vulnerabilities.\
+    \ \nThe function does not perform proper safety checks on the input object, potentially\
+    \ leading to memory corruption or crashes. \nUse `SafeStringValueCStr` instead,\
+    \ which ensures the object is safe before converting it to a C string.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/339e11a7f178312d937b7c95dd3115ce7236597a
+    category: security
+    cwe:
+    - CWE-119
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-ruby-db48c307
+  pattern: "$HEAD = xcalloc((size_t)RARRAY_LEN($TAGS), sizeof($TYPE));\n...\nfor($I\
+    \ = 0; $I < RARRAY_LEN($TAGS); $I++) {\n  ...\n}\n"
+  pattern-not: "$LEN = RARRAY_LEN($TAGS);\n$HEAD = xcalloc((size_t)$LEN, sizeof($TYPE));\n\
+    ...\nfor($I = 0; $I < $LEN && $I < RARRAY_LEN($TAGS); $I++) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability where the loop condition relies on
+    RARRAY_LEN($TAGS) which might change during iteration. This can lead to memory
+    corruption or out-of-bounds access. Store RARRAY_LEN($TAGS) in a variable before
+    the loop to ensure consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/db48c307944a9a18877236bdf9e9b778875f38ed
+    category: security
+    cwe:
+    - CWE-119
+    - CWE-125
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-ruby-bcc2421b
+  pattern: "ffi_prep_cif(\n  $CIF,\n  NUM2INT($ABI),\n  RARRAY_LENINT($ARGS),\n  INT2FFI_TYPE(NUM2INT($RET_TYPE)),\n\
+    \  $ARG_TYPES\n)\n"
+  pattern-not: "ffi_prep_cif(\n  $CIF,\n  $NABI,\n  $LEN,\n  $RTYPE,\n  $ARG_TYPES\n\
+    )\n"
+  languages:
+  - c
+  message: "The use of `NUM2INT` and `RARRAY_LENINT` directly in `ffi_prep_cif` can\
+    \ lead to integer overflow vulnerabilities. \nThe patch introduces a safer approach\
+    \ by storing the values in variables (`len`, `nabi`, `rtype`) before passing them\
+    \ to `ffi_prep_cif`. \nThis prevents potential integer overflow issues by ensuring\
+    \ proper bounds checking and type conversion.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/bcc2421b4938fc1d9f5f3fb6ef2320571b27af42
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-ruby-1c2ef610
+  pattern: 'res = rb_str_new5($STR, 0, RSTRING_LEN($STR)+$N*$FLEN/$FCLEN+2);
+
+    ...
+
+    memcpy($P, RSTRING_PTR($STR), RSTRING_LEN($STR));
+
+    '
+  pattern-not: 'res = rb_str_new5($STR, 0, $LEN);
+
+    ...
+
+    memcpy($P, RSTRING_PTR($STR), $SIZE);
+
+    '
+  languages:
+  - c
+  message: 'This pattern detects potential integer overflow vulnerabilities in string
+    operations. The original code calculates a size without proper bounds checking,
+    which can lead to overflow. The fix includes proper bounds checking and uses separate
+    variables to avoid overflow. To fix this, always validate the size calculations
+    and ensure they do not exceed the maximum allowable value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/1c2ef610358af33f9ded3086aa2d70aac03dcac5
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-ruby-8794dec6
+  pattern: SafeStringValue($PATH);
+  pattern-not: FilePathValue($PATH);
+  languages:
+  - c
+  message: "The use of `SafeStringValue` for file paths is dangerous because it does\
+    \ not properly handle path validation, potentially leading to security vulnerabilities\
+    \ such as path traversal attacks. \nReplace `SafeStringValue` with `FilePathValue`\
+    \ to ensure proper path validation and mitigate security risks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ruby/ruby/commit/8794dec6a5f11adc5cdd19a5ee91ea6b0816763f
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-73
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/73.html
+    technology:
+    - c

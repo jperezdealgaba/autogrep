@@ -1,0 +1,84 @@
+rules:
+- id: vuln-microweber-b2baab6e
+  pattern: "[\n    'first_name'=> $request->get('first_name'),\n    'last_name'=>\
+    \ $request->get('last_name'),\n    'email'=> $request->get('email'),\n    'phone'=>\
+    \ $request->get('phone')\n]\n"
+  pattern-not: "[\n    'first_name'=> strip_tags($request->get('first_name')),\n \
+    \   'last_name'=> strip_tags($request->get('last_name')),\n    'email'=> strip_tags($request->get('email')),\n\
+    \    'phone'=> strip_tags($request->get('phone'))\n]\n"
+  languages:
+  - php
+  message: 'Detected potential Cross-Site Scripting (XSS) vulnerability due to missing
+    input sanitization.
+
+    Directly using user input without stripping HTML tags can lead to XSS attacks.
+
+    Fix this by using `strip_tags` to sanitize user input before storing or displaying
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/b2baab6e582b2efe63788d367a2bb61a2fa26470
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-microweber-70b46e23
+  pattern: '$are_allowed .= '',doc,docx,pdf,odt,pages,rtf,txt,pps,ppt,pptx,xls,xlsx'';
+
+    '
+  pattern-not: '$are_allowed .= '',doc,docx,pdf,odt,rtf,txt,pps,ppt,pptx,xls,xlsx'';
+
+    '
+  languages:
+  - php
+  message: 'The file extension whitelist includes potentially dangerous file types
+    like ''pages'' which could be exploited to upload malicious files. Ensure that
+    only safe and necessary file types are allowed in the whitelist to prevent security
+    risks. Remove any unnecessary or risky file types from the whitelist.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/microweber/microweber/commit/70b46e231e7b2c113666745a0ab6de9a8b7ef08e
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php
+- id: vuln-microweber-4ee09f9d
+  pattern: '$categories_id = intval($parent_id);
+
+    '
+  pattern-not: '$categories_id = $parent_id = intval($parent_id);
+
+    '
+  languages:
+  - php
+  message: 'The assignment of `intval($parent_id)` to `$categories_id` without also
+    assigning it to `$parent_id` can lead to inconsistent state. This can cause unexpected
+    behavior in the application, especially if `$parent_id` is used later without
+    being sanitized. To fix this, ensure both variables are assigned the sanitized
+    value.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/microweber/microweber/commit/4ee09f9dda35cd1b15daa351f335c2a4a0538d29
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

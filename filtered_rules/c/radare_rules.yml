@@ -1,0 +1,130 @@
+rules:
+- id: vuln-radare2-14189710
+  pattern: "if ($TREE->root == NULL) {\n  ...\n}\n"
+  pattern-not: "if (!$TREE->root) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses explicit comparison with NULL (`== NULL`) instead of the
+    more idiomatic and safer `!` operator. While functionally equivalent, using `!`
+    is more concise and reduces the risk of errors in complex conditions. Replace
+    `if ($TREE->root == NULL)` with `if (!$TREE->root)`.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/radare/radare2/commit/14189710859c27981adb4c2c2aed2863c1859ec5
+    category: best-practice
+    cwe:
+    - 'CWE-480: Use of Incorrect Operator'
+    technology:
+    - c
+- id: vuln-radare2-a49bb7cf
+  pattern: '$VAR = r_str_trim($EXPR);
+
+    '
+  pattern-not: 'r_str_trim($EXPR);
+
+    $VAR = $EXPR;
+
+    '
+  languages:
+  - c
+  message: "The use of `r_str_trim` in an assignment can lead to unexpected behavior\
+    \ or vulnerabilities. \nThe function `r_str_trim` modifies the string in place,\
+    \ and assigning its return value to a variable \nis redundant and potentially\
+    \ dangerous. Instead, modify the string directly with `r_str_trim` \nand then\
+    \ use the modified string. This ensures clarity and prevents potential issues\
+    \ \nwith string manipulation.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/radare/radare2/commit/a49bb7cf6698ed4fded0f36b12e019e61df1d2f8
+    category: security
+    cwe:
+    - CWE-664
+    technology:
+    - c
+- id: vuln-radare2-40c9f50e
+  pattern: "for ($J = 0; $J < $SECTION->size; $J += 8) {\n  ...\n}\n"
+  pattern-not: "for ($J = 0; $J + 7 < $SECTION->size; $J += 8) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This loop condition may lead to an out-of-bounds read due to insufficient
+    bounds checking.
+
+    The condition `j < section->size` does not account for the fact that 8 bytes are
+    read at each iteration,
+
+    which could result in reading past the end of the section buffer. The fix ensures
+    that there are
+
+    at least 8 bytes remaining before accessing the memory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/40c9f50e127be80b9d816bce2ab2ee790831aefd
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-radare2-021ad4d5
+  pattern: "if ($VAR) {\n  ...\n  free($TOKENS);\n  free($LBUF);\n  return $FUNC($ACODE);\n\
+    }\n"
+  pattern-not: "if ($VAR) {\n  ...\n  goto fail;\n}\n"
+  languages:
+  - c
+  message: 'Detected direct resource cleanup and return statements without using a
+    common failure handler.
+
+    This pattern can lead to inconsistent resource management and potential memory
+    leaks.
+
+    Use a common failure handler (goto fail) to ensure consistent resource cleanup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/021ad4d59bb14fd6439cc324692a0d38359d1f4c
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-radare2-a0348bb1
+  pattern: 'r_hex_bin2str($BUF, R_MIN($ADDRBYTES * $OPLEN, (sizeof($BUF_HEX) - 1)
+    / 2), $BUF_HEX);
+
+    '
+  pattern-not: 'int $LEN = R_MIN($ADDRBYTES * $OPLEN, (sizeof($BUF_HEX) - 1) / 2);
+
+    r_hex_bin2str($BUF, $LEN, $BUF_HEX);
+
+    '
+  languages:
+  - c
+  message: 'The function `r_hex_bin2str` is being called with an incorrect length
+    parameter, which could lead to buffer overflows or incorrect data processing.
+    The length should be calculated separately and explicitly passed to the function
+    to ensure correctness. This vulnerability can cause memory corruption or unexpected
+    behavior in the application.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/radare/radare2/commit/a0348bb1b512ef27301dd7cdfb327ef5e14813fc
+    category: security
+    cwe:
+    - CWE-119
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-sleuthkit-8e646f96
+  pattern: '$EXPR > (uintptr_t)($VAR + $LEN)
+
+    '
+  pattern-not: '$EXPR > (uintptr_t)$VAR + $LEN
+
+    '
+  languages:
+  - c
+  message: 'This rule detects a potential vulnerability in pointer arithmetic where
+    the cast to uintptr_t is incorrectly applied to the entire expression. This can
+    lead to incorrect pointer calculations and potential memory corruption. To fix
+    this, ensure that the cast to uintptr_t is applied only to the pointer variable,
+    not the entire expression.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/sleuthkit/sleuthkit/commit/8e646f96f5047768d63647844f300de7a5b5fb34
+    category: security
+    cwe:
+    - CWE-704
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/704.html
+    technology:
+    - c

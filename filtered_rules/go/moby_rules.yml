@@ -1,0 +1,75 @@
+rules:
+- id: vuln-moby-a79fabbf
+  pattern: 'strings.ToLower($HEADER.Get("Transfer-Encoding")) == "chunked"
+
+    '
+  pattern-not: 'strings.EqualFold($HEADER.Get("Transfer-Encoding"), "chunked")
+
+    '
+  languages:
+  - go
+  message: "Using `strings.ToLower` for case-insensitive string comparison is inefficient\
+    \ and less safe. \nPrefer `strings.EqualFold` for case-insensitive comparisons\
+    \ as it is more efficient and handles Unicode correctly.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/moby/moby/commit/a79fabbfe84117696a19671f4aa88b82d0f64fc1
+    category: security
+    cwe:
+    - 'CWE-178: Improper Handling of Case Sensitivity'
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - go
+- id: vuln-moby-f0ab919f
+  pattern: 'idtools.MkdirAllAndChown($PATH, 0701, idtools.CurrentIdentity())
+
+    '
+  pattern-not: 'idtools.MkdirAllAndChown($PATH, 0710, idtools.Identity{UID: idtools.CurrentIdentity().UID,
+    GID: $GID})
+
+    '
+  languages:
+  - go
+  message: 'Detected insecure directory creation with mode 0701. This mode allows
+    excessive permissions and may expose sensitive data. Use mode 0710 and ensure
+    proper GID mapping for secure directory creation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moby/moby/commit/f0ab919f518c47240ea0e72d0999576bb8008e64
+    category: security
+    cwe:
+    - CWE-732
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - go
+- id: vuln-buildkit-23bebc4a
+  pattern: "$DIR := filepath.Dir($P)\n$DIRST, $ERR := os.Stat($DIR)\n...\nif $ERR\
+    \ := os.Chtimes($DIR, $ATIME, $MTIME); $ERR != nil {\n  ...\n}\n"
+  pattern-not: "$PARENT := filepath.Dir($P)\nif $REALPATH, $ERR := fs.RootPath($DIR,\
+    \ strings.TrimPrefix($PARENT, $DIR)); $ERR != nil || $REALPATH != $PARENT {\n\
+    \  continue\n}\n$DIRST, $ERR := os.Stat($PARENT)\n...\nif $ERR := os.Chtimes($PARENT,\
+    \ $ATIME, $MTIME); $ERR != nil {\n  ...\n}\n"
+  languages:
+  - go
+  message: "Detected a potential path traversal vulnerability due to improper handling\
+    \ of directory paths. \nThe original code directly uses the directory path derived\
+    \ from a user-controlled input, \nwhich could allow an attacker to manipulate\
+    \ file timestamps in unintended directories. \nThe fix includes additional path\
+    \ validation using `fs.RootPath` to ensure the path is within the intended directory.\
+    \ \nTo fix, ensure all paths are properly validated and sanitized before use.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moby/buildkit/commit/23bebc4a180b84ba18733f545e7559e10c439ac3
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    technology:
+    - go

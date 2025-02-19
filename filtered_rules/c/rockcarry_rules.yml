@@ -1,0 +1,92 @@
+rules:
+- id: vuln-ffjpeg-e63a75fd
+  pattern: '$VAR->width = $WIDTH;
+
+    $VAR->height = $HEIGHT;
+
+    $VAR->stride = ALIGN($WIDTH * 3, 4);
+
+    $VAR->pdata = malloc($VAR->stride * $HEIGHT);
+
+    '
+  pattern-not: '$VAR->width = (int)$WIDTH > 0 ? (int)$WIDTH : 0;
+
+    $VAR->height = (int)$HEIGHT > 0 ? (int)$HEIGHT : 0;
+
+    $VAR->stride = ALIGN($VAR->width * 3, 4);
+
+    $VAR->pdata = malloc((size_t)$VAR->stride * $HEIGHT);
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns width and height values without validation,
+    which can lead to integer overflow or negative values in memory allocation. This
+    can cause heap corruption or buffer overflows. Always validate width and height
+    values before using them in calculations or memory allocations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/e63a75fdc2ba931c90445037b225170c6c31ce5d
+    category: security
+    cwe:
+    - CWE-190
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    - https://cwe.mitre.org/data/definitions/787.html
+    technology:
+    - c
+- id: vuln-ffjpeg-caade60a
+  pattern: 'bmp_load(&$BMP, $ARG);
+
+    '
+  pattern-not: "if (bmp_load(&$BMP, $ARG) == -1) {\n    ...\n    return -1;\n}\n"
+  languages:
+  - c
+  message: 'The function `bmp_load` is called without checking its return value, which
+    can lead to undefined behavior if the function fails. This can cause the program
+    to continue executing with invalid data, potentially leading to crashes or security
+    vulnerabilities. To fix this, always check the return value of `bmp_load` and
+    handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/caade60a69633d74100bd3c2528bddee0b6a1291
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A10:2021 - Server-Side Request Forgery (SSRF)
+    technology:
+    - c
+- id: vuln-ffjpeg-82166f2b
+  pattern: 'jfif->comp_num = $BUF[0];
+
+    '
+  pattern-not: 'jfif->comp_num = $BUF[0] < 4 ? $BUF[0] : 4;
+
+    '
+  languages:
+  - c
+  message: 'The code directly assigns a value from a buffer to `comp_num` without
+    bounds checking, which can lead to out-of-bounds access or memory corruption.
+    This is dangerous because it can be exploited to cause undefined behavior or security
+    vulnerabilities. To fix this, ensure the value is within the expected range before
+    assignment.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/rockcarry/ffjpeg/commit/82166f2b942405b11e40153c70551a48b7e6b4ab
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

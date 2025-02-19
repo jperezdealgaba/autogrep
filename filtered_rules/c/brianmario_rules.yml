@@ -1,0 +1,25 @@
+rules:
+- id: vuln-yajl-ruby-a8ca8f47
+  pattern: "end++;\nif (str[$END] == '\\\\' && str[$END + 1] == 'u') {\n  ...\n}\n"
+  pattern-not: "if ($END + 2 < $LEN && str[$END + 1] == '\\\\' && str[$END + 2] ==\
+    \ 'u') {\n  end++;\n  ...\n}\n"
+  languages:
+  - c
+  message: 'This pattern detects a potential out-of-bounds read vulnerability in the
+    YAJL library. The original code increments ''end'' before checking the bounds
+    of the string, which could lead to reading beyond the allocated memory. This is
+    dangerous because it can cause crashes or expose sensitive information. The fix
+    involves checking the bounds before accessing the string. Always ensure bounds
+    are validated before array or pointer access.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/brianmario/yajl-ruby/commit/a8ca8f476655adaa187eedc60bdc770fff3c51ce
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

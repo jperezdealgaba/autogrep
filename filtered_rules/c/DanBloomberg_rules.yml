@@ -1,0 +1,28 @@
+rules:
+- id: vuln-leptonica-25ef6f68
+  pattern: 'stringCheckForChars($ROOTNAME, "`;&|><\"?*", $BADCHAR)
+
+    '
+  pattern-not: 'stringCheckForChars($ROOTNAME, "`;&|><\"?*$()", $BADCHAR)
+
+    '
+  languages:
+  - c
+  message: 'The function `stringCheckForChars` is missing critical characters (`$()`)
+    in the set of dangerous characters to check for. This can lead to command injection
+    vulnerabilities if the input is used in shell commands. To fix this, ensure all
+    potentially dangerous characters are included in the character set.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/DanBloomberg/leptonica/commit/25ef6f683de2abcea7af3191475a90218b96c340
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    technology:
+    - c

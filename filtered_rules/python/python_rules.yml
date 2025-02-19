@@ -1,0 +1,66 @@
+rules:
+- id: vuln-cpython-2b578479
+  pattern: 'raise ValueError(u"netloc ''" + $NETLOC + u"'' contains invalid " + u"characters
+    under NFKC normalization")
+
+    '
+  pattern-not: 'raise ValueError("netloc %r contains invalid characters under NFKC
+    normalization" % $NETLOC)
+
+    '
+  languages:
+  - python
+  message: 'Detected an unsafe error message construction in URL parsing. Using string
+    concatenation with Unicode strings can lead to incorrect error messages and potential
+    security issues. Use `%r` formatting to ensure proper ASCII representation of
+    the netloc value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/2b578479b96aa3deeeb8bac313a02b5cf3cb1aff
+    category: security
+    cwe: CWE-116
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.python.org/3/library/urlparse.html
+    technology:
+    - python
+- id: vuln-cpython-e3110c3c
+  pattern: "def parse_multipart($FP, $PDICT, $ENCODING=\"utf-8\", $ERRORS=\"replace\"\
+    ):\n    ...\n"
+  pattern-not: "def parse_multipart($FP, $PDICT, $ENCODING=\"utf-8\", $ERRORS=\"replace\"\
+    , $SEPARATOR='&'):\n    ...\n"
+  languages:
+  - python
+  message: Detected use of parse_multipart without the separator parameter. This can
+    lead to incorrect parsing of query arguments when using non-standard separators.
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/e3110c3cfbb7daa690d54d0eff6c264c870a71bf
+    category: security
+    cwe: CWE-20
+    owasp: A1:2017-Injection
+    references:
+    - https://docs.python.org/3/library/cgi.html
+    technology:
+    - python
+- id: vuln-cpython-9fe7655c
+  pattern: "with self.assertRaises(ValueError):\n    subprocess.check_call($CMD, extra_groups=[])\n"
+  pattern-not: "with self.assertRaises(ValueError):\n    subprocess.check_call($CMD,\
+    \ extra_groups=[$GROUP])\n"
+  languages:
+  - python
+  message: Detected potentially unsafe subprocess call with empty extra_groups. This
+    can lead to unexpected behavior or security issues. Ensure proper group validation
+    is in place.
+  severity: ERROR
+  metadata:
+    source-url: github.com/python/cpython/commit/9fe7655c6ce0b8e9adc229daf681b6d30e6b1610
+    category: security
+    cwe: CWE-284
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://docs.python.org/3/library/subprocess.html
+    technology:
+    - python

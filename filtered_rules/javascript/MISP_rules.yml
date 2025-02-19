@@ -1,0 +1,29 @@
+rules:
+- id: vuln-misp-26bedd8a
+  pattern: '$SELECT.append(''<option value="'' + $ELEMENT + ''">'' + $ELEMENT + ''</option>'');
+
+    '
+  pattern-not: 'var $OPTION = $(''<option></option>'');
+
+    $OPTION.text($ELEMENT);
+
+    $OPTION.attr(''value'', $OPTION.text());
+
+    $SELECT.append($OPTION);
+
+    '
+  languages:
+  - javascript
+  message: "Potential XSS vulnerability detected due to unsafe concatenation of HTML\
+    \ strings. \nThis can lead to DOM-based XSS if the element contains user-controlled\
+    \ input. \nInstead, use safe DOM manipulation methods to create and append elements.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/MISP/MISP/commit/26bedd8a68c32a2f14460a8eac2a9fb09923392b
+    category: security
+    cwe: CWE-79
+    owasp: 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html
+    technology: javascript

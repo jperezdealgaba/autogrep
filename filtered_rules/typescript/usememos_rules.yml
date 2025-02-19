@@ -1,0 +1,26 @@
+rules:
+- id: vuln-memos-64e5c343
+  pattern: 'marked(escape($VAR), ...)
+
+    '
+  pattern-not: 'marked($VAR, ...)
+
+    '
+  languages:
+  - typescript
+  message: "Potential XSS vulnerability due to incorrect use of `escape` before `marked`.\
+    \ \nThe `escape` function should not be used before `marked` as it can interfere\
+    \ with proper HTML escaping, leading to potential XSS vulnerabilities. \nRemove\
+    \ the `escape` function and rely on `marked`'s built-in escaping mechanisms.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/64e5c343c5f74b0abdf3ac0d21a6139daea58cf8
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://marked.js.org/#/USING_ADVANCED.md#options
+    technology:
+    - typescript

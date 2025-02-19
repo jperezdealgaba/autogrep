@@ -1,0 +1,26 @@
+rules:
+- id: vuln-untangle-6f2c1059
+  pattern: 'run: python setup.py sdist bdist_wheel
+
+    '
+  pattern-not: 'run: python -m build
+
+    '
+  languages:
+  - yaml
+  message: "Using 'python setup.py sdist bdist_wheel' is deprecated and can lead to\
+    \ inconsistent builds. \nThis method does not handle dependencies correctly and\
+    \ may result in incomplete or incorrect package builds. \nUse 'python -m build'\
+    \ instead, which ensures proper handling of dependencies and consistent builds.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/stchris/untangle/commit/6f2c105974ce4850efcae8a45610031085b48b89
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://packaging.python.org/en/latest/tutorials/packaging-projects/
+    technology:
+    - yaml

@@ -1,0 +1,57 @@
+rules:
+- id: vuln-udev-662c3110
+  pattern: 'char $VAR[(len * 3) + 1];
+
+    '
+  pattern-not: 'char $VAR[(len * 4) + 1];
+
+    '
+  languages:
+  - c
+  message: 'Insufficient buffer size allocation detected. The buffer is allocated
+    with a size of (len * 3) + 1, which may lead to buffer overflow vulnerabilities.
+    Increase the buffer size to (len * 4) + 1 to ensure sufficient space is allocated.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mfwitten/udev/commit/662c3110803bd8c1aedacc36788e6fd028944314
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c
+- id: vuln-udev-e2b362d9
+  pattern: "if ($MONITOR->snl.nl_family != 0) {\n  $ERR = bind($MONITOR->sock, (struct\
+    \ sockaddr *)&$MONITOR->snl, sizeof(struct sockaddr_nl));\n  if ($ERR < 0) {\n\
+    \    err($MONITOR->udev, \"bind failed: %m\\n\");\n    return $ERR;\n  }\n  dbg($MONITOR->udev,\
+    \ \"monitor %p listening on netlink\\n\", $MONITOR);\n} else if ($MONITOR->sun.sun_family\
+    \ != 0) {\n  ...\n}\n"
+  pattern-not: "if ($MONITOR->sun.sun_family != 0)\nelse if ($MONITOR->snl.nl_family\
+    \ != 0)\n  $ERR = bind($MONITOR->sock, (struct sockaddr *)&$MONITOR->snl, sizeof(struct\
+    \ sockaddr_nl));\nelse\n  return -EINVAL;\n...\n"
+  languages:
+  - c
+  message: 'The original code had a vulnerability where it did not properly handle
+    the case when neither `sun.sun_family` nor `snl.nl_family` was set, potentially
+    leading to undefined behavior. The patch fixes this by adding an explicit check
+    and returning `-EINVAL` in such cases. This vulnerability could lead to crashes
+    or unexpected behavior in the application. To fix this, ensure that all possible
+    cases are handled explicitly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mfwitten/udev/commit/e2b362d9f23d4c63018709ab5f81a02f72b91e75
+    category: security
+    cwe:
+    - CWE-391
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    references:
+    - https://cwe.mitre.org/data/definitions/391.html
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - c

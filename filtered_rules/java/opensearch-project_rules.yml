@@ -1,0 +1,23 @@
+rules:
+- id: vuln-security-f7cc569c
+  pattern: 'resolver.concreteIndexNames($STATE, $OPTIONS, $UNRESOLVED)
+
+    '
+  pattern-not: 'resolver.concreteIndexNames($STATE, $OPTIONS, true, $UNRESOLVED)
+
+    '
+  languages:
+  - java
+  message: 'Missing ''includeDataStreams'' parameter in ''concreteIndexNames'' call.
+    This can lead to incomplete or incorrect index resolution, potentially bypassing
+    security controls. Always include the ''includeDataStreams'' parameter when resolving
+    indices to ensure proper handling of data streams.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/opensearch-project/security/commit/f7cc569c9d3fa5d5432c76c854eed280d45ce6f4
+    category: security
+    cwe: CWE-284
+    owasp: A01:2021 - Broken Access Control
+    technology: java

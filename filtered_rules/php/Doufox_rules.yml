@@ -1,0 +1,28 @@
+rules:
+- id: vuln-doufox-17b60059
+  pattern: "if (!in_array($ext, array('html', 'css', 'js', 'txt'))) {\n  ...\n}\n"
+  pattern-not: "if (!in_array($ext, $this->allowed_file_suffix)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a hardcoded file extension whitelist which can lead to security
+    vulnerabilities.
+
+    Hardcoding allowed file extensions directly in the code makes it difficult to
+    maintain and update the list, potentially allowing unsafe file types to be processed.
+
+    Instead, use a configurable list of allowed file extensions stored in a class
+    property or configuration file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Doufox/Doufox/commit/17b6005975f51ecf3a9f7b932db4898b9b969779
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Security_Misconfiguration
+    technology:
+    - php

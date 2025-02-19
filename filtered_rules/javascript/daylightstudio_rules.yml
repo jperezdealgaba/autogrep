@@ -1,0 +1,22 @@
+rules:
+- id: vuln-fuel-cms-47303d70
+  pattern: 'var $VAR = $(''$SELECTOR'', $CONTEXT).val();
+
+    '
+  pattern-not: 'var $VAR = parseInt($(''$SELECTOR'', $CONTEXT).val());
+
+    '
+  languages:
+  - javascript
+  message: "Direct use of jQuery `.val()` without type conversion can lead to type\
+    \ confusion vulnerabilities. \nAlways convert the value to the appropriate type\
+    \ (e.g., using `parseInt` for integers) to ensure proper handling.\nThis can prevent\
+    \ security issues such as unexpected behavior or injection attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/daylightstudio/FUEL-CMS/commit/47303d707a34e5818724e3124421a9ea6ac6753b
+    category: security
+    cwe: CWE-843
+    owasp: A1-Injection
+    technology:
+    - javascript

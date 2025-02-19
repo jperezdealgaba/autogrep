@@ -1,0 +1,26 @@
+rules:
+- id: vuln-i-educar-7824b957
+  pattern: '$VAR = is_string($VAR) ? htmlspecialchars($VAR, ENT_QUOTES) : null;
+
+    '
+  pattern-not: '$VAR = ! is_null($VAR) ? htmlspecialchars($VAR, ENT_QUOTES) : null;
+
+    '
+  languages:
+  - php
+  message: 'The code uses `is_string` to check if a value should be sanitized with
+    `htmlspecialchars`, which may miss non-string values that still need sanitization.
+    This could lead to XSS vulnerabilities if the value is later output to HTML. Use
+    `!is_null` instead to ensure all non-null values are properly sanitized.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/portabilis/i-educar/commit/7824b95745fa2da6476b9901041d9c854bf52ffe
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php

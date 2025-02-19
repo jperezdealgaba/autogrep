@@ -1,0 +1,111 @@
+rules:
+- id: vuln-gravity-00e53c36
+  pattern: 'char $VAR[new_size+1];
+
+    ...
+
+    strcpy($VAR, $STR);
+
+    ...
+
+    strcat($VAR, $STR);
+
+    '
+  pattern-not: 'char *$VAR = mem_alloc($SIZE);
+
+    ...
+
+    memcpy($VAR+$SEEK, $STR, $LEN);
+
+    '
+  languages:
+  - c
+  message: 'Detected unsafe string manipulation using strcpy and strcat without proper
+    bounds checking. This can lead to buffer overflows and memory corruption. Replace
+    with memcpy and ensure proper allocation and bounds checking.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/00e53c362677ba9363e89e859a54027581c60cf2
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - c
+- id: vuln-gravity-5b73d291
+  pattern: 'if (!$VAR) goto $LABEL;
+
+    if (!$VAR2) $VAR2 = $FUNC();
+
+    if ($VAR3) $FUNC2($VAR2, $FUNC3(...));
+
+    $FUNC4($VAR2, $VAR);
+
+    '
+  pattern-not: "if ($VAR) {\n    if (!$VAR2) $VAR2 = $FUNC();\n    if ($VAR3) $FUNC2($VAR2,\
+    \ $FUNC3(...));\n    $FUNC4($VAR2, $VAR);\n}\nif (!$VAR) goto $LABEL;\n"
+  languages:
+  - c
+  message: 'The code contains a potential null pointer dereference vulnerability.
+
+    The original code executes multiple operations after a null check but before the
+    goto statement, which can lead to undefined behavior if the null condition is
+    true.
+
+    The fix ensures that all operations are performed only if the pointer is not null,
+    and the goto statement is executed only after all operations are complete.
+
+    To fix this, ensure that all operations dependent on the pointer are enclosed
+    within the null check block.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/5b73d291c6969696947d2f264c6f935b8d78e0a8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/476.html
+    technology:
+    - c
+- id: vuln-gravity-8cf63796
+  pattern: "char *$BUFFER = mem_alloc($ALLOC);\n...\nif ($FREE < $REQ + $SEPLEN) {\n\
+    \    $BUFFER = mem_realloc($BUFFER, $ALLOC * 2 + $REQ + $SEPLEN);\n    $ALLOC\
+    \ += $ALLOC + $REQ + $SEPLEN;\n}\n"
+  pattern-not: "char *$_BUFFER = mem_alloc($ALLOC);\n...\nif ($FREE_MEM < $REQ + $SEPLEN)\
+    \ {\n    uint64_t $TO_ALLOC = $ALLOC + ($REQ + $SEPLEN) * 2 + 4096;\n    if ($TO_ALLOC\
+    \ > $MAX_MEMORY_BLOCK) {\n        mem_free($_BUFFER);\n        RETURN_ERROR(\"\
+    Maximum memory block size reached (max %d, requested %lld).\", $MAX_MEMORY_BLOCK,\
+    \ $TO_ALLOC);\n    }\n    $_BUFFER = mem_realloc($_BUFFER, (uint32_t)$TO_ALLOC);\n\
+    \    if (!$_BUFFER) {\n        mem_free($_BUFFER);\n        RETURN_ERROR(\"Not\
+    \ enought memory to re-allocate a buffer for the join operation.\");\n    }\n\
+    \    $ALLOC = (uint32_t)$TO_ALLOC;\n}\n"
+  languages:
+  - c
+  message: 'The code lacks proper sanity checks when reallocating memory, which can
+    lead to excessive memory allocation or memory corruption. This vulnerability can
+    be exploited to cause a denial of service or potentially execute arbitrary code.
+    Always validate the size of the memory block before reallocating and ensure proper
+    error handling for memory allocation failures.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marcobambini/gravity/commit/8cf6379645f458384fc44b627662de5345696072
+    category: security
+    cwe:
+    - 'CWE-789: Uncontrolled Memory Allocation'
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c

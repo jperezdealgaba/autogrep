@@ -1,0 +1,61 @@
+rules:
+- id: vuln-grin-391e311f
+  pattern: 'zip::decompress($SRC_FILE, $DEST_PATH)
+
+    '
+  pattern-not: 'zip::decompress($SRC_FILE, $DEST_PATH, $EXPECTED_FUNC)
+
+    '
+  languages:
+  - rust
+  message: 'Detected use of `zip::decompress` without a file validation function.
+    This can lead to path traversal or malicious file extraction vulnerabilities.
+    Always validate file paths before extraction to prevent unauthorized file access
+    or overwrites. Use the `expected` parameter to specify a validation function.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/391e311f4c05619bd4b7b0d599a5071ce7753b90
+    category: security
+    cwe:
+    - CWE-22
+    - CWE-434
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://cwe.mitre.org/data/definitions/22.html
+    - https://cwe.mitre.org/data/definitions/434.html
+    technology:
+    - rust
+- id: vuln-grin-eafe730a
+  pattern: "let mut $SET = HashSet::new();\n...\nfor $OUT in &$OUTPUTS {\n    $SET.insert($OUT.commitment());\n\
+    }\nfor $INP in &$INPUTS {\n    if $SET.contains(&$INP.commitment()) {\n      \
+    \  return Err($ERROR);\n    }\n}\n"
+  pattern-not: "let mut $INPUTS = $INPUTS.iter().map(|$X| $X.hash()).peekable();\n\
+    let mut $OUTPUTS = $OUTPUTS.iter().map(|$X| $X.hash()).peekable();\nwhile let\
+    \ (Some($IH), Some($OH)) = ($INPUTS.peek(), $OUTPUTS.peek()) {\n    match $IH.cmp($OH)\
+    \ {\n        Ordering::Less => {\n            $INPUTS.next();\n        }\n   \
+    \     Ordering::Greater => {\n            $OUTPUTS.next();\n        }\n      \
+    \  Ordering::Equal => {\n            return Err($ERROR);\n        }\n    }\n}\n"
+  languages:
+  - rust
+  message: 'Detected inefficient use of HashSet for checking duplicate commitments
+    in transactions.
+
+    This can lead to performance issues and incorrect handling of cut-through transactions.
+
+    The fix involves using sorted iterators and direct comparison, which is more efficient
+    and correct.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/mimblewimble/grin/commit/eafe730a65b1de2d5a1df5be53ebb54d5df25ec2
+    category: performance
+    cwe:
+    - CWE-400
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - rust

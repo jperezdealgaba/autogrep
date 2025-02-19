@@ -1,0 +1,26 @@
+rules:
+- id: vuln-servicestack-a0e0d7de
+  pattern: '$VAR = $VAR.Replace("<", "&lt;").Replace(">", "&gt;")
+
+    '
+  pattern-not: '$VAR = $VAR.HtmlEncode()
+
+    '
+  languages:
+  - csharp
+  message: 'Detected use of manual HTML encoding instead of the `HtmlEncode` method.
+    Manual encoding can miss certain characters and lead to XSS vulnerabilities. Use
+    the `HtmlEncode` method to ensure all potentially dangerous characters are properly
+    encoded.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ServiceStack/ServiceStack/commit/a0e0d7de20f5d1712f1793f925496def4383c610
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - csharp

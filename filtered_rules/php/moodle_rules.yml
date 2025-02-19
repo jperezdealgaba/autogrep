@@ -1,0 +1,421 @@
+rules:
+- id: vuln-moodle-324b018b
+  pattern: 'require_login();
+
+    '
+  pattern-not: "require_login(0, false);\nif (isguestuser()) {\n    throw new require_login_exception('Guests\
+    \ are not allowed here.');\n}\n"
+  languages:
+  - php
+  message: 'The code uses `require_login()` without proper guest user validation,
+    allowing unauthorized access. This is dangerous because guest users could perform
+    actions they shouldn''t be allowed to. To fix this, use `require_login(0, false)`
+    and explicitly check for guest users with `isguestuser()`, throwing an exception
+    if detected.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/324b018bbce2f56198fe8808968bad6c8798710a
+    category: security
+    cwe:
+    - CWE-285
+    owasp:
+    - A01:2021-Broken Access Control
+    references:
+    - https://docs.moodle.org/dev/require_login
+    technology:
+    - php
+- id: vuln-moodle-98456628
+  pattern: '$password = ''$PASSWORD'';
+
+    '
+  pattern-not: '$password = get_site_identifier();
+
+    '
+  languages:
+  - php
+  message: 'Hardcoded passwords in the codebase pose a significant security risk as
+    they can be easily discovered and exploited. Always use dynamically generated
+    or securely stored credentials instead of hardcoding them. Replace hardcoded passwords
+    with secure methods like `get_site_identifier()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/98456628a24bba25d336860d38a45b5a4e3895da
+    category: security
+    cwe:
+    - CWE-798
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - php
+- id: vuln-moodle-07323f50
+  pattern: 'preg_split(''/(<[^>]*>)/i'', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+    '
+  pattern-not: 'preg_split(''/(<[^<|>]*>)/i'', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+    '
+  languages:
+  - php
+  message: 'The use of a regular expression that matches any angle-bracketed content
+    without properly handling nested tags can lead to incorrect parsing of HTML content.
+    This can result in security vulnerabilities such as XSS if the parsed content
+    is rendered in a web page. The fixed version uses a more precise regex pattern
+    that correctly handles nested tags.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/07323f50ffc71f8ba1b2914ec8947451e32a61c1
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-moodle-18767260
+  pattern: 'print_r($OBJECT);
+
+    '
+  pattern-not: 'echo s(print_r($OBJECT, true));
+
+    '
+  languages:
+  - php
+  message: 'Directly using `print_r()` without proper memory handling can lead to
+    memory exhaustion when handling large objects. This vulnerability can cause the
+    application to crash or become unresponsive. The fix involves raising the memory
+    limit and ensuring the output is properly sanitized using `s()` before being echoed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/187672608ec96659e07f2461b3b83634debd16cb
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - A1:2017-Injection
+    technology:
+    - php
+- id: vuln-moodle-d4985a77
+  pattern: 'optional_param($VAR1, $VAR2, PARAM_NOTAGS)
+
+    '
+  pattern-not: 'optional_param($VAR1, $VAR2, PARAM_ALPHANUM)
+
+    '
+  languages:
+  - php
+  message: 'The use of PARAM_NOTAGS in optional_param() is dangerous as it does not
+    properly sanitize input, potentially allowing malicious data to be processed.
+    This can lead to security vulnerabilities such as XSS. Use PARAM_ALPHANUM instead
+    to ensure only alphanumeric characters are accepted.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/d4985a77391123c5959db432c076328f8d5e3624
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://docs.moodle.org/dev/Data_validation
+    technology:
+    - php
+- id: vuln-moodle-ac40d8b5
+  pattern: '$mform->setType(''description'', PARAM_RAW);
+
+    '
+  pattern-not: '$mform->setType(''description'', PARAM_CLEANHTML);
+
+    '
+  languages:
+  - php
+  message: "Using PARAM_RAW for form descriptions can lead to XSS vulnerabilities\
+    \ as it does not sanitize user input. \nReplace PARAM_RAW with PARAM_CLEANHTML\
+    \ to ensure proper HTML sanitization and prevent XSS attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/ac40d8b589820929fe4201a3f0640414e2b9dabd
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-moodle-493205b6
+  pattern: 'file_get_contents($TEMPPATH . ''/course_files/'' . $DATA[''initialcontent''])
+
+    '
+  pattern-not: 'file_get_contents($TEMPPATH . ''/course_files/'' . clean_param($DATA[''initialcontent''],
+    PARAM_FILE))
+
+    '
+  languages:
+  - php
+  message: 'Detected a potential file path traversal vulnerability due to unvalidated
+    user input in file_get_contents. This can allow attackers to read arbitrary files
+    on the server by manipulating the ''initialcontent'' parameter. To fix this, use
+    clean_param with PARAM_FILE to sanitize the input before using it in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/493205b6b280633bcbc49d2eaf4f61a52252c26c
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+    technology:
+    - php
+- id: vuln-moodle-2c639e85
+  pattern: '$record->groupid = $VAR;
+
+    '
+  pattern-not: '$record->groupid = $currentgroup;
+
+    '
+  languages:
+  - php
+  message: 'The assignment of groupid in the record object is potentially unsafe as
+    it directly assigns a variable without proper validation. This could lead to security
+    vulnerabilities such as unauthorized group access or data manipulation. Ensure
+    that the value assigned to groupid is properly validated and sanitized, or use
+    a trusted source like $currentgroup.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/2c639e85a32aaef4a9978e5ca139fb74ca5d6ae4
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-moodle-58e8ad85
+  pattern: 'unserialize(base64_decode($VAR))
+
+    '
+  pattern-not: 'unserialize_object(base64_decode($VAR))
+
+    '
+  languages:
+  - php
+  message: 'Unsafe use of `unserialize` on base64-decoded data detected. This can
+    lead to PHP object injection vulnerabilities, allowing attackers to execute arbitrary
+    code or manipulate application behavior. Replace `unserialize` with the safer
+    `unserialize_object` function to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/58e8ad852f9e75c8158e5bee02c273383f7d9865
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php
+- id: vuln-moodle-1fc481dd
+  pattern: 'format_text($VAR_CONTENT, $VAR_FORMAT, array(''overflowdiv'' => true))
+
+    '
+  pattern-not: 'format_text($VAR_CONTENT, $VAR_FORMAT, array(''overflowdiv'' => true,
+    ''blanktarget'' => true))
+
+    '
+  languages:
+  - php
+  message: 'The `format_text` function is being called without the ''blanktarget''
+    option, which can lead to security vulnerabilities by allowing links to open in
+    the same window. This could expose users to phishing or other malicious content.
+    Always include the ''blanktarget'' option to ensure links open in a new tab, mitigating
+    this risk.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/1fc481dd7b09e08e85824c1fe6733b303a36bdce
+    category: security
+    cwe:
+    - CWE-1022
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://docs.moodle.org/dev/format_text
+    technology:
+    - php
+- id: vuln-moodle-f2807dee
+  pattern: confirm_sesskey();
+  pattern-not: require_sesskey();
+  languages:
+  - php
+  message: "The use of `confirm_sesskey()` is insecure as it does not enforce session\
+    \ validation. \nThis can lead to CSRF (Cross-Site Request Forgery) attacks. \n\
+    Use `require_sesskey()` instead, which enforces session validation and prevents\
+    \ CSRF.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/f2807dee5bc777d9c58b7a70cba6e4c21ee02ea1
+    category: security
+    cwe:
+    - 352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://docs.moodle.org/dev/Session_key
+    technology:
+    - php
+- id: vuln-moodle-038131c8
+  pattern: '$querystring .= ''&amp;''.$VAR.''=''.$VAL;
+
+    '
+  pattern-not: '$querystring .= ''&''.$VAR.''=''.$VAL;
+
+    '
+  languages:
+  - php
+  message: 'The use of ''&amp;'' instead of ''&'' in query string construction can
+    lead to incorrect URL encoding, potentially causing security issues such as parameter
+    injection. Always use ''&'' for query string separation and ensure proper URL
+    encoding of parameters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/038131c8b5614f18c14d964dc53b6960ae6c30d8
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.urlencode.php
+    technology:
+    - php
+- id: vuln-moodle-3ab2851d
+  pattern: 'str_pad(decbin($VAR), 32, "0", "STR_PAD_LEFT")
+
+    '
+  pattern-not: 'str_pad(decbin($VAR), 32, "0", STR_PAD_LEFT)
+
+    '
+  languages:
+  - php
+  message: 'The function `str_pad` is being used with a string parameter for the padding
+    type instead of the constant `STR_PAD_LEFT`. This can lead to unexpected behavior
+    or errors if the string is not recognized as a valid padding type. Always use
+    the constant `STR_PAD_LEFT` to ensure correct and consistent behavior.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/3ab2851d2a59721445945d0706c58092e07e861e
+    category: security
+    cwe:
+    - CWE-628
+    owasp:
+    - A9:2021-Security Misconfiguration
+    technology:
+    - php
+- id: vuln-moodle-ce5a785b
+  pattern: 'new moodle_url(''http://mystatus.skype.com/smallicon/''.$USER->skype)
+
+    '
+  pattern-not: 'new moodle_url(''http://mystatus.skype.com/smallicon/''.urlencode($USER->skype))
+
+    '
+  languages:
+  - php
+  message: 'The Skype URL is constructed without proper URL encoding, which can lead
+    to URL injection vulnerabilities. This could allow an attacker to manipulate the
+    URL and potentially redirect users to malicious sites or inject harmful content.
+    Always use urlencode() to safely include user input in URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/ce5a785b0962c3c94c7a7b0d36176482d21db95d
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/URL_Injection
+    technology:
+    - php
+- id: vuln-moodle-9f178c1f
+  pattern: 'str_replace($matches[0][$i], "<b>Undetermined error:</b> ", $text)
+
+    '
+  pattern-not: 'str_replace($matches[0][$i], "<b>Undetermined error:</b> " . $matches[0][$i],
+    $text)
+
+    '
+  languages:
+  - php
+  message: 'The str_replace function is being used to replace an error message without
+    preserving the original matched content, which can lead to loss of important error
+    context. This is dangerous because it can obscure the root cause of errors, making
+    debugging and error handling more difficult. To fix this, ensure the original
+    matched content is preserved in the replacement string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/9f178c1f816e78ec024ab16a10192c81305b2624
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://www.php.net/manual/en/function.str-replace.php
+    technology:
+    - php
+- id: vuln-moodle-28947c1d
+  pattern: 'format_text($text, $textformat, array(''noclean'' => true, ...))
+
+    '
+  pattern-not: 'format_text($text, $textformat, array(''para'' => false, ''filter''
+    => $settings->get_filter()))
+
+    '
+  languages:
+  - php
+  message: 'The use of ''noclean'' => true in format_text() can lead to XSS vulnerabilities
+    as it disables HTML sanitization. This is dangerous because it allows potentially
+    malicious HTML to be rendered without proper sanitization. To fix this, remove
+    the ''noclean'' => true option and ensure the text format is properly set to HTML
+    after conversion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/moodle/moodle/commit/28947c1d7d9c53781989b9da7ceb2cafdd144749
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php

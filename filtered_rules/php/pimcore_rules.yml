@@ -1,0 +1,51 @@
+rules:
+- id: vuln-pimcore-c8f37b19
+  pattern: "if ($VAR instanceof User && $VAR->isAdmin() && !$this->getAdminUser()->isAdmin())\
+    \ {\n    ...\n}\n"
+  pattern-not: "$VAR = $this->getAdminUser()->isAdmin();\nif ($VAR2 instanceof User\
+    \ && $VAR2->isAdmin() && !$VAR) {\n    ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where admin privileges are
+    checked multiple times within the same condition. This can lead to inconsistent
+    privilege checks and potential privilege escalation. The issue was fixed by storing
+    the result of `$this->getAdminUser()->isAdmin()` in a variable and reusing it.
+    To fix this, store the result of privilege checks in a variable and use that variable
+    in subsequent conditions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/pimcore/commit/c8f37b19c99cd82e4e558857d3e4d5476ea7228a
+    category: security
+    cwe:
+    - 'CWE-269: Improper Privilege Management'
+    owasp:
+    - A01:2021 - Broken Access Control
+    technology:
+    - php
+- id: vuln-admin-ui-classic-bundle-363afef2
+  pattern: '$conditionFilters[] = ''id IN ('' . implode('','', $selectedIds) . '')'';
+
+    '
+  pattern-not: "$quotedSelectedIds = [];\nforeach ($selectedIds as $selectedId) {\n\
+    \    if ($selectedId) {\n        $quotedSelectedIds[] = $db->quote($selectedId);\n\
+    \    }\n}\n$conditionFilters[] = 'id IN (' . implode(',', $quotedSelectedIds)\
+    \ . ')';\n"
+  languages:
+  - php
+  message: "Detected a potential SQL injection vulnerability due to unquoted user\
+    \ input in an SQL query. \nThe code directly concatenates user-controlled input\
+    \ (`$selectedIds`) into an SQL query, which can be exploited to inject malicious\
+    \ SQL commands.\nTo fix this, ensure all user inputs are properly escaped using\
+    \ the database's quoting mechanism, as shown in the fixed version.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/pimcore/admin-ui-classic-bundle/commit/363afef29496cc40a8b863c2ca2338979fcf50a8
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

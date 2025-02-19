@@ -1,0 +1,116 @@
+rules:
+- id: vuln-node-1780bbc3
+  pattern: "if ($OPTIONS.rejectUnauthorized) {\n  ...\n}\n"
+  pattern-not: "if ($OPTIONS.rejectUnauthorized !== false) {\n  ...\n}\n"
+  languages:
+  - javascript
+  message: 'The `rejectUnauthorized` property check is vulnerable when explicitly
+    set to `undefined`. This can cause the default value (`true`) to fail, potentially
+    allowing unauthorized connections. Always explicitly check if `rejectUnauthorized`
+    is `false` to ensure secure TLS connections.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/1780bbc3291357f7c3370892eb311fc7a62afe8d
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - javascript
+- id: vuln-node-bf00665a
+  pattern: "const $RESULT = win32SplitPath($PATH);\nconst $ROOT = $RESULT[0];\nvar\
+    \ $DIR = $RESULT[1];\nif (!$ROOT && !$DIR) {\n  ...\n}\nif ($DIR) {\n  $DIR =\
+    \ $DIR.substr(0, $DIR.length - 1);\n}\nreturn $ROOT + $DIR;\n"
+  pattern-not: "const $LEN = $PATH.length;\nif ($LEN === 0)\n...\nfor (var $I = $LEN\
+    \ - 1; $I >= $OFFSET; --$I) {\n  $CODE = $PATH.charCodeAt($I);\n  if ($CODE ===\
+    \ 47 || $CODE === 92) {\n    if (!$MATCHEDSLASH) {\n      $END = $I;\n      break;\n\
+    \    }\n  } else {\n    $MATCHEDSLASH = false;\n  }\n}\nif ($END === -1) {\n \
+    \ if ($ROOTEND === -1)\n    return \".\";\n  else\n    $END = $ROOTEND;\n}\nreturn\
+    \ $PATH.slice(0, $END);\n"
+  languages:
+  - javascript
+  message: 'Insecure path handling detected. The old implementation used a regex-based
+    split approach that could be vulnerable to path manipulation attacks. The new
+    implementation uses a more secure character-by-character parsing approach. Update
+    your path handling code to use the new secure implementation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/bf00665af68c8aaf43112a244535bd1094d68f16
+    category: security
+    cwe: CWE-22
+    owasp: A1:2017-Injection
+    technology:
+    - javascript
+    - nodejs
+    references:
+    - https://nodejs.org/api/path.html
+    - https://cwe.mitre.org/data/definitions/22.html
+- id: vuln-undici-f2324e54
+  pattern: "$VAR.replace(\n  /^[\\r\\n\\t ]+|[\\r\\n\\t ]+$/g,\n  ''\n)\n"
+  pattern-not: 'let $I = $VAR.length;
+
+    while (/[\r\n\t ]/.test($VAR.charAt(--$I)));
+
+    $VAR.slice(0, $I + 1).replace(/^[\r\n\t ]+/, '''')
+
+    '
+  languages:
+  - javascript
+  message: 'Detected a potentially vulnerable use of regex-based string trimming that
+    is susceptible to ReDoS (Regular Expression Denial of Service) attacks. This occurs
+    when a regular expression with potentially exponential time complexity is used
+    on untrusted input. The fix involves using a safer and more efficient approach
+    with manual trimming and a simple regex for leading whitespace.
+
+    To fix this, replace the vulnerable regex-based trimming with the safer approach
+    shown in the pattern-not section.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/undici/commit/f2324e549943f0b0937b09fb1c0c16cc7c93abdf
+    category: security
+    cwe:
+    - CWE-400
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
+    technology:
+    - javascript
+- id: vuln-node-40a7beed
+  pattern: '_fill(createUnsafeBuffer($SIZE), $FILL, $ENCODING)
+
+    '
+  pattern-not: 'const $BUF = createUnsafeBuffer($SIZE);
+
+    _fill($BUF, $FILL, 0, $BUF.length, $ENCODING)
+
+    '
+  languages:
+  - javascript
+  message: 'Potential buffer overflow vulnerability due to unsafe buffer filling.
+
+    The original code directly passes the buffer to _fill without specifying the range,
+
+    which can lead to incorrect buffer manipulation. Always specify the start and
+    end
+
+    indices when filling buffers.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nodejs/node/commit/40a7beeddac9b9ec9ef5b49157daaf8470648b08
+    category: security
+    cwe: CWE-120
+    owasp: A1
+    references:
+    - https://nodejs.org/api/buffer.html#buffer_buf_fill_value_offset_end_encoding
+    technology:
+    - javascript

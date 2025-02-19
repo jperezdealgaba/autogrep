@@ -1,0 +1,104 @@
+rules:
+- id: vuln-struts-4260bee6
+  pattern: '<jackson.version>2.9.2</jackson.version>
+
+    '
+  pattern-not: '<jackson.version>2.9.4</jackson.version>
+
+    '
+  languages:
+  - xml
+  message: 'The version of Jackson library specified is vulnerable. Versions before
+    2.9.4 contain security issues that could lead to remote code execution. Upgrade
+    to Jackson version 2.9.4 or later to mitigate this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/4260bee634cb606be6071bce2383fddb510608aa
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/FasterXML/jackson-databind/issues
+    technology:
+    - xml
+- id: vuln-struts-d832747d
+  pattern: "<interceptor-ref name=\"params\">\n  <param name=\"excludeParams\">^action:.*,^method:.*</param>\n\
+    </interceptor-ref>\n"
+  pattern-not: '<interceptor-ref name="params"/>
+
+    '
+  languages:
+  - xml
+  message: 'The use of specific excludeParams in the params interceptor can lead to
+    insufficient parameter filtering, potentially allowing unauthorized access to
+    sensitive methods or actions. This vulnerability was fixed by removing the specific
+    excludeParams, which ensures that all parameters are properly filtered. To fix
+    this, remove the excludeParams configuration from the params interceptor.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/struts/commit/d832747d647df343ed07a58b1b5e540a05a4d51b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A01:2021 - Broken Access Control
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - xml
+- id: vuln-ofbiz-framework-77ad05c6
+  pattern: '<field name="story" use-when="custRequest==null" encode-output="false"><textarea
+    cols="60" rows="12" default-value="${communicationEvent.content}"/></field>
+
+    '
+  pattern-not: '<field name="story" use-when="custRequest==null"><textarea cols="60"
+    rows="12" default-value="${communicationEvent.content}"/></field>
+
+    '
+  languages:
+  - xml
+  message: 'The field element with name "story" has the attribute `encode-output="false"`,
+    which disables output encoding. This can lead to Cross-Site Scripting (XSS) vulnerabilities
+    if user-controlled input is rendered without proper escaping. Remove the `encode-output="false"`
+    attribute to ensure output is properly encoded and prevent XSS attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ofbiz-framework/commit/77ad05c6274bc358383f57e91ca2164bbb86fa50
+    category: security
+    cwe: 'CWE-79: Improper Neutralization of Input During Web Page Generation (''Cross-site
+      Scripting'')'
+    owasp: A03:2021 - Injection
+    technology:
+    - xml
+- id: vuln-ofbiz-framework-9b5aad63
+  pattern: '<field name="articleData" ...><textarea ... visual-editor-enable="true"/></field>
+
+    '
+  pattern-not: '<field name="articleData" ...><textarea ... visual-editor-enable="false"/></field>
+
+    '
+  languages:
+  - xml
+  message: 'The visual editor is enabled in a textarea field, which can lead to XSS
+    vulnerabilities. Disabling the visual editor (setting visual-editor-enable to
+    "false") is recommended to prevent potential injection attacks.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/ofbiz-framework/commit/9b5aad637c08a128f2503e32589e504d7d601ff5
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - xml

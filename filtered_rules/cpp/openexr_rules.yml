@@ -1,0 +1,107 @@
+rules:
+- id: vuln-openexr-e7c26f6e
+  pattern: 'int $NBYTES = $EXPR1 * $EXPR2 / $EXPR3;
+
+    '
+  pattern-not: 'size_t $NBYTES = size_t($EXPR1) * size_t($EXPR2) / size_t($EXPR3);
+
+    '
+  languages:
+  - cpp
+  message: 'Integer overflow vulnerability due to unsafe arithmetic operations. When
+    calculating the number of bytes, using ''int'' can lead to overflow if the result
+    exceeds the maximum value of ''int''. This can cause memory corruption or buffer
+    overflows. Use ''size_t'' and cast the operands to ''size_t'' to ensure safe arithmetic
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/e7c26f6ef5bf7ae8ea21ecf19963186cd1391720
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp
+- id: vuln-openexr-74504503
+  pattern: 'float $VAR = ($WIDTH > 0)? (float ($H - 1) / ($WIDTH - 1)): 1;
+
+    '
+  pattern-not: 'float $VAR = ($WIDTH > 1)? (float ($H - 1) / ($WIDTH - 1)): 1;
+
+    '
+  languages:
+  - cpp
+  message: 'Potential division by zero vulnerability detected. The condition checks
+    if the width is greater than 0, which can lead to division by zero when the width
+    is 1. This can cause undefined behavior. To fix this, ensure the condition checks
+    for values greater than 1.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/74504503cff86e986bac441213c403b0ba28d58f
+    category: security
+    cwe:
+    - CWE-369
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp
+- id: vuln-openexr-ae6d2038
+  pattern: 'i.insert($NAME, Slice($TYPE, (char*)&$CHANNELS[-$DX], $SIZEOF, 0, $CHANNEL.xSampling,
+    $CHANNEL.ySampling));
+
+    '
+  pattern-not: 'i.insert($NAME, Slice($TYPE, (char*)&$CHANNELS[-$DX / $CHANNEL.xSampling],
+    $SIZEOF, 0, $CHANNEL.xSampling, $CHANNEL.ySampling));
+
+    '
+  languages:
+  - cpp
+  message: 'The code contains a potential buffer overflow vulnerability due to incorrect
+    pointer arithmetic in the Slice function. The original code does not account for
+    the channel sampling rate when calculating the offset, which could lead to accessing
+    memory outside the intended bounds. This can cause undefined behavior, crashes,
+    or even security vulnerabilities. To fix this, ensure that the offset calculation
+    includes the channel sampling rate by dividing the delta (dx or dwx) by the xSampling
+    value.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/ae6d203892cc9311917a7f4f05354ef792b3e58e
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-787: Out-of-bounds Write'
+    owasp: 'A1: Injection'
+    technology:
+    - cpp
+- id: vuln-openexr-c3ed4a1d
+  pattern: '(double)(2 << ($EXPR - $VAR))
+
+    '
+  pattern-not: '(double)(2ll << ($EXPR - $VAR))
+
+    '
+  languages:
+  - cpp
+  message: "Detected a potential integer overflow vulnerability due to the use of\
+    \ '2 <<' without the 'll' suffix. \nThis can lead to undefined behavior when the\
+    \ shift operation exceeds the bit width of the integer type. \nTo fix this, use\
+    \ '2ll <<' to ensure the operation is performed on a 64-bit integer.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/openexr/openexr/commit/c3ed4a1db1f39bf4524a644cb2af81dc8cfab33f
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp

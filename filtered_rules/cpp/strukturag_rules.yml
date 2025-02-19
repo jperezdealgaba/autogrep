@@ -1,0 +1,80 @@
+rules:
+- id: vuln-libde265-677342a0
+  pattern: 'bandIdx = $TABLE[ $IMG[$X+$I+($Y+$J)*$STRIDE]>>$SHIFT ];
+
+    '
+  pattern-not: 'int $PIXEL = $IMG[$X+$I+($Y+$J)*$STRIDE];
+
+    $PIXEL = Clip3(0,$MAX,$PIXEL);
+
+    bandIdx = $TABLE[ $PIXEL>>$SHIFT ];
+
+    '
+  languages:
+  - cpp
+  message: "Detected potential out-of-bounds array access due to unvalidated pixel\
+    \ value. \nThis can lead to illegal memory access when decoding errors occur,\
+    \ causing crashes or undefined behavior. \nAlways validate pixel values using\
+    \ Clip3() to ensure they are within the valid range before using them as array\
+    \ indices.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/677342a07667f56744a5087d6f7732981f784e2f
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-129
+    owasp: 'A1: Injection'
+    technology:
+    - cpp
+- id: vuln-libde265-0b1752ab
+  pattern: "if ($PPS[$ID]->$FIELD == false) {\n  ...\n}\n"
+  pattern-not: "if ($PPS[$ID] == nullptr || $PPS[$ID]->$FIELD == false) {\n  ...\n\
+    }\n"
+  languages:
+  - cpp
+  message: 'Detected a potential null pointer dereference vulnerability. The code
+    checks a field of a PPS object without first verifying that the object is not
+    null. This can lead to a crash or undefined behavior. To fix this, add a null
+    check before accessing the object''s fields.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/0b1752abff97cb542941d317a0d18aa50cb199b1
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - cpp
+- id: vuln-libde265-63b596c9
+  pattern: "if ($SUCCESS) {\n  $PPS[$ID] = $NEW_PPS;\n}\nreturn $SUCCESS ? $OK : $WARNING;\n"
+  pattern-not: "if (!$SUCCESS) {\n  return $WARNING;\n}\n$PPS[$ID] = $NEW_PPS;\nreturn\
+    \ $OK;\n"
+  languages:
+  - cpp
+  message: 'The original code conditionally assigns a new PPS (Picture Parameter Set)
+    only if the operation was successful, but fails to handle the case where the operation
+    is not successful, potentially leading to inconsistent state or undefined behavior.
+    The fix ensures that the PPS is always assigned and returns the appropriate warning
+    when the operation fails.
+
+    This vulnerability is dangerous because it can lead to unexpected behavior or
+    crashes in the video decoding process. To fix it, ensure that the PPS is always
+    assigned and handle the failure case explicitly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/strukturag/libde265/commit/63b596c915977f038eafd7647d1db25488a8c133
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A12:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/754.html
+    technology:
+    - cpp

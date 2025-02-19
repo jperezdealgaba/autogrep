@@ -1,0 +1,41 @@
+rules:
+- id: vuln-ceph-47c33179
+  pattern: "def create_dmcrypt_key():\n    ...\n    random_string = os.urandom(int($DMCRYPT_KEY_SIZE\
+    \ / 8))\n"
+  pattern-not: "def create_dmcrypt_key():\n    ...\n    random_string = os.urandom(128)\n"
+  languages:
+  - python
+  message: Detected insecure key generation in `create_dmcrypt_key()` function. The
+    key size should be fixed to 128 bytes to ensure cryptographic security. Using
+    a variable key size can lead to weak encryption.
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/47c33179f9a15ae95cc1579a421be89378602656
+    category: security
+    cwe:
+    - 'CWE-326: Inadequate Encryption Strength'
+    owasp: A2:2017-Broken Authentication
+    references:
+    - https://cwe.mitre.org/data/definitions/326.html
+    technology:
+    - python
+- id: vuln-ceph-af3fffab
+  pattern: "def $FUNC(self, $TOKEN, $ALL_ENDPOINTS=False):\n    ...\n    return self._swagger_ui_page($ALL_ENDPOINTS,\
+    \ $TOKEN)\n"
+  pattern-not: "def $FUNC(self, $ALL_ENDPOINTS=False):\n    ...\n    return self._swagger_ui_page($ALL_ENDPOINTS)\n"
+  languages:
+  - python
+  message: 'Detected a potential security vulnerability where a token is passed directly
+    to the Swagger UI page. This can lead to unauthorized access or token leakage.
+    Remove the token parameter and handle authentication securely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ceph/ceph/commit/af3fffab3b0f13057134d96e5d481e400d8bfd27
+    category: security
+    cwe: CWE-200
+    owasp: A01:2017-Broken Access Control
+    references:
+    - https://swagger.io/docs/specification/authentication/
+    technology: python

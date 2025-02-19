@@ -1,0 +1,27 @@
+rules:
+- id: vuln-grav-b6bba9eb
+  pattern: '''#(<[^>]+[[a-z\x00-\x20\"\''\/])([\s\/]on|\sxmlns)[a-z].*=>?#iUu''
+
+    '
+  pattern-not: '''#(<[^>]+[a-z\x00-\x20\"\''\/])(on[a-z]+|xmlns)\s*=[\s|\''\"].*[\s|\''\"]>#iUu''
+
+    '
+  languages:
+  - php
+  message: "The pattern used to detect malicious HTML attributes is too permissive\
+    \ and could allow XSS attacks. \nThe original regex pattern is vulnerable because\
+    \ it does not properly restrict event handlers and XML namespaces.\nUpdate the\
+    \ pattern to be more strict and ensure it properly validates event handlers and\
+    \ XML namespaces.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/getgrav/grav/commit/b6bba9eb99bf8cb55b8fa8d23f18873ca594e348
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php

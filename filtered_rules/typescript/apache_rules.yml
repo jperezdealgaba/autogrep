@@ -1,0 +1,23 @@
+rules:
+- id: vuln-streampipes-cd5a7b46
+  pattern: '$VAR!.clear()
+
+    '
+  pattern-not: "if ($VAR) {\n    $VAR.clear();\n}\n"
+  languages:
+  - typescript
+  message: 'Detected unsafe property access using the non-null assertion operator
+    (!). This can lead to runtime errors if the property is null or undefined. Always
+    check for null/undefined before accessing properties.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/apache/streampipes/commit/cd5a7b46e3383573f0f2b51da4b7306d4936aa3f
+    category: reliability
+    cwe:
+    - CWE-476
+    owasp:
+    - A10:2021-Server-Side Request Forgery
+    technology:
+    - typescript

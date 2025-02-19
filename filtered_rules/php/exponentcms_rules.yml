@@ -1,0 +1,118 @@
+rules:
+- id: vuln-exponent-cms-684d7942
+  pattern: "if (array_key_exists($perm_action, $perms)) {\n    ...\n} elseif (array_key_exists($common_action,\
+    \ $perms)) {\n    ...\n} elseif (array_key_exists($perm_action, $controller->requires_login))\
+    \ {\n    ...\n} elseif (array_key_exists($common_action, $controller->requires_login))\
+    \ {\n    ...\n}\n"
+  pattern-not: "if (array_key_exists(strtolower($perm_action), array_change_key_case($perms)))\
+    \ {\n    ...\n} elseif (array_key_exists(strtolower($common_action), array_change_key_case($perms)))\
+    \ {\n    ...\n} elseif (array_key_exists(strtolower($perm_action), $controller->requires_login))\
+    \ {\n    ...\n} elseif (array_key_exists(strtolower($common_action), $controller->requires_login))\
+    \ {\n    ...\n}\n"
+  languages:
+  - php
+  message: "The code is vulnerable to case-sensitive action name reflection attacks.\
+    \ \nAttackers can bypass access controls by using different case variations of\
+    \ action names. \nConvert action names and permission arrays to lowercase before\
+    \ comparison to prevent this.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/684d79424f768db8bb345d5c68aa2a886239492b
+    category: security
+    cwe:
+    - CWE-178
+    owasp:
+    - A01:2021-Broken Access Control
+    technology:
+    - php
+- id: vuln-exponent-cms-559792be
+  pattern: '$_REQUEST[$KEY] = $VALUE;
+
+    $_GET[$KEY] = $VALUE;
+
+    $_POST[$KEY] = $VALUE;
+
+    '
+  pattern-not: '$_REQUEST[$KEY] = intval($VALUE);
+
+    $_GET[$KEY] = intval($VALUE);
+
+    $_POST[$KEY] = intval($VALUE);
+
+    '
+  languages:
+  - php
+  message: 'Detected unvalidated input assignment to $_REQUEST, $_GET, and $_POST
+    variables. This can lead to XSS and other injection vulnerabilities. Ensure all
+    user inputs are properly validated and sanitized using functions like intval()
+    or expString::sanitize().
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/559792be727f4e731bfcb3935f5beec7749e9ce9
+    category: security
+    cwe:
+    - CWE-79
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-exponent-cms-99636b21
+  pattern: "if (is_string($VAR) && strrpos($KEY, '_id', -3) !== false) {\n  ...\n\
+    }\n"
+  pattern-not: "if (is_string($VAR) && strlen($KEY) >= 3 && strrpos($KEY, '_id', -3)\
+    \ !== false) {\n  ...\n}\n"
+  languages:
+  - php
+  message: "Detected a potential string manipulation vulnerability due to missing\
+    \ length check before using strrpos. \nThis could lead to unexpected behavior\
+    \ or security issues when the key is shorter than the searched substring. \nAlways\
+    \ verify the string length before using strrpos with a negative offset to prevent\
+    \ out-of-bounds access.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/99636b2118cd9af4eb9920f6b6c228bd824593d2
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://www.php.net/manual/en/function.strrpos.php
+    technology:
+    - php
+- id: vuln-exponent-cms-2ddffb2e
+  pattern: '$move = $router->params[''move''];
+
+    $target = $router->params[''target''];
+
+    '
+  pattern-not: '$move = intval($router->params[''move'']);
+
+    $target = intval($router->params[''target'']);
+
+    '
+  languages:
+  - php
+  message: 'Detected potential integer casting vulnerability in router parameters.
+    Directly assigning router parameters to variables without proper type validation
+    can lead to security issues such as unexpected behavior or type manipulation.
+    Always validate and cast parameters to their expected types (e.g., using intval()
+    for integers) to ensure data integrity and prevent potential exploits.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/exponentcms/exponent-cms/commit/2ddffb2e7eafe4830e3483a4b437873022c461ba
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php

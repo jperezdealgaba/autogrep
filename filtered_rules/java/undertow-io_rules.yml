@@ -1,0 +1,223 @@
+rules:
+- id: vuln-undertow-b53d4589
+  pattern: 'IoUtils.safeClose($EXCHANGE.getRequestChannel())
+
+    '
+  pattern-not: '$EXCHANGE.getConnection().terminateRequestChannel($EXCHANGE)
+
+    '
+  languages:
+  - java
+  message: 'Detected unsafe closure of request channel in Undertow. This can lead
+    to resource leaks and improper handling of HTTP requests. Use `terminateRequestChannel`
+    instead of directly closing the channel to ensure proper cleanup and handling
+    of persistent connections.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/b53d4589c586e8bbdcc89ed60f32cd7977e9a4f4
+    category: security
+    cwe:
+    - CWE-404
+    owasp: A9:2017-Insufficient Attack Protection
+    technology:
+    - java
+- id: vuln-undertow-09d4dc44
+  pattern: 'int $RES = Channels.readBlocking($CHANNEL, $BUFFER);
+
+    '
+  pattern-not: 'int $RES = Channels.readBlocking($CHANNEL, $BUFFER, $TIMEOUT, $TIMEUNIT);
+
+    '
+  languages:
+  - java
+  message: "Missing timeout in blocking read operation can lead to resource exhaustion\
+    \ or denial of service. \nEnsure a timeout is specified for blocking read operations\
+    \ to prevent indefinite blocking.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/09d4dc44da0eb7a0cfa5d943de32e06c7cb2f7d2
+    category: security
+    cwe: CWE-400
+    owasp: A9:2017-Insufficient Logging & Monitoring
+    references: https://github.com/undertow-io/undertow/commit/09d4dc44da0eb7a0cfa5d943de32e06c7cb2f7d2
+    technology: java
+- id: vuln-undertow-8217c469
+  pattern: "if (!$READY) {\n    $SEND_WRITE_BUFFER;\n    $READY = true;\n    $STATE\
+    \ |= $STATE_FIRST_DATA_WRITTEN;\n    $CHANNEL.queueFrame(($S) this);\n}\n"
+  pattern-not: 'if ($READY) return;
+
+    $SEND_WRITE_BUFFER;
+
+    $READY = true;
+
+    $STATE |= $STATE_FIRST_DATA_WRITTEN;
+
+    $CHANNEL.queueFrame(($S) this);
+
+    '
+  languages:
+  - java
+  message: 'Potential race condition vulnerability due to incorrect ordering of operations
+    in frame queuing logic.
+
+    The original code could lead to inconsistent state management and improper frame
+    handling.
+
+    The fix ensures proper state checking and early return when conditions are met.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/8217c4690805588d8a4eb841d1ef8dab7bcee978
+    category: security
+    cwe: CWE-362
+    owasp: A02:2021 - Cryptographic Failures
+    technology:
+    - java
+- id: vuln-undertow-86209e5d
+  pattern: "if ($FILE == null && $FILENAME != null && $FILESIZETHRESHOLD < $CURRENTFILESIZE)\
+    \ {\n  ...\n  $FILE = Files.createTempFile($TEMPLOCATION, \"undertow\", \"upload\"\
+    );\n  ...\n}\n"
+  pattern-not: "if ($FILE == null && $FILESIZETHRESHOLD < $CURRENTFILESIZE && ($FILENAME\
+    \ != null || $CURRENTFILESIZE > $FIELDSIZETHRESHOLD)) {\n  ...\n  $FILE = createFile();\n\
+    \  ...\n}\n"
+  languages:
+  - java
+  message: "Detected a file upload vulnerability where files could be created without\
+    \ proper size threshold validation. \nThis could lead to uncontrolled file creation\
+    \ and potential denial of service. \nThe fix introduces a fieldSizeThreshold to\
+    \ ensure files are only created when they exceed both the fileSizeThreshold and\
+    \ fieldSizeThreshold.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/86209e5dd84d06708957ead659b7ed8daa7fb912
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - java
+- id: vuln-undertow-1302c8cf
+  pattern: "while ($RESULT == null || ($RESULT.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_WRAP\
+    \ && $RESULT.getStatus() != SSLEngineResult.Status.BUFFER_OVERFLOW)) {\n  ...\n\
+    }\n"
+  pattern-not: "while ($RESULT == null || ($RESULT.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_WRAP\
+    \ && $RESULT.getStatus() != SSLEngineResult.Status.BUFFER_OVERFLOW && !$ENGINE.isInboundDone()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: Incomplete SSL handshake loop condition may lead to infinite loops or unexpected
+    behavior. Ensure the loop condition checks if the engine's inbound processing
+    is done.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/1302c8cf4476936802504efe0d36c58dcd954f78
+    category: security
+    cwe:
+    - CWE-835
+    owasp:
+    - 'A2: Broken Authentication'
+    technology:
+    - java
+- id: vuln-undertow-9bf05b76
+  pattern: '"HttpServerExchange{ " + getRequestMethod().toString() + " " + getRequestURI()
+    + " request " + $REQUEST_HEADERS + " response " + $RESPONSE_HEADERS + ''}''
+
+    '
+  pattern-not: '"HttpServerExchange{ " + getRequestMethod().toString() + " " + getRequestURI()
+    + ''}''
+
+    '
+  languages:
+  - java
+  message: Sensitive information exposure through logging of request and response
+    headers. This can lead to security issues such as session hijacking or information
+    leakage. Remove the logging of headers from the string representation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/9bf05b765e222dd106fee9b46314061b18b7275e
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - java
+- id: vuln-undertow-514ba4d5
+  pattern: 'handle($EXCHANGE, decode($CHARSET, $ATTRNAME, $DODECODE), decode($CHARSET,
+    $STRING.substring($STRINGSTART, $STRING.length()), $DODECODE))
+
+    '
+  pattern-not: 'handle($EXCHANGE, decode($CHARSET, $ATTRNAME, $DODECODE), decode($CHARSET,
+    $STRING.substring($STRINGSTART, $I), $DODECODE))
+
+    '
+  languages:
+  - java
+  message: Potential URL decoding vulnerability due to incorrect substring bounds.
+    Using string.length() instead of a specific index can lead to incorrect URL decoding.
+    Use the correct index to avoid processing unintended parts of the string.
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/514ba4d5be7d925934487b431141bcb7b9cc41ff
+    category: security
+    cwe: CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - java
+- id: vuln-undertow-85d4478e
+  pattern: "if($C != '\\r' && $C != '\\n') {\n    $BUFFER.put((byte) $C);\n}\n"
+  pattern-not: "byte $B = (byte) $C;\nif($B != '\\r' && $B != '\\n') {\n    $BUFFER.put($B);\n\
+    }\n"
+  languages:
+  - java
+  message: 'Direct casting of a character to a byte without intermediate type conversion
+    can lead to unexpected behavior and potential security vulnerabilities. Always
+    use an intermediate variable to ensure proper type conversion.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/85d4478e598105fe94ac152d3e11e388374e8b86
+    category: security
+    cwe: CWE-704
+    owasp: 'A1: Injection'
+    technology: java
+- id: vuln-undertow-facb33a5
+  pattern: "public AuthenticationMechanismOutcome handleDigestHeader(HttpServerExchange\
+    \ $EXCHANGE, final SecurityContext $SECURITY_CONTEXT) {\n  ...\n}\n"
+  pattern-not: "private AuthenticationMechanismOutcome handleDigestHeader(HttpServerExchange\
+    \ $EXCHANGE, final SecurityContext $SECURITY_CONTEXT) {\n  if($PARSED_HEADER.containsKey(DigestAuthorizationToken.DIGEST_URI))\
+    \ {\n    String $URI = $PARSED_HEADER.get(DigestAuthorizationToken.DIGEST_URI);\n\
+    \    String $REQUEST_URI = $EXCHANGE.getRequestURI();\n    if(!$EXCHANGE.getQueryString().isEmpty())\
+    \ {\n      $REQUEST_URI = $REQUEST_URI + \"?\" + $EXCHANGE.getQueryString();\n\
+    \    }\n    if(!$URI.equals($REQUEST_URI)) {\n      $EXCHANGE.setStatusCode(StatusCodes.BAD_REQUEST);\n\
+    \      $EXCHANGE.endExchange();\n      return AuthenticationMechanismOutcome.NOT_AUTHENTICATED;\n\
+    \    }\n  } else {\n    return AuthenticationMechanismOutcome.NOT_AUTHENTICATED;\n\
+    \  }\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Missing URI validation in Digest authentication handler. This can allow
+    attackers to bypass authentication by manipulating the URI.
+
+    The vulnerability occurs because the Digest URI parameter is not validated against
+    the actual request URI.
+
+    To fix this, ensure the Digest URI is validated against the request URI and return
+    BAD_REQUEST if they don''t match.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/undertow-io/undertow/commit/facb33a5cedaf4b7b96d3840a08210370a806870
+    category: security
+    cwe: CWE-287
+    owasp: 'A2: Broken Authentication'
+    technology: java

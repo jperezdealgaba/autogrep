@@ -1,0 +1,24 @@
+rules:
+- id: vuln-codeigniter-800a20d6
+  pattern: $this->_memcached-get($this->_key_prefix.$id);
+  pattern-not: $this->_memcached->get($this->_key_prefix.$id);
+  languages:
+  - php
+  message: "This vulnerability involves a missing object operator (->) in a memcached\
+    \ get call, \nwhich can lead to incorrect or failed session retrieval. This is\
+    \ dangerous because \nit can cause session data to be inaccessible or improperly\
+    \ handled, potentially \nleading to security issues such as session hijacking\
+    \ or data corruption. \nTo fix this, ensure the correct object operator (->) is\
+    \ used when calling \nthe get method on the memcached object.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/bcit-ci/CodeIgniter/commit/800a20d6c4662d99ae0988b2f8f2238bb8bb29db
+    category: security
+    cwe:
+    - CWE-480
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php

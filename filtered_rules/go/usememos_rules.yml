@@ -1,0 +1,89 @@
+rules:
+- id: vuln-memos-6ffc09d8
+  pattern: "func GetWebsiteMetadata(c echo.Context) error {\n    urlStr := c.QueryParam(\"\
+    url\")\n    if urlStr == \"\" {\n        return echo.NewHTTPError(http.StatusBadRequest,\
+    \ \"Missing website url\")\n    }\n    if _, err := url.Parse(urlStr); err !=\
+    \ nil {\n        return echo.NewHTTPError(http.StatusBadRequest, \"Wrong url\"\
+    ).SetInternal(err)\n    }\n    htmlMeta, err := getter.GetHTMLMeta(urlStr)\n \
+    \   if err != nil {\n        return echo.NewHTTPError(http.StatusNotAcceptable,\
+    \ fmt.Sprintf(\"Failed to get website meta with url: %s\", urlStr)).SetInternal(err)\n\
+    \    }\n    return c.JSON(http.StatusOK, htmlMeta)\n}\n"
+  pattern-not: "func GetWebsiteMetadata(c echo.Context) error {\n    ...\n}\n"
+  languages:
+  - go
+  message: 'The GetWebsiteMetadata function is vulnerable to SSRF (Server-Side Request
+    Forgery) as it directly uses user-provided URLs without proper validation or restriction.
+    This can allow attackers to make requests to internal services or arbitrary external
+    endpoints. To fix this, ensure that the URL is validated against a whitelist of
+    allowed domains or implement strict URL parsing and validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/6ffc09d86a1302c384ef085aa70c7bddb3ce7ba9
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    - https://cwe.mitre.org/data/definitions/918.html
+    technology:
+    - go
+- id: vuln-memos-8101a5e0
+  pattern: "func CORSMiddleware() echo.MiddlewareFunc {\n    ...\n    w.Header().Set(\"\
+    Access-Control-Allow-Origin\", $ORIGIN)\n    ...\n}\n"
+  pattern-not: "func CORSMiddleware($ORIGINS) echo.MiddlewareFunc {\n    ...\n   \
+    \ requestOrigin := r.Header.Get(\"Origin\")\n    if len($ORIGINS) == 0 {\n   \
+    \     w.Header().Set(\"Access-Control-Allow-Origin\", requestOrigin)\n    } else\
+    \ {\n        for _, origin := range $ORIGINS {\n            if origin == requestOrigin\
+    \ {\n                w.Header().Set(\"Access-Control-Allow-Origin\", origin)\n\
+    \                break\n            }\n        }\n    }\n    ...\n}\n"
+  languages:
+  - go
+  message: 'Detected a CORS middleware that allows any origin without validation.
+    This can lead to security vulnerabilities by enabling cross-origin requests from
+    untrusted domains. To fix this, implement origin validation by checking against
+    a list of allowed origins.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/8101a5e0b162044c16385bee4f12a4a653d050b9
+    category: security
+    cwe:
+    - CWE-942
+    owasp:
+    - 'A5: Security Misconfiguration'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A5_2017-Security_Misconfiguration
+    technology:
+    - go
+- id: vuln-memos-c07b4a57
+  pattern: "if strings.HasPrefix($RESOURCE.Type, echo.MIMETextHTML) {\n  $C.Response().Writer.Header().Set(\"\
+    Content-Type\", echo.MIMETextPlain)\n} else {\n  $C.Response().Writer.Header().Set(\"\
+    Content-Type\", $RESOURCE.Type)\n}\n"
+  pattern-not: '$C.Response().Writer.Header().Set("Content-Type", $RESOURCE.Type)
+
+    '
+  languages:
+  - go
+  message: 'The code sets the Content-Type header based on a prefix check of the resource
+    type, which can lead to incorrect content type handling and potential security
+    issues. Instead, the Content-Type should be set directly to the resource type
+    to ensure proper handling and prevent security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/usememos/memos/commit/c07b4a57caa89905e54b800f4d8fb720bbf5bf82
+    category: security
+    cwe:
+    - CWE-436
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - go

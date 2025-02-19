@@ -1,0 +1,29 @@
+rules:
+- id: vuln-fastasyncworldedit-956a5182
+  pattern: 'String.format("%s-%s", $ROOT_VERSION, $BUILD_NUMBER)
+
+    '
+  pattern-not: 'String.format("%s", $ROOT_VERSION)
+
+    '
+  languages:
+  - kotlin
+  message: 'The version string is being constructed using a build number, which can
+    introduce inconsistency and potential security issues. This practice can lead
+    to versioning conflicts and make it harder to track and manage releases. It is
+    recommended to use a stable version format without dynamic build numbers to ensure
+    consistency and security.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/IntellectualSites/FastAsyncWorldEdit/commit/956a5182381e64c2e1959452a2c780e16ea31492
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://cwe.mitre.org/data/definitions/664.html
+    technology:
+    - kotlin

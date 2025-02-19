@@ -1,0 +1,54 @@
+rules:
+- id: vuln-cms-4c6fe041
+  pattern: "if (in_array(trim(strtolower($value->getClientOriginalExtension())), ['php',\
+    \ 'php3', 'php4', 'php5', 'phtml'])) {\n  ...\n}\n"
+  pattern-not: "if (in_array(trim(strtolower($value->getClientOriginalExtension())),\
+    \ ['php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'phar'])) {\n  ...\n\
+    }\n"
+  languages:
+  - php
+  message: "Detected an incomplete list of dangerous file extensions in file upload\
+    \ validation. \nThis could allow attackers to upload malicious PHP files with\
+    \ extensions like php7, php8, or phar, potentially leading to remote code execution.\
+    \ \nUpdate the list of blocked extensions to include all known PHP-related extensions.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/statamic/cms/commit/4c6fe041e2203a8033e5949ce4a5d9d6c0ad2411
+    category: security
+    cwe:
+    - 434
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-cms-0b804306
+  pattern: '$REQUEST->except([''email'', ''groups'', ''roles'', ''super''])
+
+    '
+  pattern-not: '$REQUEST->except([''email'', ''groups'', ''roles'', ''super'', ''password_confirmation''])
+
+    '
+  languages:
+  - php
+  message: 'The code is vulnerable to sensitive data exposure as it fails to exclude
+    the ''password_confirmation'' field from the request data. This can lead to unintended
+    storage or exposure of sensitive information. Ensure that all sensitive fields,
+    including ''password_confirmation'', are explicitly excluded from the request
+    data.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/statamic/cms/commit/0b804306c96c99b81755d5bd02df87ddf392853e
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-359
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure
+    technology:
+    - php

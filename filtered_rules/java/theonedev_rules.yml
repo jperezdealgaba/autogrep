@@ -1,0 +1,40 @@
+rules:
+- id: vuln-onedev-4f5dc6fb
+  pattern: 'Configuration<?> $CONFIG = Validation.byDefaultProvider().configure();
+
+    '
+  pattern-not: "Configuration<?> $CONFIG = Validation\n    .byDefaultProvider()\n\
+    \    .configure()\n    .messageInterpolator(new ParameterMessageInterpolator());\n"
+  languages:
+  - java
+  message: Missing message interpolator in Hibernate validation configuration. This
+    can lead to improper message handling and potential security issues. Use ParameterMessageInterpolator
+    to ensure secure message interpolation.
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/4f5dc6fb9e50f2c41c4929b0d8c5824b2cca3d65
+    category: security
+    cwe: CWE-20
+    owasp: A03:2021 - Injection
+    technology:
+    - java
+- id: vuln-onedev-39d95ab8
+  pattern: "protected String escape(String $STRING) {\n  ...\n}\n"
+  pattern-not: "public static String escape(String $STRING) {\n  ...\n}\n"
+  languages:
+  - java
+  message: "The `escape` method should be declared as `public static` to ensure proper\
+    \ usage across different contexts. \nUsing a protected method can lead to inconsistent\
+    \ behavior and potential security vulnerabilities when the method is accessed\
+    \ from outside its class hierarchy. \nFix by changing the method visibility to\
+    \ `public static`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/theonedev/onedev/commit/39d95ab8122c5d9ed18e69dc024870cae08d2d60
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    technology:
+    - java

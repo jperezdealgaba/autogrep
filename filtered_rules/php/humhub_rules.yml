@@ -1,0 +1,28 @@
+rules:
+- id: vuln-humhub-fbcfcbbb
+  pattern: '$VAR->find()->all()
+
+    '
+  pattern-not: '$VAR->find()->orderBy([...])->all()
+
+    '
+  languages:
+  - php
+  message: 'Detected a database query without an ORDER BY clause, which can lead to
+    inconsistent or unpredictable results. Always specify an ORDER BY clause to ensure
+    consistent ordering of results. This is particularly important for pagination
+    and user-facing data.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/humhub/humhub/commit/fbcfcbbb4469542d6730fd069c8d2e42ac2bed2e
+    category: security
+    cwe:
+    - CWE-1041
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2021/A03_2021-Injection
+    technology:
+    - php

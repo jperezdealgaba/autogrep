@@ -1,0 +1,79 @@
+rules:
+- id: vuln-basercms-7555a5cf
+  pattern: '$filePath = WWW_ROOT . ''files'' . DS . $settings[''saveDir''] . DS .
+    $file;
+
+    '
+  pattern-not: "$basePath = realpath(WWW_ROOT . 'files' . DS . $settings['saveDir']);\n\
+    $filePath = realpath($basePath . DS . $file);\nif (strpos($filePath, $basePath)\
+    \ !== 0) {\n    $this->notFound();\n}\n"
+  languages:
+  - php
+  message: 'Detected a path traversal vulnerability due to insufficient path validation.
+
+    The code constructs a file path using user-controlled input without proper validation,
+    allowing an attacker to potentially access files outside the intended directory.
+
+    To fix this, use realpath() to resolve the absolute path and validate that the
+    resolved path is within the intended directory.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/7555a5cf0006755dc0223fffc2d882b50a97758b
+    category: security
+    cwe:
+    - 22
+    owasp: A1:2017-Injection
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - php
+- id: vuln-basercms-874c5543
+  pattern: '$controller->Security->csrfCheck = false;
+
+    '
+  pattern-not: '$controller->Security->csrfCheck = true;
+
+    '
+  languages:
+  - php
+  message: "Disabling CSRF protection in a controller can expose the application to\
+    \ CSRF attacks. \nCSRF (Cross-Site Request Forgery) attacks allow attackers to\
+    \ perform unauthorized actions on behalf of an authenticated user. \nEnsure that\
+    \ CSRF protection is always enabled in controllers to prevent such attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/874c55433fead93e0be9df96fd28740f8047c8b6
+    category: security
+    cwe:
+    - CWE-352
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-community/attacks/csrf
+    technology:
+    - php
+- id: vuln-basercms-002886be
+  pattern: "if (is_string($VAR)) {\n  ...\n}\n"
+  pattern-not: "if (!empty($VAR) && is_string($VAR)) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The code checks if a variable is a string but does not verify if it is
+    empty. This can lead to vulnerabilities when the variable is used in contexts
+    where empty strings should be handled differently. Always check for both non-emptiness
+    and the correct type to ensure the variable is valid for its intended use.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/baserproject/basercms/commit/002886be0998c74c386e04f0b43688a8a45d7a96
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/20.html
+    technology:
+    - php

@@ -1,0 +1,51 @@
+rules:
+- id: vuln-elasticsearch-69735b0f
+  pattern: '$SETTINGS.getAsBoolean($GROOVY_SCRIPT_SANDBOX_ENABLED, true)
+
+    '
+  pattern-not: '$SETTINGS.getAsBoolean($GROOVY_SCRIPT_SANDBOX_ENABLED, false)
+
+    '
+  languages:
+  - java
+  message: 'Detected insecure default sandbox configuration for Groovy scripts. Setting
+    the sandbox to true by default can expose the system to arbitrary code execution
+    vulnerabilities. Always ensure the sandbox is enabled by default to restrict unsafe
+    operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/elastic/elasticsearch/commit/69735b0f4ab9ad7df4b82e8c917589b52cb9978c
+    category: security
+    cwe: 'CWE-94: Improper Control of Generation of Code (''Code Injection'')'
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/94.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology: java
+- id: vuln-elasticsearch-5d8e9e24
+  pattern: "if (!Files.exists($FILE) || Files.isHidden($FILE)) {\n  ...\n}\n"
+  pattern-not: "if (!Files.exists($FILE) || Files.isHidden($FILE) || !$FILE.toAbsolutePath().normalize().startsWith($SITE_FILE.toAbsolutePath()))\
+    \ {\n  ...\n}\n"
+  languages:
+  - java
+  message: 'Potential path traversal vulnerability detected. The code checks for file
+    existence and hidden status but does not properly validate the file path against
+    a safe base directory. This can allow attackers to access files outside the intended
+    directory. To fix this, ensure that the file path is normalized and validated
+    against the base directory using `toAbsolutePath().normalize().startsWith()`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/elastic/elasticsearch/commit/5d8e9e24c917b5f2c0958ba68be34a42efaeadbc
+    category: security
+    cwe:
+    - CWE-22
+    owasp:
+    - A1:2017-Injection
+    references:
+    - https://www.owasp.org/index.php/Path_Traversal
+    technology:
+    - java

@@ -1,0 +1,29 @@
+rules:
+- id: vuln-git-lfs-4ac53df9
+  pattern: 'runs-on: windows-latest
+
+    '
+  pattern-not: 'runs-on: windows-2019
+
+    '
+  languages:
+  - yaml
+  message: 'Using ''windows-latest'' in GitHub Actions workflows can lead to unexpected
+    behavior due to automatic updates to the latest Windows version. This can cause
+    compatibility issues or break CI/CD pipelines. It is recommended to pin the Windows
+    version to a specific release (e.g., ''windows-2019'') to ensure consistent and
+    predictable behavior.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/git-lfs/git-lfs/commit/4ac53df965e5a4b1cc0dfbc2e7228a7fae0b2a90
+    category: security
+    cwe:
+    - CWE-1104
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+    technology:
+    - yaml

@@ -1,0 +1,24 @@
+rules:
+- id: vuln-ettercap-31b93729
+  pattern: 'char *$P;
+
+    '
+  pattern-not: 'u_char *$P;
+
+    '
+  languages:
+  - c
+  message: "The use of 'char *' for pointer arithmetic can lead to vulnerabilities\
+    \ due to signedness issues. \nThis can cause incorrect calculations and potential\
+    \ buffer overflows. \nReplace 'char *' with 'u_char *' to ensure proper unsigned\
+    \ arithmetic.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/Ettercap/ettercap/commit/31b937298c8067e6b0c3217c95edceb983dfc4a2
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

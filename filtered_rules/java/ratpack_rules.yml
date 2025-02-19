@@ -1,0 +1,70 @@
+rules:
+- id: vuln-ratpack-603e0c56
+  pattern: 'private String $VAR = Long.toString(System.currentTimeMillis() / $NUM);
+
+    '
+  pattern-not: 'private String $VAR = randomString($NUM);
+
+    '
+  languages:
+  - java
+  message: 'Insecure secret token generation using a time-based value detected. This
+    can lead to predictable secrets, making the system vulnerable to attacks. Use
+    a cryptographically secure random value generator instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ratpack/ratpack/commit/603e0c56ab668c88234dd79d01b811581ea057b6
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A02:2021-Cryptographic Failures
+    technology:
+    - java
+- id: vuln-ratpack-efb910d3
+  pattern: 'HttpHeaders $HEADERS = new DefaultHttpHeaders(false);
+
+    '
+  pattern-not: 'HttpHeaders $HEADERS = new DefaultHttpHeaders();
+
+    '
+  languages:
+  - java
+  message: 'Using `DefaultHttpHeaders(false)` can lead to security vulnerabilities
+    as it disables header validation. This can allow malicious headers to be processed,
+    potentially leading to injection attacks or other security issues. Always use
+    `DefaultHttpHeaders()` without the `false` parameter to ensure proper header validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/ratpack/ratpack/commit/efb910d38a96494256f36675ef0e5061097dd77d
+    category: security
+    cwe: CWE-113
+    owasp: 'A1: Injection'
+    technology: java
+- id: vuln-ratpack-a3cbb13b
+  pattern: '$W.println($THROWABLE.toString())
+
+    '
+  pattern-not: '$W.escapeln($THROWABLE.toString())
+
+    '
+  languages:
+  - java
+  message: "Detected potential XSS vulnerability due to unescaped error output. \n\
+    Printing throwable messages directly to output can lead to XSS if the message\
+    \ contains user-controlled content. \nUse escapeln() instead of println() to properly\
+    \ escape HTML content.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/ratpack/ratpack/commit/a3cbb13be1527874528c3b99fc33517c0297b6d3
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - java

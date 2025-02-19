@@ -1,0 +1,144 @@
+rules:
+- id: vuln-silverstripe-framework-1a5bb4cb
+  pattern: 'preg_match(''%^\s*/{2,}%'', $URL ?? '''')
+
+    '
+  pattern-not: 'preg_match(''%^\s*(\\\\|/){2,}%'', $URL ?? '''')
+
+    '
+  languages:
+  - php
+  message: 'The regex pattern used to validate URLs is incomplete and does not properly
+    handle backslashes,
+
+    which could lead to security issues such as URL misinterpretation or injection
+    attacks.
+
+    Update the regex pattern to account for both forward and backward slashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/1a5bb4cbece1721203977910b8ecd8b79c18dc77
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Command_Injection
+    technology:
+    - php
+- id: vuln-silverstripe-framework-7b21b38a
+  pattern: '$VAR->setCanBeEmpty(true)
+
+    '
+  pattern-not: '$VAR->setCanBeEmpty(false)
+
+    '
+  languages:
+  - php
+  message: 'Detected a security vulnerability where a password field can be set to
+    empty. This is dangerous because it allows users to set empty passwords, bypassing
+    password strength requirements and increasing the risk of unauthorized access.
+    To fix this, ensure that passwords cannot be empty by setting `setCanBeEmpty(false)`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/7b21b38ac4532d06565dfcefad50540ebd2b50f4
+    category: security
+    cwe:
+    - 'CWE-521: Weak Password Requirements'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication
+    technology:
+    - php
+- id: vuln-silverstripe-framework-252e1870
+  pattern: '$pageLink = $PAGE->AbsoluteLink();
+
+    '
+  pattern-not: '$pageLink = Convert::raw2att($PAGE->AbsoluteLink());
+
+    '
+  pattern-inside: "function $FUNC(...) {\n  ...\n  $pageLink = $PAGE->AbsoluteLink();\n\
+    \  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected unescaped URL output in SilverStripe framework. This vulnerability
+    can lead to XSS (Cross-Site Scripting) attacks if the URL contains malicious input.
+    Always use Convert::raw2att() to properly escape URLs before outputting them.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/252e187015a4f4c14470ab39bcf6a5c43b64081e
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://docs.silverstripe.org/en/4/developer_guides/security/secure_coding/#output-escaping
+    technology:
+    - php
+- id: vuln-silverstripe-framework-107706c1
+  pattern: '$variables[''_SERVER''][''REQUEST_METHOD''] = $variables[''_SERVER''][''X-HTTP-Method-Override''];
+
+    '
+  pattern-not: '$this->httpMethod = strtoupper($httpMethod);
+
+    '
+  languages:
+  - php
+  message: 'Detected unsafe HTTP method override via X-HTTP-Method-Override header.
+    This can lead to web cache poisoning and CSRF vulnerabilities. Instead, validate
+    the HTTP method explicitly using a whitelist of allowed methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/107706c12cd9cf4d1b8b96b6a6e223633209d851
+    category: security
+    cwe:
+    - CWE-352
+    - CWE-113
+    owasp:
+    - A5:2017-Broken Access Control
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://www.silverstripe.org/download/security-releases/CVE-2019-19326
+    technology:
+    - php
+- id: vuln-silverstripe-framework-5fe7091d
+  pattern: '$JS_message = Convert::raw2js($message);
+
+    $JS_status = Convert::raw2js($status);
+
+    '
+  pattern-not: '$JS_message = Convert::raw2js(Convert::raw2xml($message));
+
+    $JS_status = Convert::raw2js(Convert::raw2xml($status));
+
+    '
+  languages:
+  - php
+  message: "The code directly applies `raw2js` to user input without proper XML encoding,\
+    \ which can lead to XSS vulnerabilities. \nAttackers can inject malicious JavaScript\
+    \ code that will be executed in the browser. \nTo fix this, always apply `raw2xml`\
+    \ before `raw2js` to ensure proper encoding of user input.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/silverstripe/silverstripe-framework/commit/5fe7091dffa33a161cbc74ae7e73ab8ae4fa144b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php

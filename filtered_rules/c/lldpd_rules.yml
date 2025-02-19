@@ -1,0 +1,29 @@
+rules:
+- id: vuln-lldpd-73d42680
+  pattern: "if (length < SONMP_SIZE) {\n  ...\n}\n"
+  pattern-not: "if (length < SONMP_SIZE + 2*ETHER_ADDR_LEN + sizeof(u_int16_t)) {\n\
+    \  ...\n}\n"
+  languages:
+  - c
+  message: 'This rule detects insufficient length checks in SONMP protocol handling.
+    The original check only verifies if the length is greater than SONMP_SIZE, but
+    it does not account for additional required fields like Ethernet addresses and
+    a 16-bit integer. This could lead to buffer underflows or incorrect packet processing.
+    The fix adds the necessary length for these additional fields. Always ensure that
+    length checks account for all required fields in network protocols.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/lldpd/lldpd/commit/73d42680fce8598324364dbb31b9bc3b8320adf7
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-126: Buffer Over-read'
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    - https://cwe.mitre.org/data/definitions/126.html
+    technology:
+    - c

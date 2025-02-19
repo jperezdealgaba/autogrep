@@ -1,0 +1,70 @@
+rules:
+- id: vuln-openolat-23e6212e
+  pattern: 'DocumentBuilderFactory $FACTORY = DocumentBuilderFactory.newInstance();
+
+    '
+  pattern-not: 'DocumentBuilderFactory $FACTORY = XMLFactories.newDocumentBuilderFactory();
+
+    '
+  languages:
+  - java
+  message: 'Insecure instantiation of DocumentBuilderFactory detected. Using DocumentBuilderFactory.newInstance()
+    can lead to XML External Entity (XXE) attacks. Use XMLFactories.newDocumentBuilderFactory()
+    instead, which is configured securely to prevent XXE vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenOLAT/OpenOLAT/commit/23e6212e9412c3b099436159b8c8935321c91872
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+    technology:
+    - java
+- id: vuln-openolat-c450df7d
+  pattern: '$CONTAINER.resolve("/" + $FILENAME)
+
+    '
+  pattern-not: '$CONTAINER.resolve($FILENAME)
+
+    '
+  languages:
+  - java
+  message: Potential path traversal vulnerability. Avoid concatenating paths with
+    '/' as it can lead to unsafe file resolution. Use direct path resolution instead.
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenOLAT/OpenOLAT/commit/c450df7d7ffe6afde39ebca6da9136f1caa16ec4
+    category: security
+    cwe: CWE-22
+    owasp: 'A1: Injection'
+    references: https://owasp.org/www-community/attacks/Path_Traversal
+    technology: java
+- id: vuln-openolat-2cf73c97
+  pattern: 'import org.wildfly.common.Assert;
+
+    '
+  pattern-not: 'import org.junit.Assert;
+
+    '
+  languages:
+  - java
+  message: 'Incorrect Assert import detected. Using ''org.wildfly.common.Assert''
+    can lead to unexpected behavior in test cases. Replace it with ''org.junit.Assert''
+    for proper test assertions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OpenOLAT/OpenOLAT/commit/2cf73c972e23ccd69cc1e103e43c2c8253571d3e
+    category: security
+    cwe:
+    - CWE-665
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - java

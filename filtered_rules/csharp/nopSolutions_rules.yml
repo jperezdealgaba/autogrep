@@ -1,0 +1,60 @@
+rules:
+- id: vuln-nopcommerce-510b2d49
+  pattern: 'var $VAR = $UPLOADEDFILE.ContentType;
+
+    ...
+
+    await $PICTURESERVICE.InsertPictureAsync($BINARY, $VAR, null);
+
+    '
+  pattern-not: "var $VAR = $UPLOADEDFILE.ContentType.ToLowerInvariant();\nif (!($VAR.Equals(\"\
+    image/jpeg\") || $VAR.Equals(\"image/gif\") || $VAR.StartsWith(\"image/\"))) {\n\
+    \    ...\n}\nawait $PICTURESERVICE.InsertPictureAsync($BINARY, $VAR, null);\n"
+  languages:
+  - csharp
+  message: 'The code directly uses the uploaded file''s content type without proper
+    validation, which can lead to the upload of malicious files. This vulnerability
+    can be exploited to upload non-image files or dangerous file types. Always validate
+    the content type and ensure it matches expected image types (e.g., "image/jpeg",
+    "image/gif") before processing the file.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nopSolutions/nopCommerce/commit/510b2d493a74d5719279b7c82edce2ef2b7f2ed1
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - csharp
+- id: vuln-nopcommerce-26b0927a
+  pattern: 'private static readonly Regex $REGEX = new(@"\[url\=([^\]]+)\]([^\]]+)\[/url\]",
+    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    '
+  pattern-not: 'private static readonly Regex $REGEX = new(@"\[url\=(https?:.+?)\]([^\]]+)\[/url\]",
+    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    '
+  languages:
+  - csharp
+  message: 'The original regex pattern for BBCode URL parsing is too permissive, allowing
+    potentially dangerous input. This can lead to security vulnerabilities such as
+    XSS or phishing attacks. The pattern should be updated to explicitly match URLs
+    starting with ''http:'' or ''https:'' to ensure only valid URLs are processed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/nopSolutions/nopCommerce/commit/26b0927a1f872e601e7d9b3be1e70b4fc740c23f
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - csharp

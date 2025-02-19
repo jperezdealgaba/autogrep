@@ -1,0 +1,27 @@
+rules:
+- id: vuln-metabase-057e2d67
+  pattern: "(with-open [reader (io/reader (or (io/resource $URL) $URL))\n        \
+    \    is     (ReaderInputStream. reader)]\n  (respond (-> (response/response is)\n\
+    \               (response/content-type \"application/json\"))))\n"
+  pattern-not: '(read-url-and-respond $URL respond)
+
+    '
+  languages:
+  - clojure
+  message: 'Detected direct URL reading without proper redirection handling. This
+    can lead to security vulnerabilities such as SSRF (Server-Side Request Forgery).
+    Use `clj-http.client` with `:redirect-strategy :none` to safely handle URLs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/metabase/metabase/commit/057e2d67fcbeb6b48db68b697e022243e3a5771e
+    category: security
+    cwe:
+    - CWE-918
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
+    technology:
+    - clojure

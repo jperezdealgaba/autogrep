@@ -1,0 +1,28 @@
+rules:
+- id: vuln-casaos-705bf1fa
+  pattern: 'jwt.Validate($TOKEN)
+
+    '
+  pattern-not: 'jwt.Validate($TOKEN, func() (*ecdsa.PublicKey, error) { return external.GetPublicKey($CONFIG)
+    })
+
+    '
+  languages:
+  - go
+  message: 'Insecure JWT validation detected. The JWT validation is missing proper
+    public key verification, which can lead to unauthorized access. Always use a secure
+    method to validate JWTs by providing a function to retrieve the public key.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/IceWhaleTech/CasaOS/commit/705bf1facbffd2ca40b159b0303132b6fdf657ad
+    category: security
+    cwe:
+    - CWE-347
+    owasp:
+    - A02:2021-Cryptographic Failures
+    references:
+    - https://auth0.com/docs/secure/tokens/json-web-tokens/validate-json-web-tokens
+    technology:
+    - go

@@ -1,0 +1,80 @@
+rules:
+- id: vuln-feh-f7a547b7
+  pattern: 'static unsigned short $LEN = 0;
+
+    '
+  pattern-not: 'static size_t $LEN = 0;
+
+    '
+  languages:
+  - c
+  message: "Using 'unsigned short' for length variables can lead to integer overflow\
+    \ vulnerabilities. \nThis is dangerous because it can cause buffer overflows or\
+    \ incorrect memory allocation. \nUse 'size_t' instead, which is designed for sizes\
+    \ and lengths.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/derf/feh/commit/f7a547b7ef8fc8ebdeaa4c28515c9d72e592fb6d
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-feh-23421a86
+  pattern: 'execlp("wget", "wget", "--cache=off", "-O", $TMPNAME, $URL, $QUIET, NULL);
+
+    '
+  pattern-not: 'execlp("wget", "wget", "--no-clobber", "--cache=off", "-O", $TMPNAME,
+    $URL, $QUIET, NULL);
+
+    '
+  languages:
+  - c
+  message: 'The use of `execlp` with `wget` without the `--no-clobber` option can
+    lead to file clobbering vulnerabilities, where existing files can be overwritten
+    unintentionally. This can be exploited to overwrite critical files or execute
+    arbitrary code. To fix this, always include the `--no-clobber` option when using
+    `wget` with `execlp`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/derf/feh/commit/23421a86cc826dd30f3dc4f62057fafb04b3ac40
+    category: security
+    cwe:
+    - CWE-59
+    owasp:
+    - 'A9: Security Misconfiguration'
+    technology:
+    - c
+- id: vuln-feh-ae56ce24
+  pattern: 'execlp("wget", "wget", "-N", "-O", $TMPNAME, $URL, $QUIET, (char *) NULL);
+
+    '
+  pattern-not: 'execlp("wget", "wget", "--cache=off", "-O", $TMPNAME, $URL, $QUIET,
+    NULL);
+
+    '
+  languages:
+  - c
+  message: 'The use of the ''-N'' flag with wget can lead to unsafe file operations
+    by relying on server-provided timestamps, which can be manipulated. This can result
+    in the overwriting of files with potentially malicious content. The vulnerability
+    was fixed by removing the ''-N'' flag and using ''--cache=off'' instead, which
+    ensures that the file is always downloaded fresh without relying on server timestamps.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/derf/feh/commit/ae56ce24b10767800b1715e7e68b41c7d3571b4c
+    category: security
+    cwe:
+    - CWE-494
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - c

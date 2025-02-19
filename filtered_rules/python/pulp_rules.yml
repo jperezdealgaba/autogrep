@@ -1,0 +1,26 @@
+rules:
+- id: vuln-pulp-32be2bfc
+  pattern: 'open($FILENAME, ''w'')
+
+    '
+  pattern-not: 'os.fdopen(os.open($FILENAME, os.O_WRONLY | os.O_CREAT, $MODE), ''w'')
+
+    '
+  languages:
+  - python
+  message: 'Detected unsafe file opening using `open()` without proper file permissions.
+    This can lead to security vulnerabilities where files are created with insecure
+    permissions. Use `os.fdopen` with `os.open` and specify appropriate file permissions
+    (e.g., 0o600) to ensure secure file creation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pulp/pulp/commit/32be2bfc21e2f233b287217e8fc70bfde3044b1a
+    category: security
+    cwe: CWE-276
+    owasp: A9:2017-Insufficient Attack Protection
+    references:
+    - https://docs.python.org/3/library/os.html#os.open
+    technology:
+    - python

@@ -1,0 +1,49 @@
+rules:
+- id: vuln-jawn-0707e256
+  pattern: 'private[this] val $VAR = mutable.Map.empty[$TYPE1, $TYPE2]
+
+    '
+  pattern-not: 'private[this] val $VAR = (new HashMap[$TYPE1, $TYPE2]).asScala
+
+    '
+  languages:
+  - scala
+  message: "Using `mutable.Map.empty` can lead to potential thread-safety issues in\
+    \ concurrent environments. \nIt is safer to use `java.util.HashMap` and convert\
+    \ it to a Scala mutable map using `.asScala` \nto ensure thread safety. Replace\
+    \ `mutable.Map.empty` with `(new HashMap[String, J]).asScala`.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/typelevel/jawn/commit/0707e2569f43ff6195f90cc0dfc2d0ca79b51dd1
+    category: security
+    cwe:
+    - CWE-362
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://docs.scala-lang.org/overviews/collections/thread-safety.html
+    technology:
+    - scala
+- id: vuln-jawn-e5ddb114
+  pattern: 'private[this] var $VAR = Map.empty[String, $TYPE]
+
+    '
+  pattern-not: 'private[this] var $VAR = TreeMap.empty[String, $TYPE]
+
+    '
+  languages:
+  - scala
+  message: "Using `Map.empty[String, J]` can lead to non-deterministic behavior due\
+    \ to unordered collections. \nThis can cause security issues when the order of\
+    \ keys is important, such as in JSON parsing. \nReplace `Map.empty` with `TreeMap.empty`\
+    \ to ensure deterministic key ordering.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/typelevel/jawn/commit/e5ddb114ed5d45ee0a605da06a280207bf9f9f58
+    category: security
+    cwe:
+    - CWE-664
+    owasp:
+    - A03:2021 - Cryptographic Failures
+    technology:
+    - scala

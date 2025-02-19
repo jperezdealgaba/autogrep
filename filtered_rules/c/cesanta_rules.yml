@@ -1,0 +1,37 @@
+rules:
+- id: vuln-mongoose-c65c8fda
+  pattern: "int $FUNC(struct mg_connection *$C, struct mg_http_message *$HM, const\
+    \ char *$DIR) {\n  char $OFFSET[40] = \"\", $NAME[200] = \"\", $PATH[256];\n \
+    \ mg_http_get_var(&$HM->query, \"offset\", $OFFSET, sizeof($OFFSET));\n  mg_http_get_var(&$HM->query,\
+    \ \"name\", $NAME, sizeof($NAME));\n  if ($NAME[0] == '\\0') {\n    ...\n  } else\
+    \ {\n    FILE *$FP;\n    size_t $OFT = strtoul($OFFSET, NULL, 0);\n    snprintf($PATH,\
+    \ sizeof($PATH), \"%s%c%s\", $DIR, MG_DIRSEP, $NAME);\n    ...\n    if (($FP =\
+    \ fopen($PATH, $OFT == 0 ? \"wb\" : \"ab\")) == NULL) {\n      ...\n    } else\
+    \ {\n      ...\n    }\n  }\n}\n"
+  pattern-not: "int $FUNC(struct mg_connection *$C, struct mg_http_message *$HM, const\
+    \ char *$DIR) {\n  char $OFFSET[40] = \"\", $NAME[200] = \"\", $PATH[256];\n \
+    \ mg_http_get_var(&$HM->query, \"offset\", $OFFSET, sizeof($OFFSET));\n  mg_http_get_var(&$HM->query,\
+    \ \"name\", $NAME, sizeof($NAME));\n  if ($NAME[0] == '\\0') {\n    ...\n  } else\
+    \ {\n    FILE *$FP;\n    long $OFT = strtol($OFFSET, NULL, 0);\n    snprintf($PATH,\
+    \ sizeof($PATH), \"%s%c%s\", $DIR, MG_DIRSEP, $NAME);\n    remove_double_dots($PATH);\n\
+    \    ...\n    if (($FP = fopen($PATH, $OFT == 0 ? \"wb\" : \"ab\")) == NULL) {\n\
+    \      ...\n    } else {\n      ...\n    }\n  }\n}\n"
+  languages:
+  - c
+  message: "Detected potential directory traversal vulnerability in file upload functionality.\
+    \ \nThe code constructs a file path using user-controlled input without proper\
+    \ validation, \nwhich could allow an attacker to write files to arbitrary locations\
+    \ on the filesystem. \nTo fix this, ensure that the file path is properly sanitized\
+    \ using a function like \n`remove_double_dots` to prevent directory traversal\
+    \ attacks.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/cesanta/mongoose/commit/c65c8fdaaa257e0487ab0aaae9e8f6b439335945
+    category: security
+    cwe:
+    - 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory (''Path
+      Traversal'')'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

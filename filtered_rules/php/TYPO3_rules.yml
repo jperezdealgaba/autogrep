@@ -1,0 +1,288 @@
+rules:
+- id: vuln-typo3-51f3dd98
+  pattern: "public static function quoteJSvalue($value, $inScriptTags = false) {\n\
+    \    $value = addcslashes($value, '\\''.'\"'.chr(10).chr(13));\n    if (!$inScriptTags)\
+    \ {\n        $value = htmlspecialchars($value);\n    }\n    return '\\''.$value.'\\\
+    '';\n}\n"
+  pattern-not: "public static function quoteJSvalue($value, $withinCData = false)\
+    \ {\n    $escapedValue = addcslashes(\n        $value, '\\'' . '\"' . '\\\\' .\
+    \ chr(9) . chr(10) . chr(13)\n    );\n    if (!$withinCData) {\n        $escapedValue\
+    \ = htmlspecialchars($escapedValue);\n    }\n    return '\\'' . $escapedValue\
+    \ . '\\'';\n}\n"
+  languages:
+  - php
+  message: "The function `quoteJSvalue` is vulnerable due to insufficient escaping\
+    \ of special characters. \nThe original implementation does not escape backslashes\
+    \ and tabs, which can lead to JavaScript injection vulnerabilities. \nThe fix\
+    \ adds proper escaping for these characters. Ensure all special characters are\
+    \ properly escaped when generating JavaScript values.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/51f3dd9804cae04575323b92a9136e5a511fe810
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://cwe.mitre.org/data/definitions/79.html
+    technology:
+    - php
+- id: vuln-typo3-fdf9cdad
+  pattern: unserialize($VAR)
+  pattern-not: unserialize($VAR, ['allowed_classes' => false])
+  languages:
+  - php
+  message: "Detected unsafe usage of unserialize() without the 'allowed_classes' option.\
+    \ \nThis can lead to object injection vulnerabilities, allowing an attacker to\
+    \ execute arbitrary code \nor manipulate application behavior. \nAlways use the\
+    \ 'allowed_classes' option set to false to prevent deserialization of potentially\
+    \ \ndangerous objects.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/fdf9cdade0da9acc970f1dd763ae23708c318293
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php
+- id: vuln-typo3-6863f738
+  pattern: "class $CLASS {\n  protected $escapeChildren = false;\n  ...\n}\n"
+  pattern-not: "class $CLASS {\n  protected $escapeChildren = true;\n  ...\n}\n"
+  languages:
+  - php
+  message: 'The `escapeChildren` property is set to false, which can lead to XSS vulnerabilities
+    when rendering untrusted content. This is dangerous because it allows malicious
+    input to be interpreted as CSS, potentially leading to style injection attacks.
+    To fix this, set `escapeChildren` to true to ensure proper escaping of content.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/6863f73818c36b0b88c677ba533765c8074907b4
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-typo3-7339543a
+  pattern: '$fullElement[] = ''<input type="text" class="form-control" disabled="disabled"
+    value="'' . $shortenedPlaceholder . ''" />'';
+
+    '
+  pattern-not: '$fullElement[] = ''<input type="text" class="form-control" disabled="disabled"
+    value="'' . htmlspecialchars($shortenedPlaceholder) . ''" />'';
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped user input in HTML attribute value, which can lead
+    to Cross-Site Scripting (XSS) vulnerabilities. Always use htmlspecialchars() to
+    escape user input before embedding it in HTML to prevent malicious script execution.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/7339543a0f703221b5477c47dd2514c325b23d6b
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A7:2017-Cross-Site Scripting (XSS)
+    technology:
+    - php
+- id: vuln-typo3-948df21e
+  pattern: '$qs .= trim($conf[''operator''] ?: ''AND'') . '' '';
+
+    '
+  pattern-not: "$operator = strtoupper(trim($conf['operator']));\nif (!in_array($operator,\
+    \ ['AND', 'OR'], true)) {\n    $operator = 'AND';\n}\n$qs .= $operator . ' ';\n"
+  languages:
+  - php
+  message: 'Insecure SQL operator handling detected. The operator value from user
+    input is directly used in SQL queries without proper validation, which could lead
+    to SQL injection. Validate the operator using a whitelist of allowed values (e.g.,
+    ''AND'', ''OR'') and default to a safe value if the input is invalid.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/948df21e45cf8beffa3d472e5c06f2f84833e432
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php
+- id: vuln-typo3-5f13c227
+  pattern: '$this->tag->setContent($this->getValue())
+
+    '
+  pattern-not: '$this->tag->setContent(htmlspecialchars($this->getValue()))
+
+    '
+  languages:
+  - php
+  message: 'The content of a textarea is not being properly escaped, which can lead
+    to XSS vulnerabilities.
+
+    Directly setting content without escaping allows attackers to inject malicious
+    scripts.
+
+    To fix this, always use htmlspecialchars() to escape the content before setting
+    it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/5f13c2276c8b753ceb76b31d1034a47c781d302a
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - php
+- id: vuln-typo3-3e24a0ff
+  pattern: '$this->mailer = ''TYPO3 ''.$VAR;
+
+    '
+  pattern-not: '$this->mailer = ''TYPO3'';
+
+    '
+  languages:
+  - php
+  message: 'The email header ''mailer'' field is exposing the TYPO3 version number,
+    which can be used by attackers to target known vulnerabilities. This information
+    disclosure should be removed to prevent potential security risks. Replace the
+    version-specific string with a generic identifier.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/3e24a0fff04897826a12e5cac16b5b0a3848cf2d
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A06:2021-Vulnerable and Outdated Components
+    technology:
+    - php
+- id: vuln-typo3-38ec239a
+  pattern: '$search = ''/&#[xX]0{0,8}(21|22|23|24|25|26|27|28|29|2a|2b|2d|2f|30|31|32|33|34|35|36|37|38|39|3a|3b|3d|3f|40|41|42|43|44|45|46|47|48|49|4a|4b|4c|4d|4e|4f|50|51|52|53|54|55|56|57|58|59|5a|5b|5c|5d|5e|5f|60|61|62|63|64|65|66|67|68|69|6a|6b|6c|6d|6e|6f|70|71|72|73|74|75|76|77|78|79|7a|7b|7c|7d|7e);?/ie'';
+
+    $val = preg_replace($search, "chr(hexdec(''\\1''))", $val);
+
+    $search = ''/&#0{0,8}(33|34|35|36|37|38|39|40|41|42|43|45|47|48|49|50|51|52|53|54|55|56|57|58|59|61|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126);?/ie'';
+
+    $val = preg_replace($search, "chr(''\\1'')", $val);
+
+    '
+  pattern-not: "while (preg_match($searchHexEncodings, $val) || preg_match($searchUnicodeEncodings,\
+    \ $val)) {\n  $val = preg_replace($searchHexEncodings, \"chr(hexdec('\\\\1'))\"\
+    , $val);\n  $val = preg_replace($searchUnicodeEncodings, \"chr('\\\\1')\", $val);\n\
+    }\n"
+  languages:
+  - php
+  message: 'The code is vulnerable to XSS due to insufficient handling of encoded
+    characters. The original code performs a single pass of character decoding, which
+    may not fully sanitize the input. This can allow attackers to bypass XSS filters
+    by using multiple layers of encoding. The fix involves using a loop to repeatedly
+    decode the input until no more encoded characters are found.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/38ec239a35d50746a2f95eef004227acd1932b81
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-typo3-14d10135
+  pattern: "if (empty($options['logFile'])) {\n  ...\n}\n"
+  pattern-not: "if (empty($options['logFile']) &&\n    ($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']\
+    \ ?? '') !== ''\n) {\n  ...\n}\n"
+  languages:
+  - php
+  message: 'Detected a potential security vulnerability where logging could create
+    guessable filenames if TYPO3 is not properly configured. This could lead to information
+    disclosure or other security risks. Ensure that logging is only performed when
+    the encryption key is properly set in the TYPO3 configuration.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/14d101359c71ee963cf51ad0c8ae777b7b9ec9a1
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A03:2021 - Sensitive Data Exposure
+    technology:
+    - php
+- id: vuln-typo3-139594a2
+  pattern: '$previousValueOfEntityLoader = libxml_disable_entity_loader(...);
+
+    ...
+
+    libxml_disable_entity_loader($previousValueOfEntityLoader);
+
+    '
+  pattern-not: "$previousValueOfEntityLoader = null;\nif (PHP_MAJOR_VERSION < 8) {\n\
+    \    $previousValueOfEntityLoader = libxml_disable_entity_loader(...);\n}\n...\n\
+    if (PHP_MAJOR_VERSION < 8) {\n    libxml_disable_entity_loader($previousValueOfEntityLoader);\n\
+    }\n"
+  languages:
+  - php
+  message: 'The use of `libxml_disable_entity_loader` without checking the PHP version
+    can lead to XML External Entity (XXE) vulnerabilities in PHP 8 and above, where
+    the function is deprecated. This can allow attackers to read arbitrary files or
+    perform server-side request forgery (SSRF) attacks. To fix this, check the PHP
+    version before calling `libxml_disable_entity_loader` and only execute it if the
+    PHP version is less than 8.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/139594a296726ccd31d54329b255c009454caab2
+    category: security
+    cwe:
+    - CWE-611
+    owasp:
+    - A4:2017-XML External Entities (XXE)
+    technology:
+    - php
+- id: vuln-typo3-63ae7ddd
+  pattern: '$retVal = $_SERVER[''REQUEST_URI''];
+
+    '
+  pattern-not: '$retVal = ''/'' . ltrim($_SERVER[''REQUEST_URI''], ''/'');
+
+    '
+  languages:
+  - php
+  message: 'Direct use of $_SERVER[''REQUEST_URI''] without proper sanitization can
+    lead to path manipulation vulnerabilities. Ensure that the request URI is properly
+    sanitized by prefixing it with a ''/'' and trimming any leading slashes.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/TYPO3/typo3/commit/63ae7ddd11d284a121f23ce86282e3149bc16f96
+    category: security
+    cwe:
+    - CWE-20
+    owasp: 'A1: Injection'
+    technology:
+    - php

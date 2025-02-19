@@ -1,0 +1,83 @@
+rules:
+- id: vuln-pluck-be59bf6b
+  pattern: 'list($filename, $extension) = explode(''.'', $var1);
+
+    $filename = $filename.''_copy'';
+
+    '
+  pattern-not: '$filename = ''copyof_''.$var1;
+
+    '
+  languages:
+  - php
+  message: 'The code uses `explode` to split a filename and appends ''_copy'' to the
+    base name, which can lead to incorrect file handling and potential security issues.
+    This approach is unsafe because it assumes the filename contains a single dot,
+    which may not be true. Instead, directly prepend ''copyof_'' to the entire filename
+    to avoid ambiguity and ensure consistent behavior.
+
+    '
+  severity: WARNING
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/be59bf6ba83bf41e9e91167e55330f56fcbf33c3
+    category: security
+    cwe:
+    - CWE-706
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/706.html
+    technology:
+    - php
+- id: vuln-pluck-ca3fae70
+  pattern: 'curl_setopt($VAR, CURLOPT_SSL_VERIFYPEER, false);
+
+    '
+  pattern-not: '//curl_setopt($VAR, CURLOPT_SSL_VERIFYPEER, false);
+
+    '
+  languages:
+  - php
+  message: 'Disabling SSL peer verification (CURLOPT_SSL_VERIFYPEER) can expose the
+    application to Man-in-the-Middle (MITM) attacks. This setting makes cURL accept
+    any SSL certificate, which can lead to sensitive data being intercepted. Always
+    verify SSL certificates to ensure secure communication.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/ca3fae7001e2db17deca5128a9e4d758266624aa
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://curl.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html
+    technology:
+    - php
+- id: vuln-pluck-21ea65a7
+  pattern: '$blockedExtentions = array(''.php'',''php3'',''php4'',''php5'',''php6'',''php7'',''phtml'',''.phtm'',''.pht'',''.ph3'',''.ph4'',''.ph5'',''.asp'',''.cgi'');
+
+    '
+  pattern-not: '$blockedExtentions = array(''.php'',''php3'',''php4'',''php5'',''php6'',''php7'',''phtml'',''.phtm'',''.pht'',''.ph3'',''.ph4'',''.ph5'',''.asp'',''.cgi'',''.phar'');
+
+    '
+  languages:
+  - php
+  message: 'The list of blocked file extensions is missing ''.phar'', which could
+    allow malicious PHAR files to be uploaded and executed. PHAR files can contain
+    PHP code and pose a security risk. Update the blocked extensions list to include
+    ''.phar'' to prevent this vulnerability.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/pluck-cms/pluck/commit/21ea65a77e78049202c03259f24a4c3db7fb075e
+    category: security
+    cwe:
+    - CWE-434
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - php

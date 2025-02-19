@@ -1,0 +1,26 @@
+rules:
+- id: vuln-react-admin-1226a15a
+  pattern: '$INPUT ? $INPUT.replace(/<.+?>/gm, '''') : '''';
+
+    '
+  pattern-not: '$INPUT ? $INPUT.replace(/<[^>]+>/gm, '''') : '''';
+
+    '
+  languages:
+  - typescript
+  message: 'Detected a potentially unsafe HTML tag stripping pattern. The regex pattern
+    `<.+?>` is too permissive and can lead to incomplete sanitization of HTML content,
+    potentially allowing XSS attacks. Use the more restrictive pattern `<[^>]+>` to
+    ensure all HTML tags are properly removed.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/marmelab/react-admin/commit/1226a15a72f2218d9b359f9bd573586bf5710982
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - typescript

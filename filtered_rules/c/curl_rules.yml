@@ -1,0 +1,561 @@
+rules:
+- id: vuln-curl-7e92d12b
+  pattern: 'return !strchr($DOMAIN, ''.'') && !strcasecompare($DOMAIN, "localhost");
+
+    '
+  pattern-not: "if(strcasecompare($DOMAIN, \"localhost\"))\n  return $FALSE;\nelse\
+    \ {\n  char *$DOT = strchr($DOMAIN, '.');\n  if($DOT)\n    return $DOT[1] ? $FALSE\
+    \ : $TRUE;\n}\nreturn $TRUE;\n"
+  languages:
+  - c
+  message: 'The code checks if a domain is valid by verifying it contains a dot and
+    is not ''localhost''.
+
+    This can lead to security vulnerabilities as it doesn''t properly handle trailing
+    dots or other edge cases.
+
+    To fix this, ensure the domain validation correctly handles trailing dots and
+    other edge cases by checking if the dot is not at the end of the string.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/7e92d12b4e6911f424678a133b19de670e183a59
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - A6:2017-Security Misconfiguration
+    technology:
+    - c
+- id: vuln-curl-39ce47f2
+  pattern: "if(sscanf($DATA, \"$FORMAT\", $VAR1, $VAR2)) {\n  ...\n}\n"
+  pattern-not: "if(sscanf($DATA, \"$FORMAT\", $VAR1, $VAR2) == $EXPECTED) {\n  ...\n\
+    }\n"
+  languages:
+  - c
+  message: 'The sscanf() function is used without checking the return value, which
+    can lead to undefined behavior if the input does not match the expected format.
+    This can cause security vulnerabilities such as buffer overflows or information
+    leaks. Always check the return value of sscanf() to ensure it matches the expected
+    number of conversions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/39ce47f219b09c380b81f89fe54ac586c8db6bde
+    category: security
+    cwe:
+    - CWE-252
+    owasp:
+    - A6:2017-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/252.html
+    technology:
+    - c
+- id: vuln-curl-6ecdf513
+  pattern: 'buf->size = $FUNC($ARG1, $ARG2, $ARG3, $ARG4, $ARG5);
+
+    '
+  pattern-not: "$NREAD = $FUNC($ARG1, $ARG2, $ARG3, $ARG4, $ARG5);\nif($NREAD < 0)\n\
+    \  return $ERROR;\nbuf->size = (size_t)$NREAD;\n"
+  languages:
+  - c
+  message: 'The code directly assigns the result of a decode function to buf->size
+    without checking for negative values. This can lead to buffer size corruption
+    or security vulnerabilities if the decode function returns an error. Always check
+    the return value of decode functions and handle errors appropriately.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/6ecdf5136b52af747e7bda08db9a748256b1cd09
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    technology:
+    - c
+- id: vuln-curl-af32cd38
+  pattern: '$VAR->set.http_disable_hostname_check_before_authentication
+
+    '
+  pattern-not: '$VAR->set.allow_auth_to_other_hosts
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability involves the use of the deprecated `http_disable_hostname_check_before_authentication`
+    setting, which could allow sensitive authentication headers to be sent to unintended
+    hosts. This is dangerous because it could lead to credential leakage to unauthorized
+    servers. The issue has been fixed by replacing it with the `allow_auth_to_other_hosts`
+    setting, which provides better control over authentication header forwarding.
+    Always use the new setting to ensure authentication headers are only sent to trusted
+    hosts.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/af32cd3859336ab963591ca0df9b1e33a7ee066b
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-201
+    owasp:
+    - A01:2021 - Broken Access Control
+    - A02:2021 - Cryptographic Failures
+    references:
+    - https://curl.se/docs/CVE-2021-XXXX.html
+    technology:
+    - c
+- id: vuln-curl-8236aba5
+  pattern: "$RC = rename($OLD, $NEW);\nif($RC != 0) {\n  warnf($GLOBAL, \"Failed to\
+    \ rename %s -> %s: %s\\n\", $OLD, $NEW, strerror(errno));\n}\nif($ALLOC) {\n \
+    \ Curl_safefree($OLD);\n}\nif($RC != 0) {\n  free($NEW);\n  return $FAILURE;\n\
+    }\n"
+  pattern-not: 'free($NEW);
+
+    return $FAILURE;
+
+    '
+  languages:
+  - c
+  message: 'Potential file handling vulnerability detected. The code attempts to rename
+    a file and handles failure by freeing resources but may leave the system in an
+    inconsistent state. This could lead to resource leaks or security issues if the
+    file operations are not properly handled. Ensure proper error handling and resource
+    cleanup in file operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/8236aba58542c5f89f1d41ca09d84579efb05e22
+    category: security
+    cwe:
+    - CWE-404
+    owasp:
+    - A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c
+- id: vuln-curl-8ae35102
+  pattern: 'bool $VAR = ($EXPR == $AUTH_TYPE) || ($EXPR == $AUTH_TYPE_WB) ? TRUE :
+    FALSE;
+
+    '
+  pattern-not: 'bool $VAR = ($EXPR & $AUTH_TYPE) || ($EXPR & $AUTH_TYPE_WB) ? TRUE
+    : FALSE;
+
+    '
+  languages:
+  - c
+  message: 'The code uses equality comparison (==) instead of bitwise AND (&) to check
+    authentication flags. This can lead to incorrect authentication logic, as the
+    flags are typically set as bitfields. Use bitwise AND to properly check for specific
+    authentication types.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/8ae35102c43d8d06572c3a1292eb6e27e663c78d
+    category: security
+    cwe:
+    - CWE-697
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c
+- id: vuln-curl-686d54ba
+  pattern: '$FUNC(..., sizeof($BUFFER), ...);
+
+    '
+  pattern-not: '$FUNC(..., sizeof($BUFFER) - 1, ...);
+
+    '
+  languages:
+  - c
+  message: 'The vulnerability occurs when the full size of a buffer is passed to a
+    function without accounting for the null terminator, which can lead to buffer
+    overflows. This is dangerous because it can result in memory corruption, crashes,
+    or even arbitrary code execution. To fix this, subtract 1 from the buffer size
+    to ensure space for the null terminator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/686d54baf1df6e0775898f484d1670742898b3b2
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A2:2017-Broken Authentication
+    technology:
+    - c
+- id: vuln-curl-192c4f78
+  pattern: "if(('%' == $IN) && ISXDIGIT($STRING[1]) && ISXDIGIT($STRING[2])) {\n \
+    \ ...\n}\n"
+  pattern-not: "if(('%' == $IN) && ($ALLOC > 2) && ISXDIGIT($STRING[1]) && ISXDIGIT($STRING[2]))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for a percent-encoded character without verifying if there
+    is sufficient allocated space in the buffer. This can lead to out-of-bounds read
+    vulnerabilities when processing malformed input. To fix this, ensure that the
+    buffer has enough space (greater than 2) before checking for percent-encoded characters.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/192c4f788d48f82c03e9cef40013f34370e90737
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-curl-89721ff0
+  pattern: "if(strequal($NEEDLE->protostr, \"FTP\")) {\n  ...\n}\n"
+  pattern-not: "if($NEEDLE->protocol & PROT_FTP) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code uses ''strequal'' to compare protocol strings, which can lead
+    to security vulnerabilities if the strings are not properly validated. This can
+    be exploited to bypass SSL/TLS verification checks. Use protocol flags (e.g.,
+    PROT_FTP) instead of string comparisons to ensure secure protocol handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/89721ff04af70f527baae1368f3b992777bf6526
+    category: security
+    cwe:
+    - CWE-295
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://cwe.mitre.org/data/definitions/295.html
+    technology:
+    - c
+- id: vuln-curl-75ca568f
+  pattern: "$TYPE *$FUNC(CURL *$HANDLE, const char *$STRING, int $LENGTH, int *$OLEN)\
+    \ {\n  ...\n  int $STRINDEX = 0;\n  ...\n}\n"
+  pattern-not: "$TYPE *$FUNC(CURL *$HANDLE, const char *$STRING, size_t $LENGTH, int\
+    \ *$OLEN) {\n  ...\n  size_t $STRINDEX = 0;\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The use of ''int'' instead of ''size_t'' for string length and index variables
+    can lead to integer overflow vulnerabilities. This is particularly dangerous in
+    URL decoding functions where large inputs can cause buffer overflows or incorrect
+    memory allocations. Always use ''size_t'' for variables that represent sizes or
+    indices to avoid such issues.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/75ca568fa1c19de4c5358fed246686de8467c238
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-curl-3bb273db
+  pattern: 'sscanf($URL, "%[^\n/?]%[^\n]", $HOST, $PATH);
+
+    '
+  pattern-not: 'sscanf($URL, "%[^\n/?#]%[^\n]", $HOST, $PATH);
+
+    '
+  languages:
+  - c
+  message: 'The sscanf pattern used for parsing URLs is incomplete and does not properly
+    handle ''#'' characters in the path. This can lead to incorrect parsing of URLs,
+    potentially causing security issues such as path traversal or misinterpretation
+    of URL components. Update the sscanf pattern to include ''#'' in the character
+    exclusion list.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/3bb273db7e40ebc284cff45f3ce3f0475c8339c2
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://curl.se/docs/CVE-2021-22945.html
+    technology:
+    - c
+- id: vuln-curl-fa3dbb9a
+  pattern: 'uint32_t $N = (uint32_t)($NAMELEN + $VALUELEN + 3);
+
+    '
+  pattern-not: 'uint32_t $N = (uint32_t)($NAMELEN + $VALUELEN + 4);
+
+    '
+  languages:
+  - c
+  message: 'Incorrect calculation of HTTP2 header length due to wrong offset value.
+    This vulnerability can lead to buffer overflow or incorrect header parsing. The
+    offset should be 4 to account for ": " and "\r\n" instead of 3. Update the calculation
+    to use the correct offset.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/fa3dbb9a147488a2943bda809c66fc497efe06cb
+    category: security
+    cwe:
+    - 'CWE-190: Integer Overflow or Wraparound'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-curl-be285cde
+  pattern: "if ($SIZE >= 48)\n  memcpy($NTLM->nonce, &$BUFFER[24], 8);\n"
+  pattern-not: "if (($SIZE < 32) || \n     (memcmp($BUFFER, \"NTLMSSP\", 8) != 0)\
+    \ || \n     (memcmp($BUFFER+8, $TYPE2_MARKER, sizeof($TYPE2_MARKER)) != 0)) {\n\
+    \  /* This was not a good enough type-2 message */\n  free($BUFFER);\n  return\
+    \ $ERROR;\n}\n$NTLM->flags = readint_le(&$BUFFER[20]);\nmemcpy($NTLM->nonce, &$BUFFER[24],\
+    \ 8);\n"
+  languages:
+  - c
+  message: 'The code directly copies data from a buffer without proper validation
+    of the buffer''s size or content. This can lead to buffer overflows or invalid
+    memory access if the input is malformed. The vulnerability was fixed by adding
+    proper validation checks for the buffer size and content before processing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/be285cde3f52571087816759220a68cb994d9307
+    category: security
+    cwe:
+    - 'CWE-120: Buffer Copy without Checking Size of Input (''Classic Buffer Overflow'')'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c
+- id: vuln-curl-fae6fea2
+  pattern: "$STS->host = strdup($HOSTNAME);\nif(!$STS->host) {\n  ...\n}\n"
+  pattern-not: "$DUPHOST = strdup($HOSTNAME);\nif(!$DUPHOST) {\n  ...\n}\n$HLEN =\
+    \ strlen($DUPHOST);\nif($DUPHOST[$HLEN - 1] == '.')\n  $DUPHOST[--$HLEN] = 0;\n\
+    $STS->host = $DUPHOST;\n"
+  languages:
+  - c
+  message: 'Direct assignment of strdup result to a struct field without checking
+    for trailing dots or buffer length can lead to security vulnerabilities. This
+    can cause issues like incorrect hostname processing or buffer overflows. Always
+    validate and sanitize the hostname before assignment, and ensure the length is
+    within acceptable bounds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/fae6fea209a2d4db1582f608bd8cc8000721733a
+    category: security
+    cwe:
+    - CWE-20
+    - CWE-170
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-curl-453e7a7a
+  pattern: "if(errno || ($END == ':')) {\n  ...\n}\n"
+  pattern-not: "if(errno)\n  /* overflow */\n  $END = NULL;\nelse if($END == ':')\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code checks for both `errno` and `*endp == '':''` in the same condition,
+    which can lead to undefined behavior if `errno` is set and `endp` is NULL. This
+    can cause a null pointer dereference or other unexpected behavior. To fix this,
+    separate the checks into distinct conditions, handling `errno` first and then
+    checking `*endp == '':''`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/453e7a7a03a2cec749abd3878a48e728c515cca7
+    category: security
+    cwe:
+    - CWE-476
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - c
+- id: vuln-curl-ba1dbd78
+  pattern: '$SCRATCH = malloc(2 * $DATA->set.buffer_size);
+
+    '
+  pattern-not: '$SCRATCH = malloc(2 * UPLOAD_BUFSIZE);
+
+    '
+  languages:
+  - c
+  message: 'Detected a potentially unsafe memory allocation using `data->set.buffer_size`
+    which could lead to buffer overflow or insufficient memory allocation. This vulnerability
+    arises because the buffer size is dynamically determined from a user-controlled
+    structure, which may not be properly validated. To fix this, use a defined constant
+    like `UPLOAD_BUFSIZE` instead of dynamically calculated sizes, and ensure proper
+    bounds checking with `DEBUGASSERT`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/ba1dbd78e5f1ed67c1b8d37ac89d90e5e330b628
+    category: security
+    cwe:
+    - 'CWE-131: Incorrect Calculation of Buffer Size'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/131.html
+    technology:
+    - c
+- id: vuln-curl-fb4415d8
+  pattern: 'socksreq[$LEN++] = (char) $HOSTNAME_LEN;
+
+    '
+  pattern-not: 'socksreq[$LEN++] = (unsigned char) $HOSTNAME_LEN;
+
+    '
+  languages:
+  - c
+  message: 'The code uses a potentially unsafe cast of a length value to a signed
+    char type, which can lead to integer overflow. This vulnerability can be exploited
+    to bypass length checks and cause buffer overflows. Use an unsigned char type
+    for length values to prevent this issue.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/fb4415d8aee6c1045be932a34fe6107c2f5ed147
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - c
+- id: vuln-curl-2eb8dcf2
+  pattern: "static bool tailmatch(const char *$LITTLE, const char *$BIGONE) {\n  size_t\
+    \ $LITTLELEN = strlen($LITTLE);\n  size_t $BIGLEN = strlen($BIGONE);\n  if($LITTLELEN\
+    \ > $BIGLEN)\n    return FALSE;\n  return Curl_raw_equal($LITTLE, $BIGONE+$BIGLEN-$LITTLELEN)\
+    \ ? TRUE : FALSE;\n}\n"
+  pattern-not: "static bool tailmatch(const char *$COOKIE_DOMAIN, const char *$HOSTNAME)\
+    \ {\n  size_t $COOKIE_DOMAIN_LEN = strlen($COOKIE_DOMAIN);\n  size_t $HOSTNAME_LEN\
+    \ = strlen($HOSTNAME);\n  if($HOSTNAME_LEN < $COOKIE_DOMAIN_LEN)\n    return FALSE;\n\
+    \  if(!Curl_raw_equal($COOKIE_DOMAIN, $HOSTNAME+$HOSTNAME_LEN-$COOKIE_DOMAIN_LEN))\n\
+    \    return FALSE;\n  if($HOSTNAME_LEN == $COOKIE_DOMAIN_LEN)\n    return TRUE;\n\
+    \  if('.' == *($HOSTNAME + $HOSTNAME_LEN - $COOKIE_DOMAIN_LEN - 1))\n    return\
+    \ TRUE;\n  return FALSE;\n}\n"
+  languages:
+  - c
+  message: 'The function ''tailmatch'' is vulnerable to domain matching issues. The
+    original implementation does not properly validate the domain against the hostname,
+    which can lead to security vulnerabilities such as cookie hijacking. The fixed
+    version ensures proper domain matching by checking the length and the leading
+    character of the domain. Always validate domain names according to RFC6265 standards.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/2eb8dcf26cb37f09cffe26909a646e702dbcab66
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A2: Broken Authentication'
+    references:
+    - https://tools.ietf.org/html/rfc6265
+    technology:
+    - c
+- id: vuln-curl-73980f9a
+  pattern: 'DEBUGASSERT($PREFIX[3] == L''\0'');
+
+    '
+  pattern-not: 'DEBUGASSERT($PREFIX[2] == L''\0'');
+
+    '
+  languages:
+  - c
+  message: 'The code contains an incorrect assertion that checks the null terminator
+    at the wrong index in a wide character string. This could lead to incorrect assumptions
+    about the string''s length, potentially causing buffer overflows or other undefined
+    behavior. The fix is to check the correct index (2) instead of (3) to ensure proper
+    string termination validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/73980f9ace6c7577e7fcab8008bbde8a0a231692
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/125.html
+    technology:
+    - c
+- id: vuln-curl-058f98dc
+  pattern: 'msnprintf($BUF, $LEN, "%ld%s", $PORT, $HOSTNAME);
+
+    '
+  pattern-not: 'msnprintf($BUF, $LEN, "%ld/%s", $PORT, $HOSTNAME);
+
+    '
+  languages:
+  - c
+  message: "Detected a vulnerable format string in msnprintf that may lead to incorrect\
+    \ hostname handling. \nThe original code concatenates port and hostname directly\
+    \ without proper separation, which can cause issues with parsing and potential\
+    \ security vulnerabilities. \nThe fix adds proper separation using slashes and\
+    \ includes scope_id for IPv6 support. \nUpdate the format string to use proper\
+    \ separators and include scope_id if IPv6 is enabled.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/058f98dc3fe595f21dc26a5b9b1699e519ba5705
+    category: security
+    cwe:
+    - 'CWE-134: Use of Externally-Controlled Format String'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c
+- id: vuln-curl-2766262a
+  pattern: 'result = ($LINE[3] == '' '') ? TRUE : FALSE;
+
+    '
+  pattern-not: 'result = ($LINE[3] == '' '' || $LEN == 5) ? TRUE : FALSE;
+
+    '
+  languages:
+  - c
+  message: 'The code checks for a command response in SMTP protocol but does not account
+    for servers that only send the response code without additional text. This can
+    lead to incorrect handling of server responses, potentially causing security issues
+    or unexpected behavior. The fix includes checking for a response code of length
+    5, which is valid according to RFC-4954. Update the condition to handle both cases.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/curl/curl/commit/2766262a68688c1dd8143f9c4be84b46c408b70a
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc4954
+    - https://tools.ietf.org/html/rfc5321
+    technology:
+    - c

@@ -1,0 +1,23 @@
+rules:
+- id: vuln-discourse-69232989
+  pattern: '(params.description ? '' title="'' + params.description + ''" '' : "")
+
+    '
+  pattern-not: '(params.description ? '' title="'' + escape(params.description) +
+    ''" '' : "")
+
+    '
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unescaped HTML attribute. Use the `escape`
+    function to sanitize user input before including it in HTML attributes.
+  severity: ERROR
+  metadata:
+    source-url: github.com/discourse/discourse/commit/692329896ac64d8581947e977202c243eef3b5a2
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - javascript

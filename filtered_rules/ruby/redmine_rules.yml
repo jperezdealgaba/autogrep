@@ -1,0 +1,115 @@
+rules:
+- id: vuln-redmine-0f09f161
+  pattern: '$FUNC($ASSIGNEE, $ISSUES, $DAYS).deliver if $ASSIGNEE.is_a?(User) && $ASSIGNEE.active?
+
+    '
+  pattern-not: "if $ASSIGNEE.is_a?(User) && $ASSIGNEE.active? && $ISSUES.present?\n\
+    \  $VISIBLE_ISSUES = $ISSUES.select {|$I| $I.visible?($ASSIGNEE)}\n  $FUNC($ASSIGNEE,\
+    \ $VISIBLE_ISSUES, $DAYS).deliver if $VISIBLE_ISSUES.present?\nend\n"
+  languages:
+  - ruby
+  message: 'The code directly delivers issues to a user without verifying if the issues
+    are visible to them. This can lead to information disclosure, where users receive
+    notifications about issues they should not have access to. To fix this, ensure
+    that only visible issues are delivered by filtering them using `select {|i| i.visible?(assignee)}`
+    and checking if the filtered list is present before delivery.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/0f09f161f64f4190a52166675ff380a15b72a8bc
+    category: security
+    cwe:
+    - CWE-200
+    - CWE-284
+    owasp: A6:2017-Security Misconfiguration
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+    technology:
+    - ruby
+- id: vuln-redmine-56c8ee04
+  pattern: '$VALUE.collect {|$V| $COLUMN_VALUE($COLUMN, $ITEM, $V)}.compact.join($SEPARATOR).html_safe
+
+    '
+  pattern-not: '$VALUES = $VALUE.collect {|$V| $COLUMN_VALUE($COLUMN, $ITEM, $V)}.compact
+
+    safe_join($VALUES, $SEPARATOR)
+
+    '
+  languages:
+  - ruby
+  message: 'Detected unsafe HTML joining of values using `.html_safe`. This can lead
+    to XSS vulnerabilities if the values contain user input. Use `safe_join` instead
+    to safely concatenate HTML-safe strings.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/56c8ee0440d8555aa7822d947ba9091c8a791508
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://guides.rubyonrails.org/security.html#cross-site-scripting-xss
+    technology:
+    - ruby
+- id: vuln-redmine-df615b70
+  pattern: "$KLASS =\n  begin\n    $PARAMS[:object_type].to_s.singularize.classify.constantize\n\
+    \  rescue\n    nil\n  end\n"
+  pattern-not: '$KLASS = $PARAMS[:object_type].to_s.singularize.classify.constantize
+
+    '
+  languages:
+  - ruby
+  message: 'Unsafe constantization of user input detected. This can lead to remote
+    code execution or unintended class instantiation. The fix involves constraining
+    the input values in the routes and removing the unsafe constantization pattern.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/df615b7047e58a5dfb236d3b011dfe1619559acc
+    category: security
+    cwe:
+    - CWE-470
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - ruby
+- id: vuln-redmine-9d797400
+  pattern: 'hg_args = [...]
+
+    hg_args << ''-r'' << $VAR
+
+    ...
+
+    '
+  pattern-not: 'hg_args = [...]
+
+    hg_args << "-r$VAR"
+
+    ...
+
+    '
+  languages:
+  - ruby
+  message: "Detected potential command injection vulnerability due to incorrect argument\
+    \ formatting in Mercurial commands. \nUsing separate arguments for command options\
+    \ and their values can lead to injection vulnerabilities if the values are not\
+    \ properly sanitized. \nInstead, combine the option and its value into a single\
+    \ string argument to prevent injection.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/redmine/redmine/commit/9d797400eaec5f9fa7ba9507c82d9c18cb91d02e
+    category: security
+    cwe:
+    - CWE-78
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/78.html
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html
+    technology:
+    - ruby

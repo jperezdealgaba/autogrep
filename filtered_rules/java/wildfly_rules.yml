@@ -1,0 +1,22 @@
+rules:
+- id: vuln-wildfly-a48db605
+  pattern: 'return new ModelNode(ModelType.UNDEFINED);
+
+    '
+  pattern-not: 'return UNDEFINED;
+
+    '
+  languages:
+  - java
+  message: 'Direct instantiation of ModelNode with ModelType.UNDEFINED can lead to
+    inconsistent state and potential security issues. Use a predefined, protected
+    ModelNode instance instead.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/wildfly/wildfly/commit/a48db605577d941b5ae3e899a1187303e138ca74
+    category: security
+    cwe: CWE-664
+    owasp: A9:2021-Security Logging and Monitoring Failures
+    technology: java

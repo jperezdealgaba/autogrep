@@ -1,0 +1,26 @@
+rules:
+- id: vuln-jwx-d69a7219
+  pattern: 'uses: actions/setup-go@v4
+
+    '
+  pattern-not: 'uses: actions/setup-go@v5
+
+    '
+  languages:
+  - yaml
+  message: "The workflow is using an outdated version of the 'actions/setup-go' action\
+    \ (v4). \nUsing outdated versions can expose the workflow to security vulnerabilities\
+    \ and bugs \nthat have been fixed in newer versions. Upgrade to 'actions/setup-go@v5'\
+    \ to ensure \nthe latest security patches and features are applied.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/lestrrat-go/jwx/commit/d69a721931a5c48b9850a42404f18e143704adcd
+    category: security
+    cwe:
+    - 'CWE-1104: Use of Unmaintained Third Party Components'
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://github.com/actions/setup-go
+    technology:
+    - yaml

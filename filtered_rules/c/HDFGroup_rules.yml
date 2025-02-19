@@ -1,0 +1,29 @@
+rules:
+- id: vuln-hdf5-302053f9
+  pattern: 'H5O_msg_decode($F, $DXPL_ID, $OPEN_OH, $MSG_ID, $BUF)
+
+    '
+  pattern-not: 'H5O_msg_decode($F, $DXPL_ID, $OPEN_OH, $MSG_ID, $BUF_SIZE, $BUF)
+
+    '
+  languages:
+  - c
+  message: 'The function `H5O_msg_decode` is called without a buffer size parameter,
+    which can lead to buffer overflows or incorrect decoding. This vulnerability can
+    be exploited to cause memory corruption or arbitrary code execution. Always include
+    the buffer size parameter to ensure safe memory operations.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/HDFGroup/hdf5/commit/302053f978e38a8d4306a7c1233cdf8fd2ec28dd
+    category: security
+    cwe:
+    - CWE-120
+    - CWE-119
+    owasp: 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    - https://cwe.mitre.org/data/definitions/119.html
+    technology:
+    - c

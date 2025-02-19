@@ -1,0 +1,26 @@
+rules:
+- id: vuln-cilium-b467cc70
+  pattern: 'timeout-minutes: 60
+
+    '
+  pattern-not: 'timeout-minutes: 90
+
+    '
+  languages:
+  - yaml
+  message: "The workflow timeout is set too low, which can cause builds to fail prematurely.\
+    \ \nIncreasing the timeout to 90 minutes ensures that long-running builds have\
+    \ sufficient time to complete.\n"
+  severity: WARNING
+  metadata:
+    source-url: github.com/cilium/cilium/commit/b467cc70a725ecf5e3345e90f6b4330b142ba852
+    category: reliability
+    cwe:
+    - CWE-400
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    references:
+    - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes
+    technology:
+    - yaml
+    - github-actions

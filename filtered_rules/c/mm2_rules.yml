@@ -1,0 +1,28 @@
+rules:
+- id: vuln-little-cms-91c2db7f
+  pattern: 'strncpy($DEST, $SRC, sizeof($DEST));
+
+    '
+  pattern-not: 'strncpy($DEST, $SRC, sizeof($DEST)-1);
+
+    '
+  languages:
+  - c
+  message: 'The use of `strncpy` with `sizeof(dest)` can lead to buffer overflows
+    if the source string is not null-terminated. This can cause memory corruption
+    and potential security vulnerabilities. Always subtract 1 from the size to ensure
+    space for the null terminator.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/mm2/Little-CMS/commit/91c2db7f2559be504211b283bc3a2c631d6f06d9
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - c

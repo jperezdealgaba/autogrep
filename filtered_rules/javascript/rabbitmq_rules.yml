@@ -1,0 +1,18 @@
+rules:
+- id: vuln-rabbitmq-server-a8dffdf7
+  pattern: $VAR = $RES.req_params.username
+  pattern-not: $VAR = fmt_escape_html($RES.req_params.username)
+  languages:
+  - javascript
+  message: Potential XSS vulnerability due to unescaped username parameter. Always
+    escape user input before using it in HTML context to prevent XSS attacks.
+  severity: ERROR
+  metadata:
+    source-url: github.com/rabbitmq/rabbitmq-server/commit/a8dffdf7de9793a76fc4685c89b968d8eddca4ca
+    category: security
+    cwe: CWE-79
+    owasp: A7:2017-Cross-Site Scripting (XSS)
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    technology:
+    - javascript

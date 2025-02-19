@@ -1,0 +1,219 @@
+rules:
+- id: vuln-glpi-039c184c
+  pattern: '$CURRENTCSRFTOKEN = md5(uniqid(rand(), true));
+
+    '
+  pattern-not: '$CURRENTCSRFTOKEN = bin2hex(random_bytes(32));
+
+    '
+  languages:
+  - php
+  message: 'Using `md5(uniqid(rand(), true))` for generating CSRF tokens is insecure
+    because it relies on weak entropy sources. This can make the token predictable
+    and vulnerable to brute-force attacks. Use `bin2hex(random_bytes(32))` instead
+    to generate cryptographically secure random tokens.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/039c184cba0f1b564fde2d934f103910db779922
+    category: security
+    cwe:
+    - CWE-330
+    owasp:
+    - A2:2017-Broken Authentication
+    references:
+    - https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+    technology:
+    - php
+- id: vuln-glpi-f542ec83
+  pattern: "if (\n    isset($_POST['action'])\n    && isset($_POST['id'])\n) {\n \
+    \   if (method_exists($plugin, $_POST['action'])) {\n        call_user_func([$plugin,\
+    \ $_POST['action']], $_POST['id']);\n    } else {\n        echo \"Action \" .\
+    \ $_POST['action'] . \" undefined\";\n    }\n    Html::back();\n}\n"
+  pattern-not: "$id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int)$_POST['id']\
+    \ : null;\n$action = $id > 0 && isset($_POST['action']) ? $_POST['action'] : null;\n\
+    switch ($action) {\n    case 'install':\n        $plugin->install($id);\n    \
+    \    break;\n    case 'activate':\n        $plugin->activate($id);\n        break;\n\
+    \    case 'unactivate':\n        $plugin->unactivate($id);\n        break;\n \
+    \   case 'uninstall':\n        $plugin->uninstall($id);\n        break;\n    case\
+    \ 'clean':\n        $plugin->clean($id);\n        break;\n    default:\n     \
+    \   Html::displayErrorAndDie('Lost');\n        break;\n}\nHtml::back();\n"
+  languages:
+  - php
+  message: 'The code directly uses user-controlled input (`$_POST[''action'']`) to
+    call a method on an object, which can lead to Remote Code Execution (RCE) if an
+    attacker can control the `action` parameter. This is dangerous because it allows
+    attackers to call arbitrary methods on the `$plugin` object. The fix is to validate
+    the `action` parameter and use a whitelist of allowed actions in a switch statement.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/f542ec8378afbd8038aeca5975b15eca3f0574c8
+    category: security
+    cwe:
+    - CWE-95
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/Code_Injection
+    technology:
+    - php
+- id: vuln-glpi-06a1bced
+  pattern: 'mysqli_set_charset($VAR, ...)
+
+    '
+  pattern-not: '$VAR->set_charset(...)
+
+    '
+  languages:
+  - php
+  message: "Detected use of `mysqli_set_charset` instead of the object-oriented `set_charset`\
+    \ method. \nUsing `mysqli_set_charset` can lead to inconsistent character encoding\
+    \ handling and potential security vulnerabilities. \nUse the object-oriented `set_charset`\
+    \ method on the mysqli connection object instead.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/06a1bceddbd0b635e7c35c87406b529be1f38a46
+    category: security
+    cwe:
+    - CWE-116
+    owasp:
+    - A9:2017-Security Misconfiguration
+    technology:
+    - php
+- id: vuln-glpi-e9b16bc8
+  pattern: 'echo "<a href=''".htmlentities($_SERVER[''REQUEST_URI''])."'' class=''vsubmit''>Reload</a>";
+
+    '
+  pattern-not: 'echo "<a href=''".htmlspecialchars($_SERVER[''REQUEST_URI''], ENT_QUOTES
+    | ENT_HTML5, ''UTF-8'')."'' class=''vsubmit''>Reload</a>";
+
+    '
+  languages:
+  - php
+  message: 'The code uses `htmlentities` to sanitize `$_SERVER[''REQUEST_URI'']`,
+    which is insufficient for preventing XSS attacks. `htmlentities` does not encode
+    single quotes by default, making it vulnerable to attribute injection. Use `htmlspecialchars`
+    with appropriate flags (ENT_QUOTES | ENT_HTML5) and specify the charset (UTF-8)
+    to properly sanitize the output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/e9b16bc8e9b61ebb2d35b96b9c71cd25c5af9e48
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - A03:2021-Injection
+    technology:
+    - php
+- id: vuln-glpi-5e1c52c5
+  pattern: 'header("Content-Type: text/html; charset=UTF-8");
+
+    '
+  pattern-not: 'header("Content-Type: application/json; charset=UTF-8");
+
+    '
+  languages:
+  - php
+  message: 'Detected incorrect Content-Type header in AJAX responses. Using "text/html"
+    instead of "application/json" can lead to security vulnerabilities, such as XSS,
+    when the response is interpreted as HTML instead of JSON. Always use "application/json"
+    for JSON responses to ensure proper content type handling.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/5e1c52c5e8a30ceb4e9572964da7ed89ddfb1aaf
+    category: security
+    cwe:
+    - 'CWE-116: Improper Encoding or Escaping of Output'
+    owasp:
+    - A03:2021 - Injection
+    technology:
+    - php
+- id: vuln-glpi-fc1f6da9
+  pattern: 'echo "<input type=''hidden'' name=''itemtype'' value=\"" . $_GET[''itemtype'']
+    . "\">";
+
+    '
+  pattern-not: 'echo "<input type=''hidden'' name=''itemtype'' value=\"" . htmlspecialchars($_GET[''itemtype''])
+    . "\">";
+
+    '
+  languages:
+  - php
+  message: 'Detected unescaped output of $_GET[''itemtype''] in HTML context. This
+    can lead to XSS vulnerabilities if the input is not properly sanitized. Always
+    use htmlspecialchars() to escape user input before outputting it in HTML.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/fc1f6da9d158933b870ff374ed3a50ae98dcef4a
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    references:
+    - https://owasp.org/www-community/attacks/xss/
+    - https://www.php.net/manual/en/function.htmlspecialchars.php
+    technology:
+    - php
+- id: vuln-glpi-3b6bc1b4
+  pattern: 'new $_REQUEST[''$VAR'']()
+
+    '
+  pattern-not: 'getItemForItemtype($_REQUEST[''$VAR''])
+
+    '
+  languages:
+  - php
+  message: "Direct instantiation of classes using user-controlled input can lead to\
+    \ arbitrary object instantiation, \nwhich is a security risk. Use the `getItemForItemtype`\
+    \ function instead to safely instantiate objects.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/3b6bc1b4aa1f3693b20ada3425d2de5108522484
+    category: security
+    cwe:
+    - CWE-913
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A1_2017-Injection
+    technology:
+    - php
+- id: vuln-glpi-39e25591
+  pattern: '$search_where = [''OR'' => $ors];
+
+    '
+  pattern-not: '$search_where = $criteria[''WHERE''];
+
+    $search_where[] = [''OR'' => $ors];
+
+    '
+  languages:
+  - php
+  message: 'Direct assignment of an array with ''OR'' condition to `$search_where`
+    without considering visibility restrictions can lead to security vulnerabilities.
+    This can expose sensitive data by bypassing access controls. To fix this, ensure
+    that visibility criteria are applied before adding the ''OR'' condition.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/glpi-project/glpi/commit/39e25591efddc560e3679ab07e443ee6198705e2
+    category: security
+    cwe:
+    - CWE-200
+    owasp:
+    - A01:Broken Access Control
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php

@@ -1,0 +1,31 @@
+rules:
+- id: vuln-coreos-installer-2a364053
+  pattern: 'create_dir_all($PATH).context($MSG)?;
+
+    '
+  pattern-not: "if !$PATH.is_dir() {\n    create_dir_all($PATH).with_context(|| {\n\
+    \        format!($MSG, $PATH.display())\n    })?;\n    set_permissions($PATH,\
+    \ Permissions::from_mode($MODE)).with_context(|| {\n        format!($MSG, $PATH.display())\n\
+    \    })?;\n}\nset_permissions($PATH, Permissions::from_mode($MODE)).with_context(||\
+    \ {\n    format!($MSG, $PATH.display())\n})?;\n"
+  languages:
+  - rust
+  message: 'The code creates a directory without setting appropriate permissions,
+    which could lead to unauthorized access to sensitive data. This is dangerous because
+    it may expose secrets or other confidential information. To fix this, ensure that
+    the directory is created with restricted permissions (e.g., 0o700) and that the
+    permissions are explicitly set after creation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/coreos/coreos-installer/commit/2a36405339c87b16ed6c76e91ad5b76638fbdb0c
+    category: security
+    cwe:
+    - CWE-276
+    owasp:
+    - A05:2021-Security Misconfiguration
+    references:
+    - https://cwe.mitre.org/data/definitions/276.html
+    technology:
+    - rust

@@ -1,0 +1,25 @@
+rules:
+- id: vuln-hoppscotch-15424903
+  pattern: 'console.log(`Database: ${process.env.DATABASE_URL}`)
+
+    '
+  pattern-not: 'console.log("Database: [REDACTED]")
+
+    '
+  languages:
+  - typescript
+  message: 'Detected sensitive information (database URL) being logged to the console.
+    This can expose sensitive credentials in production environments. Remove or redact
+    sensitive data from console logs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/hoppscotch/hoppscotch/commit/15424903ede20b155d764abf4c4f7c2c84c11247
+    category: security
+    cwe:
+    - CWE-532
+    owasp:
+    - A3:2017-Sensitive Data Exposure
+    technology:
+    - typescript

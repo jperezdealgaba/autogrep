@@ -1,0 +1,75 @@
+rules:
+- id: vuln-suricata-2f39ba75
+  pattern: "if (!$F->more_frags) {\n    break;\n}\n"
+  pattern-not: "if (!more_frags && $F->offset > prev_offset) {\n    break;\n}\n"
+  languages:
+  - c
+  message: 'Detected a potential vulnerability in packet defragmentation logic. The
+    original code would break the defragmentation process when encountering a fragment
+    marked as the last one, which could lead to incomplete reassembly of packets.
+    This is dangerous as it may result in incorrect packet processing or security
+    bypass. The fix involves continuing the defragmentation process even if a fragment
+    is marked as the last one, as subsequent fragments with the same offset might
+    contain preferred data. Always verify the complete packet payload to ensure proper
+    reassembly.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/2f39ba75f153ba9bdf8eedc2a839cc973dbaea66
+    category: security
+    cwe:
+    - CWE-670
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://tools.ietf.org/html/rfc815
+    technology:
+    - c
+- id: vuln-suricata-d8634daf
+  pattern: "if ($PROTO == IPPROTO_TCP && $PROTOCTX != NULL) {\n  ...\n}\n"
+  pattern-not: "if ($PROTO == IPPROTO_TCP && $PROTOCTX != NULL &&\n    ($FLAGS & PKT_STREAM_EST))\
+    \ {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'Detected a missing check for PKT_STREAM_EST in TCP protocol handling.
+    This vulnerability could allow processing of packets that are not part of an established
+    stream, potentially leading to security issues such as bypassing security controls
+    or processing malformed packets. Always verify that the packet is part of an established
+    stream using the PKT_STREAM_EST flag when handling TCP packets.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/d8634daf74c882356659addb65fb142b738a186b
+    category: security
+    cwe:
+    - CWE-20
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://suricata.io/
+    technology:
+    - c
+- id: vuln-suricata-51790d38
+  pattern: "if ($LINE_LEN >= 4 && $FUNC(\"SSH-\", $LINE_PTR, 4) != 0) {\n  ...\n}\n"
+  pattern-not: "if ($LINE_LEN < 4) {\n  ...\n}\nif ($FUNC(\"SSH-\", $LINE_PTR, 4)\
+    \ != 0) {\n  ...\n}\n"
+  languages:
+  - c
+  message: 'The code directly compares the buffer content without first checking if
+    the buffer length is sufficient. This can lead to out-of-bounds memory access
+    if the buffer is shorter than expected. Always verify the buffer length before
+    performing memory comparisons to prevent potential crashes or security vulnerabilities.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/OISF/suricata/commit/51790d3824bc381e24aaeef20338dd6b8bd4e453
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - c

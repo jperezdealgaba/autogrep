@@ -1,0 +1,23 @@
+rules:
+- id: vuln-libpcap-87d6bef0
+  pattern: "if ($TOTAL_LENGTH < sizeof($BHDRP) + sizeof($SHBP) + sizeof(struct block_trailer))\
+    \ {\n  ...\n}\n"
+  pattern-not: "if ($TOTAL_LENGTH < sizeof($BHDRP) + sizeof($SHBP) + sizeof(struct\
+    \ block_trailer) ||\n    ($TOTAL_LENGTH > $BT_SHB_INSANE_MAX)) {\n  ...\n}\n"
+  languages:
+  - c
+  message: "The code fails to check for an upper bound on the length of the Section\
+    \ Header Block in pcapng dump files, which could lead to excessive memory allocation\
+    \ or denial of service. \nThe vulnerability is dangerous because it allows potentially\
+    \ malicious input to cause memory exhaustion or crash the application. \nTo fix\
+    \ this, ensure that the length is checked against a reasonable maximum value (e.g.,\
+    \ BT_SHB_INSANE_MAX).\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/the-tcpdump-group/libpcap/commit/87d6bef033062f969e70fa40c43dfd945d5a20ab
+    category: security
+    cwe:
+    - CWE-770
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - c

@@ -1,0 +1,628 @@
+rules:
+- id: vuln-tensorflow-37e64539
+  pattern: "auto $SIZE = (std::is_integral<$T>::value\n                 ? ((Eigen::numext::abs($LIMIT\
+    \ - $START) +\n                     Eigen::numext::abs($DELTA) - $T(1)) /\n  \
+    \                  Eigen::numext::abs($DELTA))\n                 : (Eigen::numext::ceil(\n\
+    \                       Eigen::numext::abs(($LIMIT - $START) / $DELTA))));\n"
+  pattern-not: "int64_t $SIZE;\nif (std::is_integral<$T>::value) {\n  $SIZE = Eigen::divup(static_cast<int64_t>(Eigen::numext::abs($LIMIT\
+    \ - $START)),\n                       static_cast<int64_t>(Eigen::numext::abs($DELTA)));\n\
+    } else {\n  auto $SIZE_AUTO =\n      Eigen::numext::ceil(Eigen::numext::abs(($LIMIT\
+    \ - $START) / $DELTA));\n  if ($SIZE_AUTO > std::numeric_limits<int64_t>::max())\
+    \ {\n    return errors::InvalidArgument(\"Requires (($LIMIT - $START) / $DELTA)\
+    \ <= \",\n                                   std::numeric_limits<int64_t>::max());\n\
+    \  }\n  $SIZE = static_cast<int64_t>($SIZE_AUTO);\n}\n"
+  languages:
+  - cpp
+  message: 'Detected potential integer overflow vulnerability in size calculation.
+
+    The original code directly calculates the size without checking if it fits into
+    int64_t, which can lead to undefined behavior.
+
+    The fix introduces proper checks and uses `Eigen::divup` for safer integer division.
+
+    To fix this, ensure that the size calculation is checked against the maximum value
+    of int64_t and use safer division methods.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/37e64539cd29fcfb814c4451152a60f5d107b0f0
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    technology:
+    - cpp
+- id: vuln-tensorflow-a2b743f6
+  pattern: 'DCHECK_GT($VAR.size(), 0)
+
+    '
+  pattern-not: 'OP_REQUIRES($VAR1, $VAR2.size() > 0, $VAR3)
+
+    '
+  languages:
+  - cpp
+  message: 'Using DCHECK_GT for input validation is dangerous as it is only active
+    in debug builds.
+
+    This can lead to undefined behavior in production code when invalid inputs are
+    provided.
+
+    Replace DCHECK_GT with proper error handling using OP_REQUIRES to validate inputs
+
+    in both debug and release builds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/a2b743f6017d7b97af1fe49087ae15f0ac634373
+    category: security
+    cwe:
+    - 'CWE-754: Improper Check for Unusual or Exceptional Conditions'
+    owasp:
+    - A10:2021 - Server-Side Request Forgery
+    references:
+    - https://github.com/tensorflow/tensorflow/blob/a2b743f6017d7b97af1fe49087ae15f0ac634373/tensorflow/core/kernels/ragged_gather_op.cc
+    technology:
+    - cpp
+- id: vuln-tensorflow-c5b30379
+  pattern: 'const int $VAR = $EXPR.dimension($INDEX);
+
+    '
+  pattern-not: 'const Eigen::DenseIndex $VAR = $EXPR.dimension($INDEX);
+
+    '
+  languages:
+  - cpp
+  message: 'Using ''int'' instead of ''Eigen::DenseIndex'' for tensor dimension indexing
+    can lead to integer overflow and undefined behavior. Replace ''int'' with ''Eigen::DenseIndex''
+    to ensure safe handling of large tensor dimensions.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c5b30379ba87cbe774b08ac50c1f6d36df4ebb7c
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A03:2021-Injection
+    references:
+    - https://eigen.tuxfamily.org/dox/TensorDimensionIndexing.html
+    technology:
+    - cpp
+- id: vuln-tensorflow-8faa6ea6
+  pattern: 'ctx->allocate_output(0, TensorShape({$DIM1, $DIM2, $DIM3, $DIM4}), &$OUTPUT);
+
+    '
+  pattern-not: 'ctx->allocate_output(0, $TENSORSHAPE, &$OUTPUT);
+
+    '
+  languages:
+  - cpp
+  message: 'Directly constructing TensorShape within allocate_output can lead to potential
+    memory corruption or undefined behavior. Use TensorShape::BuildTensorShape to
+    properly construct the shape before passing it to allocate_output.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/8faa6ea692985dbe6ce10e1a3168e0bd60a723ba
+    category: security
+    cwe:
+    - CWE-125
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/tensor-shape
+    technology:
+    - cpp
+- id: vuln-tensorflow-08d7b00c
+  pattern: 'const int $VAR = $EXPR < 0 ? -$EXPR : $EXPR + 1;
+
+    '
+  pattern-not: 'const int64 $VAR = $EXPR < 0 ? -$EXPR : $EXPR + 1;
+
+    '
+  languages:
+  - cpp
+  message: 'Using ''int'' instead of ''int64'' for minimum rank calculation can lead
+    to integer overflow.
+
+    This vulnerability occurs when calculating rank based on a dimension value, which
+    could be large.
+
+    To fix this, use ''int64'' instead of ''int'' to handle larger values safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/08d7b00c0a5a20926363849f611729f53f3ec022
+    category: security
+    technology:
+    - cpp
+- id: vuln-tensorflow-c4843158
+  pattern: '$X << GifErrorString($ERROR_CODE)
+
+    '
+  pattern-not: '$X << GifErrorStringNonNull($ERROR_CODE)
+
+    '
+  languages:
+  - cpp
+  message: 'Direct usage of `GifErrorString` without null check can lead to undefined
+    behavior if the function returns nullptr. This can cause crashes or security vulnerabilities
+    when handling GIF errors. Use `GifErrorStringNonNull` instead, which safely handles
+    null returns by providing a default error message.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c48431588e7cf8aff61d4c299231e3e925144df8
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - A9:2021-Security Logging and Monitoring Failures
+    technology:
+    - cpp
+- id: vuln-tensorflow-4f38b1ac
+  pattern: '$VAR1 = $VAR2->second.outputs().find($VAR3)->second.name();
+
+    '
+  pattern-not: "const auto& $VAR1 = $VAR2->second.outputs();\nconst auto& $VAR3 =\
+    \ $VAR1.find($VAR4);\nif ($VAR3 == $VAR1.end()) {\n  ...\n}\n$VAR5 = $VAR3->second.name();\n"
+  languages:
+  - cpp
+  message: 'Directly accessing the result of `find()` without checking if the key
+    exists can lead to undefined behavior. This is dangerous because it can cause
+    crashes or unexpected behavior if the key is not found. Always check if the key
+    exists before accessing it.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/4f38b1ac8e42727e18a2f0bde06d3bee8e77b250
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    references:
+    - https://en.cppreference.com/w/cpp/container/map/find
+    technology:
+    - cpp
+- id: vuln-tensorflow-c2426bba
+  pattern: 'int64_t $NUM_ELEMS = TensorShape($T.tensor_shape()).num_elements();
+
+    '
+  pattern-not: 'int64_t $NUM_ELEMS = PartialTensorShape($T.tensor_shape()).num_elements();
+
+    '
+  languages:
+  - cpp
+  message: 'Using TensorShape instead of PartialTensorShape for num_elements() calculation
+    can lead to incorrect tensor shape handling. This is dangerous because it may
+    cause memory corruption or incorrect tensor operations. Replace TensorShape with
+    PartialTensorShape to properly handle potentially incomplete shape information.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c2426bba00a01de6913738df8fa78e0215fcce02
+    category: security
+    cwe:
+    - CWE-125
+    - CWE-787
+    owasp: 'A1: Injection'
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/partial-tensor-shape
+    technology:
+    - cpp
+- id: vuln-tensorflow-4c0ee937
+  pattern: 'sparse::SparseTensor::Create($INDICES, $VALUES, TensorShape($SHAPE.vec<int64>()),
+    $SPARSE_TENSOR)
+
+    '
+  pattern-not: 'sparse::SparseTensor::Create($INDICES, $VALUES, $DENSE_SHAPE, $SPARSE_TENSOR)
+
+    '
+  languages:
+  - cpp
+  message: "Directly constructing a TensorShape from a vector of int64 can lead to\
+    \ integer overflow vulnerabilities. \nThis is dangerous because it can cause incorrect\
+    \ tensor shape calculations, leading to memory corruption or out-of-bounds access.\
+    \ \nTo fix this, construct the dense shape separately and add dimensions with\
+    \ proper bounds checking.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/4c0ee937c0f61c4fc5f5d32d9bb4c67428012a60
+    category: security
+    cwe:
+    - CWE-190
+    owasp: 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://cwe.mitre.org/data/definitions/190.html
+    technology:
+    - cpp
+- id: vuln-tensorflow-68867bf0
+  pattern: 'const NodeDef* $VAR;
+
+    '
+  pattern-not: 'const NodeDef* $VAR = nullptr;
+
+    '
+  languages:
+  - cpp
+  message: 'Uninitialized pointer variables can lead to undefined behavior and potential
+    security vulnerabilities. Always initialize pointer variables to nullptr when
+    declaring them to ensure they have a defined state and prevent accidental use
+    of uninitialized memory. In this case, the NodeDef pointer was declared without
+    initialization, which could lead to undefined behavior if used before assignment.
+    The fix adds initialization to nullptr.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/68867bf01239d9e1048f98cbad185bf4761bedd3
+    category: security
+    cwe:
+    - CWE-908
+    owasp: A1:2017-Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/908.html
+    - https://wiki.sei.cmu.edu/confluence/display/c/EXP33-C.+Do+not+read+uninitialized+memory
+    technology:
+    - cpp
+- id: vuln-tensorflow-8a513cec
+  pattern: 'DCHECK($VAR != nullptr);
+
+    '
+  pattern-not: "if ($VAR == nullptr) {\n  return Status($ERROR, $MESSAGE);\n}\n"
+  languages:
+  - cpp
+  message: 'Use of DCHECK without proper null pointer validation can lead to crashes
+    or undefined behavior if the check fails in production builds. Replace DCHECK
+    with explicit null pointer validation and return an appropriate error status.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/8a513cec4bec15961fbfdedcaa5376522980455c
+    category: security
+    cwe:
+    - CWE-476
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp
+- id: vuln-tensorflow-c2b31ff2
+  pattern: "DCHECK($SET.find($NAME) == $SET.end())\n  << \"AttrDef names must be unique,\
+    \ but '\" << $NAME\n  << \"' appears more than once\";\n"
+  pattern-not: "if ($SET.find($NAME) != $SET.end()) {\n  LOG(ERROR) << \"AttrDef names\
+    \ must be unique, but '\" << $NAME\n             << \"' appears more than once\"\
+    ;\n}\n"
+  languages:
+  - cpp
+  message: 'Using DCHECK for uniqueness validation is unsafe as it''s only active
+    in debug builds.
+
+    This can lead to undetected duplicate AttrDef names in production.
+
+    Replace DCHECK with proper error logging using LOG(ERROR) to ensure validation
+    in all builds.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/c2b31ff2d3151acb230edc3f5b1832d2c713a9e0
+    category: security
+    cwe:
+    - CWE-754
+    owasp:
+    - A10:2021-Server-Side Request Forgery (SSRF)
+    references:
+    - https://google.github.io/styleguide/cppguide.html#CHECK_DCHECK_and_NULL
+    technology:
+    - cpp
+- id: vuln-tensorflow-3218043d
+  pattern: 'ConvolutionDimensions $DIMS = OpDimensionsFromInputs($INPUTS, $OP_INFO,
+    $FOUND_UNKNOWN_SHAPES);
+
+    '
+  pattern-not: 'TF_ASSIGN_OR_RETURN(ConvolutionDimensions $DIMS, OpDimensionsFromInputs($INPUTS,
+    $OP_INFO, $FOUND_UNKNOWN_SHAPES));
+
+    '
+  languages:
+  - cpp
+  message: 'Direct assignment of OpDimensionsFromInputs without error handling can
+    lead to unhandled errors. This can cause undefined behavior or crashes if the
+    input dimensions are invalid. Use TF_ASSIGN_OR_RETURN to properly handle potential
+    errors from OpDimensionsFromInputs.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/3218043d6d3a019756607643cf65574fbfef5d7a
+    category: security
+    cwe:
+    - CWE-703
+    owasp: A10:2021 - Server-Side Request Forgery
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/status-or
+    technology:
+    - cpp
+- id: vuln-tensorflow-27b41736
+  pattern: "[](int $START, int $LIMIT) {\n  ...\n}\n"
+  pattern-not: "[](int64 $START, int64 $LIMIT) {\n  ...\n}\n"
+  languages:
+  - cpp
+  message: 'Potential integer overflow vulnerability detected. The lambda function
+    parameters
+
+    are using ''int'' type instead of ''int64'' which could lead to integer overflow
+
+    in large-scale computations. Use ''int64'' type instead to prevent this.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/27b417360cbd671ef55915e4bb6bb06af8b8a832
+    category: security
+    cwe:
+    - CWE-190
+    owasp:
+    - A2:2021-Cryptographic Failures
+    references:
+    - https://en.wikipedia.org/wiki/Integer_overflow
+    - https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow
+    technology:
+    - cpp
+- id: vuln-tensorflow-cd31fd0c
+  pattern: 'const TfLiteTensor* $INPUT = GetInput($CONTEXT, $NODE, $INDEX);
+
+    '
+  pattern-not: 'const TfLiteTensor* $INPUT;
+
+    TF_LITE_ENSURE_OK($CONTEXT, GetInputSafe($CONTEXT, $NODE, $INDEX, &$INPUT));
+
+    '
+  languages:
+  - cpp
+  message: 'The code directly uses `GetInput` to retrieve a tensor without checking
+    for errors, which can lead to null pointer dereferences or undefined behavior
+    if the tensor retrieval fails. This vulnerability can cause crashes or security
+    issues in the application. Always use `GetInputSafe` with error handling (`TF_LITE_ENSURE_OK`)
+    to ensure the tensor is retrieved safely.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/cd31fd0ce0449a9e0f83dcad08d6ed7f1d6bef3f
+    category: security
+    cwe:
+    - CWE-476
+    owasp:
+    - 'A9: Using Components with Known Vulnerabilities'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/cd31fd0ce0449a9e0f83dcad08d6ed7f1d6bef3f
+    technology:
+    - cpp
+- id: vuln-tensorflow-e7f49757
+  pattern: 'Tensor $TENSOR($TYPE, TensorShape($SHAPE));
+
+    '
+  pattern-not: 'Tensor $TENSOR;
+
+    OP_REQUIRES_OK($CTX, $CTX->allocate_temp($TYPE, TensorShape($SHAPE), &$TENSOR));
+
+    '
+  languages:
+  - cpp
+  message: "Direct Tensor initialization without error checking can lead to resource\
+    \ allocation failures going undetected. \nUse OP_REQUIRES_OK with allocate_temp\
+    \ to properly handle allocation errors.\nThis vulnerability could cause undefined\
+    \ behavior or crashes when memory allocation fails.\n"
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/e7f497570abb6b4ae5af4970620cd880e4c0c904
+    category: security
+    cwe:
+    - CWE-476
+    - CWE-703
+    owasp: A9:2017-Using Components with Known Vulnerabilities
+    technology:
+    - cpp
+- id: vuln-tensorflow-abcced05
+  pattern: 'std::unique_ptr<tensorflow::Tensor> $TENSOR(new tensorflow::Tensor($TYPE,
+    $SHAPE));
+
+    '
+  pattern-not: 'std::unique_ptr<tensorflow::Tensor> $TENSOR(new tensorflow::Tensor);
+
+    Status $STATUS = tensorflow::Tensor::BuildTensor($TYPE, $SHAPE, $TENSOR.get());
+
+    if (!$STATUS.ok()) return $STATUS;
+
+    '
+  languages:
+  - cpp
+  message: 'Directly constructing a Tensor without validating the DataType can lead
+    to crashes or undefined behavior when invalid or unsupported types are provided.
+    Use the BuildTensor factory method instead, which safely validates the type and
+    returns an error if it is invalid or unsupported.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/abcced051cb1bd8fb05046ac3b6023a7ebcc4578
+    category: security
+    cwe:
+    - CWE-20
+    owasp: 'A1: Injection'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/abcced051cb1bd8fb05046ac3b6023a7ebcc4578
+    technology:
+    - cpp
+- id: vuln-tensorflow-40adbe4d
+  pattern: 'const auto $VAR = $CTX->input($IDX).flat<$TYPE>();
+
+    ...
+
+    $FUNC($CTX, $VAR, ...);
+
+    '
+  pattern-not: 'const Tensor& $VAR = $CTX->input($IDX);
+
+    const auto $VAR_FLAT = $VAR.flat<$TYPE>();
+
+    ...
+
+    $FUNC($CTX, $VAR_FLAT, ...);
+
+    '
+  languages:
+  - cpp
+  message: 'Directly using flat() on input tensor without validation can lead to security
+    issues.
+
+    The input tensor should be properly validated before use to ensure it matches
+    expected
+
+    dimensions and types. Always validate sparse tensors using ValidateSparseTensor()
+
+    before accessing their contents.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/40adbe4dd15b582b0210dfbf40c243a62f5119fa
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    technology:
+    - cpp
+    - tensorflow
+- id: vuln-tensorflow-eb921122
+  pattern: 'return Gather<$TYPE, $INDEX_TYPE>(*$PARAMS, $INPUT, $POSITIONS, $OUTPUT);
+
+    '
+  pattern-not: 'return Gather<$TYPE, $INDEX_TYPE>($CONTEXT, *$PARAMS, $INPUT, $POSITIONS,
+    $OUTPUT);
+
+    '
+  languages:
+  - cpp
+  message: 'The Gather function is missing a context parameter, which is essential
+    for error handling and validation. This can lead to unhandled errors and potential
+    security vulnerabilities, such as out-of-bounds access or invalid memory operations.
+    Always include the context parameter to ensure proper error checking and validation.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/eb921122119a6b6e470ee98b89e65d721663179d
+    category: security
+    cwe:
+    - 'CWE-20: Improper Input Validation'
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://github.com/tensorflow/tensorflow/commit/eb921122119a6b6e470ee98b89e65d721663179d
+    technology:
+    - cpp
+- id: vuln-tensorflow-698e0151
+  pattern: "const $TYPE* $VAR = reinterpret_cast<const $TYPE*>($EXPR.data());\nif\
+    \ ($EXPR.size() > $LENGTH) {\n  memcpy($DEST, $VAR, $LENGTH);\n} else {\n  memcpy($DEST,\
+    \ $VAR, $EXPR.size());\n}\n$DEST += $LENGTH;\n"
+  pattern-not: 'const auto $VAR = std::min($EXPR.size(), static_cast<size_t>($LENGTH));
+
+    memcpy($DEST, $EXPR.data(), $VAR);
+
+    $DEST += $WIDTH;
+
+    '
+  languages:
+  - cpp
+  message: 'Found unsafe use of memcpy without proper bounds checking. This can lead
+    to buffer overflows if the length of the source data exceeds the destination buffer
+    size. Always use std::min to ensure the copy length does not exceed the destination
+    buffer size.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/698e01511f62a3c185754db78ebce0eee1f0184d
+    category: security
+    cwe:
+    - CWE-120
+    owasp:
+    - A1: Injection
+    references:
+    - https://cwe.mitre.org/data/definitions/120.html
+    technology:
+    - cpp
+- id: vulnerable-tensorflow-verifier
+  pattern: "if (!Verify($BUFFER, $SIZE)) {\n  ...\n}\n"
+  pattern-not: "if (!::tflite::Verify($BUFFER, $SIZE, $RESOLVER, $REPORTER)) {\n \
+    \ ...\n}\n"
+  languages:
+  - cpp
+  message: 'The TensorFlow Lite model verifier is being called without the required
+    resolver and error reporter arguments.
+
+    This can lead to incorrect verification of model buffers and potentially allow
+    malformed models to pass verification.
+
+    Always use the full Verify() function with both resolver and error reporter arguments.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/41335abb46f80ca644b5738550daef6136ba5476
+    category: security
+    cwe: 'CWE-345: Insufficient Verification of Data Authenticity'
+    owasp: 'OWASP Top 10 2021 A05: Security Misconfiguration'
+    technology: cpp
+- id: vuln-tensorflow-f6fde895
+  pattern: "OP_REQUIRES(\n    $CTX, $A_INDICES->dim_size(1) == $B_INDICES->dim_size(1),\n\
+    \    errors::InvalidArgument(\n        \"Indices' dimensions do not match: got\
+    \ \", $A_INDICES->dim_size(1),\n        \" and \", $B_INDICES->dim_size(1), \"\
+    \ for the second dimension.\"));\nconst int $NUM_DIMS = $A_INDICES->dim_size(1);\n"
+  pattern-not: "const int $NUM_DIMS = $A_INDICES->dim_size(1);\nOP_REQUIRES(\n   \
+    \ $CTX, $A_SHAPE->NumElements() == $NUM_DIMS,\n    errors::InvalidArgument(\"\
+    Second dimension of a_indices and length of \"\n                          \"a_shape\
+    \ must match, got \",\n                          $NUM_DIMS, \" and \", $A_SHAPE->NumElements()));\n\
+    OP_REQUIRES($CTX, $NUM_DIMS > 0,\n            errors::InvalidArgument(\"Tensors\
+    \ must not be empty\"));\n"
+  languages:
+  - cpp
+  message: 'Missing validation of tensor dimensions can lead to inconsistent tensor
+    operations.
+
+    The vulnerable code checks dimension matching between two tensors but doesn''t
+    validate
+
+    that the dimensions are valid and non-empty. This can cause undefined behavior
+    or
+
+    crashes when processing empty or malformed tensors.
+
+    Add validation for tensor dimensions and ensure tensors are not empty before proceeding.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/tensorflow/tensorflow/commit/f6fde895ef9c77d848061c0517f19d0ec2682f3a
+    category: security
+    cwe:
+    - 'CWE-125: Out-of-bounds Read'
+    - 'CWE-682: Incorrect Calculation'
+    owasp: A1:2017-Injection
+    references:
+    - https://www.tensorflow.org/api_docs/cc/class/tensorflow/tensor
+    technology:
+    - cpp
+    - tensorflow

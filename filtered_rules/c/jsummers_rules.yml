@@ -1,0 +1,35 @@
+rules:
+- id: vuln-imageworsener-62bfbfb1
+  pattern: 'if(!ret) return FALSE;
+
+    ...
+
+    if(bytesread<1) return FALSE;
+
+    '
+  pattern-not: "if((!ret) || (bytesread<1)) {\n  iw_set_error(rctx->ctx, \"Unexpected\
+    \ end of file\");\n  rctx->buffer[0] = 0xffU;\n  rctx->buffer[1] = 0xd9U;\n  rctx->pub.bytes_in_buffer\
+    \ = 2;\n}\nelse {\n  rctx->pub.bytes_in_buffer = bytesread;\n}\n"
+  languages:
+  - c
+  message: 'Detected unsafe handling of JPEG read operations that could lead to truncated
+
+    or malformed image processing. The original code fails silently when read operations
+
+    return zero bytes or fail, which could lead to incomplete image processing or
+
+    undefined behavior. The fix adds proper error handling and ensures a valid EOI
+
+    marker is returned in case of read errors.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/jsummers/imageworsener/commit/62bfbfb1527953312f8cc10901fccba5d20e3e93
+    category: security
+    cwe:
+    - 'CWE-252: Unchecked Return Value'
+    owasp:
+    - 'A6: Security Misconfiguration'
+    technology:
+    - c

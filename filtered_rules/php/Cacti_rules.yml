@@ -1,0 +1,147 @@
+rules:
+- id: vuln-cacti-0730ce38
+  pattern: '$_SESSION[''custom_error''] = __(''The search term "%s" is not valid.
+    Error is %s'', get_nfilter_request_var($VAR), $VAR2)
+
+    '
+  pattern-not: '$_SESSION[''custom_error''] = __(''The search term "%s" is not valid.
+    Error is %s'', html_escape(get_nfilter_request_var($VAR)), html_escape($VAR2))
+
+    '
+  languages:
+  - php
+  message: 'The code directly uses `get_nfilter_request_var` without escaping the
+    output, which can lead to XSS vulnerabilities. Always use `html_escape` to sanitize
+    user input before displaying it in HTML context.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/0730ce38735d146de098fc450c4420c1a3fbdf95
+    category: security
+    cwe:
+    - CWE-79
+    owasp:
+    - 'A7: Cross-Site Scripting (XSS)'
+    technology:
+    - php
+- id: vuln-cacti-cd8618f5
+  pattern: 'json_decode(file_get_contents($CONFIG[''input_whitelist'']))
+
+    '
+  pattern-not: 'json_decode(file_get_contents($CONFIG[''input_whitelist'']), true)
+
+    '
+  languages:
+  - php
+  message: 'The function `json_decode` is being used without the second parameter
+    `true`, which means it will decode JSON objects as PHP objects instead of associative
+    arrays. This can lead to potential security issues, especially when dealing with
+    untrusted input, as it may allow for object injection or unexpected behavior.
+    Always use `json_decode` with the second parameter set to `true` to ensure JSON
+    objects are decoded as associative arrays.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/cd8618f5fdabdf7307d70ba684c1cc7009c573dc
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A8:2017-Insecure Deserialization
+    technology:
+    - php
+- id: vuln-cacti-adf22134
+  pattern: 'unserialize(stripslashes($VAR))
+
+    '
+  pattern-not: 'preg_match(''/^a:[0-9]+:{/'', $VAR) && !preg_match(''/(^|;|{|})O:\+?[0-9]+:"/'',
+    $VAR)
+
+    ...
+
+    unserialize($VAR)
+
+    '
+  languages:
+  - php
+  message: 'Unsafe deserialization detected. The code directly deserializes user input
+    without proper validation, which can lead to object injection vulnerabilities.
+    An attacker could craft malicious serialized data to execute arbitrary code. Always
+    validate the serialized string format before deserialization, as shown in the
+    patch.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/adf221344359f5b02b8aed43dfb6b33ae5d708c8
+    category: security
+    cwe:
+    - CWE-502
+    owasp:
+    - A08:2021 - Software and Data Integrity Failures
+    references:
+    - https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization
+    technology:
+    - php
+- id: vuln-cacti-fd93c6e4
+  pattern: '$sql_having .= ($i == 0 ? '''':'' OR '') . ''`'' . implode(''`.`'', explode(''.'',
+    $column[''field_name''])) . ''`'' . '' LIKE "%'' . $filter . ''%"''
+
+    '
+  pattern-not: '$sql_having .= ($i == 0 ? '''':'' OR '') . ''`'' . implode(''`.`'',
+    explode(''.'', $column[''field_name''])) . ''`'' . '' LIKE '' . db_qstr(''%''
+    . $filter . ''%'')
+
+    '
+  languages:
+  - php
+  message: 'Detected a SQL injection vulnerability due to improper sanitization of
+    user input in a SQL query. The vulnerability occurs when user-controlled input
+    is directly concatenated into a SQL query without proper escaping, allowing an
+    attacker to manipulate the query. To fix this, use parameterized queries or proper
+    escaping functions like `db_qstr`.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/fd93c6e47651958b77c3bbe6a01fff695f81e886
+    category: security
+    cwe:
+    - CWE-89
+    owasp:
+    - 'A1: Injection'
+    references:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+    technology:
+    - php
+- id: vuln-cacti-fea919e8
+  pattern: '$VAR = $PATH . ''/user_'' . session_id() . $SUFFIX;
+
+    '
+  pattern-not: '$VAR = $PATH . ''/user_'' . hash(''sha256'', session_id()) . $SUFFIX;
+
+    '
+  languages:
+  - php
+  message: 'The use of `session_id()` directly in file paths can lead to security
+    vulnerabilities, such as session hijacking or path traversal attacks. The session
+    ID should be hashed before being used in file paths to prevent these risks. Replace
+    `session_id()` with `hash(''sha256'', session_id())` to secure the code.
+
+    '
+  severity: ERROR
+  metadata:
+    source-url: github.com/Cacti/cacti/commit/fea919e8fe05bb730c802054661fd3a7ec029784
+    category: security
+    cwe:
+    - CWE-384
+    - CWE-22
+    owasp:
+    - 'A1: Injection'
+    - 'A2: Broken Authentication'
+    references:
+    - https://owasp.org/www-project-top-ten/
+    technology:
+    - php
