@@ -53,7 +53,7 @@ pip install -r requirements.txt
 pip install semgrep
 ```
 
-5. Download the oreFixes dataset:
+5. Download the MoreFixes dataset:
 ```bash
 wget https://zenodo.org/records/13983082/files/cvedataset-patches.zip
 unzip cvedataset-patches.zip -d cvedataset-patches
