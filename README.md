@@ -1,8 +1,8 @@
-# AutoGrep
+# Autogrep
 
-AutoGrep is a tool for automatically generating and filtering Semgrep rules from vulnerability patches. It addresses a critical need in the security tooling ecosystem that emerged after Semgrep announced that their official rules are no longer available under permissive licenses. This change led to the creation of OpenGrep ([opengrep/opengrep](https://github.com/opengrep/opengrep)), a community fork supported by several security vendors.
+Autogrep is a tool for automatically generating and filtering Semgrep rules from vulnerability patches. It addresses a critical need in the security tooling ecosystem that emerged after Semgrep announced that their official rules are no longer available under permissive licenses. This change led to the creation of OpenGrep ([opengrep/opengrep](https://github.com/opengrep/opengrep)), a community fork supported by several security vendors.
 
-AutoGrep bridges the gap by automating the creation and maintenance of high-quality security rules using Large Language Models (LLMs). Instead of relying on manual rule curation, which is time-consuming and requires constant maintenance, AutoGrep automatically generates rules from known vulnerability fixes and validates them for accuracy.
+Autogrep bridges the gap by automating the creation and maintenance of high-quality security rules using Large Language Models (LLMs). Instead of relying on manual rule curation, which is time-consuming and requires constant maintenance, Autogrep automatically generates rules from known vulnerability fixes and validates them for accuracy.
 
 The project leverages several key resources:
 - [patched-codes/semgrep-rules](https://github.com/patched-codes/semgrep-rules): A collection of permissively licensed Semgrep rules used as a foundation
@@ -29,7 +29,7 @@ The project leverages several key resources:
 
 1. Clone the repository and the initial rule set:
 ```bash
-# Clone AutoGrep
+# Clone Autogrep
 git clone https://github.com/yourusername/autogrep.git
 cd autogrep
 
