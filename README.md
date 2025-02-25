@@ -1,6 +1,6 @@
 # Autogrep
 
-Autogrep is a tool for automatically generating and filtering Semgrep rules from vulnerability patches. It addresses a critical need in the security tooling ecosystem that emerged after Semgrep announced that their official rules are no longer available under permissive licenses. This change led to the creation of OpenGrep ([opengrep/opengrep](https://github.com/opengrep/opengrep)), a community fork supported by several security vendors.
+Autogrep is a tool for automatically generating and filtering Semgrep rules from vulnerability patches. It addresses a critical need in the security tooling ecosystem that emerged after Semgrep announced that their official rules are no longer available under permissive licenses. This change led to the creation of Opengrep ([opengrep/opengrep](https://github.com/opengrep/opengrep)), a community fork supported by several security vendors.
 
 Autogrep bridges the gap by automating the creation and maintenance of high-quality security rules using Large Language Models (LLMs). Instead of relying on manual rule curation, which is time-consuming and requires constant maintenance, Autogrep automatically generates rules from known vulnerability fixes and validates them for accuracy.
 
@@ -112,7 +112,7 @@ autogrep/
 
 ## Output
 
-The final filtered rules will be available in the `filtered_rules` directory, organized by programming language. These rules can be used with either Semgrep or OpenGrep projects:
+The final filtered rules will be available in the `filtered_rules` directory, organized by programming language. These rules can be used with either Semgrep or Opengrep projects:
 
 ```
 filtered_rules/
@@ -131,7 +131,7 @@ filtered_rules/
 semgrep --config filtered_rules/python/repo_rules.yml path/to/your/code
 ```
 
-2. With OpenGrep:
+2. With Opengrep:
 ```bash
 opengrep scan --rules filtered_rules/python/repo_rules.yml path/to/your/code
 ```
