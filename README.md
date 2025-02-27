@@ -135,3 +135,6 @@ semgrep --config filtered_rules/python/repo_rules.yml path/to/your/code
 ```bash
 opengrep scan --rules filtered_rules/python/repo_rules.yml path/to/your/code
 ```
+## Articles
+
+- [Autogrep: Automated Generation and Filtering of Semgrep Rules from Vulnerability Patches](https://lambdasec.github.io/AutoGrep-Automated-Generation-and-Filtering-of-Semgrep-Rules-from-Vulnerability-Patches/)
