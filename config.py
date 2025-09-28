@@ -13,6 +13,7 @@ class Config:
     max_retries: int = 8
     openrouter_api_key: str = os.getenv("OPENROUTER_API_KEY")
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    log_rules_csv: bool = False
     cache_manager: CacheManager = field(init=False)
 
     def __post_init__(self):
