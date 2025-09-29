@@ -78,6 +78,51 @@ python main.py --patches-dir /path/to/patches --output-dir generated_rules
 python rule_filter.py --input-dir generated_rules --output-dir filtered_rules
 ```
 
+### Model Configuration
+
+Autogrep uses configurable LLM models for two main tasks:
+- **Rule Generation**: Creating Semgrep rules from vulnerability patches
+- **Rule Validation**: Evaluating rule quality and filtering out project-specific or low-quality rules
+
+#### Using Different Models
+
+You can specify different models using command line arguments:
+
+```bash
+# Use different models for generation and validation
+python main.py --generation-model "anthropic/claude-3-sonnet" --validation-model "openai/gpt-4"
+
+# Use a specific model for rule filtering
+python rule_filter.py --validation-model "anthropic/claude-3-haiku"
+```
+
+#### Supported Models
+
+Any model available through OpenRouter can be used. Popular options include:
+
+- **OpenAI**: `openai/gpt-4`, `openai/gpt-4-turbo`, `openai/gpt-3.5-turbo`
+- **Anthropic**: `anthropic/claude-3-opus`, `anthropic/claude-3-sonnet`, `anthropic/claude-3-haiku`
+- **Google**: `google/gemini-pro`, `google/gemini-pro-vision`
+- **Meta**: `meta-llama/llama-3-70b-instruct`, `meta-llama/llama-3-8b-instruct`
+- **DeepSeek**: `deepseek/deepseek-chat` (default), `deepseek/deepseek-coder`
+
+#### Configuration File Example
+
+For easier management, you can create a custom configuration file:
+
+```python
+# config_local.py
+from config import Config
+
+def get_custom_config():
+    return Config(
+        generation_model="anthropic/claude-3-sonnet",  # Better for complex rule generation
+        validation_model="anthropic/claude-3-haiku",   # Faster for validation tasks
+        max_retries=5,  # Increase retries for better success rate
+        # ... other configuration options
+    )
+```
+
 ### Command Line Arguments
 
 #### Main Script (main.py)
@@ -86,12 +131,16 @@ python rule_filter.py --input-dir generated_rules --output-dir filtered_rules
 - `--repos-cache-dir`: Directory for cached repositories (default: "cache/repos")
 - `--max-files-changed`: Maximum number of files changed in patch (default: 1)
 - `--max-retries`: Maximum number of LLM generation attempts (default: 3)
+- `--generation-model`: LLM model for rule generation (default: "deepseek/deepseek-chat")
+- `--validation-model`: LLM model for rule validation (default: "deepseek/deepseek-chat")
+- `--openrouter-api-key`: OpenRouter API key (can also be set via OPENROUTER_API_KEY env var)
 - `--log-level`: Logging level (default: "INFO")
 
 #### Rule Filter Script (rule_filter.py)
 - `--input-dir`: Directory containing generated rules (default: "generated_rules")
 - `--output-dir`: Directory for filtered rules (default: "filtered_rules")
 - `--embedding-model`: Sentence-transformers model for embeddings (default: "all-MiniLM-L6-v2")
+- `--validation-model`: LLM model for rule validation and quality evaluation (default: "deepseek/deepseek-chat")
 - `--log-level`: Logging level (default: "INFO")
 
 ## Project Structure

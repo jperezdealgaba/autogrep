@@ -11,6 +11,8 @@ import argparse
 import logging
 import os
 import json
+import csv
+from datetime import datetime
 
 class AutoGrep:
     def __init__(self, config: Config):
@@ -20,6 +22,56 @@ class AutoGrep:
         self.llm_client = LLMClient(config)
         self.git_manager = GitManager(config)
         self.rule_validator = RuleValidator(config)
+        
+        # Initialize CSV logging if enabled
+        if self.config.log_rules_csv:
+            self.csv_file = Path("stats/generated_rules_log.csv")
+            self._init_csv_log()
+            logging.info("CSV logging enabled - successful rule generations will be logged to stats/generated_rules_log.csv")
+        else:
+            self.csv_file = None
+            logging.info("CSV logging disabled - use --log-rules-csv to enable rule generation tracking")
+        
+    def _init_csv_log(self):
+        """Initialize CSV log file with headers if it doesn't exist."""
+        # Create stats directory if it doesn't exist
+        self.csv_file.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Create CSV file with headers if it doesn't exist
+        if not self.csv_file.exists():
+            with open(self.csv_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow([
+                    'timestamp', 
+                    'patch_file', 
+                    'rule_id', 
+                    'rule_filename', 
+                    'language'
+                ])
+            logging.info(f"Created CSV log file: {self.csv_file}")
+    
+    def _log_successful_rule_generation(self, patch_file: Path, rule: dict, language: str):
+        """Log successful rule generation to CSV file."""
+        # Only log if CSV logging is enabled
+        if not self.config.log_rules_csv or not self.csv_file:
+            return
+            
+        try:
+            rule_filename = f"{language}/{rule['id']}.yml"
+            timestamp = datetime.now().isoformat()
+            
+            with open(self.csv_file, 'a', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow([
+                    timestamp,
+                    patch_file.name,
+                    rule['id'],
+                    rule_filename,
+                    language
+                ])
+            logging.debug(f"Logged successful rule generation to CSV: {patch_file.name} -> {rule_filename}")
+        except Exception as e:
+            logging.error(f"Failed to log rule generation to CSV: {e}")
         
     def process_patch(self, patch_file: Path) -> Optional[Tuple[dict, PatchInfo]]:
         """Process a single patch file with improved rule checking."""
@@ -124,6 +176,8 @@ class AutoGrep:
                         language = patch_info.file_changes[0].language
                         # Store the rule immediately after generation
                         self.rule_manager.add_generated_rule(language, rule)
+                        # Log the successful rule generation to CSV
+                        self._log_successful_rule_generation(patch_file, rule, language)
                         rules.append(rule)
                         logging.info(f"Successfully stored rule for {patch_file} in {language}")
             except Exception as e:
@@ -237,10 +291,28 @@ def parse_args():
     )
     
     parser.add_argument(
+        "--generation-model",
+        default="deepseek/deepseek-chat",
+        help="LLM model for rule generation"
+    )
+    
+    parser.add_argument(
+        "--validation-model",
+        default="deepseek/deepseek-chat",
+        help="LLM model for rule validation"
+    )
+    
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         help="Logging level"
+    )
+    
+    parser.add_argument(
+        "--log-rules-csv",
+        action="store_true",
+        help="Enable CSV logging of successfully generated rules to stats/generated_rules_log.csv"
     )
     
     args = parser.parse_args()
@@ -268,7 +340,10 @@ def main():
         max_files_changed=args.max_files_changed,
         max_retries=args.max_retries,
         openrouter_api_key=args.openrouter_api_key,
-        openrouter_base_url=args.openrouter_base_url
+        openrouter_base_url=args.openrouter_base_url,
+        generation_model=args.generation_model,
+        validation_model=args.validation_model
+        log_rules_csv=args.log_rules_csv
     )
     
     # Create necessary directories

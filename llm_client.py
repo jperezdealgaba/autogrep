@@ -123,7 +123,7 @@ class LLMClient:
         
         try:
             response = self.client.chat.completions.create(
-                model="deepseek/deepseek-chat",
+                model=self.config.generation_model,
                 messages=[
                     {"role": "system", "content": """You generate Semgrep rules in YAML format. 
     Return only the raw YAML content without any markdown formatting or additional text.
