@@ -61,7 +61,7 @@ unzip cvedataset-patches.zip -d cvedataset-patches
 
 6. Set up your OpenRouter API key:
 ```bash
-export OPENROUTER_API_KEY=your_api_key_here
+    export OPENROUTER_API_KEY=your_api_key_here
 ```
 
 ## Usage
@@ -70,12 +70,24 @@ The project consists of two main components:
 
 1. Rule Generation (`main.py`):
 ```bash
+# Basic usage
 python main.py --patches-dir /path/to/patches --output-dir generated_rules
+
+# With custom models and CSV logging
+python main.py --patches-dir /path/to/patches --output-dir generated_rules \
+  --generation-model "openai/gpt-4" \
+  --validation-model "anthropic/claude-3-sonnet" \
+  --log-rules-csv
 ```
 
 2. Rule Filtering (`rule_filter.py`):
 ```bash
+# Basic usage
 python rule_filter.py --input-dir generated_rules --output-dir filtered_rules
+
+# With custom validation model
+python rule_filter.py --input-dir generated_rules --output-dir filtered_rules \
+  --validation-model "openai/gpt-4"
 ```
 
 ### Command Line Arguments
@@ -86,12 +98,16 @@ python rule_filter.py --input-dir generated_rules --output-dir filtered_rules
 - `--repos-cache-dir`: Directory for cached repositories (default: "cache/repos")
 - `--max-files-changed`: Maximum number of files changed in patch (default: 1)
 - `--max-retries`: Maximum number of LLM generation attempts (default: 3)
+- `--generation-model`: LLM model for rule generation (default: "deepseek/deepseek-chat")
+- `--validation-model`: LLM model for rule validation (default: "deepseek/deepseek-chat")
+- `--log-rules-csv`: Enable CSV logging of successfully generated rules to stats/generated_rules_log.csv
 - `--log-level`: Logging level (default: "INFO")
 
 #### Rule Filter Script (rule_filter.py)
 - `--input-dir`: Directory containing generated rules (default: "generated_rules")
 - `--output-dir`: Directory for filtered rules (default: "filtered_rules")
 - `--embedding-model`: Sentence-transformers model for embeddings (default: "all-MiniLM-L6-v2")
+- `--validation-model`: LLM model for rule validation (default: "deepseek/deepseek-chat")
 - `--log-level`: Logging level (default: "INFO")
 
 ## Project Structure

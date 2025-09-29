@@ -22,9 +22,10 @@ class RuleStats:
     accepted_rules: int = 0
 
 class RuleFilter:
-    def __init__(self, input_dir: Path, output_dir: Path, model_name: str = 'all-MiniLM-L6-v2'):
+    def __init__(self, input_dir: Path, output_dir: Path, model_name: str = 'all-MiniLM-L6-v2', validation_model: str = 'deepseek/deepseek-chat'):
         self.input_dir = input_dir
         self.output_dir = output_dir
+        self.validation_model = validation_model
         self.client = OpenAI(api_key= os.getenv("OPENROUTER_API_KEY"), base_url="https://openrouter.ai/api/v1")  # Still needed for rule quality evaluation
         self.stats = defaultdict(RuleStats)
         self.embeddings_cache = {}
@@ -175,7 +176,7 @@ First line: ACCEPT or REJECT
 Second line: Brief reason specifically mentioning if it uses project-specific code or standard libraries"""
 
             response = self.client.chat.completions.create(
-                model="deepseek/deepseek-chat",
+                model=self.validation_model,
                 messages=[
                     {"role": "system", "content": "You are a security expert evaluating Semgrep rules."},
                     {"role": "user", "content": prompt}
@@ -299,6 +300,12 @@ def main():
     )
     
     parser.add_argument(
+        "--validation-model",
+        default="deepseek/deepseek-chat",
+        help="LLM model for rule validation"
+    )
+    
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -317,7 +324,7 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     
     # Initialize and run filter
-    rule_filter = RuleFilter(args.input_dir, args.output_dir, args.embedding_model)
+    rule_filter = RuleFilter(args.input_dir, args.output_dir, args.embedding_model, args.validation_model)
     
     # Load rules
     logging.info("Loading rules...")

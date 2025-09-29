@@ -13,6 +13,9 @@ class Config:
     max_retries: int = 8
     openrouter_api_key: str = os.getenv("OPENROUTER_API_KEY")
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    # LLM models for different tasks
+    generation_model: str = "deepseek/deepseek-chat"
+    validation_model: str = "deepseek/deepseek-chat"
     log_rules_csv: bool = False
     cache_manager: CacheManager = field(init=False)
 
