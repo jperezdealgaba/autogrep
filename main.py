@@ -220,8 +220,8 @@ class AutoGrep:
                 self.config.cache_manager.mark_patch_processed(patch_file.name)
                 continue
         
-        # Process different repos in parallel with max 4 workers
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        # Process different repos in parallel
+        with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
             repo_futures = []
             for repo_key, patches in repo_patches.items():
                 future = executor.submit(self._process_repo_patches, patches)
@@ -309,6 +309,13 @@ def parse_args():
         help="Enable CSV logging of successfully generated rules to stats/generated_rules_log.csv"
     )
     
+    parser.add_argument(
+        "--max-workers",
+        type=int,
+        default=2,
+        help="Maximum number of parallel workers for processing patches (default: 2)"
+    )
+    
     args = parser.parse_args()
     
     if not args.openrouter_api_key:
@@ -336,7 +343,9 @@ def main():
         openrouter_api_key=args.openrouter_api_key,
         openrouter_base_url=args.openrouter_base_url,
         generation_model=args.generation_model,
-        log_rules_csv=args.log_rules_csv
+        validation_model=args.validation_model,
+        log_rules_csv=args.log_rules_csv,
+        max_workers=args.max_workers
     )
     
     # Create necessary directories
