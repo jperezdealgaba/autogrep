@@ -25,9 +25,10 @@ class AutoGrep:
         
         # Initialize CSV logging if enabled
         if self.config.log_rules_csv:
-            self.csv_file = Path("stats/generated_rules_log.csv")
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.csv_file = Path(f"stats/generated_rules_log_{timestamp}.csv")
             self._init_csv_log()
-            logging.info("CSV logging enabled - successful rule generations will be logged to stats/generated_rules_log.csv")
+            logging.info(f"CSV logging enabled - successful rule generations will be logged to {self.csv_file}")
         else:
             self.csv_file = None
             logging.info("CSV logging disabled - use --log-rules-csv to enable rule generation tracking")
