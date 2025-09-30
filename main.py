@@ -291,6 +291,12 @@ def parse_args():
     )
     
     parser.add_argument(
+        "--generation-model",
+        default="deepseek/deepseek-chat",
+        help="LLM model for rule generation"
+    )
+    
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -329,6 +335,7 @@ def main():
         max_retries=args.max_retries,
         openrouter_api_key=args.openrouter_api_key,
         openrouter_base_url=args.openrouter_base_url,
+        generation_model=args.generation_model,
         log_rules_csv=args.log_rules_csv
     )
     
