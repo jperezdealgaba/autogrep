@@ -343,7 +343,6 @@ def main():
         openrouter_api_key=args.openrouter_api_key,
         openrouter_base_url=args.openrouter_base_url,
         generation_model=args.generation_model,
-        validation_model=args.validation_model,
         log_rules_csv=args.log_rules_csv,
         max_workers=args.max_workers
     )
