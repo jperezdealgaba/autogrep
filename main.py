@@ -232,9 +232,8 @@ class AutoGrep:
             for future in repo_futures:
                 try:
                     rules = future.result()
-                    for rule in rules:
-                        if rule:
-                            self.rule_manager.add_generated_rule(rule["language"], rule)
+                    # Rules are already stored in _process_repo_patches, just collect results
+                    logging.info(f"Completed processing batch with {len(rules) if rules else 0} rules")
                 except Exception as e:
                     logging.error(f"Error processing repository patches: {e}")
 
