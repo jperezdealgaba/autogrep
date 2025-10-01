@@ -73,11 +73,12 @@ The project consists of two main components:
 # Basic usage
 python main.py --patches-dir /path/to/patches --output-dir generated_rules
 
-# With custom models and CSV logging
+# With custom models, CSV logging, and increased parallelism
 python main.py --patches-dir /path/to/patches --output-dir generated_rules \
   --generation-model "openai/gpt-4" \
   --validation-model "anthropic/claude-3-sonnet" \
-  --log-rules-csv
+  --log-rules-csv \
+  --max-workers 4
 ```
 
 2. Rule Filtering (`rule_filter.py`):
@@ -101,6 +102,7 @@ python rule_filter.py --input-dir generated_rules --output-dir filtered_rules \
 - `--generation-model`: LLM model for rule generation (default: "deepseek/deepseek-chat")
 - `--validation-model`: LLM model for rule validation (default: "deepseek/deepseek-chat")
 - `--log-rules-csv`: Enable CSV logging of successfully generated rules to stats/generated_rules_log.csv
+- `--max-workers`: Maximum number of parallel workers for processing patches (default: 2)
 - `--log-level`: Logging level (default: "INFO")
 
 #### Rule Filter Script (rule_filter.py)
