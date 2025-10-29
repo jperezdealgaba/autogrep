@@ -117,9 +117,13 @@ class LLMClient:
         
         return rule
 
-    def generate_rule(self, patch_info: PatchInfo, error_feedback: Optional[str] = None) -> Optional[dict]:
+    def generate_rule(self, patch_info: PatchInfo, error_feedback: Optional[str] = None, 
+                      attempt_number: int = 1, max_attempts: int = 3, 
+                      previous_attempts: list = None) -> Optional[dict]:
         """Generate a Semgrep rule using the LLM with improved validation."""
-        prompt = self._build_prompt(patch_info, error_feedback)
+        if previous_attempts is None:
+            previous_attempts = []
+        prompt = self._build_prompt(patch_info, error_feedback, attempt_number, max_attempts, previous_attempts)
         
         try:
             response = self.client.chat.completions.create(
@@ -173,8 +177,12 @@ class LLMClient:
             logging.error(f"Error generating rule: {e}")
             return None
         
-    def _build_prompt(self, patch_info: PatchInfo, error_feedback: Optional[str] = None) -> str:
+    def _build_prompt(self, patch_info: PatchInfo, error_feedback: Optional[str] = None,
+                     attempt_number: int = 1, max_attempts: int = 3, 
+                     previous_attempts: list = None) -> str:
         """Build an enhanced prompt for rule generation with examples and detailed guidance."""
+        if previous_attempts is None:
+            previous_attempts = []
         # Combine all file changes with context
         all_changes = []
         for file_change in patch_info.file_changes:
@@ -334,7 +342,82 @@ class LLMClient:
 
     Remember to adapt the patterns to match the specific vulnerability in the patch while keeping them general enough to catch variations of the same issue."""
 
-        if error_feedback:
+        # Add enhanced retry feedback if enabled
+        if self.config.enhanced_retry_feedback and attempt_number > 1 and previous_attempts:
+            prompt += f"\n\n{'='*60}\n=== RETRY ATTEMPT {attempt_number} OF {max_attempts} ===\n{'='*60}\n"
+            prompt += f"This is retry attempt #{attempt_number}. Previous {len(previous_attempts)} attempt(s) failed validation.\n"
+            
+            # Show all previous failed attempts
+            prompt += f"\n{'='*60}\n"
+            prompt += "HISTORY OF PREVIOUS ATTEMPTS:\n"
+            prompt += f"{'='*60}\n"
+            
+            for prev_attempt in previous_attempts:
+                attempt_num = prev_attempt['attempt']
+                prev_rule = prev_attempt['rule']
+                prev_error = prev_attempt['error']
+                
+                prompt += f"\n--- Attempt #{attempt_num} ---\n"
+                
+                if prev_rule:
+                    prompt += "Generated Rule:\n"
+                    prompt += "```yaml\n"
+                    prompt += yaml.dump(prev_rule, default_flow_style=False, sort_keys=False)
+                    prompt += "```\n"
+                else:
+                    prompt += "Failed to generate valid rule structure.\n"
+                
+                prompt += f"\nError: {prev_error}\n"
+                prompt += "-" * 40 + "\n"
+            
+            # Add current error feedback with specific suggestions
+            if error_feedback:
+                prompt += f"\n{'='*60}\n"
+                prompt += "ANALYSIS OF FAILURES:\n"
+                prompt += f"{'='*60}\n"
+                
+                # Provide specific suggestions based on error type
+                if "failed to detect vulnerability" in error_feedback.lower():
+                    prompt += "\nPATTERN TOO SPECIFIC - Common Issues:\n"
+                    prompt += "- Your pattern may be TOO SPECIFIC. The vulnerable code exists but your pattern doesn't match it.\n"
+                    prompt += "- Use more GENERAL metavariables (e.g., $VAR, $FUNC, $OBJ instead of specific names)\n"
+                    prompt += "- Remove overly restrictive pattern-inside or pattern-not-inside constraints\n"
+                    prompt += "- Check if your pattern syntax matches the actual code structure\n"
+                    prompt += "- Try simpler patterns that focus on the core vulnerability\n"
+                elif "incorrectly detected" in error_feedback.lower() or "fixed version" in error_feedback.lower():
+                    prompt += "\nPATTERN TOO BROAD - Common Issues:\n"
+                    prompt += "- Your pattern is TOO BROAD. It matches both vulnerable and fixed code.\n"
+                    prompt += "- Add pattern-not clauses to exclude the fixed version's pattern\n"
+                    prompt += "- Make your pattern MORE SPECIFIC to only match the vulnerable variant\n"
+                    prompt += "- Look at what changed in the patch and ensure your pattern EXCLUDES the fix\n"
+                    prompt += "- Consider using pattern-not-inside to exclude safe contexts\n"
+                elif "invalidruleschema" in error_feedback.lower() or "invalidrule" in error_feedback.lower():
+                    prompt += "\nSCHEMA/SYNTAX ERROR - Common Issues:\n"
+                    prompt += "- Check that all REQUIRED fields are present: id, pattern, message, severity, languages\n"
+                    prompt += "- Verify YAML syntax is correct (proper indentation, no tabs)\n"
+                    prompt += "- Ensure severity is one of: ERROR, WARNING, INFO\n"
+                    prompt += "- Make sure pattern field is a valid Semgrep pattern\n"
+                elif "parse" in error_feedback.lower() or "syntax" in error_feedback.lower():
+                    prompt += "\nPARSE/SYNTAX ERROR - Common Issues:\n"
+                    prompt += "- Simplify your patterns - they may be too complex\n"
+                    prompt += "- Ensure your pattern syntax matches Semgrep's DSL\n"
+                    prompt += "- Use ... for wildcards, $VAR for metavariables\n"
+                    prompt += "- Check that your pattern is syntactically valid for the target language\n"
+                
+                prompt += f"\n{'='*60}\n"
+                prompt += "INSTRUCTIONS FOR THIS ATTEMPT:\n"
+                prompt += f"{'='*60}\n"
+                prompt += f"**CRITICAL**: You have tried {len(previous_attempts)} time(s) already. Each attempt failed for different reasons shown above.\n"
+                prompt += "- DO NOT repeat the same patterns from previous attempts\n"
+                prompt += "- ANALYZE what went wrong in each previous attempt\n"
+                prompt += "- Try a FUNDAMENTALLY DIFFERENT approach this time\n"
+                prompt += "- Consider completely different metavariables or detection strategies\n"
+                prompt += "- If previous attempts were too specific, be more general\n"
+                prompt += "- If previous attempts were too broad, be more specific\n"
+                prompt += "- Look at the ACTUAL code changes in the patch and think creatively\n"
+                prompt += "\nThis is your chance to learn from all previous mistakes. Make it count!\n"
+        elif error_feedback:
+            # Default behavior when enhanced feedback is disabled
             prompt += f"\n\nPREVIOUS ERROR TO FIX:\n{error_feedback}\nEnsure your next attempt addresses these issues."
             
         return prompt
