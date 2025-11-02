@@ -119,14 +119,28 @@ class AutoGrep:
                 
             # Initialize error tracking
             error_msg = None
+            previous_attempts = []  # Track all previous attempts
             
             # Try generating and validating rule
             for attempt in range(self.config.max_retries):
                 logging.info(f"Attempt {attempt + 1}/{self.config.max_retries} for patch {patch_file}")
                 
-                rule = self.llm_client.generate_rule(patch_info, error_msg)
+                rule = self.llm_client.generate_rule(
+                    patch_info, 
+                    error_msg,
+                    attempt_number=attempt + 1,
+                    max_attempts=self.config.max_retries,
+                    previous_attempts=previous_attempts if self.config.enhanced_retry_feedback else []
+                )
                 if not rule:
                     error_msg = "Failed to generate valid rule structure"
+                    # Track failed generation attempt
+                    if self.config.enhanced_retry_feedback:
+                        previous_attempts.append({
+                            'attempt': attempt + 1,
+                            'rule': None,
+                            'error': error_msg
+                        })
                     continue
                 
                 is_valid, validation_error = self.rule_validator.validate_rule(
@@ -146,6 +160,14 @@ class AutoGrep:
                     self.config.cache_manager.mark_patch_processed(patch_file.name)
                     return None
                     
+                # Store the attempt (rule + error) for next attempt
+                if self.config.enhanced_retry_feedback:
+                    previous_attempts.append({
+                        'attempt': attempt + 1,
+                        'rule': rule,
+                        'error': validation_error
+                    })
+                
                 # Otherwise, use the error message for the next attempt
                 error_msg = validation_error
                 logging.warning(f"Attempt {attempt + 1} failed: {error_msg}")
@@ -316,6 +338,12 @@ def parse_args():
         help="Maximum number of parallel workers for processing patches (default: 2)"
     )
     
+    parser.add_argument(
+        "--enhanced-retry-feedback",
+        action="store_true",
+        help="Enable enhanced retry feedback with previous rule context and detailed suggestions"
+    )
+    
     args = parser.parse_args()
     
     if not args.openrouter_api_key:
@@ -344,7 +372,8 @@ def main():
         openrouter_base_url=args.openrouter_base_url,
         generation_model=args.generation_model,
         log_rules_csv=args.log_rules_csv,
-        max_workers=args.max_workers
+        max_workers=args.max_workers,
+        enhanced_retry_feedback=args.enhanced_retry_feedback
     )
     
     # Create necessary directories

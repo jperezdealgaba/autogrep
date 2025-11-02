@@ -198,9 +198,17 @@ class RuleValidator:
             
             if not is_valid:
                 if len(vuln_results) == 0:
-                    error_msg = "Rule failed to detect vulnerability in original version"
+                    # Provide detailed feedback for no matches in vulnerable version
+                    file_paths = [fc.file_path for fc in patch_info.file_changes]
+                    error_msg = f"Rule failed to detect vulnerability in original version. "
+                    error_msg += f"Expected: At least 1 match in {', '.join(file_paths)}. "
+                    error_msg += f"Found: 0 matches. "
+                    error_msg += "The pattern may be too specific or doesn't match the vulnerable code structure."
                 elif len(fixed_results) > 0:
-                    error_msg = "Rule incorrectly detected vulnerability in fixed version"
+                    # Provide detailed feedback for false positives in fixed version
+                    error_msg = f"Rule incorrectly detected vulnerability in fixed version. "
+                    error_msg += f"Found: {len(fixed_results)} match(es) in fixed code. "
+                    error_msg += "The pattern is too broad and needs refinement to exclude the fixed version."
                 else:
                     error_msg = "Rule validation failed for unknown reason"
                 return False, error_msg

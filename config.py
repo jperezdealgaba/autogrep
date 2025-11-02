@@ -18,6 +18,7 @@ class Config:
     validation_model: str = "deepseek/deepseek-chat"
     log_rules_csv: bool = False
     max_workers: int = 2
+    enhanced_retry_feedback: bool = False
     cache_manager: CacheManager = field(init=False)
 
     def __post_init__(self):
