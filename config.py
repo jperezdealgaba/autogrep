@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Optional
 import os
 from cache_manager import CacheManager
 
@@ -19,6 +20,11 @@ class Config:
     log_rules_csv: bool = False
     max_workers: int = 2
     enhanced_retry_feedback: bool = False
+    # RAG system configuration
+    enable_rag: bool = False
+    opengrep_rules_path: Optional[Path] = None
+    rag_top_k: int = 3
+    rag_auto_clone: bool = True
     cache_manager: CacheManager = field(init=False)
 
     def __post_init__(self):
