@@ -47,11 +47,12 @@ class AutoGrep:
                     'patch_file', 
                     'rule_id', 
                     'rule_filename', 
-                    'language'
+                    'language',
+                    'attempts'
                 ])
             logging.info(f"Created CSV log file: {self.csv_file}")
     
-    def _log_successful_rule_generation(self, patch_file: Path, rule: dict, language: str):
+    def _log_successful_rule_generation(self, patch_file: Path, rule: dict, language: str, attempts: int = 1):
         """Log successful rule generation to CSV file."""
         # Only log if CSV logging is enabled
         if not self.config.log_rules_csv or not self.csv_file:
@@ -68,14 +69,19 @@ class AutoGrep:
                     patch_file.name,
                     rule['id'],
                     rule_filename,
-                    language
+                    language,
+                    attempts
                 ])
-            logging.debug(f"Logged successful rule generation to CSV: {patch_file.name} -> {rule_filename}")
+            logging.debug(f"Logged successful rule generation to CSV: {patch_file.name} -> {rule_filename} (attempts: {attempts})")
         except Exception as e:
             logging.error(f"Failed to log rule generation to CSV: {e}")
         
-    def process_patch(self, patch_file: Path) -> Optional[Tuple[dict, PatchInfo]]:
-        """Process a single patch file with improved rule checking."""
+    def process_patch(self, patch_file: Path) -> Optional[Tuple[dict, PatchInfo, int]]:
+        """Process a single patch file with improved rule checking.
+        
+        Returns:
+            Optional tuple of (rule, patch_info, attempts) if successful, None otherwise.
+        """
         # Check if patch has already been processed
         if self.config.cache_manager.is_patch_processed(patch_file.name):
             logging.info(f"Skipping already processed patch: {patch_file.name}")
@@ -150,7 +156,7 @@ class AutoGrep:
                 if is_valid:
                     logging.info(f"Successfully generated valid rule for {patch_file}")
                     self.config.cache_manager.mark_patch_processed(patch_file.name)
-                    return (rule, patch_info)
+                    return (rule, patch_info, attempt + 1)
                     
                 # If validation failed due to parse errors, skip this patch
                 if validation_error and ("Parse error" in validation_error or 
@@ -194,15 +200,15 @@ class AutoGrep:
             try:
                 result = self.process_patch(patch_file)
                 if result:  # Check if we got a valid result
-                    rule, patch_info = result  # Properly unpack the tuple
+                    rule, patch_info, attempts = result  # Properly unpack the tuple
                     if rule and patch_info and patch_info.file_changes:
                         language = patch_info.file_changes[0].language
                         # Store the rule immediately after generation
                         self.rule_manager.add_generated_rule(language, rule)
                         # Log the successful rule generation to CSV
-                        self._log_successful_rule_generation(patch_file, rule, language)
+                        self._log_successful_rule_generation(patch_file, rule, language, attempts)
                         rules.append(rule)
-                        logging.info(f"Successfully stored rule for {patch_file} in {language}")
+                        logging.info(f"Successfully stored rule for {patch_file} in {language} (attempts: {attempts})")
             except Exception as e:
                 logging.error(f"Error processing patch {patch_file}: {e}", exc_info=True)
         return rules
