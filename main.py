@@ -7,6 +7,7 @@ from llm_client import LLMClient
 from git_manager import GitManager
 from config import Config
 from rule_validator import RuleValidator
+from rag_manager import RagManager
 import argparse
 import logging
 import os
@@ -22,6 +23,24 @@ class AutoGrep:
         self.llm_client = LLMClient(config)
         self.git_manager = GitManager(config)
         self.rule_validator = RuleValidator(config)
+        
+        # Initialize RAG manager if enabled
+        self.rag_manager = None
+        if self.config.enable_rag:
+            try:
+                logging.info("Initializing RAG system...")
+                self.rag_manager = RagManager(
+                    repo_path=self.config.opengrep_rules_path,
+                    top_k=self.config.rag_top_k,
+                    auto_clone=self.config.rag_auto_clone
+                )
+                logging.info(f"RAG system initialized successfully with {len(self.rag_manager.rules)} rules")
+            except Exception as e:
+                logging.error(f"Failed to initialize RAG system: {e}")
+                logging.warning("Continuing without RAG features")
+                self.rag_manager = None
+        else:
+            logging.info("RAG system disabled - use --enable-rag to enable context-aware rule generation")
         
         # Initialize CSV logging if enabled
         if self.config.log_rules_csv:
@@ -136,7 +155,8 @@ class AutoGrep:
                     error_msg,
                     attempt_number=attempt + 1,
                     max_attempts=self.config.max_retries,
-                    previous_attempts=previous_attempts if self.config.enhanced_retry_feedback else []
+                    previous_attempts=previous_attempts if self.config.enhanced_retry_feedback else [],
+                    rag_manager=self.rag_manager
                 )
                 if not rule:
                     error_msg = "Failed to generate valid rule structure"
@@ -350,6 +370,33 @@ def parse_args():
         help="Enable enhanced retry feedback with previous rule context and detailed suggestions"
     )
     
+    parser.add_argument(
+        "--enable-rag",
+        action="store_true",
+        help="Enable RAG system to augment prompts with similar rules from opengrep-rules repository"
+    )
+    
+    parser.add_argument(
+        "--opengrep-rules-path",
+        type=Path,
+        default=None,
+        help="Path to local opengrep-rules repository (default: auto-clone to cache/opengrep-rules)"
+    )
+    
+    parser.add_argument(
+        "--rag-top-k",
+        type=int,
+        default=3,
+        help="Number of similar rules to retrieve from RAG system (default: 3)"
+    )
+    
+    parser.add_argument(
+        "--rag-auto-clone",
+        action="store_true",
+        default=True,
+        help="Auto-clone opengrep-rules repository if not found (default: enabled)"
+    )
+    
     args = parser.parse_args()
     
     if not args.openrouter_api_key:
@@ -379,7 +426,11 @@ def main():
         generation_model=args.generation_model,
         log_rules_csv=args.log_rules_csv,
         max_workers=args.max_workers,
-        enhanced_retry_feedback=args.enhanced_retry_feedback
+        enhanced_retry_feedback=args.enhanced_retry_feedback,
+        enable_rag=args.enable_rag,
+        opengrep_rules_path=args.opengrep_rules_path,
+        rag_top_k=args.rag_top_k,
+        rag_auto_clone=args.rag_auto_clone
     )
     
     # Create necessary directories

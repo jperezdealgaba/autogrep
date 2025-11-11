@@ -119,11 +119,24 @@ class LLMClient:
 
     def generate_rule(self, patch_info: PatchInfo, error_feedback: Optional[str] = None, 
                       attempt_number: int = 1, max_attempts: int = 3, 
-                      previous_attempts: list = None) -> Optional[dict]:
+                      previous_attempts: list = None, rag_manager=None) -> Optional[dict]:
         """Generate a Semgrep rule using the LLM with improved validation."""
         if previous_attempts is None:
             previous_attempts = []
-        prompt = self._build_prompt(patch_info, error_feedback, attempt_number, max_attempts, previous_attempts)
+        
+        # Retrieve similar rules from RAG system if available
+        rag_examples = None
+        if rag_manager:
+            try:
+                query = rag_manager.build_query_from_patch(patch_info)
+                language = patch_info.file_changes[0].language if patch_info.file_changes else 'unknown'
+                similar_rules = rag_manager.retrieve_similar_rules(query, language)
+                if similar_rules:
+                    rag_examples = rag_manager.format_rules_for_prompt(similar_rules)
+            except Exception as e:
+                logging.error(f"Error retrieving RAG examples: {e}")
+        
+        prompt = self._build_prompt(patch_info, error_feedback, attempt_number, max_attempts, previous_attempts, rag_examples)
         
         try:
             response = self.client.chat.completions.create(
@@ -179,7 +192,7 @@ class LLMClient:
         
     def _build_prompt(self, patch_info: PatchInfo, error_feedback: Optional[str] = None,
                      attempt_number: int = 1, max_attempts: int = 3, 
-                     previous_attempts: list = None) -> str:
+                     previous_attempts: list = None, rag_examples: Optional[str] = None) -> str:
         """Build an enhanced prompt for rule generation with examples and detailed guidance."""
         if previous_attempts is None:
             previous_attempts = []
@@ -328,7 +341,27 @@ class LLMClient:
     5. Consider different variations of the vulnerable pattern
 
     EXAMPLES OF HIGH-QUALITY RULES:
-    {examples}
+    {examples}"""
+
+        # Add RAG examples if available
+        if rag_examples:
+            prompt += f"""
+
+    {'='*60}
+    SIMILAR RULES FROM OPENGREP REPOSITORY:
+    {'='*60}
+    
+    The following are real-world, validated rules from the official Opengrep rules repository
+    that are similar to your current context. Use these as reference for patterns, structure,
+    and best practices:
+
+    {rag_examples}
+
+    Note: These examples are semantically similar to your task. Study their patterns and adapt
+    them to the specific vulnerability in the patch above.
+    {'='*60}"""
+
+        prompt += """
 
     FORMAT YOUR RESPONSE AS A SINGLE YAML DOCUMENT:
     rules:
