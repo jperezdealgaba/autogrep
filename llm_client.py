@@ -119,7 +119,8 @@ class LLMClient:
 
     def generate_rule(self, patch_info: PatchInfo, error_feedback: Optional[str] = None, 
                       attempt_number: int = 1, max_attempts: int = 3, 
-                      previous_attempts: list = None, rag_manager=None) -> Optional[dict]:
+                      previous_attempts: list = None, rag_manager=None, 
+                      model: Optional[str] = None) -> Optional[dict]:
         """Generate a Semgrep rule using the LLM with improved validation."""
         if previous_attempts is None:
             previous_attempts = []
@@ -138,9 +139,12 @@ class LLMClient:
         
         prompt = self._build_prompt(patch_info, error_feedback, attempt_number, max_attempts, previous_attempts, rag_examples)
         
+        # Use provided model or fall back to config default
+        generation_model = model if model is not None else self.config.generation_model
+        
         try:
             response = self.client.chat.completions.create(
-                model=self.config.generation_model,
+                model=generation_model,
                 messages=[
                     {"role": "system", "content": """You generate Semgrep rules in YAML format. 
     Return only the raw YAML content without any markdown formatting or additional text.
