@@ -42,6 +42,13 @@ class AutoGrep:
         else:
             logging.info("RAG system disabled - use --enable-rag to enable context-aware rule generation")
         
+        # Log model configuration
+        logging.info(f"Primary generation model: {self.config.generation_model}")
+        if self.config.backup_model:
+            logging.info(f"Backup generation model: {self.config.backup_model}")
+        else:
+            logging.info("No backup model configured")
+        
         # Initialize CSV logging if enabled
         if self.config.log_rules_csv:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -67,11 +74,12 @@ class AutoGrep:
                     'rule_id', 
                     'rule_filename', 
                     'language',
-                    'attempts'
+                    'attempts',
+                    'model_used'
                 ])
             logging.info(f"Created CSV log file: {self.csv_file}")
     
-    def _log_successful_rule_generation(self, patch_file: Path, rule: dict, language: str, attempts: int = 1):
+    def _log_successful_rule_generation(self, patch_file: Path, rule: dict, language: str, attempts: int = 1, model_used: str = None):
         """Log successful rule generation to CSV file."""
         # Only log if CSV logging is enabled
         if not self.config.log_rules_csv or not self.csv_file:
@@ -89,17 +97,89 @@ class AutoGrep:
                     rule['id'],
                     rule_filename,
                     language,
-                    attempts
+                    attempts,
+                    model_used or self.config.generation_model
                 ])
             logging.debug(f"Logged successful rule generation to CSV: {patch_file.name} -> {rule_filename} (attempts: {attempts})")
         except Exception as e:
             logging.error(f"Failed to log rule generation to CSV: {e}")
+    
+    def _try_generate_rule_with_model(self, patch_info: PatchInfo, repo_path: Path, 
+                                    patch_file: Path, model: str, model_type: str) -> Optional[Tuple[dict, PatchInfo, int, str]]:
+        """Try to generate and validate a rule using a specific model with retry logic.
         
-    def process_patch(self, patch_file: Path) -> Optional[Tuple[dict, PatchInfo, int]]:
+        Args:
+            patch_info: Information about the patch
+            repo_path: Path to the repository
+            patch_file: Path to the patch file
+            model: Model name to use for generation
+            model_type: Type of model ("primary" or "backup") for logging
+            
+        Returns:
+            Optional tuple of (rule, patch_info, total_attempts, model) if successful, None otherwise.
+        """
+        error_msg = None
+        previous_attempts = []  # Track all previous attempts
+        
+        # Try generating and validating rule
+        for attempt in range(self.config.max_retries):
+            logging.info(f"{model_type.title()} model ({model}) - Attempt {attempt + 1}/{self.config.max_retries} for patch {patch_file}")
+            
+            rule = self.llm_client.generate_rule(
+                patch_info, 
+                error_msg,
+                attempt_number=attempt + 1,
+                max_attempts=self.config.max_retries,
+                previous_attempts=previous_attempts if self.config.enhanced_retry_feedback else [],
+                rag_manager=self.rag_manager,
+                model=model
+            )
+            if not rule:
+                error_msg = "Failed to generate valid rule structure"
+                # Track failed generation attempt
+                if self.config.enhanced_retry_feedback:
+                    previous_attempts.append({
+                        'attempt': attempt + 1,
+                        'rule': None,
+                        'error': error_msg
+                    })
+                continue
+            
+            is_valid, validation_error = self.rule_validator.validate_rule(
+                rule, patch_info, repo_path
+            )
+            
+            if is_valid:
+                logging.info(f"Successfully generated valid rule for {patch_file} using {model_type} model ({model})")
+                return (rule, patch_info, attempt + 1, model)
+                
+            # If validation failed due to parse errors, skip this patch
+            if validation_error and ("Parse error" in validation_error or 
+                                "Syntax error" in validation_error or
+                                "Skipped all files" in validation_error):
+                logging.info(f"Skipping patch due to parse errors: {validation_error}")
+                return None
+                
+            # Store the attempt (rule + error) for next attempt
+            if self.config.enhanced_retry_feedback:
+                previous_attempts.append({
+                    'attempt': attempt + 1,
+                    'rule': rule,
+                    'error': validation_error
+                })
+            
+            # Otherwise, use the error message for the next attempt
+            error_msg = validation_error
+            logging.warning(f"{model_type.title()} model ({model}) - Attempt {attempt + 1} failed: {error_msg}")
+        
+        logging.info(f"{model_type.title()} model ({model}) failed after {self.config.max_retries} attempts")
+        return None
+        
+    def process_patch(self, patch_file: Path) -> Optional[Tuple[dict, PatchInfo, int, str]]:
         """Process a single patch file with improved rule checking.
         
         Returns:
-            Optional tuple of (rule, patch_info, attempts) if successful, None otherwise.
+            Optional tuple of (rule, patch_info, attempts, model_used) if successful, None otherwise.
         """
         # Check if patch has already been processed
         if self.config.cache_manager.is_patch_processed(patch_file.name):
@@ -142,62 +222,28 @@ class AutoGrep:
                 self.config.cache_manager.mark_patch_processed(patch_file.name)
                 return None
                 
-            # Initialize error tracking
-            error_msg = None
-            previous_attempts = []  # Track all previous attempts
+            # Try generating rule with primary model first
+            logging.info(f"Attempting rule generation with primary model: {self.config.generation_model}")
+            result = self._try_generate_rule_with_model(
+                patch_info, repo_path, patch_file, self.config.generation_model, "primary"
+            )
             
-            # Try generating and validating rule
-            for attempt in range(self.config.max_retries):
-                logging.info(f"Attempt {attempt + 1}/{self.config.max_retries} for patch {patch_file}")
-                
-                rule = self.llm_client.generate_rule(
-                    patch_info, 
-                    error_msg,
-                    attempt_number=attempt + 1,
-                    max_attempts=self.config.max_retries,
-                    previous_attempts=previous_attempts if self.config.enhanced_retry_feedback else [],
-                    rag_manager=self.rag_manager
-                )
-                if not rule:
-                    error_msg = "Failed to generate valid rule structure"
-                    # Track failed generation attempt
-                    if self.config.enhanced_retry_feedback:
-                        previous_attempts.append({
-                            'attempt': attempt + 1,
-                            'rule': None,
-                            'error': error_msg
-                        })
-                    continue
-                
-                is_valid, validation_error = self.rule_validator.validate_rule(
-                    rule, patch_info, repo_path
+            if result:
+                return result
+            
+            # If primary model failed and backup model is configured, try backup model
+            if self.config.backup_model:
+                logging.info(f"Primary model failed, attempting with backup model: {self.config.backup_model}")
+                result = self._try_generate_rule_with_model(
+                    patch_info, repo_path, patch_file, self.config.backup_model, "backup"
                 )
                 
-                if is_valid:
-                    logging.info(f"Successfully generated valid rule for {patch_file}")
-                    self.config.cache_manager.mark_patch_processed(patch_file.name)
-                    return (rule, patch_info, attempt + 1)
-                    
-                # If validation failed due to parse errors, skip this patch
-                if validation_error and ("Parse error" in validation_error or 
-                                    "Syntax error" in validation_error or
-                                    "Skipped all files" in validation_error):
-                    logging.info(f"Skipping patch due to parse errors: {validation_error}")
-                    self.config.cache_manager.mark_patch_processed(patch_file.name)
-                    return None
-                    
-                # Store the attempt (rule + error) for next attempt
-                if self.config.enhanced_retry_feedback:
-                    previous_attempts.append({
-                        'attempt': attempt + 1,
-                        'rule': rule,
-                        'error': validation_error
-                    })
-                
-                # Otherwise, use the error message for the next attempt
-                error_msg = validation_error
-                logging.warning(f"Attempt {attempt + 1} failed: {error_msg}")
+                if result:
+                    return result
+            else:
+                logging.info("Primary model failed and no backup model configured")
             
+            # Both models failed or no backup model configured
             self.config.cache_manager.mark_patch_processed(patch_file.name)
             return None
             
@@ -220,15 +266,15 @@ class AutoGrep:
             try:
                 result = self.process_patch(patch_file)
                 if result:  # Check if we got a valid result
-                    rule, patch_info, attempts = result  # Properly unpack the tuple
+                    rule, patch_info, attempts, model_used = result  # Properly unpack the tuple
                     if rule and patch_info and patch_info.file_changes:
                         language = patch_info.file_changes[0].language
                         # Store the rule immediately after generation
                         self.rule_manager.add_generated_rule(language, rule)
                         # Log the successful rule generation to CSV
-                        self._log_successful_rule_generation(patch_file, rule, language, attempts)
+                        self._log_successful_rule_generation(patch_file, rule, language, attempts, model_used)
                         rules.append(rule)
-                        logging.info(f"Successfully stored rule for {patch_file} in {language} (attempts: {attempts})")
+                        logging.info(f"Successfully stored rule for {patch_file} in {language} (attempts: {attempts}, model: {model_used})")
             except Exception as e:
                 logging.error(f"Error processing patch {patch_file}: {e}", exc_info=True)
         return rules
@@ -345,6 +391,12 @@ def parse_args():
     )
     
     parser.add_argument(
+        "--backup-model",
+        default=None,
+        help="Backup LLM model to use if primary generation model fails"
+    )
+    
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -424,6 +476,7 @@ def main():
         openrouter_api_key=args.openrouter_api_key,
         openrouter_base_url=args.openrouter_base_url,
         generation_model=args.generation_model,
+        backup_model=args.backup_model,
         log_rules_csv=args.log_rules_csv,
         max_workers=args.max_workers,
         enhanced_retry_feedback=args.enhanced_retry_feedback,

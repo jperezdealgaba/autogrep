@@ -16,6 +16,7 @@ class Config:
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     # LLM models for different tasks
     generation_model: str = "deepseek/deepseek-chat"
+    backup_model: Optional[str] = None
     validation_model: str = "deepseek/deepseek-chat"
     log_rules_csv: bool = False
     max_workers: int = 2

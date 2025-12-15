@@ -12,6 +12,7 @@ The project leverages several key resources:
 
 - Automatic rule generation from vulnerability patches
 - Support for multiple programming languages
+- Backup model fallback for improved reliability
 - Duplicate rule detection using embeddings
 - Rule quality evaluation using LLM
 - Validation against original vulnerabilities
@@ -73,9 +74,10 @@ The project consists of two main components:
 # Basic usage
 python main.py --patches-dir /path/to/patches --output-dir generated_rules
 
-# With custom models, CSV logging, and increased parallelism
+# With custom models, backup model, CSV logging, and increased parallelism
 python main.py --patches-dir /path/to/patches --output-dir generated_rules \
   --generation-model "openai/gpt-4" \
+  --backup-model "anthropic/claude-3-sonnet" \
   --validation-model "anthropic/claude-3-sonnet" \
   --log-rules-csv \
   --max-workers 4
@@ -100,6 +102,7 @@ python rule_filter.py --input-dir generated_rules --output-dir filtered_rules \
 - `--max-files-changed`: Maximum number of files changed in patch (default: 1)
 - `--max-retries`: Maximum number of LLM generation attempts (default: 3)
 - `--generation-model`: LLM model for rule generation (default: "deepseek/deepseek-chat")
+- `--backup-model`: Backup LLM model to use if primary generation model fails (optional)
 - `--validation-model`: LLM model for rule validation (default: "deepseek/deepseek-chat")
 - `--log-rules-csv`: Enable CSV logging of successfully generated rules to stats/generated_rules_log.csv
 - `--max-workers`: Maximum number of parallel workers for processing patches (default: 2)
@@ -111,6 +114,30 @@ python rule_filter.py --input-dir generated_rules --output-dir filtered_rules \
 - `--embedding-model`: Sentence-transformers model for embeddings (default: "all-MiniLM-L6-v2")
 - `--validation-model`: LLM model for rule validation (default: "deepseek/deepseek-chat")
 - `--log-level`: Logging level (default: "INFO")
+
+### Backup Model Feature
+
+Autogrep supports a backup model fallback mechanism to improve reliability when generating rules. When a backup model is configured:
+
+1. **Primary Model**: The tool first attempts to generate rules using the primary generation model (specified by `--generation-model`)
+2. **Fallback**: If rule generation fails after all retries with the primary model, the tool automatically attempts generation using the backup model
+3. **Retry Logic**: Each model (primary and backup) uses the same retry policy controlled by `--max-retries`
+
+**Configuration Options:**
+- **CLI**: Use `--backup-model MODEL_NAME` to specify a backup model
+- **Config File**: Add `backup_model: "MODEL_NAME"` to your configuration
+- **Precedence**: CLI arguments take precedence over configuration file settings
+
+**Example Usage:**
+```bash
+# Use GPT-4 as primary, Claude as backup
+python main.py --generation-model "openai/gpt-4" --backup-model "anthropic/claude-3-sonnet"
+
+# Backup model is optional - if not specified, behavior is unchanged
+python main.py --generation-model "openai/gpt-4"
+```
+
+**Logging**: The tool provides clear logging to show which model is being used for each attempt and when fallback occurs.
 
 ## Project Structure
 
